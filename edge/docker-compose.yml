@@ -1,0 +1,98 @@
+version: '3'
+
+services:
+
+  mqtt:
+    restart: always
+    image: onesaitplatform/edge-mqtt:community
+    container_name: edge.mqtt
+    volumes:
+      - /mosquitto/log
+      - /mosquitto/data
+    ports:
+      - 1883:1883
+    networks:
+      edgenet:
+        aliases:
+          - mqtt
+
+  nodered:
+    restart: always
+    image: onesaitplatform/edge-nodered:community
+    container_name: edge.nodered
+    volumes:
+      - /home/node
+    ports:
+      - 1880:8080
+    networks:
+      edgenet:
+        aliases:
+          - nodered
+
+  database:
+    restart: always
+    image: onesaitplatform/edge-database:community
+    container_name: edge.database
+    environment:
+      CONTAINER_TIMEZONE: Europe/Madrid
+      INFLUXDB_SHARD_PRECREATION_ENABLED: 1
+      MQTT_HOST: mqtt
+      MQTT_PORT: 1883
+      MQTT_TOPIC: topic/data
+    volumes:
+      - /var/lib/influxdb
+    depends_on:
+      - mqtt
+    ports:
+      - 5300:5300
+      - 8086:8086
+    networks:
+      edgenet:
+        aliases:
+          - database
+  
+  cadvisor:
+    restart: always
+    image: google/cadvisor:latest
+    container_name: edge.cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+    depends_on:
+      - database
+    ports:
+      - 8080:8080
+    command: -storage_driver=influxdb -storage_driver_db=cadvisor -storage_driver_host=database:8086
+    networks:
+      edgenet:
+        aliases:
+          - cadvisor
+
+  grafana:
+    image: grafana/grafana
+    restart: always
+    depends_on:
+      - database
+    ports:
+      - 3000:3000
+    environment:
+      HTTP_USER: admin
+      HTTP_PASS: admin
+      INFLUXDB_HOST: database
+      INFLUXDB_PORT: 8086
+      INFLUXDB_NAME: cadvisor
+      INFLUXDB_USER: root
+      INFLUXDB_PASS: root
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: changeme
+      GF_USERS_ALLOW_SIGN_UP: 'false'
+    networks:
+      edgenet:
+        aliases:
+          - grafana
+
+networks:
+  edgenet:
+    driver: bridge
