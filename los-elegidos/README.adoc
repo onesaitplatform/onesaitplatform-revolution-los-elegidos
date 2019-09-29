@@ -74,7 +74,18 @@ La configuración realizada en el `docker-compose.yml` es la siguiente:
 
 [source,yaml]
 ----
-include::docker-compose.yml[tag=cAdvisor]
+  cadvisor:
+    restart: always
+    image: google/cadvisor:latest # <1>
+    container_name: edge.cadvisor # <2>
+    volumes: # <3>
+#      - /:/rootfs:ro
+      - /var/run:/var/run:rw #<1
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+    depends_on: # <4>
+      - database
+    command: -storage_driver=influxdb -storage_driver_db=cadvisor -storage_driver_host=database:8086 # <5>
 ----
 
 <1> Se indica la imagen Docker a utilizar.
@@ -99,7 +110,18 @@ La configuración realizada en el `docker-compose.yml` es la siguiente:
 
 [source,yaml]
 ----
-include::docker-compose.yml[tag=prometheus]
+  prometheus:
+    restart: always
+    image: prom/prometheus:latest # <1>
+    container_name: edge.prometheus # <2>
+    ports: # <3>
+      - 9090
+    volumes: # <4>
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/rules:/etc/prometheus/rules
+      - ./prometheus/data:/prometheus
+    depends_on: # <5>
+      - database
 ----
 
 <1> Se indica la imagen Docker a utilizar.
@@ -112,10 +134,40 @@ El archivo de configuración de prometheus `prometheus.yml` especifica que la ba
 
 [source]
 ----
-include::prometheus/prometheus.yml[]
+global:
+  scrape_interval:     15s # By default, scrape targets every 15 seconds.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds.
+  external_labels:
+    monitor: 'edge-monitor'
+
+rule_files:
+  - 'prometheus.rules'
+#  - 'rules/host.rules'
+#  - 'rules/targets.rules'
+
+scrape_configs:
+
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'cAdvisor'
+    scrape_interval: 5s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['cadvisor:8080']
+
+  - job_name: 'nodeexporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['nodeexporter:9100']
+
+remote_write:
+  - url: "http://database:8086/api/v1/prom/write?db=prometheus"
 ----
 
-Para que prometheus pueda almacenar su información en InfluxDB, es neceseareio crear la base de datos correspondiente `prometheus`, con el siguiente comando:
+Para que prometheus pueda almacenar su información en InfluxDB, es necesario crear la base de datos correspondiente `prometheus`, con el siguiente comando:
 
 [source,shell script]
 ----
@@ -131,6 +183,49 @@ La configuración realizada en el `docker-compose.yml` es la siguiente:
 
 [source,yaml]
 ----
-include::docker-compose.yml[tag=grafana]
+  grafana:
+    restart: always
+    image: grafana/grafana:latest
+    container_name: edge.grafana
+    volumes:
+      - ./grafana/data:/var/lib/grafana
+      - ./grafana/datasources:/etc/grafana/datasources
+      - ./grafana/dashboards:/etc/grafana/dashboards
+      - ./grafana/setup.sh:/setup.sh
+    entrypoint: /setup.sh
+    environment:
+      - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - 3000:3000
 ----
 
+=== Visualización de las métricas
+
+Una vez arrancados todos los contenedores mediante el comando `docker-compose up`, es posible acceder al servicio de Grafana en el puerto 3000, donde se puede ver:
+
+.Home Dashboard
+image::resources/screenshot-grafana-home.png[]
+
+Se puede comprobar que hay cuatro dashboards disponibles:
+
+==== Aggregate resource usage
+
+.Aggregate resource usage
+image::resources/screenshot-grafana-aggregate-resource.png[]
+
+==== cAdvisor with InfluxDB
+
+.cAdvisor with InfluxDB
+image::resources/screenshot-grafana-cadvisor-influxdb.png[]
+
+==== Docker containers
+
+.Docker containers
+image::resources/screenshot-grafana-docker-containers.png[]
+
+==== Docker and OS metrics
+
+.Docker and OS metrics
+image::resources/screenshot-grafana-docker-os-metrics.png[]
