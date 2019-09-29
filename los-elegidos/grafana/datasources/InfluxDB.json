@@ -1,0 +1,10 @@
+{
+    "name":"InfluxDB",
+    "type":"influxdb",
+    "url":"http://database:8086",
+    "access":"proxy",
+    "basicAuth":false,
+    "database":"cadvisor",
+    "user": "root",
+    "password": "root"
+}

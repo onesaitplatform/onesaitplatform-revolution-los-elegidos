@@ -1,0 +1,31 @@
+global:
+  scrape_interval:     15s # By default, scrape targets every 15 seconds.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds.
+  external_labels:
+    monitor: 'edge-monitor'
+
+rule_files:
+  - 'prometheus.rules'
+#  - 'rules/host.rules'
+#  - 'rules/targets.rules'
+
+scrape_configs:
+
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'cAdvisor'
+    scrape_interval: 5s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['cadvisor:8080']
+
+  - job_name: 'nodeexporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['nodeexporter:9100']
+
+remote_write:
+  - url: "http://database:8086/api/v1/prom/write?db=prometheus"

@@ -50,48 +50,98 @@ services:
       edgenet:
         aliases:
           - database
-  
+ 
+# tag::cAdvisor[]
   cadvisor:
     restart: always
-    image: google/cadvisor:latest
-    container_name: edge.cadvisor
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
+    image: google/cadvisor:latest # <1>
+    container_name: edge.cadvisor # <2>
+    volumes: # <3>
+#      - /:/rootfs:ro
+      - /var/run:/var/run:rw #<1
       - /sys:/sys:ro
       - /var/lib/docker:/var/lib/docker:ro
-    depends_on:
+    depends_on: # <4>
       - database
-    ports:
-      - 8080:8080
-    command: -storage_driver=influxdb -storage_driver_db=cadvisor -storage_driver_host=database:8086
+    command: -storage_driver=influxdb -storage_driver_db=cadvisor -storage_driver_host=database:8086 # <5>
     networks:
       edgenet:
         aliases:
           - cadvisor
+# end::cAdvisor[]
 
-  grafana:
-    image: grafana/grafana
+# tag::prometheus[]
+  prometheus:
     restart: always
-    depends_on:
+    image: prom/prometheus:latest # <1>
+    container_name: edge.prometheus # <2>
+    ports: # <3>
+      - 9090
+    volumes: # <4>
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/rules:/etc/prometheus/rules
+      - ./prometheus/data:/prometheus
+    depends_on: # <5>
       - database
+    networks:
+      edgenet:
+        aliases:
+          - prometheus
+# end::prometheus[]
+
+  alertmanager:
+    restart: always
+    image: prom/alertmanager:latest
+    container_name: edge.alertmanager
+    ports:
+      - 9093
+    networks:
+      edgenet:
+        aliases:
+          - alertmanager
+
+  nodeexporter:
+    restart: always
+    image: prom/node-exporter:latest
+    container_name: edge.nodeexporter
+    ports:
+      - 9100
+    volumes:
+      - /:/rootfs:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      edgenet:
+        aliases:
+          - nodeexporter
+
+# tag::grafana[]
+  grafana:
+    restart: always
+    image: grafana/grafana:latest
+    container_name: edge.grafana
+    volumes:
+      - ./grafana/data:/var/lib/grafana
+      - ./grafana/datasources:/etc/grafana/datasources
+      - ./grafana/dashboards:/etc/grafana/dashboards
+      - ./grafana/setup.sh:/setup.sh
+    entrypoint: /setup.sh
+    environment:
+      - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
     ports:
       - 3000:3000
-    environment:
-      HTTP_USER: admin
-      HTTP_PASS: admin
-      INFLUXDB_HOST: database
-      INFLUXDB_PORT: 8086
-      INFLUXDB_NAME: cadvisor
-      INFLUXDB_USER: root
-      INFLUXDB_PASS: root
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: changeme
-      GF_USERS_ALLOW_SIGN_UP: 'false'
     networks:
       edgenet:
         aliases:
           - grafana
+# end::grafana[]
 
 networks:
   edgenet:

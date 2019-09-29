@@ -1,0 +1,136 @@
+Recopilación de métricas técnicas
+=================================
+
+:author: Los Elegidos
+:date: 29 de septiembre de 2019
+:revision: v1.0
+
+:doctype: book
+:docinfo:
+:encoding: utf-8
+:lang: es
+:toc: left
+:toclevels: 4
+:numbered:
+:src_numbered:
+:pagenums:
+:icons: font
+:idprefix:
+:idseparator: -
+:sectlinks:
+:sectanchors:
+:experimental:
+:source-highlighter: prettify
+:coderay-css: style
+:status:
+:menu:
+:navigation:
+:split:
+:goto:
+:blank:
+:deckjs_theme: swiss
+:showtitle:
+
+// Captions
+:toc-title: Índice de contenidos
+:figure-caption: Figura
+
+// -------------------------------------------
+// Enlaces
+// -------------------------------------------
+
+// -------------------------------------------
+// Contenido
+// -------------------------------------------
+
+[#intro]
+== Introducción
+
+Este proyecto es el resultado del reto https://www.onesaitplatformrevolution.com/#/[onesait platform Revolution] para el equipo "Los ElegidOS".
+
+Este reto consta de dos partes, que en los próximos apartados se explicarán:
+* Métricas técnicas.
+* Métricas funcionales.
+
+[#metricas-tecnicas]
+== Métricas técnicas
+
+La plataforma https://onesaitplatform.atlassian.net/wiki/spaces/OP/pages/8913150/Edge+Side[Edge] está desarrollada con el objetivo de instalarse sobre dispositivos. El objetivo del reto es poder aplicar métricas técnicas sobre estos dispositivos y poder visualizar la información de estas métricas.
+
+En este sentido, para la recopilación de métricas técnicas (CPU, memoria...) y visualización de dichas métricas se han utilizado las herramientas:
+
+* <<metricas-tecnicas-cadvisor,cAdvisor>>.
+* <<metricas-tecnicas-prometheus,prometheus>>.
+* <<metricas-tecnicas-grafana,Grafana>>. 
+
+Todas las herramientas se han configurado para lanzarse utilizando el archivo `docker-compose.yml`.
+
+[#metricas-tecnicas-cadvisor]
+=== cAdvisor
+
+La herramienta https://github.com/google/cadvisor[cAdvisor] analiza el uso de recursos y características de rendimiento de los contenedores en ejecución.
+
+La configuración realizada en el `docker-compose.yml` es la siguiente:
+
+[source,yaml]
+----
+include::docker-compose.yml[tag=cAdvisor]
+----
+
+<1> Se indica la imagen Docker a utilizar.
+<2> Se indica el nombre del contenedor.
+<3> Se indican los volúmenes a compartir entre la máquina host y el contenedor.
+<4> Se indica que el contenedor de cAdvisor depende del servicio `database`, el cual contiene la base de datos InfluxDB.
+<5> Se indica el comando de ejecución, contactando con la base de datos InfluxDB contenida en el contenedor `database`.
+
+Para que cAdvisor pueda almacenar su información en InfluxDB, es neceseareio crear la base de datos correspondiente `cadvisor`, con el siguiente comando:
+
+[source,shell script]
+----
+curl -XPOST 'http://localhost:8086/query' --data-urlencode 'q=CREATE DATABASE "cadvisor"'
+----
+
+[#metricas-tecnicas-prometheus]
+=== prometheus
+
+La herramienta https://prometheus.io/[prometheus] ofrece información sobre métricas dentro de la solución de monitorización.
+
+La configuración realizada en el `docker-compose.yml` es la siguiente:
+
+[source,yaml]
+----
+include::docker-compose.yml[tag=prometheus]
+----
+
+<1> Se indica la imagen Docker a utilizar.
+<2> Se indica el nombre del contenedor.
+<3> Se indica el puerto a exponer.
+<4> Se indican los volúmenes a compartir entre la máquina host y el contenedor.
+<5> Se indica que el contenedor de prometheus depende del servicio `database`, el cual contiene la base de datos InfluxDB.
+
+El archivo de configuración de prometheus `prometheus.yml` especifica que la base de datos donde almacenar la información sea InfluxDB:
+
+[source]
+----
+include::prometheus/prometheus.yml[]
+----
+
+Para que prometheus pueda almacenar su información en InfluxDB, es neceseareio crear la base de datos correspondiente `prometheus`, con el siguiente comando:
+
+[source,shell script]
+----
+curl -XPOST 'http://localhost:8086/query' --data-urlencode 'q=CREATE DATABASE "prometheus"'
+----
+
+[#metricas-tecnicas-grafana]
+=== Grafana
+
+La herramienta https://github.com/grafana/grafana[Grafana] permite visualizar información de métricas desde distintas fuentes, ofreciendo dashboards configurables.
+
+La configuración realizada en el `docker-compose.yml` es la siguiente:
+
+[source,yaml]
+----
+include::docker-compose.yml[tag=grafana]
+----
+
