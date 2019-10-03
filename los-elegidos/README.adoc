@@ -210,22 +210,7 @@ image::resources/screenshot-grafana-home.png[]
 
 Se puede comprobar que hay cuatro dashboards disponibles:
 
-==== Aggregate resource usage
-
-.Aggregate resource usage
-image::resources/screenshot-grafana-aggregate-resource.png[]
-
-==== cAdvisor with InfluxDB
-
-.cAdvisor with InfluxDB
-image::resources/screenshot-grafana-cadvisor-influxdb.png[]
-
 ==== Docker containers
 
 .Docker containers
 image::resources/screenshot-grafana-docker-containers.png[]
-
-==== Docker and OS metrics
-
-.Docker and OS metrics
-image::resources/screenshot-grafana-docker-os-metrics.png[]

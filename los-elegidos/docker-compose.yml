@@ -16,18 +16,18 @@ services:
         aliases:
           - mqtt
 
-  nodered:
-    restart: always
-    image: onesaitplatform/edge-nodered:community
-    container_name: edge.nodered
-    volumes:
-      - /home/node
-    ports:
-      - 1880:8080
-    networks:
-      edgenet:
-        aliases:
-          - nodered
+#  nodered:
+#    restart: always
+#    image: onesaitplatform/edge-nodered:community
+#    container_name: edge.nodered
+#    volumes:
+#      - /home/node
+#   ports:
+#      - 1880:8080
+#    networks:
+#      edgenet:
+#        aliases:
+#          - nodered
 
   database:
     restart: always
@@ -57,13 +57,14 @@ services:
     image: google/cadvisor:latest # <1>
     container_name: edge.cadvisor # <2>
     volumes: # <3>
-#      - /:/rootfs:ro
-      - /var/run:/var/run:rw #<1
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
       - /sys:/sys:ro
       - /var/lib/docker:/var/lib/docker:ro
-    depends_on: # <4>
-      - database
-    command: -storage_driver=influxdb -storage_driver_db=cadvisor -storage_driver_host=database:8086 # <5>
+#    depends_on: # <4>
+#      - database
+#    command: -storage_driver=influxdb -storage_driver_db=cadvisor -storage_driver_host=database:8086 # <5>
+#    command: -storage_driver=prometheus -storage_driver_host=prometheus:9090
     networks:
       edgenet:
         aliases:
@@ -88,6 +89,20 @@ services:
         aliases:
           - prometheus
 # end::prometheus[]
+
+  loselegidos:
+    #restart: always
+    build: ../sources/revolution-los-elegidos/target/
+    image: edge.loselegidos:latest
+    container_name: edge.loselegidos
+    volumes:
+      - ./service/logs:/var/log/platform-logs
+    ports:
+      - 8080:8080
+    networks:
+      edgenet:
+        aliases:
+          - loselegidos
 
   alertmanager:
     restart: always
@@ -126,9 +141,10 @@ services:
     image: grafana/grafana:latest
     container_name: edge.grafana
     volumes:
-      - ./grafana/data:/var/lib/grafana
+      #- ./grafana/data:/var/lib/grafana
       - ./grafana/datasources:/etc/grafana/datasources
       - ./grafana/dashboards:/etc/grafana/dashboards
+      - ./grafana/preferences.json:/etc/grafana/preferences.json
       - ./grafana/setup.sh:/setup.sh
     entrypoint: /setup.sh
     environment:

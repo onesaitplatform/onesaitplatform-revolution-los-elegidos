@@ -4,7 +4,7 @@
     "url":"http://database:8086",
     "access":"proxy",
     "basicAuth":false,
-    "database":"cadvisor",
+    "database":"prometheus",
     "user": "root",
     "password": "root"
 }

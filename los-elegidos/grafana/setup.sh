@@ -8,9 +8,9 @@
 # ENTRYPOINT [\"/run.sh\"]"
 
 GRAFANA_URL=${GRAFANA_URL:-http://$GF_SECURITY_ADMIN_USER:$GF_SECURITY_ADMIN_PASSWORD@localhost:3000}
-#GRAFANA_URL=http://grafana-plain.k8s.playground1.aws.ad.zopa.com
 DATASOURCES_PATH=${DATASOURCES_PATH:-/etc/grafana/datasources}
 DASHBOARDS_PATH=${DASHBOARDS_PATH:-/etc/grafana/dashboards}
+PREFERENCES_PATH=${DASHBOARDS_PATH:-/etc/grafana/preferences.json}
 
 # Generic function to call the Vault API
 grafana_api() {
@@ -70,10 +70,19 @@ install_dashboards() {
   done
 }
 
+theme_light() {
+  if grafana_api PUT /api/org/preferences "" "${PREFERENCES_PATH}"; then
+    echo "org preferences ok"
+  else
+    echo "org preferences failed"
+  fi
+}
+
 configure_grafana() {
   wait_for_api
   install_datasources
   install_dashboards
+  theme_light
 }
 
 echo "Running configure_grafana in the background..."
