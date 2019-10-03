@@ -1,14 +1,14 @@
 var svgEditorExtensionLocale_eyedropper_en = (function () {
-  'use strict';
+    'use strict';
 
-  var en = {
-    name: 'eyedropper',
-    buttons: [{
-      title: 'Eye Dropper Tool',
-      key: 'I'
-    }]
-  };
+    var en = {
+        name: 'eyedropper',
+        buttons: [{
+            title: 'Eye Dropper Tool',
+            key: 'I'
+        }]
+    };
 
-  return en;
+    return en;
 
 }());

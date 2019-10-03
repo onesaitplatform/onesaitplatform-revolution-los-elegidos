@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,43 +35,43 @@ import lombok.extern.slf4j.Slf4j;
 @Conditional(HadoopEnabledCondition.class)
 public class KuduQueryAsTextDBRepository implements QueryAsTextDBRepository {
 
-	@Autowired
-	KuduBasicOpsDBRepository kuduBasicOpsDBRepository;
+    @Autowired
+    KuduBasicOpsDBRepository kuduBasicOpsDBRepository;
 
-	@Autowired
-	private HadoopQueryProcessor queryProcessor;
+    @Autowired
+    private HadoopQueryProcessor queryProcessor;
 
-	private static final String UPDATE_KUDU_PREFIX = "update";
-	private static final String DELETE_KUDU_PREFIX = "delete";
+    private static final String UPDATE_KUDU_PREFIX = "update";
+    private static final String DELETE_KUDU_PREFIX = "delete";
 
-	@Override
-	public String queryNativeAsJson(String ontology, String query, int offset, int limit) {
-		try {
-			String queryLC = query.toLowerCase();
-			String procQuery = queryProcessor.parse(query);
+    @Override
+    public String queryNativeAsJson(String ontology, String query, int offset, int limit) {
+        try {
+            String queryLC = query.toLowerCase();
+            String procQuery = queryProcessor.parse(query);
 
-			if (queryLC.startsWith(UPDATE_KUDU_PREFIX)) {
-				return kuduBasicOpsDBRepository.updateNative(ontology, procQuery, false).toString();
-			} else if (queryLC.startsWith(DELETE_KUDU_PREFIX)) {
-				return kuduBasicOpsDBRepository.deleteNative(ontology, procQuery, false).toString();
-			} else {
-				return kuduBasicOpsDBRepository.queryNativeAsJson(ontology, procQuery);
-			}
-		} catch (Exception e) {
-			log.error("Error in queryNativeAsJson", e);
-			throw new DBPersistenceException(new ErrorResult(ErrorResult.PersistenceType.KUDU, e.getMessage()),
-					e.getMessage());
-		}
-	}
+            if (queryLC.startsWith(UPDATE_KUDU_PREFIX)) {
+                return kuduBasicOpsDBRepository.updateNative(ontology, procQuery, false).toString();
+            } else if (queryLC.startsWith(DELETE_KUDU_PREFIX)) {
+                return kuduBasicOpsDBRepository.deleteNative(ontology, procQuery, false).toString();
+            } else {
+                return kuduBasicOpsDBRepository.queryNativeAsJson(ontology, procQuery);
+            }
+        } catch (Exception e) {
+            log.error("Error in queryNativeAsJson", e);
+            throw new DBPersistenceException(new ErrorResult(ErrorResult.PersistenceType.KUDU, e.getMessage()),
+                                             e.getMessage());
+        }
+    }
 
-	@Override
-	public String queryNativeAsJson(String ontology, String query) {
-		return queryNativeAsJson(ontology, query, -1, -1);
-	}
+    @Override
+    public String queryNativeAsJson(String ontology, String query) {
+        return queryNativeAsJson(ontology, query, -1, -1);
+    }
 
-	@Override
-	public String querySQLAsJson(String ontology, String query, int offset) {
-		return queryNativeAsJson(ontology, query, offset, -1);
-	}
+    @Override
+    public String querySQLAsJson(String ontology, String query, int offset) {
+        return queryNativeAsJson(ontology, query, offset, -1);
+    }
 
 }

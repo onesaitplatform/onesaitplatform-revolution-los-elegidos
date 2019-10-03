@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,64 +39,64 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 @EnableAuthorizationServer
 public class OAuth2AuthorizationServerConfigJwt extends AuthorizationServerConfigurerAdapter {
 
-	@Value("${security.jwt.client-id}")
-	private String clientId;
+    @Value("${security.jwt.client-id}")
+    private String clientId;
 
-	@Value("${security.jwt.client-secret}")
-	private String clientSecret;
+    @Value("${security.jwt.client-secret}")
+    private String clientSecret;
 
-	@Value("${security.jwt.grant-type}")
-	private String grantType;
+    @Value("${security.jwt.grant-type}")
+    private String grantType;
 
-	@Value("${security.jwt.scopes}")
-	private String scopes;
+    @Value("${security.jwt.scopes}")
+    private String scopes;
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-	@Autowired(required = false)
-	@Qualifier("configDBAuthenticationProvider")
-	private AuthenticationProvider authProvider;
+    @Autowired(required = false)
+    @Qualifier("configDBAuthenticationProvider")
+    private AuthenticationProvider authProvider;
 
-	@Autowired
-	private UserDetailsService userDetailsService;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
-	@Autowired
-	private TokenStore tokenStore;
+    @Autowired
+    private TokenStore tokenStore;
 
-	@Autowired
-	private JwtAccessTokenConverter jwtAccessTokenConverter;
+    @Autowired
+    private JwtAccessTokenConverter jwtAccessTokenConverter;
 
-	@Override
-	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-		security.checkTokenAccess("permitAll()");
-	}
+    @Override
+    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+        security.checkTokenAccess("permitAll()");
+    }
 
-	@Override
-	public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-		final TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
-		tokenEnhancerChain.setTokenEnhancers(Arrays.asList(tokenEnhancer(), jwtAccessTokenConverter));
+    @Override
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        final TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
+        tokenEnhancerChain.setTokenEnhancers(Arrays.asList(tokenEnhancer(), jwtAccessTokenConverter));
 
-		endpoints.tokenEnhancer(tokenEnhancerChain);
-		endpoints.authenticationManager(new ProviderManager(Arrays.asList(authProvider)));
-		endpoints.userDetailsService(userDetailsService);
-		endpoints.tokenStore(tokenStore);
-		endpoints.accessTokenConverter(jwtAccessTokenConverter);
-		endpoints.reuseRefreshTokens(false);
+        endpoints.tokenEnhancer(tokenEnhancerChain);
+        endpoints.authenticationManager(new ProviderManager(Arrays.asList(authProvider)));
+        endpoints.userDetailsService(userDetailsService);
+        endpoints.tokenStore(tokenStore);
+        endpoints.accessTokenConverter(jwtAccessTokenConverter);
+        endpoints.reuseRefreshTokens(false);
 
-	}
+    }
 
-	@Override
-	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+    @Override
+    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 
-		final String[] types = grantType.split("\\s*,\\s*");
+        final String[] types = grantType.split("\\s*,\\s*");
 
-		clients.inMemory().withClient(clientId).secret(clientSecret).authorizedGrantTypes(types).scopes(scopes);
-	}
+        clients.inMemory().withClient(clientId).secret(clientSecret).authorizedGrantTypes(types).scopes(scopes);
+    }
 
-	@Bean
-	public TokenEnhancer tokenEnhancer() {
-		return new CustomTokenEnhancer();
-	}
+    @Bean
+    public TokenEnhancer tokenEnhancer() {
+        return new CustomTokenEnhancer();
+    }
 
 }

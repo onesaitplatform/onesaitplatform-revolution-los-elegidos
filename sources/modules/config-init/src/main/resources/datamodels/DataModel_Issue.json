@@ -1,261 +1,261 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "DataModel Issue Schema",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DataModel Issue Schema",
+  "type": "object",
+  "required": [
+    "Issue"
+  ],
+  "properties": {
+    "Evnt": {
+      "type": "string",
+      "$ref": "#/datos"
+    }
+  },
+  "datos": {
+    "description": "Properties for DataModel Issue",
     "type": "object",
     "required": [
-        "Issue"
+      "assetId",
+      "assetType",
+      "assetSource",
+      "timestamp",
+      "issueId",
+      "issueSource",
+      "issueType",
+      "issueInfo"
     ],
     "properties": {
-        "Evnt": {
+      "issueId": {
+        "type": "string"
+      },
+      "issueSource": {
+        "type": "string"
+      },
+      "issueType": {
+        "type": "string"
+      },
+      "assetId": {
+        "type": "string"
+      },
+      "assetType": {
+        "type": "string"
+      },
+      "assetSource": {
+        "type": "string"
+      },
+      "assetName": {
+        "type": "string"
+      },
+      "timestamp": {
+        "type": "object",
+        "required": [
+          "$date"
+        ],
+        "properties": {
+          "$date": {
             "type": "string",
-            "$ref": "#/datos"
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "attribs": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "name",
+            "value"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
         }
-    },
-    "datos": {
-        "description": "Properties for DataModel Issue",
+      },
+      "issueInfo": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "name",
+            "value"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "geometry": {
+        "type": "object",
+        "oneOf": [
+          {
+            "$ref": "#/point"
+          },
+          {
+            "$ref": "#/linestring"
+          },
+          {
+            "$ref": "#/polygon"
+          }
+        ]
+      },
+      "issueStart": {
         "type": "object",
         "required": [
-            "assetId",
-            "assetType",
-            "assetSource",
-            "timestamp",
-            "issueId",
-            "issueSource",
-            "issueType",
-            "issueInfo"
+          "$date"
         ],
         "properties": {
-            "issueId": {
-                "type": "string"
-            },
-            "issueSource": {
-                "type": "string"
-            },
-            "issueType": {
-                "type": "string"
-            },
-            "assetId": {
-                "type": "string"
-            },
-            "assetType": {
-                "type": "string"
-            },
-            "assetSource": {
-                "type": "string"
-            },
-            "assetName": {
-                "type": "string"
-            },
-            "timestamp": {
-                "type": "object",
-                "required": [
-                    "$date"
-                ],
-                "properties": {
-                    "$date": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "additionalProperties": false
-            },
-            "attribs": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "required": [
-                        "name",
-                        "value"
-                    ],
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        },
-                        "value": {
-                            "type": "string"
-                        }
-                    },
-                    "additionalProperties": false
-                }
-            },
-            "issueInfo": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "required": [
-                        "name",
-                        "value"
-                    ],
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        },
-                        "value": {
-                            "type": "string"
-                        }
-                    },
-                    "additionalProperties": false
-                }
-            },
-            "geometry": {
-                "type": "object",
-                "oneOf": [
-                    {
-                        "$ref": "#/point"
-                    },
-                    {
-                        "$ref": "#/linestring"
-                    },
-                    {
-                        "$ref": "#/polygon"
-                    }
-                ]
-            },
-            "issueStart": {
-                "type": "object",
-                "required": [
-                    "$date"
-                ],
-                "properties": {
-                    "$date": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "additionalProperties": false
-            },
-            "issueEnd": {
-                "type": "object",
-                "required": [
-                    "$date"
-                ],
-                "properties": {
-                    "$date": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "additionalProperties": false
-            },
-            "issueObserved": {
-                "type": "object",
-                "required": [
-                    "$date"
-                ],
-                "properties": {
-                    "$date": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "additionalProperties": false
-            }
+          "$date": {
+            "type": "string",
+            "format": "date-time"
+          }
         },
         "additionalProperties": false
-    },
-    "point": {
+      },
+      "issueEnd": {
         "type": "object",
         "required": [
-            "coordinates",
-            "type"
+          "$date"
         ],
         "properties": {
-            "coordinates": {
-                "type": "array",
-                "items": [
-                    {
-                        "type": "number",
-                        "maximum": 180,
-                        "minimum": -180
-                    },
-                    {
-                        "type": "number",
-                        "maximum": 90,
-                        "minimum": -90
-                    }
-                ],
-                "minItems": 2,
-                "maxItems": 2
-            },
-            "type": {
-                "type": "string",
-                "enum": [
-                    "Point"
-                ]
-            }
+          "$date": {
+            "type": "string",
+            "format": "date-time"
+          }
         },
         "additionalProperties": false
-    },
-    "linestring": {
+      },
+      "issueObserved": {
         "type": "object",
         "required": [
-            "coordinates",
-            "type"
+          "$date"
         ],
         "properties": {
-            "coordinates": {
-                "type": "array",
-                "items": {
-                    "type": "array",
-                    "items": [
-                        {
-                            "type": "number",
-                            "maximum": 180,
-                            "minimum": -180
-                        },
-                        {
-                            "type": "number",
-                            "maximum": 90,
-                            "minimum": -90
-                        }
-                    ],
-                    "minItems": 2,
-                    "maxItems": 2
-                },
-                "minItems": 2
-            },
-            "type": {
-                "type": "string",
-                "enum": [
-                    "LineString"
-                ]
-            }
+          "$date": {
+            "type": "string",
+            "format": "date-time"
+          }
         },
         "additionalProperties": false
+      }
     },
-    "polygon": {
-        "type": "object",
-        "required": [
-            "coordinates",
-            "type"
+    "additionalProperties": false
+  },
+  "point": {
+    "type": "object",
+    "required": [
+      "coordinates",
+      "type"
+    ],
+    "properties": {
+      "coordinates": {
+        "type": "array",
+        "items": [
+          {
+            "type": "number",
+            "maximum": 180,
+            "minimum": -180
+          },
+          {
+            "type": "number",
+            "maximum": 90,
+            "minimum": -90
+          }
         ],
-        "properties": {
-            "coordinates": {
-                "type": "array",
-                "items": {
-                    "type": "array",
-                    "items": [
-                        {
-                            "type": "number",
-                            "maximum": 180,
-                            "minimum": -180
-                        },
-                        {
-                            "type": "number",
-                            "maximum": 90,
-                            "minimum": -90
-                        }
-                    ],
-                    "minItems": 3
-                }
+        "minItems": 2,
+        "maxItems": 2
+      },
+      "type": {
+        "type": "string",
+        "enum": [
+          "Point"
+        ]
+      }
+    },
+    "additionalProperties": false
+  },
+  "linestring": {
+    "type": "object",
+    "required": [
+      "coordinates",
+      "type"
+    ],
+    "properties": {
+      "coordinates": {
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number",
+              "maximum": 180,
+              "minimum": -180
             },
-            "type": {
-                "type": "string",
-                "enum": [
-                    "Polygon"
-                ]
+            {
+              "type": "number",
+              "maximum": 90,
+              "minimum": -90
             }
+          ],
+          "minItems": 2,
+          "maxItems": 2
         },
-        "additionalProperties": false
-    }
+        "minItems": 2
+      },
+      "type": {
+        "type": "string",
+        "enum": [
+          "LineString"
+        ]
+      }
+    },
+    "additionalProperties": false
+  },
+  "polygon": {
+    "type": "object",
+    "required": [
+      "coordinates",
+      "type"
+    ],
+    "properties": {
+      "coordinates": {
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number",
+              "maximum": 180,
+              "minimum": -180
+            },
+            {
+              "type": "number",
+              "maximum": 90,
+              "minimum": -90
+            }
+          ],
+          "minItems": 3
+        }
+      },
+      "type": {
+        "type": "string",
+        "enum": [
+          "Polygon"
+        ]
+      }
+    },
+    "additionalProperties": false
+  }
 }

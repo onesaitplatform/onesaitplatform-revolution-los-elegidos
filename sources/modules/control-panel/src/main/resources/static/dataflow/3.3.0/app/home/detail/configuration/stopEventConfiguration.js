@@ -17,10 +17,10 @@
  * Controller for Stop Event Configuration.
  */
 angular
-  .module('dataCollectorApp.home')
-  .controller('StopEventConfigurationController', function ($scope) {
-    $scope.detailPaneConfig = $scope.stopEventStageConfig;
-    $scope.$watch('stopEventStageConfig', function() {
-      $scope.detailPaneConfig = $scope.stopEventStageConfig;
+    .module('dataCollectorApp.home')
+    .controller('StopEventConfigurationController', function ($scope) {
+        $scope.detailPaneConfig = $scope.stopEventStageConfig;
+        $scope.$watch('stopEventStageConfig', function () {
+            $scope.detailPaneConfig = $scope.stopEventStageConfig;
+        });
     });
-  });

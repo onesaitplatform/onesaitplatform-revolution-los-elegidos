@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,31 +26,31 @@ import lombok.Setter;
 
 public class RestApiInvocationParams {
 
-	@Getter
-	@Setter
-	private String body;
-	@Getter
-	@Setter
-	private Map<String, String> queryParams;
-	@Getter
-	@Setter
-	private Map<String, String> pathParams;
-	@Getter
-	@Setter
-	private Type method;
-	@Getter
-	@Setter
-	private String url;
-	@Getter
-	@Setter
-	private HttpHeaders headers;
-	
-	public RestApiInvocationParams (){
-		this.body = "";
-		this.queryParams  = new HashMap<>();
-		this.pathParams  = new HashMap<>();
-		this.method = null;
-		this.url = "";
-		this.headers = new HttpHeaders();
-	}
+    @Getter
+    @Setter
+    private String body;
+    @Getter
+    @Setter
+    private Map<String, String> queryParams;
+    @Getter
+    @Setter
+    private Map<String, String> pathParams;
+    @Getter
+    @Setter
+    private Type method;
+    @Getter
+    @Setter
+    private String url;
+    @Getter
+    @Setter
+    private HttpHeaders headers;
+
+    public RestApiInvocationParams() {
+        this.body = "";
+        this.queryParams = new HashMap<>();
+        this.pathParams = new HashMap<>();
+        this.method = null;
+        this.url = "";
+        this.headers = new HttpHeaders();
+    }
 }

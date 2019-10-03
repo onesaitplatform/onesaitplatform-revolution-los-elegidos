@@ -1,40 +1,39 @@
 /***************** SOHO FONT *****************/
 
 @font-face {
-	font-family: 'Soho';
-	src: url('../../font/soho/SohoGothicPro-Regular.eot');
-	src: url('../../font/soho/SohoGothicPro-Regular.eot?#iefix') format('embedded-opentype'),
-			 url('../../font/soho/SohoGothicPro-Regular.woff') format('woff'),
-			 url('../../font/soho/SohoGothicPro-Regular.ttf') format('truetype');
-	font-style: normal;
-	font-weight: 400;
-}
-
-
-
-@font-face {
-	font-family: 'Soho';
-	src: url('../../font/soho/SohoGothicPro-Medium.eot');
-	src: url('../../font/soho/SohoGothicPro-Medium.eot?#iefix') format('embedded-opentype'),
-			url('../../font/soho/SohoGothicPro-Medium.woff') format('woff'),
-			url('../../font/soho/SohoGothicPro-Medium.ttf') format('truetype');
-	font-style: normal;
-	font-weight: 500;
+    font-family: 'Soho';
+    src: url('../../font/soho/SohoGothicPro-Regular.eot');
+    src: url('../../font/soho/SohoGothicPro-Regular.eot?#iefix') format('embedded-opentype'),
+    url('../../font/soho/SohoGothicPro-Regular.woff') format('woff'),
+    url('../../font/soho/SohoGothicPro-Regular.ttf') format('truetype');
+    font-style: normal;
+    font-weight: 400;
 }
 
 
 @font-face {
-	font-family: 'Soho';
-	src: url('../../font/soho/SohoGothicPro-Bold.eot');
-	src: url('../../font/soho/SohoGothicPro-Bold.eot?#iefix') format('embedded-opentype'),
-			url('../../font/soho/SohoGothicPro-Bold.woff') format('woff'),
-			url('../../font/soho/SohoGothicPro-Bold.ttf') format('truetype');
-	font-style: normal;
-	font-weight: 600;
+    font-family: 'Soho';
+    src: url('../../font/soho/SohoGothicPro-Medium.eot');
+    src: url('../../font/soho/SohoGothicPro-Medium.eot?#iefix') format('embedded-opentype'),
+    url('../../font/soho/SohoGothicPro-Medium.woff') format('woff'),
+    url('../../font/soho/SohoGothicPro-Medium.ttf') format('truetype');
+    font-style: normal;
+    font-weight: 500;
+}
+
+
+@font-face {
+    font-family: 'Soho';
+    src: url('../../font/soho/SohoGothicPro-Bold.eot');
+    src: url('../../font/soho/SohoGothicPro-Bold.eot?#iefix') format('embedded-opentype'),
+    url('../../font/soho/SohoGothicPro-Bold.woff') format('woff'),
+    url('../../font/soho/SohoGothicPro-Bold.ttf') format('truetype');
+    font-style: normal;
+    font-weight: 600;
 }
 
 body {
-  background: #e4ecf2;
+    background: #e4ecf2;
 
 }
 
@@ -45,23 +44,23 @@ body {
 }
 
 #workarea {
-  display: inline-table-cell;
-  position:absolute;
-  top: 0px !important;
-  left: 0px !important;
-  bottom: 0px !important;
-  right: 14px ;
-  background-color: #A0A0A0;
-  border: 1px solid #808080;
-  overflow: auto;
-  text-align: center;
+    display: inline-table-cell;
+    position: absolute;
+    top: 0px !important;
+    left: 0px !important;
+    bottom: 0px !important;
+    right: 14px;
+    background-color: #A0A0A0;
+    border: 1px solid #808080;
+    overflow: auto;
+    text-align: center;
 }
 
-  #workarea, #sidepanels {
+#workarea, #sidepanels {
     top: 0px;
-  }
-  
-  #tool_open input, #tool_import input, #tool_image input {
+}
+
+#tool_open input, #tool_import input, #tool_image input {
     position: absolute;
     /* opacity: 0; */
     font-size: 10em;
@@ -74,44 +73,44 @@ body {
 
 /* Style the tab */
 .tab {
-  overflow: hidden;
- 
-  background-color: #e4ecf2;
+    overflow: hidden;
+
+    background-color: #e4ecf2;
 }
 
 /* Style the buttons inside the tab */
 .tab button {
-  background-color: #e4ecf2;
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 6px 5px;
-  transition: 0.3s;
-  font-family:Soho;
-  color:#333;  
-  font-size: 10px;
-  text-transform: uppercase;
-  font-weight: 500;
+    background-color: #e4ecf2;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 6px 5px;
+    transition: 0.3s;
+    font-family: Soho;
+    color: #333;
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: 500;
 }
 
 /* Change background color of buttons on hover */
 .tab button:hover {
- color:#2e6c99;
+    color: #2e6c99;
 }
 
 /* Create an active/current tablink class */
 .tab button.active {
- color:#2e6c99;
- border-bottom: 2px solid;
+    color: #2e6c99;
+    border-bottom: 2px solid;
 }
 
 /* Style the tab content */
 .tabcontent {
-  display: none;
-  padding: 6px 12px;
-  
-  border-top: none;
+    display: none;
+    padding: 6px 12px;
+
+    border-top: none;
 }
 
 #sidepanels {
@@ -124,12 +123,12 @@ body {
     padding: 6px;
     border-color: #808080;
     border-style: solid;
-    border-width: 0px; 
+    border-width: 0px;
     border-left: none;
     overflow-x: hidden;
     overflow-y: visible;
-    height:96%;
-    background-color:  #e4ecf2;
+    height: 96%;
+    background-color: #e4ecf2;
 }
 
 #sidepanel_handle {
@@ -153,16 +152,16 @@ body {
     line-height: 150px;
 }
 
-#layerpanel{
-	height: 520px;
-	
+#layerpanel {
+    height: 520px;
+
 }
 
 #tools_bottom {
- position: absolute;   
+    position: absolute;
     width: 282px;
     top: 305px;
-    left: 16px;  
+    left: 16px;
     height: 0;
 }
 
@@ -171,6 +170,7 @@ body {
     width: 210px;
     height: 44px;
 }
+
 #palette_holder {
     overflow: hidden;
     top: 106px;
@@ -191,41 +191,44 @@ body {
     line-height: 26px;
     border-radius: 3px;
     min-width: 52px;
-     background: #f0f0f000;
+    background: #f0f0f000;
 }
 
 #tools_bottom input[type=text] {
     width: 3.6em;
 }
 
-#tool_stroke{
+#tool_stroke {
     top: 94px;
     left: 0px;
-     background: #f0f0f000;
+    background: #f0f0f000;
 }
 
 #tool_opacity {
-	top: 0px;
+    top: 0px;
     left: 70px;
-     background: #f0f0f000;
-	
+    background: #f0f0f000;
+
 }
+
 #zoom_panel {
     margin-top: 40px;
 }
-#ext-panning{
-	display: none;	
+
+#ext-panning {
+    display: none;
 }
 
 #tool_polygon {
-	display: none;	
-}
-#tool_star{
-	display: none;
+    display: none;
 }
 
-#tool_eyedropper{
-	display: none;
+#tool_star {
+    display: none;
+}
+
+#tool_eyedropper {
+    display: none;
 }
 
 /* #tools_shapelib{
@@ -256,11 +259,12 @@ body {
     height: 480px;
     -apple-dashboard-region: dashboard-region(control rectangle 0px 0px 0px 0px);
     position: relative;
-    background: -moz-radial-gradient(45deg,rgb(255, 255, 255),rgb(255, 255, 255));
+    background: -moz-radial-gradient(45deg, rgb(255, 255, 255), rgb(255, 255, 255));
     background: -webkit-gradient(radial, center center, 3, center center, 1000, from(rgb(255, 255, 255)), to(rgb(255, 255, 255)));
 }
-#tools_left .tool_button, #tools_left .tool_button_current{
-	z-index: 1;
+
+#tools_left .tool_button, #tools_left .tool_button_current {
+    z-index: 1;
 }
 
 #tool_open input, #tool_import input, #tool_image input {
@@ -310,38 +314,40 @@ body {
     FONT-FAMILY: Soho;
     top: -9px;
 }
+
 #main_menu li:hover {
     color: #2e6c99;
     background: #fff;
 }
 
 #blur_dropdown button {
-	display: none;
+    display: none;
 }
 
 
 #svg_source_editor, #svg_events_editor {
-	display: none;
+    display: none;
 }
 
-#svg_source_editor form ,#svg_events_editor form {
-	position: absolute;
-	top: 40px;
-	bottom: 30px;
-	width: 100%;
-	font-family: Arial;
+#svg_source_editor form, #svg_events_editor form {
+    position: absolute;
+    top: 40px;
+    bottom: 30px;
+    width: 100%;
+    font-family: Arial;
 }
+
 #svg_events_editor #event_function {
-	position: relative;
-	width: 95%;
-	height: 90%;
-	padding: 5px;
-	font-size: 12px;
+    position: relative;
+    width: 95%;
+    height: 90%;
+    padding: 5px;
+    font-size: 12px;
 }
 
-#svg_source_editor #tool_source_back ,#svg_events_editor #tool_events_back {
-	text-align: left;
-	padding-left: 28px;
+#svg_source_editor #tool_source_back, #svg_events_editor #tool_events_back {
+    text-align: left;
+    padding-left: 28px;
 }
 
 #svg_events_editor #svg_events_container {
@@ -370,5 +376,5 @@ body {
 }
 
 .toolset {
-	    padding-bottom: 10px;	
+    padding-bottom: 10px;
 }

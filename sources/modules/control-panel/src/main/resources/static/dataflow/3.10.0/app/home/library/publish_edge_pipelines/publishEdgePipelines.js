@@ -15,34 +15,34 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('PublishEdgePipelinesModalInstanceController', ["$scope", "$modalInstance", "api", "pipelineIds", function ($scope, $modalInstance, api, pipelineIds) {
-    angular.extend($scope, {
-      common: {
-        errors: []
-      },
-      publishModel : {
-        edgeHttpUrl: 'http://localhost:18633',
-        proxy: 'server'
-      },
-      operationInProgress: false,
-
-      publishPipelines : function() {
-        $scope.operationInProgress = true;
-        api.pipelineAgent.publishPipelinesToEdge(pipelineIds, $scope.publishModel.edgeHttpUrl)
-          .then(
-            function() {
-              $modalInstance.close();
+    .module('dataCollectorApp.home')
+    .controller('PublishEdgePipelinesModalInstanceController', ["$scope", "$modalInstance", "api", "pipelineIds", function ($scope, $modalInstance, api, pipelineIds) {
+        angular.extend($scope, {
+            common: {
+                errors: []
             },
-            function (res) {
-              $scope.operationInProgress = false;
-              $scope.common.errors = [res.data];
-            }
-          );
-      },
+            publishModel: {
+                edgeHttpUrl: 'http://localhost:18633',
+                proxy: 'server'
+            },
+            operationInProgress: false,
 
-      cancel : function () {
-        $modalInstance.close();
-      }
-    });
-  }]);
+            publishPipelines: function () {
+                $scope.operationInProgress = true;
+                api.pipelineAgent.publishPipelinesToEdge(pipelineIds, $scope.publishModel.edgeHttpUrl)
+                    .then(
+                        function () {
+                            $modalInstance.close();
+                        },
+                        function (res) {
+                            $scope.operationInProgress = false;
+                            $scope.common.errors = [res.data];
+                        }
+                    );
+            },
+
+            cancel: function () {
+                $modalInstance.close();
+            }
+        });
+    }]);

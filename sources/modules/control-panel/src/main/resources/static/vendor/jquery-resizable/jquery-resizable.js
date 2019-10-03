@@ -6,19 +6,19 @@ Version 0.32 - 5/5/2018
 www.west-wind.com
 Licensed under MIT License
 */
-(function(factory, undefined) {
-	if (typeof define === 'function' && define.amd) {
-		// AMD
-		define(['jquery'], factory);
-	} else if (typeof module === 'object' && typeof module.exports === 'object') {
-		// CommonJS
-		module.exports = factory(require('jquery'));
-	} else {
-		// Global jQuery
-		factory(jQuery);
-	}
-}(function($, undefined) {
-    
+(function (factory, undefined) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD
+        define(['jquery'], factory);
+    } else if (typeof module === 'object' && typeof module.exports === 'object') {
+        // CommonJS
+        module.exports = factory(require('jquery'));
+    } else {
+        // Global jQuery
+        factory(jQuery);
+    }
+}(function ($, undefined) {
+
     if ($.fn.resizable)
         return;
 
@@ -45,14 +45,14 @@ Licensed under MIT License
             touchActionNone: true,
             // instance id
             instanceId: null
-    };
+        };
         if (typeof options == "object")
             defaultOptions = $.extend(defaultOptions, options);
 
         return this.each(function () {
             var opt = $.extend({}, defaultOptions);
             if (!opt.instanceId)
-                opt.instanceId = "rsz_" + new Date().getTime();            
+                opt.instanceId = "rsz_" + new Date().getTime();
 
             var startPos, startTransition;
 
@@ -60,7 +60,7 @@ Licensed under MIT License
             var $el = $(this);
             var $handle;
 
-            if (options === 'destroy') {            
+            if (options === 'destroy') {
                 opt = $el.data('resizable');
                 if (!opt)
                     return;
@@ -72,7 +72,7 @@ Licensed under MIT License
                 $el.removeClass("resizable");
                 return;
             }
-          
+
             $el.data('resizable', opt);
 
             // get the drag handle
@@ -92,10 +92,10 @@ Licensed under MIT License
 
             function startDragging(e) {
                 // Prevent dragging a ghost image in HTML5 / Firefox and maybe others    
-                if ( e.preventDefault ) {
-                  e.preventDefault();
+                if (e.preventDefault) {
+                    e.preventDefault();
                 }
-                
+
                 startPos = getMousePos(e);
                 startPos.width = parseInt($el.width(), 10);
                 startPos.height = parseInt($el.height(), 10);
@@ -107,7 +107,7 @@ Licensed under MIT License
                     if (opt.onDragStart(e, $el, opt) === false)
                         return;
                 }
-                
+
                 $(document).on('mousemove.' + opt.instanceId, doDrag);
                 $(document).on('mouseup.' + opt.instanceId, stopDragging);
                 if (window.Touch || navigator.maxTouchPoints) {
@@ -115,11 +115,11 @@ Licensed under MIT License
                     $(document).on('touchend.' + opt.instanceId, stopDragging);
                 }
                 $(document).on('selectstart.' + opt.instanceId, noop); // disable selection
-                $("iframe").css("pointer-events","none");
+                $("iframe").css("pointer-events", "none");
             }
 
             function doDrag(e) {
-                
+
                 var pos = getMousePos(e), newWidth, newHeight;
 
                 if (opt.resizeWidthFrom === 'left')
@@ -134,10 +134,10 @@ Licensed under MIT License
 
                 if (!opt.onDrag || opt.onDrag(e, $el, newWidth, newHeight, opt) !== false) {
                     if (opt.resizeHeight)
-                        $el.height(newHeight);                    
+                        $el.height(newHeight);
 
                     if (opt.resizeWidth)
-                        $el.width(newWidth);                    
+                        $el.width(newWidth);
                 }
             }
 
@@ -152,11 +152,11 @@ Licensed under MIT License
                     $(document).off('touchmove.' + opt.instanceId);
                     $(document).off('touchend.' + opt.instanceId);
                 }
-                $(document).off('selectstart.' + opt.instanceId, noop);                
+                $(document).off('selectstart.' + opt.instanceId, noop);
 
                 // reset changed values
                 $el.css("transition", startTransition);
-                $("iframe").css("pointer-events","auto");
+                $("iframe").css("pointer-events", "auto");
 
                 if (opt.onDragEnd)
                     opt.onDragEnd(e, $el, opt);
@@ -165,7 +165,7 @@ Licensed under MIT License
             }
 
             function getMousePos(e) {
-                var pos = { x: 0, y: 0, width: 0, height: 0 };
+                var pos = {x: 0, y: 0, width: 0, height: 0};
                 if (typeof e.clientX === "number") {
                     pos.x = e.clientX;
                     pos.y = e.clientY;
@@ -188,7 +188,7 @@ Licensed under MIT License
                 // This works for multiple objects on a page (using .class syntax most likely)
                 // as long as each has a separate parent container. 
                 return selector ? $el.parent().find(selector) : $el;
-            } 
+            }
         });
     };
 }));

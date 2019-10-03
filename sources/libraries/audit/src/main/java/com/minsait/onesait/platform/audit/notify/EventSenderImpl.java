@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,51 +33,51 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EventSenderImpl implements EventRouter {
 
-	public static final String AUDIT_QUEUE_NAME = "audit";
-	public static final int EXECUTOR_THREADS = 5;
+    public static final String AUDIT_QUEUE_NAME = "audit";
+    public static final int EXECUTOR_THREADS = 5;
 
-	@Value("${onesaitplatform.audit.global.notify:true}")
-	private boolean sendAudit;
+    @Value("${onesaitplatform.audit.global.notify:true}")
+    private boolean sendAudit;
 
-	@Autowired(required = false)
-	@Qualifier("globalCache")
-	private HazelcastInstance instance;
+    @Autowired(required = false)
+    @Qualifier("globalCache")
+    private HazelcastInstance instance;
 
-	private ExecutorService senderExecutor;
+    private ExecutorService senderExecutor;
 
-	@PostConstruct
-	public void init() {
-		this.senderExecutor = Executors.newFixedThreadPool(EXECUTOR_THREADS);
-	}
+    @PostConstruct
+    public void init() {
+        this.senderExecutor = Executors.newFixedThreadPool(EXECUTOR_THREADS);
+    }
 
-	@PreDestroy
-	public void destroy() {
-		this.senderExecutor.shutdown();
-	}
+    @PreDestroy
+    public void destroy() {
+        this.senderExecutor.shutdown();
+    }
 
-	@Override
-	public void notify(String event) {
-		if (sendAudit) {
-			log.info("Received Audit Event: {} ", event);
-			if (instance != null) {
-				this.senderExecutor.execute(() -> {
-					try {
-						instance.getQueue(AUDIT_QUEUE_NAME).offer(event);
-					} catch (final Exception e4) {
-						log.error("Error notifing Adit evento to Hazelcast queue", e4);
-					}
-				});
-			}
-		}
-	}
+    @Override
+    public void notify(String event) {
+        if (sendAudit) {
+            log.info("Received Audit Event: {} ", event);
+            if (instance != null) {
+                this.senderExecutor.execute(() -> {
+                    try {
+                        instance.getQueue(AUDIT_QUEUE_NAME).offer(event);
+                    } catch (final Exception e4) {
+                        log.error("Error notifing Adit evento to Hazelcast queue", e4);
+                    }
+                });
+            }
+        }
+    }
 
-	/*
-	 * @Override public void notify(Sofia2AuditEvent event) { log.
-	 * info("EventSenderImpl :: thread '{}' handling '{}' Notify to Router The Event: "
-	 * , Thread.currentThread(), event.getMessage());
-	 * instance.getQueue("audit").offer(event.toJson());
-	 *
-	 * }
-	 */
+    /*
+     * @Override public void notify(Sofia2AuditEvent event) { log.
+     * info("EventSenderImpl :: thread '{}' handling '{}' Notify to Router The Event: "
+     * , Thread.currentThread(), event.getMessage());
+     * instance.getQueue("audit").offer(event.toJson());
+     *
+     * }
+     */
 
 }

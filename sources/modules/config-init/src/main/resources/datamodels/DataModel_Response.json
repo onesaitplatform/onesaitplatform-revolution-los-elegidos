@@ -1,52 +1,52 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "DataModel Response Schema",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DataModel Response Schema",
+  "type": "object",
+  "required": [
+    "Response"
+  ],
+  "properties": {
+    "Response": {
+      "type": "string",
+      "$ref": "#/datos"
+    }
+  },
+  "datos": {
+    "description": "Properties for DataModel Response",
     "type": "object",
     "required": [
-        "Response"
+      "timestamp",
+      "assetId",
+      "targetKpInstance",
+      "requestId",
+      "response"
     ],
     "properties": {
-        "Response": {
-            "type": "string",
-            "$ref": "#/datos"
-        }
-    },
-    "datos": {
-        "description": "Properties for DataModel Response",
+      "timestamp": {
         "type": "object",
         "required": [
-            "timestamp",
-            "assetId",
-            "targetKpInstance",
-            "requestId",
-            "response"
+          "$date"
         ],
         "properties": {
-            "timestamp": {
-                "type": "object",
-                "required": [
-                    "$date"
-                ],
-                "properties": {
-                    "$date": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "additionalProperties": false
-            },
-            "assetId": {
-                "type": "string"
-            },
-            "targetKpInstance": {
-                "type": "string"
-            },
-            "requestId": {
-                "type": "string"
-            },
-            "response": {
-                "type": "string"
-            }
-        }
+          "$date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "assetId": {
+        "type": "string"
+      },
+      "targetKpInstance": {
+        "type": "string"
+      },
+      "requestId": {
+        "type": "string"
+      },
+      "response": {
+        "type": "string"
+      }
     }
+  }
 }

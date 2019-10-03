@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,57 +43,59 @@ import com.minsait.onesait.platform.controlpanel.ControlPanelWebApplication;
 @Ignore
 public class UserControllerTest {
 
-	private MockMvc mockMvc;
-	@Autowired
-	WebApplicationContext context;
-	@Autowired
-	UserService userService;
+    private MockMvc mockMvc;
+    @Autowired
+    WebApplicationContext context;
+    @Autowired
+    UserService userService;
 
-	@Before
-	public void initTests() {
-		MockitoAnnotations.initMocks(this);
-		mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
-	}
+    @Before
+    public void initTests() {
+        MockitoAnnotations.initMocks(this);
+        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+    }
 
-	@Test
-	public void given_AnyState_When_APortToUserCreateIsRequestedWithTheCorrectParamenters_Then_TheUserIsCreatedAndTheViewIsRedirected()
-			throws Exception {
-		User user = this.mockUser();
-		// mock userService
-		userService = Mockito.mock(UserService.class);
+    @Test
+    public void given_AnyState_When_APortToUserCreateIsRequestedWithTheCorrectParamenters_Then_TheUserIsCreatedAndTheViewIsRedirected() throws Exception {
+        User user = this.mockUser();
+        // mock userService
+        userService = Mockito.mock(UserService.class);
 
-		// List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-		// grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMINISTRATOR"));
-		// Authentication authentication = new
-		// UsernamePasswordAuthenticationToken("admin", "admin", grantedAuthorities);
-		// SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-		// Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
-		// SecurityContextHolder.setContext(securityContext);
+        // List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+        // grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMINISTRATOR"));
+        // Authentication authentication = new
+        // UsernamePasswordAuthenticationToken("admin", "admin", grantedAuthorities);
+        // SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        // Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        // SecurityContextHolder.setContext(securityContext);
 
-		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
-		mockMvc.perform(post("/users/create").param("fullName", user.getFullName()).param("active", "true")
-				.param("password", user.getPassword()).param("userId", user.getUserId()).param("email", user.getEmail())
-				.param("dateCreated", formatter.format(user.getCreatedAt()))
-				.param("roleTypeId.name", user.getRole().getName())).andDo(print())
-				.andExpect(status().is3xxRedirection());
+        mockMvc.perform(
+                post("/users/create").param("fullName", user.getFullName()).param("active", "true").param("password",
+                                                                                                          user.getPassword()).param(
+                        "userId", user.getUserId()).param("email", user.getEmail()).param("dateCreated",
+                                                                                          formatter.format(
+                                                                                                  user.getCreatedAt())).param(
+                        "roleTypeId.name", user.getRole().getName())).andDo(print()).andExpect(
+                status().is3xxRedirection());
 
-	}
+    }
 
-	public User mockUser() {
-		User user = new User();
-		user.setActive(true);
-		user.setEmail("admin@gmail.com");
-		Role role = new Role();
-		role.setName("ROLE_ADMINISTRATOR");
-		user.setRole(role);
-		user.setPassword("somePass");
-		user.setCreatedAt(new java.util.Date());
-		user.setRole(role);
-		user.setUserId("admin");
-		user.setEmail("some@email.com");
-		user.setFullName("Admin s4c");
-		return user;
+    public User mockUser() {
+        User user = new User();
+        user.setActive(true);
+        user.setEmail("admin@gmail.com");
+        Role role = new Role();
+        role.setName("ROLE_ADMINISTRATOR");
+        user.setRole(role);
+        user.setPassword("somePass");
+        user.setCreatedAt(new java.util.Date());
+        user.setRole(role);
+        user.setUserId("admin");
+        user.setEmail("some@email.com");
+        user.setFullName("Admin s4c");
+        return user;
 
-	}
+    }
 }

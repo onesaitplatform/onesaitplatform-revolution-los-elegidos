@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,104 +44,104 @@ import lombok.Setter;
 @Table(name = "DIGITAL_TWIN_TYPE")
 public class DigitalTwinType extends AuditableEntityWithUUID {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public enum MainType {
-		THING
-	}
+    public enum MainType {
+        THING
+    }
 
-	@OneToMany(mappedBy = "typeId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@Getter
-	@Setter
-	private Set<PropertyDigitalTwinType> propertyDigitalTwinTypes = new HashSet<>();
+    @OneToMany(mappedBy = "typeId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Getter
+    @Setter
+    private Set<PropertyDigitalTwinType> propertyDigitalTwinTypes = new HashSet<>();
 
-	@OneToMany(mappedBy = "typeId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@Getter
-	@Setter
-	private Set<ActionsDigitalTwinType> actionDigitalTwinTypes = new HashSet<>();
+    @OneToMany(mappedBy = "typeId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Getter
+    @Setter
+    private Set<ActionsDigitalTwinType> actionDigitalTwinTypes = new HashSet<>();
 
-	@OneToMany(mappedBy = "typeId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@Getter
-	@Setter
-	private Set<EventsDigitalTwinType> eventDigitalTwinTypes = new HashSet<>();
+    @OneToMany(mappedBy = "typeId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Getter
+    @Setter
+    private Set<EventsDigitalTwinType> eventDigitalTwinTypes = new HashSet<>();
 
-	@OneToMany(mappedBy = "typeId", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, orphanRemoval = true)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@Getter
-	@Setter
-	private Set<DigitalTwinDevice> digitalTwinDevices = new HashSet<>();
+    @OneToMany(mappedBy = "typeId", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Getter
+    @Setter
+    private Set<DigitalTwinDevice> digitalTwinDevices = new HashSet<>();
 
-	@Column(name = "NAME", length = 50, unique = true, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String name;
+    @Column(name = "NAME", length = 50, unique = true, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String name;
 
-	@Column(name = "TYPE", length = 50, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String type;
+    @Column(name = "TYPE", length = 50, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String type;
 
-	@Column(name = "DESCRIPTION", length = 512)
-	@Getter
-	@Setter
-	private String description;
+    @Column(name = "DESCRIPTION", length = 512)
+    @Getter
+    @Setter
+    private String description;
 
-	@Column(name = "JSON", nullable = false)
-	@NotNull
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
-	@Getter
-	@Setter
-	private String json;
+    @Column(name = "JSON", nullable = false)
+    @NotNull
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Getter
+    @Setter
+    private String json;
 
-	@Column(name = "LOGIC", nullable = false)
-	@NotNull
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
-	@Getter
-	@Setter
-	private String logic;
+    @Column(name = "LOGIC", nullable = false)
+    @NotNull
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Getter
+    @Setter
+    private String logic;
 
-	@ManyToOne
-	@OnDelete(action = OnDeleteAction.NO_ACTION)
-	@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", nullable = false)
-	@Getter
-	@Setter
-	private User user;
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", nullable = false)
+    @Getter
+    @Setter
+    private User user;
 
-	public void setTypeEnum(DigitalTwinType.MainType type) {
-		this.type = type.toString();
-	}
+    public void setTypeEnum(DigitalTwinType.MainType type) {
+        this.type = type.toString();
+    }
 
-	@PostLoad
-	protected void trim() {
-		if (name != null) {
-			name = name.replaceAll(" ", "");
-		}
-	}
+    @PostLoad
+    protected void trim() {
+        if (name != null) {
+            name = name.replaceAll(" ", "");
+        }
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof DigitalTwinType))
-			return false;
-		return getName() != null && getName().equals(((DigitalTwinType) o).getId());
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof DigitalTwinType))
+            return false;
+        return getName() != null && getName().equals(((DigitalTwinType) o).getId());
+    }
 
-	@Override
-	public int hashCode() {
-		return java.util.Objects.hash(getName());
-	}
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(getName());
+    }
 
-	@Override
-	public String toString() {
-		return getName();
-	}
+    @Override
+    public String toString() {
+        return getName();
+    }
 
 }

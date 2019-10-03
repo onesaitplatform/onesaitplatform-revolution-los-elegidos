@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,82 +44,97 @@ import io.swagger.annotations.Authorization;
 @Api(value = "Api Service")
 public interface ApiRestService {
 
-	@GET
-	@Path("/{identificacion}")
-	@ApiOperation(value = "Find Api by ID", notes = "Returns an API", httpMethod = "GET", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON, authorizations = @Authorization(value = "token"))
-	@ApiResponses(value = { @ApiResponse(code = 204, message = "No Content"),
-			@ApiResponse(code = 400, message = "Bad Request"), @ApiResponse(code = 401, message = "Unauthorized"),
-			@ApiResponse(code = 501, message = "Internal Server Error") })
-	public Response getApi(
-			@PathParam("identificacion") @ApiParam(name = "identificacion", required = true) String identificacion,
-			@HeaderParam("X-OP-APIKey") String token) throws GenericOPException;
+    @GET
+    @Path("/{identificacion}")
+    @ApiOperation(value = "Find Api by ID", notes = "Returns an API", httpMethod = "GET", produces =
+            MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON, authorizations = @Authorization(value
+            = "token"))
+    @ApiResponses(value = {@ApiResponse(code = 204, message = "No Content"), @ApiResponse(code = 400, message = "Bad " +
+            "Request"), @ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 501, message =
+            "Internal Server Error")})
+    public Response getApi(
+            @PathParam("identificacion") @ApiParam(name = "identificacion", required = true) String identificacion,
+            @HeaderParam("X-OP-APIKey") String token) throws GenericOPException;
 
-	@GET
-	@Path("/")
-	@ApiOperation(value = "Find Api by ID", notes = "Returns an API with All Parameters", httpMethod = "GET", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON, authorizations = @Authorization(value = "token"))
-	@ApiResponses(value = { @ApiResponse(code = 204, message = "No Content"),
-			@ApiResponse(code = 400, message = "Bad Request"), @ApiResponse(code = 401, message = "Unauthorized"),
-			@ApiResponse(code = 501, message = "Internal Server Error") })
-	public Response getApiFilter(
-			@DefaultValue("") @QueryParam("identificacion") @ApiParam(name = "identificacion", required = false) String identificacion,
-			@DefaultValue("") @QueryParam("estado") @ApiParam(name = "estado", required = false) String estado,
-			@DefaultValue("") @QueryParam("usuario") @ApiParam(name = "usuario", required = false) String usuario,
-			@HeaderParam("X-OP-APIKey") String token) throws GenericOPException;
+    @GET
+    @Path("/")
+    @ApiOperation(value = "Find Api by ID", notes = "Returns an API with All Parameters", httpMethod = "GET",
+            produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON, authorizations =
+    @Authorization(value = "token"))
+    @ApiResponses(value = {@ApiResponse(code = 204, message = "No Content"), @ApiResponse(code = 400, message = "Bad " +
+            "Request"), @ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 501, message =
+            "Internal Server Error")})
+    public Response getApiFilter(
+            @DefaultValue("") @QueryParam("identificacion") @ApiParam(name = "identificacion", required = false) String identificacion,
+            @DefaultValue("") @QueryParam("estado") @ApiParam(name = "estado", required = false) String estado,
+            @DefaultValue("") @QueryParam("usuario") @ApiParam(name = "usuario", required = false) String usuario,
+            @HeaderParam("X-OP-APIKey") String token) throws GenericOPException;
 
-	@POST
-	@Path("/")
-	@ApiOperation(value = "Creación API", notes = "Creación API", httpMethod = "POST", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON, authorizations = @Authorization(value = "token"))
-	@ApiResponses(value = { @ApiResponse(code = 204, message = "No Content"),
-			@ApiResponse(code = 400, message = "Bad Request"), @ApiResponse(code = 401, message = "Unauthorized"),
-			@ApiResponse(code = 501, message = "Internal Server Error") })
-	public Response create(ApiDTO api, @HeaderParam("X-OP-APIKey") String token) throws GenericOPException;
+    @POST
+    @Path("/")
+    @ApiOperation(value = "Creación API", notes = "Creación API", httpMethod = "POST", produces =
+            MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON, authorizations = @Authorization(value
+            = "token"))
+    @ApiResponses(value = {@ApiResponse(code = 204, message = "No Content"), @ApiResponse(code = 400, message = "Bad " +
+            "Request"), @ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 501, message =
+            "Internal Server Error")})
+    public Response create(ApiDTO api, @HeaderParam("X-OP-APIKey") String token) throws GenericOPException;
 
-	@POST
-	@Path("/changestate/{indentifier}")
-	@ApiOperation(value = "Change STate API", notes = "Change STate API", httpMethod = "POST", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON, authorizations = @Authorization(value = "token"))
-	@ApiResponses(value = { @ApiResponse(code = 204, message = "No Content"),
-			@ApiResponse(code = 400, message = "Bad Request"), @ApiResponse(code = 401, message = "Unauthorized"),
-			@ApiResponse(code = 501, message = "Internal Server Error") })
-	public Response create(
-			@DefaultValue("") @QueryParam("indentifier") @ApiParam(name = "indentifier") String indentifier,
-			com.minsait.onesait.platform.config.model.Api.ApiStates api, @HeaderParam("X-OP-APIKey") String token)
-			throws GenericOPException;
+    @POST
+    @Path("/changestate/{indentifier}")
+    @ApiOperation(value = "Change STate API", notes = "Change STate API", httpMethod = "POST", produces =
+            MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON, authorizations = @Authorization(value
+            = "token"))
+    @ApiResponses(value = {@ApiResponse(code = 204, message = "No Content"), @ApiResponse(code = 400, message = "Bad " +
+            "Request"), @ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 501, message =
+            "Internal Server Error")})
+    public Response create(
+            @DefaultValue("") @QueryParam("indentifier") @ApiParam(name = "indentifier") String indentifier,
+            com.minsait.onesait.platform.config.model.Api.ApiStates api,
+            @HeaderParam("X-OP-APIKey") String token) throws GenericOPException;
 
-	@PUT
-	@Path("/")
-	@ApiOperation(value = "Modify API", notes = "Modify API", httpMethod = "PUT", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON, authorizations = @Authorization(value = "token"))
-	@ApiResponses(value = { @ApiResponse(code = 204, message = "No Content"),
-			@ApiResponse(code = 400, message = "Bad Request"), @ApiResponse(code = 401, message = "Unauthorized"),
-			@ApiResponse(code = 501, message = "Internal Server Error") })
-	public Response update(ApiDTO suscripcion, @HeaderParam("X-OP-APIKey") String token) throws GenericOPException;
+    @PUT
+    @Path("/")
+    @ApiOperation(value = "Modify API", notes = "Modify API", httpMethod = "PUT", produces =
+            MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON, authorizations = @Authorization(value
+            = "token"))
+    @ApiResponses(value = {@ApiResponse(code = 204, message = "No Content"), @ApiResponse(code = 400, message = "Bad " +
+            "Request"), @ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 501, message =
+            "Internal Server Error")})
+    public Response update(ApiDTO suscripcion, @HeaderParam("X-OP-APIKey") String token) throws GenericOPException;
 
-	@DELETE
-	@Path("/")
-	@ApiOperation(value = "Delete API", notes = "Delete API", httpMethod = "DELETE", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON, authorizations = @Authorization(value = "token"))
-	@ApiResponses(value = { @ApiResponse(code = 204, message = "No Content"),
-			@ApiResponse(code = 400, message = "Bad Request"), @ApiResponse(code = 401, message = "Unauthorized"),
-			@ApiResponse(code = 501, message = "Internal Server Error") })
-	public Response delete(ApiDTO suscripcion, @HeaderParam("X-OP-APIKey") String token) throws GenericOPException;
+    @DELETE
+    @Path("/")
+    @ApiOperation(value = "Delete API", notes = "Delete API", httpMethod = "DELETE", produces =
+            MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON, authorizations = @Authorization(value
+            = "token"))
+    @ApiResponses(value = {@ApiResponse(code = 204, message = "No Content"), @ApiResponse(code = 400, message = "Bad " +
+            "Request"), @ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 501, message =
+            "Internal Server Error")})
+    public Response delete(ApiDTO suscripcion, @HeaderParam("X-OP-APIKey") String token) throws GenericOPException;
 
-	@DELETE
-	@Path("/{identificacion}/{numversion}")
-	@ApiOperation(value = "Delete de un API", notes = "Delete de un API", httpMethod = "DELETE", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON, authorizations = @Authorization(value = "token"))
-	@ApiResponses(value = { @ApiResponse(code = 204, message = "No Content"),
-			@ApiResponse(code = 400, message = "Bad Request"), @ApiResponse(code = 401, message = "Unauthorized"),
-			@ApiResponse(code = 501, message = "Internal Server Error") })
-	public Response deleteByIdentificacionNumversion(
-			@PathParam("identificacion") @ApiParam(name = "identificacion", required = true) String identificacion,
-			@PathParam("numversion") @ApiParam(name = "numversion", required = true) String numversion,
-			@HeaderParam("X-OP-APIKey") String token) throws GenericOPException;
+    @DELETE
+    @Path("/{identificacion}/{numversion}")
+    @ApiOperation(value = "Delete de un API", notes = "Delete de un API", httpMethod = "DELETE", produces =
+            MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON, authorizations = @Authorization(value
+            = "token"))
+    @ApiResponses(value = {@ApiResponse(code = 204, message = "No Content"), @ApiResponse(code = 400, message = "Bad " +
+            "Request"), @ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 501, message =
+            "Internal Server Error")})
+    public Response deleteByIdentificacionNumversion(
+            @PathParam("identificacion") @ApiParam(name = "identificacion", required = true) String identificacion,
+            @PathParam("numversion") @ApiParam(name = "numversion", required = true) String numversion,
+            @HeaderParam("X-OP-APIKey") String token) throws GenericOPException;
 
-	@GET
-	@Path("/user/{idUsuario}")
-	@ApiOperation(value = "GET USER", notes = "GET USER", httpMethod = "GET", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON, authorizations = @Authorization(value = "token"))
-	@ApiResponses(value = { @ApiResponse(code = 204, message = "No Content"),
-			@ApiResponse(code = 400, message = "Bad Request"), @ApiResponse(code = 401, message = "Unauthorized"),
-			@ApiResponse(code = 501, message = "Internal Server Error") })
-	public Response getApiUsuario(
-			@PathParam("idUsuario") @ApiParam(name = "idUsuario", required = true) String idUsuario,
-			@HeaderParam("X-OP-APIKey") String token) throws GenericOPException;
+    @GET
+    @Path("/user/{idUsuario}")
+    @ApiOperation(value = "GET USER", notes = "GET USER", httpMethod = "GET", produces = MediaType.APPLICATION_JSON,
+            consumes = MediaType.APPLICATION_JSON, authorizations = @Authorization(value = "token"))
+    @ApiResponses(value = {@ApiResponse(code = 204, message = "No Content"), @ApiResponse(code = 400, message = "Bad " +
+            "Request"), @ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 501, message =
+            "Internal Server Error")})
+    public Response getApiUsuario(
+            @PathParam("idUsuario") @ApiParam(name = "idUsuario", required = true) String idUsuario,
+            @HeaderParam("X-OP-APIKey") String token) throws GenericOPException;
 
 }

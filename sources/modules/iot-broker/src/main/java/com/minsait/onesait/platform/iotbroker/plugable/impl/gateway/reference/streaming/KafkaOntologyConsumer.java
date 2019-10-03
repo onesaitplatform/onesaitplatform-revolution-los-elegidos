@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,153 +42,158 @@ import com.minsait.onesait.platform.router.service.app.service.RouterService;
 
 import lombok.extern.slf4j.Slf4j;
 
-@ConditionalOnProperty(prefix = "onesaitplatform.iotbroker.plugable.gateway.kafka", name = "enable", havingValue = "true")
+@ConditionalOnProperty(prefix = "onesaitplatform.iotbroker.plugable.gateway.kafka", name = "enable", havingValue =
+        "true")
 @Slf4j
 @Component
 public class KafkaOntologyConsumer {
 
-	@Autowired
-	OntologyService ontologyService;
+    @Autowired
+    OntologyService ontologyService;
 
-	@Autowired
-	OntologyRepository ontologyRepository;
+    @Autowired
+    OntologyRepository ontologyRepository;
 
-	@Autowired
-	OntologyDataService ontologyDataService;
+    @Autowired
+    OntologyDataService ontologyDataService;
 
-	@Autowired
-	RouterService routerService;
+    @Autowired
+    RouterService routerService;
 
-	ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = new ObjectMapper();
 
-	@Value("${onesaitplatform.iotbroker.plugable.gateway.kafka.prefix:ONTOLOGY_}")
-	private String ontologyPrefix;
+    @Value("${onesaitplatform.iotbroker.plugable.gateway.kafka.prefix:ONTOLOGY_}")
+    private String ontologyPrefix;
 
-	@Value("${onesaitplatform.iotbroker.plugable.gateway.kafka.ksql.out.prefix:KSQLDESTYNY_}")
-	private String ksqlPrefix;
+    @Value("${onesaitplatform.iotbroker.plugable.gateway.kafka.ksql.out.prefix:KSQLDESTYNY_}")
+    private String ksqlPrefix;
 
-	@Value("${onesaitplatform.iotbroker.plugable.gateway.kafka.router.topic:router}")
-	private String topicRouter;
+    @Value("${onesaitplatform.iotbroker.plugable.gateway.kafka.router.topic:router}")
+    private String topicRouter;
 
-	@Autowired
-	private KafkaTemplate<String, NotificationModel> kafkaTemplate;
+    @Autowired
+    private KafkaTemplate<String, NotificationModel> kafkaTemplate;
 
-	@KafkaListener(topicPattern = "${onesaitplatform.iotbroker.plugable.gateway.kafka.ksql.out.topic.pattern}", containerFactory = "kafkaListenerContainerFactoryBatch")
-	@LogInterceptable
-	public void listenToParitionKsqlBatch(List<String> data,
-			@Header(KafkaHeaders.RECEIVED_PARTITION_ID) List<Integer> partitions,
-			@Header(KafkaHeaders.RECEIVED_TOPIC) List<String> receivedTopicList,
-			@Header(KafkaHeaders.OFFSET) List<Long> offsets) {
+    @KafkaListener(topicPattern = "${onesaitplatform.iotbroker.plugable.gateway.kafka.ksql.out.topic.pattern}",
+            containerFactory = "kafkaListenerContainerFactoryBatch")
+    @LogInterceptable
+    public void listenToParitionKsqlBatch(List<String> data,
+            @Header(KafkaHeaders.RECEIVED_PARTITION_ID) List<Integer> partitions,
+            @Header(KafkaHeaders.RECEIVED_TOPIC) List<String> receivedTopicList,
+            @Header(KafkaHeaders.OFFSET) List<Long> offsets) {
 
-		try {
-			log.info("listenToParitionKsqlBatch: Start consuming batch messages size: {}",data.size());
+        try {
+            log.info("listenToParitionKsqlBatch: Start consuming batch messages size: {}", data.size());
 
-			final Map<String, StringBuilder> batchsToInsert = new HashMap<>();
+            final Map<String, StringBuilder> batchsToInsert = new HashMap<>();
 
-			String comma = "";
-			for (int i = 0; i < data.size(); i++) {
-				// log.info("received message='{}' with partition-offset='{}'",
-				// data.get(i),
-				// partitions.get(i) + "-" + offsets.get(i));
+            String comma = "";
+            for (int i = 0; i < data.size(); i++) {
+                // log.info("received message='{}' with partition-offset='{}'",
+                // data.get(i),
+                // partitions.get(i) + "-" + offsets.get(i));
 
-				final String receivedTopic = receivedTopicList.get(i);
-				final String ontologyId = receivedTopic.substring(ksqlPrefix.length(), receivedTopic.lastIndexOf('_'));
+                final String receivedTopic = receivedTopicList.get(i);
+                final String ontologyId = receivedTopic.substring(ksqlPrefix.length(), receivedTopic.lastIndexOf('_'));
 
-				if (!batchsToInsert.containsKey(ontologyId)) {
-					final StringBuilder stringBuilder = new StringBuilder();
-					stringBuilder.append("[");
-					batchsToInsert.put(ontologyId, stringBuilder);
-				}
+                if (!batchsToInsert.containsKey(ontologyId)) {
+                    final StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append("[");
+                    batchsToInsert.put(ontologyId, stringBuilder);
+                }
 
-				final StringBuilder sb = batchsToInsert.get(ontologyId);
+                final StringBuilder sb = batchsToInsert.get(ontologyId);
 
-				final String message = data.get(i);
-				sb.append(comma);
-				sb.append(message);
-				comma = ",";
-			}
+                final String message = data.get(i);
+                sb.append(comma);
+                sb.append(message);
+                comma = ",";
+            }
 
-			final Set<String> ontologies = batchsToInsert.keySet();
-			for (final String ontology : ontologies) {
-				final String batch = batchsToInsert.get(ontology).append("]").toString();
+            final Set<String> ontologies = batchsToInsert.keySet();
+            for (final String ontology : ontologies) {
+                final String batch = batchsToInsert.get(ontology).append("]").toString();
 
-				final OperationType operationType = OperationType.INSERT;
-				final OperationModel model = OperationModel.builder(ontology,
-						OperationType.valueOf(operationType.name()), null, OperationModel.Source.KSQL).body(batch)
-						.deviceTemplate("").cacheable(false).build();
-				final NotificationModel modelNotification = new NotificationModel();
-				modelNotification.setOperationModel(model);
-				try {
-					routerService.insert(modelNotification);
-				} catch (final Exception e) {
-					log.error("listenToPartitionBatch:Message ignored by error:", e);
-				}
-			}
-		} catch (final Exception e) {
-			log.error("listenToPartitionBatch:Error:", e);
-		}
+                final OperationType operationType = OperationType.INSERT;
+                final OperationModel model = OperationModel.builder(ontology,
+                                                                    OperationType.valueOf(operationType.name()), null,
+                                                                    OperationModel.Source.KSQL).body(
+                        batch).deviceTemplate("").cacheable(false).build();
+                final NotificationModel modelNotification = new NotificationModel();
+                modelNotification.setOperationModel(model);
+                try {
+                    routerService.insert(modelNotification);
+                } catch (final Exception e) {
+                    log.error("listenToPartitionBatch:Message ignored by error:", e);
+                }
+            }
+        } catch (final Exception e) {
+            log.error("listenToPartitionBatch:Error:", e);
+        }
 
-	}
+    }
 
-	@KafkaListener(topicPattern = "${onesaitplatform.iotbroker.plugable.gateway.kafka.topic.pattern}", containerFactory = "kafkaListenerContainerFactoryBatch")
-	@LogInterceptable
-	public void listenToPartitionBatch(List<String> data,
-			@Header(KafkaHeaders.RECEIVED_PARTITION_ID) List<Integer> partitions,
-			@Header(KafkaHeaders.RECEIVED_TOPIC) List<String> receivedTopicList,
-			@Header(KafkaHeaders.OFFSET) List<Long> offsets) {
+    @KafkaListener(topicPattern = "${onesaitplatform.iotbroker.plugable.gateway.kafka.topic.pattern}",
+            containerFactory = "kafkaListenerContainerFactoryBatch")
+    @LogInterceptable
+    public void listenToPartitionBatch(List<String> data,
+            @Header(KafkaHeaders.RECEIVED_PARTITION_ID) List<Integer> partitions,
+            @Header(KafkaHeaders.RECEIVED_TOPIC) List<String> receivedTopicList,
+            @Header(KafkaHeaders.OFFSET) List<Long> offsets) {
 
-		try {
-			log.info("listenToPartitionBatch: Start consuming batch messages size:{} ", data.size());
+        try {
+            log.info("listenToPartitionBatch: Start consuming batch messages size:{} ", data.size());
 
-			final Map<String, StringBuilder> batchsToInsert = new HashMap<>();
+            final Map<String, StringBuilder> batchsToInsert = new HashMap<>();
 
-			String comma = "";
-			for (int i = 0; i < data.size(); i++) {
-				// log.info("received message='{}' with partition-offset='{}'",
-				// data.get(i),
-				// partitions.get(i) + "-" + offsets.get(i));
+            String comma = "";
+            for (int i = 0; i < data.size(); i++) {
+                // log.info("received message='{}' with partition-offset='{}'",
+                // data.get(i),
+                // partitions.get(i) + "-" + offsets.get(i));
 
-				final String receivedTopic = receivedTopicList.get(i);
-				final String ontologyId = receivedTopic.replace(ontologyPrefix, "");
+                final String receivedTopic = receivedTopicList.get(i);
+                final String ontologyId = receivedTopic.replace(ontologyPrefix, "");
 
-				if (!batchsToInsert.containsKey(ontologyId)) {
-					final StringBuilder stringBuilder = new StringBuilder();
-					stringBuilder.append("[");
-					batchsToInsert.put(ontologyId, stringBuilder);
-				}
+                if (!batchsToInsert.containsKey(ontologyId)) {
+                    final StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append("[");
+                    batchsToInsert.put(ontologyId, stringBuilder);
+                }
 
-				final StringBuilder sb = batchsToInsert.get(ontologyId);
+                final StringBuilder sb = batchsToInsert.get(ontologyId);
 
-				final String message = data.get(i);
-				sb.append(comma);
-				sb.append(message);
-				comma = ",";
-			}
+                final String message = data.get(i);
+                sb.append(comma);
+                sb.append(message);
+                comma = ",";
+            }
 
-			final Set<String> ontologies = batchsToInsert.keySet();
-			for (final String ontology : ontologies) {
-				final String batch = batchsToInsert.get(ontology).append("]").toString();
+            final Set<String> ontologies = batchsToInsert.keySet();
+            for (final String ontology : ontologies) {
+                final String batch = batchsToInsert.get(ontology).append("]").toString();
 
-				final OperationType operationType = OperationType.INSERT;
-				final OperationModel model = OperationModel.builder(ontology,
-						OperationType.valueOf(operationType.name()), null, OperationModel.Source.KAFKA).body(batch)
-						.deviceTemplate("").cacheable(false).build();
-				final NotificationModel modelNotification = new NotificationModel();
-				modelNotification.setOperationModel(model);
-				try {
-					routerService.insert(modelNotification);
-				} catch (final Exception e) {
-					log.error("listenToPartitionBatch:Message ignored by error:", e);
-				}
-			}
-		} catch (final Exception e) {
-			log.error("listenToPartitionBatch:Error:", e);
-		}
+                final OperationType operationType = OperationType.INSERT;
+                final OperationModel model = OperationModel.builder(ontology,
+                                                                    OperationType.valueOf(operationType.name()), null,
+                                                                    OperationModel.Source.KAFKA).body(
+                        batch).deviceTemplate("").cacheable(false).build();
+                final NotificationModel modelNotification = new NotificationModel();
+                modelNotification.setOperationModel(model);
+                try {
+                    routerService.insert(modelNotification);
+                } catch (final Exception e) {
+                    log.error("listenToPartitionBatch:Message ignored by error:", e);
+                }
+            }
+        } catch (final Exception e) {
+            log.error("listenToPartitionBatch:Error:", e);
+        }
 
-	}
+    }
 
-	public void sendMessage(NotificationModel message) {
-		final ListenableFuture<SendResult<String, NotificationModel>> pp = kafkaTemplate.send(topicRouter, message);
-	}
+    public void sendMessage(NotificationModel message) {
+        final ListenableFuture<SendResult<String, NotificationModel>> pp = kafkaTemplate.send(topicRouter, message);
+    }
 
 }

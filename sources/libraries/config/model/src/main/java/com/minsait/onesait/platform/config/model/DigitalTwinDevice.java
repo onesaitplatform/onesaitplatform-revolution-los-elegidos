@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,77 +31,77 @@ import lombok.Setter;
 
 @Configurable
 @Entity
-@Table(name = "DIGITAL_TWIN_DEVICE", uniqueConstraints = @UniqueConstraint(name = "UK_IDENTIFICATION", columnNames = {
-		"IDENTIFICATION" }))
+@Table(name = "DIGITAL_TWIN_DEVICE", uniqueConstraints = @UniqueConstraint(name = "UK_IDENTIFICATION", columnNames =
+        {"IDENTIFICATION"}))
 public class DigitalTwinDevice extends OPResource {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@ManyToOne
-	@JoinColumn(name = "TYPE_ID", referencedColumnName = "ID", nullable = false)
-	// @OnDelete(action = OnDeleteAction.NO_ACTION)
-	@Getter
-	@Setter
-	private DigitalTwinType typeId;
+    @ManyToOne
+    @JoinColumn(name = "TYPE_ID", referencedColumnName = "ID", nullable = false)
+    // @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @Getter
+    @Setter
+    private DigitalTwinType typeId;
 
-	@Column(name = "URL", length = 512, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String url;
+    @Column(name = "URL", length = 512, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String url;
 
-	@Column(name = "URL_SCHEMA", length = 100, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String urlSchema;
+    @Column(name = "URL_SCHEMA", length = 100, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String urlSchema;
 
-	@Column(name = "DIGITAL_KEY", length = 512, nullable = false)
-	@Getter
-	@Setter
-	@NotNull
-	private String DigitalKey;
+    @Column(name = "DIGITAL_KEY", length = 512, nullable = false)
+    @Getter
+    @Setter
+    @NotNull
+    private String DigitalKey;
 
-	@Column(name = "INTERFACE", length = 512, nullable = false)
-	@Getter
-	@Setter
-	@NotNull
-	private String intrface;
+    @Column(name = "INTERFACE", length = 512, nullable = false)
+    @Getter
+    @Setter
+    @NotNull
+    private String intrface;
 
-	@Column(name = "IP", length = 512)
-	@Getter
-	@Setter
-	private String ip;
+    @Column(name = "IP", length = 512)
+    @Getter
+    @Setter
+    private String ip;
 
-	@Column(name = "IPV6", length = 512, nullable = false, columnDefinition = "BIT")
-	@Getter
-	@Setter
-	@NotNull
-	private Boolean ipv6;
+    @Column(name = "IPV6", length = 512, nullable = false, columnDefinition = "BIT")
+    @Getter
+    @Setter
+    @NotNull
+    private Boolean ipv6;
 
-	@Column(name = "PORT", nullable = false)
-	@Getter
-	@Setter
-	@NotNull
-	private Integer port;
+    @Column(name = "PORT", nullable = false)
+    @Getter
+    @Setter
+    @NotNull
+    private Integer port;
 
-	@Column(name = "CONTEXT_PATH", length = 512, nullable = false)
-	@Getter
-	@Setter
-	@NotNull
-	private String contextPath;
+    @Column(name = "CONTEXT_PATH", length = 512, nullable = false)
+    @Getter
+    @Setter
+    @NotNull
+    private String contextPath;
 
-	@Column(name = "LATITUDE", length = 512)
-	@Getter
-	@Setter
-	private String latitude;
+    @Column(name = "LATITUDE", length = 512)
+    @Getter
+    @Setter
+    private String latitude;
 
-	@Column(name = "LONGITUDE", length = 512)
-	@Getter
-	@Setter
-	private String longitude;
-	
-	@Override
+    @Column(name = "LONGITUDE", length = 512)
+    @Getter
+    @Setter
+    private String longitude;
+
+    @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;

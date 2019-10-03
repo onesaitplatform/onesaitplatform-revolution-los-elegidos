@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,56 +37,56 @@ import lombok.Setter;
 @Table(name = "PIPELINE_USER_ACCESS_TYPE")
 public class PipelineUserAccessType extends AuditableEntity {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public enum Type {
-		EDIT, VIEW;
-	}
+    public enum Type {
+        EDIT, VIEW;
+    }
 
-	@Id
-	@Column(name = "ID")
-	@Getter
-	@Setter
-	private String id;
+    @Id
+    @Column(name = "ID")
+    @Getter
+    @Setter
+    private String id;
 
-	@JsonIgnore
-	@OneToMany(mappedBy = "pipelineUserAccessType", fetch = FetchType.EAGER)
-	@Getter
-	@Setter
-	private Set<PipelineUserAccess> pipelineUserAccess;
+    @JsonIgnore
+    @OneToMany(mappedBy = "pipelineUserAccessType", fetch = FetchType.EAGER)
+    @Getter
+    @Setter
+    private Set<PipelineUserAccess> pipelineUserAccess;
 
-	@Column(name = "NAME", length = 24, unique = true, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String name;
+    @Column(name = "NAME", length = 24, unique = true, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String name;
 
-	public void setNameEnum(PipelineUserAccessType.Type type) {
-		this.name = type.toString();
-	}
+    public void setNameEnum(PipelineUserAccessType.Type type) {
+        this.name = type.toString();
+    }
 
-	@Column(name = "DESCRIPTION", length = 255)
-	@Getter
-	@Setter
-	private String description;
+    @Column(name = "DESCRIPTION", length = 255)
+    @Getter
+    @Setter
+    private String description;
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof PipelineUserAccessType))
-			return false;
-		return getName() != null && getName().equals(((PipelineUserAccessType) o).getName());
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof PipelineUserAccessType))
+            return false;
+        return getName() != null && getName().equals(((PipelineUserAccessType) o).getName());
+    }
 
-	@Override
-	public int hashCode() {
-		return java.util.Objects.hash(getName());
-	}
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(getName());
+    }
 
-	@Override
-	public String toString() {
-		return getName();
-	}
+    @Override
+    public String toString() {
+        return getName();
+    }
 
 }

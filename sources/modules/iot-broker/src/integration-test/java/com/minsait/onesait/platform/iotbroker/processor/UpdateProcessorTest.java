@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -61,184 +61,182 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UpdateProcessorTest {
 
-	@Autowired
-	ObjectMapper objectMapper;
+    @Autowired
+    ObjectMapper objectMapper;
 
-	@Autowired
-	MessageProcessorDelegate updateProcessor;
+    @Autowired
+    MessageProcessorDelegate updateProcessor;
 
-	@Autowired
-	MongoBasicOpsDBRepository repository;
+    @Autowired
+    MongoBasicOpsDBRepository repository;
 
-	@MockBean
-	SecurityPluginManager securityPluginManager;
+    @MockBean
+    SecurityPluginManager securityPluginManager;
 
-	// @Autowired
-	// MockMongoOntologies mockOntologies;
+    // @Autowired
+    // MockMongoOntologies mockOntologies;
 
-	@MockBean
-	RouterService routerService;
-	@MockBean
-	RouterSuscriptionService routerSuscriptionService;
+    @MockBean
+    RouterService routerService;
+    @MockBean
+    RouterSuscriptionService routerSuscriptionService;
 
-	Person subject = PojoGenerator.generatePerson();
-	String subjectId;
+    Person subject = PojoGenerator.generatePerson();
+    String subjectId;
 
-	SSAPMessage<SSAPBodyUpdateMessage> ssapUpdate;
-	SSAPMessage<SSAPBodyUpdateByIdMessage> ssapUpdateById;
+    SSAPMessage<SSAPBodyUpdateMessage> ssapUpdate;
+    SSAPMessage<SSAPBodyUpdateByIdMessage> ssapUpdateById;
 
-	@MockBean
-	DeviceManager deviceManager;
+    @MockBean
+    DeviceManager deviceManager;
 
-	// @MockBean
-	// IotBrokerAuditableAspect iotBrokerAuditableAspect;
+    // @MockBean
+    // IotBrokerAuditableAspect iotBrokerAuditableAspect;
 
-	private void auditMocks() {
+    private void auditMocks() {
 
-	}
+    }
 
-	private void securityMocks() {
-		final IoTSession session = PojoGenerator.generateSession();
-		when(deviceManager.registerActivity(any(), any(), any(), any())).thenReturn(true);
+    private void securityMocks() {
+        final IoTSession session = PojoGenerator.generateSession();
+        when(deviceManager.registerActivity(any(), any(), any(), any())).thenReturn(true);
 
-		when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
-		when(securityPluginManager.checkSessionKeyActive(anyString())).thenReturn(true);
-		when(securityPluginManager.checkAuthorization(any(), any(), any())).thenReturn(true);
-	}
+        when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
+        when(securityPluginManager.checkSessionKeyActive(anyString())).thenReturn(true);
+        when(securityPluginManager.checkAuthorization(any(), any(), any())).thenReturn(true);
+    }
 
-	@Before
-	public void setUp() throws IOException, Exception {
+    @Before
+    public void setUp() throws IOException, Exception {
 
-		subject = PojoGenerator.generatePerson();
-		final String subjectInsertResult = repository.insert(Person.class.getSimpleName(), "",
-				objectMapper.writeValueAsString(subject));
-		subjectId = subjectInsertResult;
-		ssapUpdate = SSAPMessageGenerator.generateUpdateMessage(Person.class.getSimpleName(), "");
-		final Person subjectModified = PojoGenerator.generatePerson();
-		ssapUpdateById = SSAPMessageGenerator.generateUpdateByIdtMessage(Person.class.getSimpleName(),
-				objectMapper.valueToTree(subjectModified));
-		ssapUpdateById.getBody().setId(subjectId);
+        subject = PojoGenerator.generatePerson();
+        final String subjectInsertResult = repository.insert(Person.class.getSimpleName(), "",
+                                                             objectMapper.writeValueAsString(subject));
+        subjectId = subjectInsertResult;
+        ssapUpdate = SSAPMessageGenerator.generateUpdateMessage(Person.class.getSimpleName(), "");
+        final Person subjectModified = PojoGenerator.generatePerson();
+        ssapUpdateById = SSAPMessageGenerator.generateUpdateByIdtMessage(Person.class.getSimpleName(),
+                                                                         objectMapper.valueToTree(subjectModified));
+        ssapUpdateById.getBody().setId(subjectId);
 
-		securityMocks();
-		auditMocks();
-	}
+        securityMocks();
+        auditMocks();
+    }
 
-	@After
-	public void tearDown() {
-		// mockOntologies.deleteOntology(Person.class);
-	}
+    @After
+    public void tearDown() {
+        // mockOntologies.deleteOntology(Person.class);
+    }
 
-	@Test
-	public void given_OneUpdateProcessor_When_OneOccurrenceIsUpdated_Then_TheResponseIndicatesItIsUpdated()
-			throws Exception {
+    @Test
+    public void given_OneUpdateProcessor_When_OneOccurrenceIsUpdated_Then_TheResponseIndicatesItIsUpdated() throws Exception {
 
-		ssapUpdate.getBody().setQuery(
-				"db.Person.update({\"name\":\"" + subject.getName() + "\"},{$set: { \"name\": \"NAME_NEW\" }})");
+        ssapUpdate.getBody().setQuery(
+                "db.Person.update({\"name\":\"" + subject.getName() + "\"},{$set: { \"name\": \"NAME_NEW\" }})");
 
-		final OperationResultModel value = RouterServiceGenerator.generateUpdateDeleteResultOk(1);
-		when(routerService.update(any())).thenReturn(value);
+        final OperationResultModel value = RouterServiceGenerator.generateUpdateDeleteResultOk(1);
+        when(routerService.update(any())).thenReturn(value);
 
-		final SSAPMessage<SSAPBodyReturnMessage> responseMessage = updateProcessor.process(ssapUpdate,
-				PojoGenerator.generateGatewayInfo());
+        final SSAPMessage<SSAPBodyReturnMessage> responseMessage = updateProcessor.process(ssapUpdate,
+                                                                                           PojoGenerator.generateGatewayInfo());
 
-		Assert.assertNotNull(responseMessage);
-		Assert.assertNotNull(responseMessage.getBody());
-		Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.RESPONSE));
-		Assert.assertNotNull(responseMessage.getBody().getData());
-		Assert.assertEquals(1, responseMessage.getBody().getData().at("/nModified").asInt());
+        Assert.assertNotNull(responseMessage);
+        Assert.assertNotNull(responseMessage.getBody());
+        Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.RESPONSE));
+        Assert.assertNotNull(responseMessage.getBody().getData());
+        Assert.assertEquals(1, responseMessage.getBody().getData().at("/nModified").asInt());
 
-	}
+    }
 
-	@Test
-	public void given_OneUpdateProcessor_Then_TwoOccurrencesAreUpdated_ThenTheResponseIndicatesTheTwoOccurrencesWereUpdated()
-			throws Exception {
+    @Test
+    public void given_OneUpdateProcessor_Then_TwoOccurrencesAreUpdated_ThenTheResponseIndicatesTheTwoOccurrencesWereUpdated() throws Exception {
 
-		repository.insert(Person.class.getSimpleName(), "", objectMapper.writeValueAsString(subject));
-		repository.insert(Person.class.getSimpleName(), "", objectMapper.writeValueAsString(subject));
+        repository.insert(Person.class.getSimpleName(), "", objectMapper.writeValueAsString(subject));
+        repository.insert(Person.class.getSimpleName(), "", objectMapper.writeValueAsString(subject));
 
-		ssapUpdate.getBody().setQuery(
-				"db.Person.update({\"name\":\"" + subject.getName() + "\"},{$set: { \"name\": \"NAME_NEW\" }})");
+        ssapUpdate.getBody().setQuery(
+                "db.Person.update({\"name\":\"" + subject.getName() + "\"},{$set: { \"name\": \"NAME_NEW\" }})");
 
-		final OperationResultModel value = RouterServiceGenerator.generateUpdateDeleteResultOk(3);
-		when(routerService.update(any())).thenReturn(value);
-		final SSAPMessage<SSAPBodyReturnMessage> responseMessage = updateProcessor.process(ssapUpdate,
-				PojoGenerator.generateGatewayInfo());
+        final OperationResultModel value = RouterServiceGenerator.generateUpdateDeleteResultOk(3);
+        when(routerService.update(any())).thenReturn(value);
+        final SSAPMessage<SSAPBodyReturnMessage> responseMessage = updateProcessor.process(ssapUpdate,
+                                                                                           PojoGenerator.generateGatewayInfo());
 
-		Assert.assertNotNull(responseMessage);
-		Assert.assertNotNull(responseMessage.getBody());
-		Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.RESPONSE));
-		Assert.assertNotNull(responseMessage.getBody().getData());
-		Assert.assertTrue(responseMessage.getBody().getData().at("/nModified").asInt() > 1);
-	}
+        Assert.assertNotNull(responseMessage);
+        Assert.assertNotNull(responseMessage.getBody());
+        Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.RESPONSE));
+        Assert.assertNotNull(responseMessage.getBody().getData());
+        Assert.assertTrue(responseMessage.getBody().getData().at("/nModified").asInt() > 1);
+    }
 
-	@Test
-	public void test_upate_no_ocurrences() throws Exception {
+    @Test
+    public void test_upate_no_ocurrences() throws Exception {
 
-		repository.delete(Person.class.getSimpleName(), false);
+        repository.delete(Person.class.getSimpleName(), false);
 
-		ssapUpdate.getBody().setQuery(
-				"db.Person.update({\"name\":\"" + subject.getName() + "\"},{$set: { \"name\": \"NAME_NEW\" }})");
+        ssapUpdate.getBody().setQuery(
+                "db.Person.update({\"name\":\"" + subject.getName() + "\"},{$set: { \"name\": \"NAME_NEW\" }})");
 
-		final OperationResultModel value = RouterServiceGenerator.generateUpdateDeleteResultOk(0);
-		when(routerService.update(any())).thenReturn(value);
+        final OperationResultModel value = RouterServiceGenerator.generateUpdateDeleteResultOk(0);
+        when(routerService.update(any())).thenReturn(value);
 
-		final SSAPMessage<SSAPBodyReturnMessage> responseMessage = updateProcessor.process(ssapUpdate,
-				PojoGenerator.generateGatewayInfo());
+        final SSAPMessage<SSAPBodyReturnMessage> responseMessage = updateProcessor.process(ssapUpdate,
+                                                                                           PojoGenerator.generateGatewayInfo());
 
-		Assert.assertNotNull(responseMessage);
-		Assert.assertNotNull(responseMessage.getBody());
-		Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.RESPONSE));
-		Assert.assertNotNull(responseMessage.getBody().getData());
-		Assert.assertEquals(0, responseMessage.getBody().getData().at("/nModified").asInt());
-	}
+        Assert.assertNotNull(responseMessage);
+        Assert.assertNotNull(responseMessage.getBody());
+        Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.RESPONSE));
+        Assert.assertNotNull(responseMessage.getBody().getData());
+        Assert.assertEquals(0, responseMessage.getBody().getData().at("/nModified").asInt());
+    }
 
-	@Test
-	public void test_update_by_id() throws Exception {
+    @Test
+    public void test_update_by_id() throws Exception {
 
-		final OperationResultModel value = RouterServiceGenerator.generateUpdateByIdResultOk("{}");
-		when(routerService.update(any())).thenReturn(value);
-		final SSAPMessage<SSAPBodyReturnMessage> responseMessage = updateProcessor.process(ssapUpdateById,
-				PojoGenerator.generateGatewayInfo());
+        final OperationResultModel value = RouterServiceGenerator.generateUpdateByIdResultOk("{}");
+        when(routerService.update(any())).thenReturn(value);
+        final SSAPMessage<SSAPBodyReturnMessage> responseMessage = updateProcessor.process(ssapUpdateById,
+                                                                                           PojoGenerator.generateGatewayInfo());
 
-		Assert.assertNotNull(responseMessage);
-		Assert.assertNotNull(responseMessage.getBody());
-		Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.RESPONSE));
-		Assert.assertTrue(responseMessage.getBody().isOk());
-		Assert.assertNotNull(responseMessage.getBody().getData());
-	}
+        Assert.assertNotNull(responseMessage);
+        Assert.assertNotNull(responseMessage.getBody());
+        Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.RESPONSE));
+        Assert.assertTrue(responseMessage.getBody().isOk());
+        Assert.assertNotNull(responseMessage.getBody().getData());
+    }
 
-	@Test
-	public void test_update_by_non_existent_id() throws Exception {
+    @Test
+    public void test_update_by_non_existent_id() throws Exception {
 
-		ssapUpdateById.getBody().setId("5a9b2ef917f81f33589e06d3");
-		final OperationResultModel value = RouterServiceGenerator.generateUpdateByIdResultOk("{}");
-		when(routerService.update(any())).thenReturn(value);
+        ssapUpdateById.getBody().setId("5a9b2ef917f81f33589e06d3");
+        final OperationResultModel value = RouterServiceGenerator.generateUpdateByIdResultOk("{}");
+        when(routerService.update(any())).thenReturn(value);
 
-		final SSAPMessage<SSAPBodyReturnMessage> responseMessage = updateProcessor.process(ssapUpdateById,
-				PojoGenerator.generateGatewayInfo());
+        final SSAPMessage<SSAPBodyReturnMessage> responseMessage = updateProcessor.process(ssapUpdateById,
+                                                                                           PojoGenerator.generateGatewayInfo());
 
-		Assert.assertNotNull(responseMessage);
-		Assert.assertNotNull(responseMessage.getBody());
-		Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.RESPONSE));
-		Assert.assertTrue(responseMessage.getBody().isOk());
-		Assert.assertNotNull(responseMessage.getBody().getData());
-	}
+        Assert.assertNotNull(responseMessage);
+        Assert.assertNotNull(responseMessage.getBody());
+        Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.RESPONSE));
+        Assert.assertTrue(responseMessage.getBody().isOk());
+        Assert.assertNotNull(responseMessage.getBody().getData());
+    }
 
-	@Test
-	public void test_update_by_malformed_id() throws Exception {
+    @Test
+    public void test_update_by_malformed_id() throws Exception {
 
-		ssapUpdateById.getBody().setId(UUID.randomUUID().toString());
+        ssapUpdateById.getBody().setId(UUID.randomUUID().toString());
 
-		final OperationResultModel value = RouterServiceGenerator.generateUpdateByIdResultOk("ERROR");
-		when(routerService.update(any())).thenReturn(value);
+        final OperationResultModel value = RouterServiceGenerator.generateUpdateByIdResultOk("ERROR");
+        when(routerService.update(any())).thenReturn(value);
 
-		final SSAPMessage<SSAPBodyReturnMessage> responseMessage = updateProcessor.process(ssapUpdateById,
-				PojoGenerator.generateGatewayInfo());
+        final SSAPMessage<SSAPBodyReturnMessage> responseMessage = updateProcessor.process(ssapUpdateById,
+                                                                                           PojoGenerator.generateGatewayInfo());
 
-		Assert.assertNotNull(responseMessage);
-		Assert.assertNotNull(responseMessage.getBody());
-		Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.ERROR));
-		Assert.assertFalse(responseMessage.getBody().isOk());
-	}
+        Assert.assertNotNull(responseMessage);
+        Assert.assertNotNull(responseMessage.getBody());
+        Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.ERROR));
+        Assert.assertFalse(responseMessage.getBody().isOk());
+    }
 
 }

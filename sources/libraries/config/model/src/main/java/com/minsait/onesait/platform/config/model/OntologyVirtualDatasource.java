@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,73 +41,73 @@ import lombok.Setter;
 @Table(name = "ONTOLOGY_VIRTUAL_DATASOURCE")
 public class OntologyVirtualDatasource extends AuditableEntityWithUUID {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public enum VirtualDatasourceType {
-		ORACLE,MYSQL,MARIADB,SQLSERVER,POSTGRESQL,IMPALA,HIVE
-	}
+    public enum VirtualDatasourceType {
+        ORACLE, MYSQL, MARIADB, SQLSERVER, POSTGRESQL, IMPALA, HIVE
+    }
 
-	@ManyToOne
-	@OnDelete(action = OnDeleteAction.NO_ACTION)
-	@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", nullable = false)
-	@Getter
-	@Setter
-	private User userId;
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", nullable = false)
+    @Getter
+    @Setter
+    private User userId;
 
-	@OneToMany(mappedBy = "datasourceId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@OnDelete(action = OnDeleteAction.NO_ACTION)
-	@Getter
-	@Setter
-	private Set<OntologyVirtual> ontologyVirtuals = new HashSet<>();
+    @OneToMany(mappedBy = "datasourceId", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @Getter
+    @Setter
+    private Set<OntologyVirtual> ontologyVirtuals = new HashSet<>();
 
-	@Column(name = "DATASOURCE_NAME", length = 128, nullable = false, unique = true)
-	@NotNull
-	@Getter
-	@Setter
-	private String datasourceName;
+    @Column(name = "DATASOURCE_NAME", length = 128, nullable = false, unique = true)
+    @NotNull
+    @Getter
+    @Setter
+    private String datasourceName;
 
-	@Column(name = "SGDB", length = 50, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private VirtualDatasourceType sgdb;
+    @Column(name = "SGDB", length = 50, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private VirtualDatasourceType sgdb;
 
-	@Column(name = "CONNECTION_STRING", length = 512, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String connectionString;
+    @Column(name = "CONNECTION_STRING", length = 512, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String connectionString;
 
-	@Column(name = "USER", length = 128, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String user;
+    @Column(name = "USER", length = 128, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String user;
 
-	@Column(name = "CREDENTIALS", length = 128, nullable = true)
-	@Getter
-	@Setter
-	private String credentials;
+    @Column(name = "CREDENTIALS", length = 128, nullable = true)
+    @Getter
+    @Setter
+    private String credentials;
 
-	@Column(name = "QUERY_LIMIT")
-	@NotNull
-	@Getter
-	@Setter
-	private int queryLimit;
+    @Column(name = "QUERY_LIMIT")
+    @NotNull
+    @Getter
+    @Setter
+    private int queryLimit;
 
-	@Column(name = "POOL_SIZE")
-	@NotNull
-	@Getter
-	@Setter
-	private String poolSize;
+    @Column(name = "POOL_SIZE")
+    @NotNull
+    @Getter
+    @Setter
+    private String poolSize;
 
-	@Column(name = "PUBLIC", nullable = false, columnDefinition = "BIT default 0")
-	@NotNull
-	@Getter
-	@Setter
-	private boolean isPublic;
+    @Column(name = "PUBLIC", nullable = false, columnDefinition = "BIT default 0")
+    @NotNull
+    @Getter
+    @Setter
+    private boolean isPublic;
 
 }

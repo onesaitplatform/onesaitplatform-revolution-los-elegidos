@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,44 +29,45 @@ import com.minsait.onesait.platform.scheduler.config.SchedulerConfig;
 
 
 public abstract class GenericQuartzConfig {
-	
-	@Autowired
-	@Qualifier("quartzDatasource")
-    protected DataSource dataSource;
-	
-	@Autowired
-	@Qualifier("quartzProperties")
-	protected Properties quartzProperties;
-	
-	@Autowired
-    protected SchedulerConfig quartzDataSourceConfig;
-	
-	public boolean checksIfAutoStartup () {
-		List<String> schedulersToStartup = quartzDataSourceConfig.getAutoStartupSchedulers();
-		return (schedulersToStartup != null && schedulersToStartup.contains(getSchedulerBeanName()));
-	}
-	
-	public abstract String getSchedulerBeanName ();
-	
-	public SchedulerFactoryBean getSchedulerFactoryBean (JobFactory jobFactory, PlatformTransactionManager transactionManager) {
-		
-		SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
-		
-		schedulerFactoryBean.setTransactionManager(transactionManager);
-		schedulerFactoryBean.setOverwriteExistingJobs(true);
-		schedulerFactoryBean.setSchedulerName(getSchedulerBeanName());
-		schedulerFactoryBean.setBeanName(getSchedulerBeanName());
 
-		// custom job factory of spring with DI support for @Autowired!
-		schedulerFactoryBean.setOverwriteExistingJobs(true);
-		schedulerFactoryBean.setAutoStartup(checksIfAutoStartup());
-		
-		schedulerFactoryBean.setDataSource(dataSource);
-		
-		schedulerFactoryBean.setJobFactory(jobFactory);
-		schedulerFactoryBean.setQuartzProperties(quartzProperties);
-		
-		return schedulerFactoryBean;
-	}
+    @Autowired
+    @Qualifier("quartzDatasource")
+    protected DataSource dataSource;
+
+    @Autowired
+    @Qualifier("quartzProperties")
+    protected Properties quartzProperties;
+
+    @Autowired
+    protected SchedulerConfig quartzDataSourceConfig;
+
+    public boolean checksIfAutoStartup() {
+        List<String> schedulersToStartup = quartzDataSourceConfig.getAutoStartupSchedulers();
+        return (schedulersToStartup != null && schedulersToStartup.contains(getSchedulerBeanName()));
+    }
+
+    public abstract String getSchedulerBeanName();
+
+    public SchedulerFactoryBean getSchedulerFactoryBean(JobFactory jobFactory,
+            PlatformTransactionManager transactionManager) {
+
+        SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
+
+        schedulerFactoryBean.setTransactionManager(transactionManager);
+        schedulerFactoryBean.setOverwriteExistingJobs(true);
+        schedulerFactoryBean.setSchedulerName(getSchedulerBeanName());
+        schedulerFactoryBean.setBeanName(getSchedulerBeanName());
+
+        // custom job factory of spring with DI support for @Autowired!
+        schedulerFactoryBean.setOverwriteExistingJobs(true);
+        schedulerFactoryBean.setAutoStartup(checksIfAutoStartup());
+
+        schedulerFactoryBean.setDataSource(dataSource);
+
+        schedulerFactoryBean.setJobFactory(jobFactory);
+        schedulerFactoryBean.setQuartzProperties(quartzProperties);
+
+        return schedulerFactoryBean;
+    }
 
 }

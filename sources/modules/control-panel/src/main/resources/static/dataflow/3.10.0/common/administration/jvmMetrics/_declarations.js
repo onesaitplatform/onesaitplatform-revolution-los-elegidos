@@ -18,6 +18,6 @@
  */
 
 angular
-  .module('commonUI.jvmMetrics', [
-    'ngRoute'
-  ]);
+    .module('commonUI.jvmMetrics', [
+        'ngRoute'
+    ]);

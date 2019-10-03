@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,26 +40,26 @@ import lombok.extern.slf4j.Slf4j;
 @Category(IntegrationTest.class)
 public class OntologyCategoryRepositoryIntegrationTest {
 
-	@Autowired
-	OntologyCategoryRepository repository;
+    @Autowired
+    OntologyCategoryRepository repository;
 
-	@Before
-	public void setUp() {
-		List<OntologyCategory> categories = this.repository.findAll();
-		if (categories.isEmpty()) {
-			log.info("No ontology categories found..adding");
-			OntologyCategory category = new OntologyCategory();
-			category.setId(1);
-			category.setIdentificator("ontologias_categoria_cultura");
-			category.setDescription("ontologias_categoria_cultura_desc");
-			this.repository.save(category);
-		}
-	}
+    @Before
+    public void setUp() {
+        List<OntologyCategory> categories = this.repository.findAll();
+        if (categories.isEmpty()) {
+            log.info("No ontology categories found..adding");
+            OntologyCategory category = new OntologyCategory();
+            category.setId(1);
+            category.setIdentificator("ontologias_categoria_cultura");
+            category.setDescription("ontologias_categoria_cultura_desc");
+            this.repository.save(category);
+        }
+    }
 
-	@Test
-	@Transactional
-	public void given_SomeOntologyCategoriesExist_When_ItIsSearchedById_Then_TheCorrectObjectIsObtained() {
-		OntologyCategory category = this.repository.findAll().get(0);
-		Assert.assertTrue(this.repository.findById(category.getId()) != null);
-	}
+    @Test
+    @Transactional
+    public void given_SomeOntologyCategoriesExist_When_ItIsSearchedById_Then_TheCorrectObjectIsObtained() {
+        OntologyCategory category = this.repository.findAll().get(0);
+        Assert.assertTrue(this.repository.findById(category.getId()) != null);
+    }
 }

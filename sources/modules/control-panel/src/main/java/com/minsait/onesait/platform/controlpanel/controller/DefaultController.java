@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,152 +44,152 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DefaultController {
 
-	@Autowired
-	private AppWebUtils utils;
+    @Autowired
+    private AppWebUtils utils;
 
-	private static final String CAS = "cas";
-	private static final String SAML = "saml";
+    private static final String CAS = "cas";
+    private static final String SAML = "saml";
 
-	@Autowired
-	private ThemesRepository themesRepository;
+    @Autowired
+    private ThemesRepository themesRepository;
 
-	@Autowired
-	private LoginManagementController loginController;
+    @Autowired
+    private LoginManagementController loginController;
 
-	@Value("${captcha.enable}")
-	private boolean captchaOn;
+    @Value("${captcha.enable}")
+    private boolean captchaOn;
 
-	@Value("${captcha.token}")
-	private String captchaToken;
+    @Value("${captcha.token}")
+    private String captchaToken;
 
-	@Value("${onesaitplatform.password.pattern}")
-	private String passwordPattern;
+    @Value("${onesaitplatform.password.pattern}")
+    private String passwordPattern;
 
-	@Value("${onesaitplatform.authentication.provider}")
-	private String provider;
+    @Value("${onesaitplatform.authentication.provider}")
+    private String provider;
 
-	private static final String USERS_CONSTANT = "users";
+    private static final String USERS_CONSTANT = "users";
 
-	private static final String PASS_CONSTANT = "passwordPattern";
+    private static final String PASS_CONSTANT = "passwordPattern";
 
-	@Autowired(required=false)
-	private TwoFactorAuthService twoFactorAuthService;
+    @Autowired(required = false)
+    private TwoFactorAuthService twoFactorAuthService;
 
-	@GetMapping("/")
-	public String base() {
-		if (utils.isAuthenticated()) {
-			if (utils.isUser()) {
-				return "redirect:/marketasset/list";
-			} else if (utils.isDataViewer()) {
-				return "redirect:/dashboards/viewerlist";
-			}
-			return "redirect:/main";
-		}
-		return "redirect:/";
-	}
+    @GetMapping("/")
+    public String base() {
+        if (utils.isAuthenticated()) {
+            if (utils.isUser()) {
+                return "redirect:/marketasset/list";
+            } else if (utils.isDataViewer()) {
+                return "redirect:/dashboards/viewerlist";
+            }
+            return "redirect:/main";
+        }
+        return "redirect:/";
+    }
 
-	@PreAuthorize("hasRole('ROLE_PREVERIFIED_ADMINISTRATOR')")
-	@GetMapping("/verify")
-	public String verifyIndex(Authentication auth, HttpServletRequest request) {
-		if (twoFactorAuthService.isUserInPurgatory(auth.getName()))
-			return "verify";
-		else {
-			request.getSession().invalidate();
-			return "redirect:/login";
-		}
-	}
+    @PreAuthorize("hasRole('ROLE_PREVERIFIED_ADMINISTRATOR')")
+    @GetMapping("/verify")
+    public String verifyIndex(Authentication auth, HttpServletRequest request) {
+        if (twoFactorAuthService.isUserInPurgatory(auth.getName()))
+            return "verify";
+        else {
+            request.getSession().invalidate();
+            return "redirect:/login";
+        }
+    }
 
-	@GetMapping("/home")
-	public String home() {
-		return "home";
-	}
+    @GetMapping("/home")
+    public String home() {
+        return "home";
+    }
 
-	@GetMapping("/login")
-	public String login(Model model) {
-		readThemes(model);
-		model.addAttribute(USERS_CONSTANT, new User());
-		model.addAttribute("captchaToken", captchaToken);
-		model.addAttribute("captchaEnable", captchaOn);
-		model.addAttribute(PASS_CONSTANT, passwordPattern);
-		if (provider.equals(CAS) || provider.equals(SAML))
-			return "redirect:/";
-		else
-			return "login";
-	}
+    @GetMapping("/login")
+    public String login(Model model) {
+        readThemes(model);
+        model.addAttribute(USERS_CONSTANT, new User());
+        model.addAttribute("captchaToken", captchaToken);
+        model.addAttribute("captchaEnable", captchaOn);
+        model.addAttribute(PASS_CONSTANT, passwordPattern);
+        if (provider.equals(CAS) || provider.equals(SAML))
+            return "redirect:/";
+        else
+            return "login";
+    }
 
-	@GetMapping("/error")
-	public String error() {
-		return "error/500";
-	}
+    @GetMapping("/error")
+    public String error() {
+        return "error/500";
+    }
 
-	@GetMapping("/403")
-	public String error403(Model model) {
-		model.addAttribute(USERS_CONSTANT, new User());
-		model.addAttribute(PASS_CONSTANT, passwordPattern);
-		return "error/403";
-	}
+    @GetMapping("/403")
+    public String error403(Model model) {
+        model.addAttribute(USERS_CONSTANT, new User());
+        model.addAttribute(PASS_CONSTANT, passwordPattern);
+        return "error/403";
+    }
 
-	@GetMapping("/500")
-	public String error500(Model model) {
-		model.addAttribute(USERS_CONSTANT, new User());
-		model.addAttribute(PASS_CONSTANT, passwordPattern);
-		return "error/500";
-	}
+    @GetMapping("/500")
+    public String error500(Model model) {
+        model.addAttribute(USERS_CONSTANT, new User());
+        model.addAttribute(PASS_CONSTANT, passwordPattern);
+        return "error/500";
+    }
 
-	@GetMapping("/404")
-	public String error404() {
-		return "error/404";
-	}
+    @GetMapping("/404")
+    public String error404() {
+        return "error/404";
+    }
 
-	@PreAuthorize("hasRole('ROLE_PREVERIFIED_ADMINISTRATOR')")
-	@PostMapping("/verify")
-	public String verify(Authentication auth, @RequestParam("code") String code, HttpServletRequest request) {
+    @PreAuthorize("hasRole('ROLE_PREVERIFIED_ADMINISTRATOR')")
+    @PostMapping("/verify")
+    public String verify(Authentication auth, @RequestParam("code") String code, HttpServletRequest request) {
 
-		if (twoFactorAuthService.verify(auth.getPrincipal().toString(), code)) {
-			twoFactorAuthService.promoteToRealRole(auth);
-			// request.getSession().setAttribute("oauthToken",
-			// loginController.postLoginOauthNopass(auth));
-			return "redirect:/main";
-		} else
-			return "redirect:verify?error";
-	}
+        if (twoFactorAuthService.verify(auth.getPrincipal().toString(), code)) {
+            twoFactorAuthService.promoteToRealRole(auth);
+            // request.getSession().setAttribute("oauthToken",
+            // loginController.postLoginOauthNopass(auth));
+            return "redirect:/main";
+        } else
+            return "redirect:verify?error";
+    }
 
-	private void readThemes(Model model) {
-		JSONObject json = new JSONObject();
-		try {
-			final List<Themes> activeThemes = themesRepository.findActive();
-			if (activeThemes.size() == 1) {
-				json = new JSONObject(activeThemes.get(0).getJson());
-			}
-		} catch (final Exception e) {
-			log.error("Error reading Json: ", e);
-		}
+    private void readThemes(Model model) {
+        JSONObject json = new JSONObject();
+        try {
+            final List<Themes> activeThemes = themesRepository.findActive();
+            if (activeThemes.size() == 1) {
+                json = new JSONObject(activeThemes.get(0).getJson());
+            }
+        } catch (final Exception e) {
+            log.error("Error reading Json: ", e);
+        }
 
-		final Iterator<String> keys = json.keys();
-		while (keys.hasNext()) {
-			try {
-				final Themes.editItems loginTitle = editItems.valueOf(keys.next());
-				switch (loginTitle) {
-				case LOGIN_TITLE:
-					model.addAttribute("title", json.getString(Themes.editItems.LOGIN_TITLE.toString()));
-					break;
-				case LOGIN_TITLE_ES:
-					model.addAttribute("title_es", json.getString(Themes.editItems.LOGIN_TITLE_ES.toString()));
-					break;
-				case LOGIN_IMAGE:
-					model.addAttribute("image", json.getString(Themes.editItems.LOGIN_IMAGE.toString()));
-					break;
-				case LOGIN_BACKGROUND_COLOR:
-					model.addAttribute("backgroundColor",
-							json.getString(Themes.editItems.LOGIN_BACKGROUND_COLOR.toString()));
-					break;
-				default:
-					break;
-				}
-			} catch (final Exception e) {
-				log.error("Error parsing Json: ", e);
-			}
-		}
-	}
+        final Iterator<String> keys = json.keys();
+        while (keys.hasNext()) {
+            try {
+                final Themes.editItems loginTitle = editItems.valueOf(keys.next());
+                switch (loginTitle) {
+                    case LOGIN_TITLE:
+                        model.addAttribute("title", json.getString(Themes.editItems.LOGIN_TITLE.toString()));
+                        break;
+                    case LOGIN_TITLE_ES:
+                        model.addAttribute("title_es", json.getString(Themes.editItems.LOGIN_TITLE_ES.toString()));
+                        break;
+                    case LOGIN_IMAGE:
+                        model.addAttribute("image", json.getString(Themes.editItems.LOGIN_IMAGE.toString()));
+                        break;
+                    case LOGIN_BACKGROUND_COLOR:
+                        model.addAttribute("backgroundColor",
+                                           json.getString(Themes.editItems.LOGIN_BACKGROUND_COLOR.toString()));
+                        break;
+                    default:
+                        break;
+                }
+            } catch (final Exception e) {
+                log.error("Error parsing Json: ", e);
+            }
+        }
+    }
 
 }

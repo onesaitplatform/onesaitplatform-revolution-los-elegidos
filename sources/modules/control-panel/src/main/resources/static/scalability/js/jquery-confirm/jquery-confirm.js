@@ -503,8 +503,7 @@ var jconfirm, Jconfirm;
             if (typeof pageYOffset !== 'undefined') {
                 //most browsers except IE before #9
                 return pageYOffset;
-            }
-            else {
+            } else {
                 var B = document.body; //IE 'quirks'
                 var D = document.documentElement; //IE with doctype
                 D = (D.clientHeight) ? D : B;
@@ -648,7 +647,7 @@ var jconfirm, Jconfirm;
                 that.buttons[key].text = button.text || key;
                 that.buttons[key].btnClass = button.btnClass || 'btn-default';
                 that.buttons[key].action = button.action || function () {
-                    };
+                };
                 that.buttons[key].keys = button.keys || [];
                 that.buttons[key].isHidden = button.isHidden || false;
                 that.buttons[key].isDisabled = button.isDisabled || false;
@@ -790,8 +789,7 @@ var jconfirm, Jconfirm;
                         this.icon = response;
                     else
                         this.icon = false;
-                }
-                else
+                } else
                     this.icon = false;
 
             if (this.isAjaxLoading && !force)
@@ -860,8 +858,7 @@ var jconfirm, Jconfirm;
                 var res = this.content.apply(this);
                 if (typeof res == 'string') {
                     this.content = res;
-                }
-                else if (typeof res == 'object' && typeof res.always == 'function') {
+                } else if (typeof res == 'object' && typeof res.always == 'function') {
                     // this is ajax loading via promise
                     this.isAjax = true;
                     this.isAjaxLoading = true;
@@ -995,8 +992,7 @@ var jconfirm, Jconfirm;
             if (keyChar === 'esc' && this.escapeKey) {
                 if (this.escapeKey === true) {
                     this.$scrollPane.trigger('click');
-                }
-                else if (typeof this.escapeKey === 'string' || typeof this.escapeKey === 'function') {
+                } else if (typeof this.escapeKey === 'string' || typeof this.escapeKey === 'function') {
                     var buttonKey;
                     if (typeof this.escapeKey === 'function') {
                         buttonKey = this.escapeKey();
@@ -1203,36 +1199,36 @@ var jconfirm, Jconfirm;
     jconfirm.lastFocused = false;
     jconfirm.pluginDefaults = {
         template: '' +
-        '<div class="jconfirm">' +
-        '<div class="jconfirm-bg jconfirm-bg-h"></div>' +
-        '<div class="jconfirm-scrollpane">' +
-        '<div class="jconfirm-row">' +
-        '<div class="jconfirm-cell">' +
-        '<div class="jconfirm-holder">' +
-        '<div class="jc-bs3-container">' +
-        '<div class="jc-bs3-row">' +
-        '<div class="jconfirm-box-container jconfirm-animated">' +
-        '<div class="jconfirm-box" role="dialog" aria-labelledby="labelled" tabindex="-1">' +
-        '<div class="jconfirm-closeIcon">&times;</div>' +
-        '<div class="jconfirm-title-c">' +
-        '<span class="jconfirm-icon-c"></span>' +
-        '<span class="jconfirm-title"></span>' +
-        '</div>' +
-        '<div class="jconfirm-content-pane">' +
-        '<div class="jconfirm-content"></div>' +
-        '</div>' +
-        '<div class="jconfirm-buttons">' +
-        '</div>' +
-        '<div class="jconfirm-clear">' +
-        '</div>' +
-        '</div>' +
-        '</div>' +
-        '</div>' +
-        '</div>' +
-        '</div>' +
-        '</div>' +
-        '</div>' +
-        '</div></div>',
+            '<div class="jconfirm">' +
+            '<div class="jconfirm-bg jconfirm-bg-h"></div>' +
+            '<div class="jconfirm-scrollpane">' +
+            '<div class="jconfirm-row">' +
+            '<div class="jconfirm-cell">' +
+            '<div class="jconfirm-holder">' +
+            '<div class="jc-bs3-container">' +
+            '<div class="jc-bs3-row">' +
+            '<div class="jconfirm-box-container jconfirm-animated">' +
+            '<div class="jconfirm-box" role="dialog" aria-labelledby="labelled" tabindex="-1">' +
+            '<div class="jconfirm-closeIcon">&times;</div>' +
+            '<div class="jconfirm-title-c">' +
+            '<span class="jconfirm-icon-c"></span>' +
+            '<span class="jconfirm-title"></span>' +
+            '</div>' +
+            '<div class="jconfirm-content-pane">' +
+            '<div class="jconfirm-content"></div>' +
+            '</div>' +
+            '<div class="jconfirm-buttons">' +
+            '</div>' +
+            '<div class="jconfirm-clear">' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div></div>',
         title: 'Hello',
         titleClass: '',
         type: 'default',

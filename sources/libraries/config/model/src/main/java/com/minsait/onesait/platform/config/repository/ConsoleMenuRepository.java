@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,36 +23,30 @@ import com.minsait.onesait.platform.config.model.Role;
 
 public interface ConsoleMenuRepository extends JpaRepository<ConsoleMenu, String> {
 
-	@Override
+    @Override
+    <S extends ConsoleMenu> List<S> save(Iterable<S> entities);
 
-	<S extends ConsoleMenu> List<S> save(Iterable<S> entities);
+    @Override
+    void flush();
 
-	@Override
+    @Override
+    <S extends ConsoleMenu> S saveAndFlush(S entity);
 
-	void flush();
+    @SuppressWarnings("unchecked")
+    @Override
+    ConsoleMenu save(ConsoleMenu entity);
 
-	@Override
+    @Override
+    void delete(ConsoleMenu id);
 
-	<S extends ConsoleMenu> S saveAndFlush(S entity);
+    @Override
+    List<ConsoleMenu> findAll();
 
-	@SuppressWarnings("unchecked")
-	@Override
+    @Override
+    void deleteAll();
 
-	ConsoleMenu save(ConsoleMenu entity);
+    ConsoleMenu findById(String id);
 
-	@Override
-
-	void delete(ConsoleMenu id);
-
-	@Override
-	List<ConsoleMenu> findAll();
-
-	@Override
-
-	void deleteAll();
-
-	ConsoleMenu findById(String id);
-
-	ConsoleMenu findByRoleType(Role roleType);
+    ConsoleMenu findByRoleType(Role roleType);
 
 }

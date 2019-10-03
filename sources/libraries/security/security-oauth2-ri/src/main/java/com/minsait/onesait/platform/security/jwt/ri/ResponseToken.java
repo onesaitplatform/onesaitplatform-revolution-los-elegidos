@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,60 +21,59 @@ import java.util.Set;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 
 public class ResponseToken implements Serializable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String token;
-	private Date expirationTimestamp;
-	private String expirationFormatted;
-	
-	private Set<String> authorities;
+    private String token;
+    private Date expirationTimestamp;
+    private String expirationFormatted;
 
-	private OAuth2AccessToken oauthInfo;
+    private Set<String> authorities;
 
-	public String getToken() {
-		return token;
-	}
+    private OAuth2AccessToken oauthInfo;
 
-	public void setToken(String token) {
-		this.token = token;
-	}
+    public String getToken() {
+        return token;
+    }
 
-	public OAuth2AccessToken getOauthInfo() {
-		return oauthInfo;
-	}
+    public void setToken(String token) {
+        this.token = token;
+    }
 
-	public void setOauthInfo(OAuth2AccessToken oauthInfo) {
-		this.oauthInfo = oauthInfo;
-	}
+    public OAuth2AccessToken getOauthInfo() {
+        return oauthInfo;
+    }
 
-	public Date getExpirationTimestamp() {
-		return expirationTimestamp;
-	}
+    public void setOauthInfo(OAuth2AccessToken oauthInfo) {
+        this.oauthInfo = oauthInfo;
+    }
 
-	public void setExpirationTimestamp(Date expirationTimestamp) {
-		this.expirationTimestamp = expirationTimestamp;
-	}
+    public Date getExpirationTimestamp() {
+        return expirationTimestamp;
+    }
 
-	public String getExpirationFormatted() {
-		return expirationFormatted;
-	}
+    public void setExpirationTimestamp(Date expirationTimestamp) {
+        this.expirationTimestamp = expirationTimestamp;
+    }
 
-	public void setExpirationFormatted(String expirationFormatted) {
-		this.expirationFormatted = expirationFormatted;
-	}
-	
-	public Set<String> getAuthorities() {
-		return authorities;
-	}
+    public String getExpirationFormatted() {
+        return expirationFormatted;
+    }
 
-	public void setAuthorities(Set<String> authorities) {
-		this.authorities = authorities;
-	}
+    public void setExpirationFormatted(String expirationFormatted) {
+        this.expirationFormatted = expirationFormatted;
+    }
 
-	@Override
-	public String toString() {
-		return "Sofia2ResponseToken [token=" + token + ", expirationTimestamp=" + expirationTimestamp
-				+ ", expirationFormatted=" + expirationFormatted + ", oauthInfo=" + oauthInfo + "]";
-	}
+    public Set<String> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(Set<String> authorities) {
+        this.authorities = authorities;
+    }
+
+    @Override
+    public String toString() {
+        return "Sofia2ResponseToken [token=" + token + ", expirationTimestamp=" + expirationTimestamp + ", expirationFormatted=" + expirationFormatted + ", oauthInfo=" + oauthInfo + "]";
+    }
 
 }

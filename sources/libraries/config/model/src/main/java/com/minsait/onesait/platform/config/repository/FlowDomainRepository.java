@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,17 +26,17 @@ import com.minsait.onesait.platform.config.model.FlowDomain;
 
 public interface FlowDomainRepository extends JpaRepository<FlowDomain, String> {
 
-	FlowDomain findByIdentification(String identification);
+    FlowDomain findByIdentification(String identification);
 
-	FlowDomain findByUserUserId(String userId);
+    FlowDomain findByUserUserId(String userId);
 
-	@Query("SELECT d.port FROM FlowDomain as d")
-	List<Integer> findAllDomainPorts();
+    @Query("SELECT d.port FROM FlowDomain as d")
+    List<Integer> findAllDomainPorts();
 
-	@Query("SELECT d.servicePort FROM FlowDomain as d")
-	List<Integer> findAllServicePorts();
+    @Query("SELECT d.servicePort FROM FlowDomain as d")
+    List<Integer> findAllServicePorts();
 
-	@Modifying
-	@Transactional
-	void deleteByIdentification(String identification);
+    @Modifying
+    @Transactional
+    void deleteByIdentification(String identification);
 }

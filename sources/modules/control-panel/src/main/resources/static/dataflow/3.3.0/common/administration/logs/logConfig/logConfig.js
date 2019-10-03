@@ -18,64 +18,64 @@
  */
 
 angular
-  .module('dataCollectorApp')
-  .controller('LogConfigModalInstanceController', function ($scope, $modalInstance, api, pipelineService, $timeout) {
-    angular.extend($scope, {
-      common: {
-        errors: []
-      },
-      showLoading: true,
-      logConfig: undefined,
-      isSaveInProgress: false,
-      refreshCodemirror: false,
+    .module('dataCollectorApp')
+    .controller('LogConfigModalInstanceController', function ($scope, $modalInstance, api, pipelineService, $timeout) {
+        angular.extend($scope, {
+            common: {
+                errors: []
+            },
+            showLoading: true,
+            logConfig: undefined,
+            isSaveInProgress: false,
+            refreshCodemirror: false,
 
-      save: function() {
-        $scope.isSaveInProgress = true;
-        api.log.updateLogConfig($scope.logConfig)
-          .then(function(res) {
-            $modalInstance.close();
-          }, function(res) {
-            $scope.isSaveInProgress = false;
-            $scope.common.errors = [res.data];
-          });
-      },
+            save: function () {
+                $scope.isSaveInProgress = true;
+                api.log.updateLogConfig($scope.logConfig)
+                    .then(function (res) {
+                        $modalInstance.close();
+                    }, function (res) {
+                        $scope.isSaveInProgress = false;
+                        $scope.common.errors = [res.data];
+                    });
+            },
 
-      reset: function() {
-        api.log.getLogConfig(true)
-          .then(function(res) {
-            $scope.showLoading = false;
-            $scope.logConfig = res.data;
+            reset: function () {
+                api.log.getLogConfig(true)
+                    .then(function (res) {
+                        $scope.showLoading = false;
+                        $scope.logConfig = res.data;
 
-            $scope.refreshCodemirror = true;
-            $timeout(function () {
-              $scope.refreshCodemirror = false;
-            }, 100);
-          }, function(res) {
-            $scope.showLoading = false;
-          });
-      },
+                        $scope.refreshCodemirror = true;
+                        $timeout(function () {
+                            $scope.refreshCodemirror = false;
+                        }, 100);
+                    }, function (res) {
+                        $scope.showLoading = false;
+                    });
+            },
 
-      cancel: function() {
-        $modalInstance.dismiss('cancel');
-      },
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
+            },
 
-      getCodeMirrorOptions: function(options) {
-        return angular.extend({}, pipelineService.getDefaultELEditorOptions(), options);
-      }
+            getCodeMirrorOptions: function (options) {
+                return angular.extend({}, pipelineService.getDefaultELEditorOptions(), options);
+            }
+        });
+
+        api.log.getLogConfig()
+            .then(function (res) {
+                $scope.showLoading = false;
+                $scope.logConfig = res.data;
+
+                $scope.refreshCodemirror = true;
+                $timeout(function () {
+                    $scope.refreshCodemirror = false;
+                }, 100);
+
+            }, function (res) {
+                $scope.showLoading = false;
+            });
+
     });
-
-    api.log.getLogConfig()
-      .then(function(res) {
-        $scope.showLoading = false;
-        $scope.logConfig = res.data;
-
-        $scope.refreshCodemirror = true;
-        $timeout(function () {
-          $scope.refreshCodemirror = false;
-        }, 100);
-
-      }, function(res) {
-        $scope.showLoading = false;
-      });
-
-  });

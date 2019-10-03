@@ -18,102 +18,102 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('InstallModalInstanceController',
-      function ($scope, $rootScope, $modalInstance, customRepoUrl, libraryList, api, pipelineConstant) {
-    angular.extend($scope, {
-      common: {
-        errors: []
-      },
-      libraryList: _.clone(libraryList),
-      maprStageLib: false,
-      operationStatus: 'incomplete',
-      operationStatusMap: {},
-      failedLibraries: [],
-      errorMap: {},
+    .module('dataCollectorApp.home')
+    .controller('InstallModalInstanceController',
+        function ($scope, $rootScope, $modalInstance, customRepoUrl, libraryList, api, pipelineConstant) {
+            angular.extend($scope, {
+                common: {
+                    errors: []
+                },
+                libraryList: _.clone(libraryList),
+                maprStageLib: false,
+                operationStatus: 'incomplete',
+                operationStatusMap: {},
+                failedLibraries: [],
+                errorMap: {},
 
-      install: function(givenLibraries) {
-        $scope.operationStatus = 'installing';
+                install: function (givenLibraries) {
+                    $scope.operationStatus = 'installing';
 
-        var libraries = givenLibraries || libraryList,
-            librariesToInstall = [libraries.shift()],
-            library = librariesToInstall[0];
+                    var libraries = givenLibraries || libraryList,
+                        librariesToInstall = [libraries.shift()],
+                        library = librariesToInstall[0];
 
-        $scope.operationStatusMap[library.id] = 'installing';
-        api.pipelineAgent.installLibraries(customRepoUrl, _.pluck(librariesToInstall, 'id'))
-            .then(function () {
-              library.installed = true;
-              $scope.operationStatusMap[library.id] = 'installed';
-              $rootScope.common.trackEvent(
-                  pipelineConstant.STAGE_LIBRARY_CATEGORY,
-                  pipelineConstant.INSTALL_ACTION,
-                  library.label,
-                  1
-              );
+                    $scope.operationStatusMap[library.id] = 'installing';
+                    api.pipelineAgent.installLibraries(customRepoUrl, _.pluck(librariesToInstall, 'id'))
+                        .then(function () {
+                            library.installed = true;
+                            $scope.operationStatusMap[library.id] = 'installed';
+                            $rootScope.common.trackEvent(
+                                pipelineConstant.STAGE_LIBRARY_CATEGORY,
+                                pipelineConstant.INSTALL_ACTION,
+                                library.label,
+                                1
+                            );
 
-              if (libraries.length > 0) {
-                $scope.install(libraries);
-              } else {
-                $scope.operationStatus = 'complete';
-              }
-            })
-            .catch(function (res) {
-              $scope.failedLibraries.push(library);
-              $scope.operationStatusMap[library.id] = 'failed';
-              $scope.errorMap[library.id] = res.data;
+                            if (libraries.length > 0) {
+                                $scope.install(libraries);
+                            } else {
+                                $scope.operationStatus = 'complete';
+                            }
+                        })
+                        .catch(function (res) {
+                                $scope.failedLibraries.push(library);
+                                $scope.operationStatusMap[library.id] = 'failed';
+                                $scope.errorMap[library.id] = res.data;
 
-              if (libraries.length > 0) {
-                $scope.install(libraries);
-              } else {
-                $scope.operationStatus = 'complete';
-              }
+                                if (libraries.length > 0) {
+                                    $scope.install(libraries);
+                                } else {
+                                    $scope.operationStatus = 'complete';
+                                }
+                            }
+                        );
+                },
+
+                retry: function () {
+                    var libraries = $scope.failedLibraries;
+
+                    $scope.errorMap = {};
+                    $scope.common.errors = [];
+                    $scope.failedLibraries = [];
+
+                    $scope.install(libraries);
+                },
+
+                restart: function () {
+                    $scope.operationStatus = 'restarting';
+                    api.admin.restartDataCollector();
+                },
+
+                cancel: function () {
+                    $modalInstance.dismiss('cancel');
+                },
+
+                inStatus: function (library, status) {
+                    return $scope.operationStatusMap[library.id] === status;
+                },
+
+                showError: function (library) {
+                    var err = $scope.errorMap[library.id];
+                    $scope.common.errors = [err];
+                },
+
+                hasError: function (library) {
+                    return !!$scope.errorMap[library.id];
+                },
+
+                hasErrors: function () {
+                    return _.any($scope.errorMap);
+                }
+            });
+
+            if (libraryList && libraryList.length) {
+                angular.forEach(libraryList, function (library) {
+                    if (library.id.indexOf('streamsets-datacollector-mapr_') !== -1) {
+                        $scope.maprStageLib = true;
+                    }
+                });
             }
-          );
-      },
 
-      retry: function() {
-        var libraries = $scope.failedLibraries;
-
-        $scope.errorMap = {};
-        $scope.common.errors = [];
-        $scope.failedLibraries = [];
-
-        $scope.install(libraries);
-      },
-
-      restart: function() {
-        $scope.operationStatus = 'restarting';
-        api.admin.restartDataCollector();
-      },
-
-      cancel: function() {
-        $modalInstance.dismiss('cancel');
-      },
-
-      inStatus: function(library, status) {
-        return $scope.operationStatusMap[library.id] === status;
-      },
-
-      showError: function(library) {
-        var err = $scope.errorMap[library.id];
-        $scope.common.errors = [err];
-      },
-
-      hasError: function(library) {
-        return !!$scope.errorMap[library.id];
-      },
-
-      hasErrors: function() {
-        return _.any($scope.errorMap);
-      }
-    });
-
-    if (libraryList && libraryList.length) {
-      angular.forEach(libraryList, function(library) {
-        if (library.id.indexOf('streamsets-datacollector-mapr_') !== -1) {
-          $scope.maprStageLib = true;
-        }
-      });
-    }
-
-  });
+        });

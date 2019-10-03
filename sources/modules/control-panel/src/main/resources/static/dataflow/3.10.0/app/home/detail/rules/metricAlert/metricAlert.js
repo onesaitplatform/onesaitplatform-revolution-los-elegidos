@@ -18,228 +18,228 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
+    .module('dataCollectorApp.home')
 
-  .controller('MetricAlertRulesController', ["$scope", "pipelineConstant", "pipelineService", "$modal", function ($scope, pipelineConstant, pipelineService, $modal) {
-    angular.extend($scope, {
-      showLoading: false,
+    .controller('MetricAlertRulesController', ["$scope", "pipelineConstant", "pipelineService", "$modal", function ($scope, pipelineConstant, pipelineService, $modal) {
+        angular.extend($scope, {
+            showLoading: false,
 
-      /**
-       * Refresh Rules
-       */
-      refreshRules: function() {
-        updateRules($scope.activeConfigInfo.pipelineId);
-      },
+            /**
+             * Refresh Rules
+             */
+            refreshRules: function () {
+                updateRules($scope.activeConfigInfo.pipelineId);
+            },
 
-      /**
-       * Callback function for Create New Metric Alert Rule button.
-       */
-      createMetricAlertRule: function() {
-        if($scope.selectedType !== pipelineConstant.LINK) {
+            /**
+             * Callback function for Create New Metric Alert Rule button.
+             */
+            createMetricAlertRule: function () {
+                if ($scope.selectedType !== pipelineConstant.LINK) {
 
-          $scope.trackEvent(pipelineConstant.BUTTON_CATEGORY, pipelineConstant.CLICK_ACTION, 'Add Metric Alert Rule', 1);
-          var modalInstance = $modal.open({
-            templateUrl: 'app/home/detail/rules/metricAlert/editMetricAlertRule.tpl.html',
-            controller: 'CreateMetricAlertRuleModalInstanceController',
-            size: 'lg',
-            backdrop: 'static',
-            resolve: {
-              edge: function () {
-                return $scope.selectedObject;
-              },
-              metricElementList: function() {
-                return $scope.metricElementList;
-              },
-              metricIDList: function() {
-                return $scope.metricIDList;
-              },
-              rulesElMetadata: function() {
-                return pipelineService.getMetricRulesElMetadata();
-              }
+                    $scope.trackEvent(pipelineConstant.BUTTON_CATEGORY, pipelineConstant.CLICK_ACTION, 'Add Metric Alert Rule', 1);
+                    var modalInstance = $modal.open({
+                        templateUrl: 'app/home/detail/rules/metricAlert/editMetricAlertRule.tpl.html',
+                        controller: 'CreateMetricAlertRuleModalInstanceController',
+                        size: 'lg',
+                        backdrop: 'static',
+                        resolve: {
+                            edge: function () {
+                                return $scope.selectedObject;
+                            },
+                            metricElementList: function () {
+                                return $scope.metricElementList;
+                            },
+                            metricIDList: function () {
+                                return $scope.metricIDList;
+                            },
+                            rulesElMetadata: function () {
+                                return pipelineService.getMetricRulesElMetadata();
+                            }
+                        }
+                    });
+
+                    modalInstance.result.then(function (metricAlertRuleDefn) {
+                        $scope.trackEvent(pipelineConstant.BUTTON_CATEGORY, pipelineConstant.CLICK_ACTION, 'Save Metric Alert Rule', 1);
+                        $scope.pipelineRules.metricsRuleDefinitions.push(metricAlertRuleDefn);
+                    }, function () {
+
+                    });
+                }
+            },
+
+            /**
+             * Callback function for Edit Data Rule button.
+             */
+            editMetricAlertDataRule: function (metricAlertRuleDefn, index) {
+                if ($scope.selectedType !== pipelineConstant.LINK) {
+
+                    var modalInstance = $modal.open({
+                        templateUrl: 'app/home/detail/rules/metricAlert/editMetricAlertRule.tpl.html',
+                        controller: 'EditMetricAlertRuleModalInstanceController',
+                        size: 'lg',
+                        backdrop: 'static',
+                        resolve: {
+                            metricAlertRuleDefn: function () {
+                                return angular.copy(metricAlertRuleDefn);
+                            },
+                            metricElementList: function () {
+                                return $scope.metricElementList;
+                            },
+                            metricIDList: function () {
+                                return $scope.metricIDList;
+                            },
+                            rulesElMetadata: function () {
+                                return pipelineService.getMetricRulesElMetadata();
+                            }
+                        }
+                    });
+
+                    modalInstance.result.then(function (newDataRuleDefn) {
+                        $scope.pipelineRules.metricsRuleDefinitions[index] = newDataRuleDefn;
+                    }, function () {
+
+                    });
+                }
+            },
+
+            /**
+             * Remove Callback function
+             *
+             * @param ruleList
+             * @param $index
+             */
+            removeRule: function (ruleList, $index) {
+                ruleList.splice($index, 1);
+            },
+
+            getMetricIdLabel: function (metricAlertRule) {
+                var metricId = _.find($scope.metricIDList[metricAlertRule.metricType], function (metricIdObj) {
+                    return metricIdObj.value === metricAlertRule.metricId;
+                });
+
+                if (metricId) {
+                    return metricId.label;
+                }
+            },
+
+
+            getMetricElementLabel: function (metricAlertRule) {
+                var metricElement = _.find($scope.metricElementList[metricAlertRule.metricType], function (metricElementObj) {
+                    return metricElementObj.value === metricAlertRule.metricElement;
+                });
+
+                if (metricElement) {
+                    return metricElement.label;
+                }
             }
-          });
+        });
 
-          modalInstance.result.then(function (metricAlertRuleDefn) {
-            $scope.trackEvent(pipelineConstant.BUTTON_CATEGORY, pipelineConstant.CLICK_ACTION, 'Save Metric Alert Rule', 1);
-            $scope.pipelineRules.metricsRuleDefinitions.push(metricAlertRuleDefn);
-          }, function () {
+        $scope.metricElementList = pipelineService.getMetricElementList();
 
-          });
-        }
-      },
 
-      /**
-       * Callback function for Edit Data Rule button.
-       */
-      editMetricAlertDataRule: function(metricAlertRuleDefn, index) {
-        if($scope.selectedType !== pipelineConstant.LINK) {
-
-          var modalInstance = $modal.open({
-            templateUrl: 'app/home/detail/rules/metricAlert/editMetricAlertRule.tpl.html',
-            controller: 'EditMetricAlertRuleModalInstanceController',
-            size: 'lg',
-            backdrop: 'static',
-            resolve: {
-              metricAlertRuleDefn: function () {
-                return angular.copy(metricAlertRuleDefn);
-              },
-              metricElementList: function() {
-                return $scope.metricElementList;
-              },
-              metricIDList: function() {
-                return $scope.metricIDList;
-              },
-              rulesElMetadata: function() {
-                return pipelineService.getMetricRulesElMetadata();
-              }
+        function updateMetricIDList() {
+            if ($scope.pipelineConfig) {
+                $scope.metricIDList = pipelineService.getMetricIDList($scope.pipelineConfig);
             }
-          });
-
-          modalInstance.result.then(function (newDataRuleDefn) {
-            $scope.pipelineRules.metricsRuleDefinitions[index] = newDataRuleDefn;
-          }, function () {
-
-          });
         }
-      },
 
-      /**
-       * Remove Callback function
-       *
-       * @param ruleList
-       * @param $index
-       */
-      removeRule: function(ruleList, $index) {
-        ruleList.splice($index, 1);
-      },
-
-      getMetricIdLabel: function(metricAlertRule) {
-        var metricId = _.find($scope.metricIDList[metricAlertRule.metricType], function(metricIdObj) {
-          return metricIdObj.value === metricAlertRule.metricId;
+        $scope.$on('onSelectionChange', function (event, options) {
+            updateMetricIDList();
         });
 
-        if(metricId) {
-          return metricId.label;
-        }
-      },
+        updateMetricIDList();
 
+    }])
 
-      getMetricElementLabel: function(metricAlertRule) {
-        var metricElement = _.find($scope.metricElementList[metricAlertRule.metricType], function(metricElementObj) {
-          return metricElementObj.value === metricAlertRule.metricElement;
+    .controller('CreateMetricAlertRuleModalInstanceController', ["$scope", "$modalInstance", "$translate", "edge", "$timeout", "metricElementList", "metricIDList", "pipelineService", "rulesElMetadata", function ($scope, $modalInstance, $translate, edge,
+                                                                                                                                                                                                                    $timeout, metricElementList, metricIDList,
+                                                                                                                                                                                                                    pipelineService, rulesElMetadata) {
+
+        angular.extend($scope, {
+            showLoading: false,
+            common: {
+                errors: []
+            },
+            metricElementList: metricElementList,
+            metricIDList: metricIDList,
+            metricAlertRuleDefn: {
+                id: edge.info.name + (new Date()).getTime(),
+                alertText: '',
+                condition: '${value() > 1000}',
+                metricId: null,
+                metricType: 'COUNTER',
+                metricElement: null,
+                enabled: false,
+                sendEmail: false
+            },
+
+            refreshCodemirror: false,
+
+            getCodeMirrorOptions: function () {
+                var codeMirrorOptions = {
+                    dictionary: rulesElMetadata,
+                    extraKeys: {
+                        'Tab': false,
+                        'Ctrl-Space': 'autocomplete'
+                    }
+                };
+
+                $timeout(function () {
+                    $scope.refreshCodemirror = true;
+                });
+
+                return angular.extend({}, pipelineService.getDefaultELEditorOptions(), codeMirrorOptions);
+            },
+
+            save: function () {
+                $modalInstance.close($scope.metricAlertRuleDefn);
+            },
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
+            }
         });
 
-        if(metricElement) {
-          return metricElement.label;
-        }
-      }
-    });
+        $scope.$broadcast('show-errors-check-validity');
+    }])
 
-    $scope.metricElementList = pipelineService.getMetricElementList();
+    .controller('EditMetricAlertRuleModalInstanceController', ["$scope", "$modalInstance", "$translate", "pipelineService", "$timeout", "metricAlertRuleDefn", "metricElementList", "metricIDList", "rulesElMetadata", function ($scope, $modalInstance, $translate,
+                                                                                                                                                                                                                                 pipelineService, $timeout, metricAlertRuleDefn,
+                                                                                                                                                                                                                                 metricElementList, metricIDList, rulesElMetadata) {
 
+        angular.extend($scope, {
+            showLoading: false,
+            common: {
+                errors: []
+            },
+            metricElementList: metricElementList,
+            metricIDList: metricIDList,
+            metricAlertRuleDefn: metricAlertRuleDefn,
+            refreshCodemirror: false,
 
-    function updateMetricIDList() {
-      if($scope.pipelineConfig) {
-        $scope.metricIDList = pipelineService.getMetricIDList($scope.pipelineConfig);
-      }
-    }
+            getCodeMirrorOptions: function () {
+                var codeMirrorOptions = {
+                    dictionary: rulesElMetadata,
+                    extraKeys: {
+                        'Tab': false,
+                        'Ctrl-Space': 'autocomplete'
+                    }
+                };
 
-    $scope.$on('onSelectionChange', function(event, options) {
-      updateMetricIDList();
-    });
+                $timeout(function () {
+                    $scope.refreshCodemirror = true;
+                });
 
-    updateMetricIDList();
+                return angular.extend({}, pipelineService.getDefaultELEditorOptions(), codeMirrorOptions);
+            },
 
-  }])
-
-  .controller('CreateMetricAlertRuleModalInstanceController', ["$scope", "$modalInstance", "$translate", "edge", "$timeout", "metricElementList", "metricIDList", "pipelineService", "rulesElMetadata", function ($scope, $modalInstance, $translate, edge,
-                                                                        $timeout, metricElementList, metricIDList,
-                                                                        pipelineService, rulesElMetadata) {
-
-    angular.extend($scope, {
-      showLoading: false,
-      common: {
-        errors: []
-      },
-      metricElementList: metricElementList,
-      metricIDList: metricIDList,
-      metricAlertRuleDefn: {
-        id: edge.info.name + (new Date()).getTime(),
-        alertText: '',
-        condition: '${value() > 1000}',
-        metricId: null,
-        metricType: 'COUNTER',
-        metricElement: null,
-        enabled: false,
-        sendEmail: false
-      },
-
-      refreshCodemirror: false,
-
-      getCodeMirrorOptions: function() {
-        var codeMirrorOptions = {
-          dictionary: rulesElMetadata,
-          extraKeys: {
-            'Tab': false,
-            'Ctrl-Space': 'autocomplete'
-          }
-        };
-
-        $timeout(function() {
-          $scope.refreshCodemirror = true;
+            save: function () {
+                $modalInstance.close($scope.metricAlertRuleDefn);
+            },
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
+            }
         });
 
-        return angular.extend({}, pipelineService.getDefaultELEditorOptions(), codeMirrorOptions);
-      },
-
-      save : function () {
-        $modalInstance.close($scope.metricAlertRuleDefn);
-      },
-      cancel : function () {
-        $modalInstance.dismiss('cancel');
-      }
-    });
-
-    $scope.$broadcast('show-errors-check-validity');
-  }])
-
-  .controller('EditMetricAlertRuleModalInstanceController', ["$scope", "$modalInstance", "$translate", "pipelineService", "$timeout", "metricAlertRuleDefn", "metricElementList", "metricIDList", "rulesElMetadata", function ($scope, $modalInstance, $translate,
-                                                                      pipelineService, $timeout, metricAlertRuleDefn,
-                                                                      metricElementList, metricIDList, rulesElMetadata) {
-
-    angular.extend($scope, {
-      showLoading: false,
-      common: {
-        errors: []
-      },
-      metricElementList: metricElementList,
-      metricIDList: metricIDList,
-      metricAlertRuleDefn: metricAlertRuleDefn,
-      refreshCodemirror: false,
-
-      getCodeMirrorOptions: function() {
-        var codeMirrorOptions = {
-          dictionary: rulesElMetadata,
-          extraKeys: {
-            'Tab': false,
-            'Ctrl-Space': 'autocomplete'
-          }
-        };
-
-        $timeout(function() {
-          $scope.refreshCodemirror = true;
-        });
-
-        return angular.extend({}, pipelineService.getDefaultELEditorOptions(), codeMirrorOptions);
-      },
-
-      save : function () {
-        $modalInstance.close($scope.metricAlertRuleDefn);
-      },
-      cancel : function () {
-        $modalInstance.dismiss('cancel');
-      }
-    });
-
-    $scope.$broadcast('show-errors-check-validity');
-  }]);
+        $scope.$broadcast('show-errors-check-validity');
+    }]);

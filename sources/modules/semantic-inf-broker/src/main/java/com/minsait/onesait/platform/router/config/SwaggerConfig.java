@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,25 +28,25 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfig {
 
-	private String title = "Semantic Information Broker Rest API";
-	private String description = "API REST for Semantic Information Broker";
-	private String version = "1.0";
-	private String termsOfServiceUrl;
+    private String title = "Semantic Information Broker Rest API";
+    private String description = "API REST for Semantic Information Broker";
+    private String version = "1.0";
+    private String termsOfServiceUrl;
 
-	private String license;
-	private String licenseUrl;
-	private String contact;
+    private String license;
+    private String licenseUrl;
+    private String contact;
 
-	@Bean
-	public Docket api() {
+    @Bean
+    public Docket api() {
 
-		return new Docket(DocumentationType.SWAGGER_2).select()
-				.apis(RequestHandlerSelectors.basePackage("com.minsait.onesait.platform.router.controller"))
-				.paths(PathSelectors.any()).build().apiInfo(apiInfo());
-	}
+        return new Docket(DocumentationType.SWAGGER_2).select().apis(
+                RequestHandlerSelectors.basePackage("com.minsait.onesait.platform.router.controller")).paths(
+                PathSelectors.any()).build().apiInfo(apiInfo());
+    }
 
-	private ApiInfo apiInfo() {
-		return new ApiInfo(title, description, version, termsOfServiceUrl, contact, license, licenseUrl);
-	}
+    private ApiInfo apiInfo() {
+        return new ApiInfo(title, description, version, termsOfServiceUrl, contact, license, licenseUrl);
+    }
 
 }

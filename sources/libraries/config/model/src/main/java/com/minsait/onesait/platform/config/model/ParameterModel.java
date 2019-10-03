@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,46 +37,46 @@ import lombok.Setter;
 @Table(name = "PARAMETER_MODEL")
 public class ParameterModel extends AuditableEntityWithUUID {
 
-	public enum Type {
+    public enum Type {
 
-		STRING, NUMBER, ENUMERATION, TIMESTAMP
-	}
+        STRING, NUMBER, ENUMERATION, TIMESTAMP
+    }
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Column(name = "IDENTIFICATION", length = 50, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String identification;
+    @Column(name = "IDENTIFICATION", length = 50, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String identification;
 
-	@Column(name = "TYPE", length = 50, unique = false, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	@Enumerated(EnumType.STRING)
-	private Type type;
+    @Column(name = "TYPE", length = 50, unique = false, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private Type type;
 
-	@Column(name = "RANGEFROM")
-	@Getter
-	@Setter
-	private Integer rangeFrom;
+    @Column(name = "RANGEFROM")
+    @Getter
+    @Setter
+    private Integer rangeFrom;
 
-	@Column(name = "RANGETO")
-	@Getter
-	@Setter
-	private Integer rangeTo;
+    @Column(name = "RANGETO")
+    @Getter
+    @Setter
+    private Integer rangeTo;
 
-	@Column(name = "enumerators", length = 1024, unique = false, nullable = true)
-	@Getter
-	@Setter
-	private String enumerators;
+    @Column(name = "enumerators", length = 1024, unique = false, nullable = true)
+    @Getter
+    @Setter
+    private String enumerators;
 
-	@ManyToOne
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "MODEL", referencedColumnName = "ID", nullable = false)
-	@Getter
-	@Setter
-	private Model model;
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "MODEL", referencedColumnName = "ID", nullable = false)
+    @Getter
+    @Setter
+    private Model model;
 
 }

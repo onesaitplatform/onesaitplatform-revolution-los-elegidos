@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,24 +20,24 @@ import com.minsait.onesait.platform.config.model.GadgetTemplate;
 
 public interface GadgetTemplateService {
 
-	public List<GadgetTemplate> findAllGadgetTemplates();
+    public List<GadgetTemplate> findAllGadgetTemplates();
 
-	public List<GadgetTemplate> findGadgetTemplateWithIdentificationAndDescription(String identification,
-			String description, String user);
+    public List<GadgetTemplate> findGadgetTemplateWithIdentificationAndDescription(String identification,
+            String description, String user);
 
-	public List<String> getAllIdentifications();
+    public List<String> getAllIdentifications();
 
-	public GadgetTemplate getGadgetTemplateById(String id);
+    public GadgetTemplate getGadgetTemplateById(String id);
 
-	public GadgetTemplate getGadgetTemplateByIdentification(String identification, String userId);
+    public GadgetTemplate getGadgetTemplateByIdentification(String identification, String userId);
 
-	public boolean hasUserPermission(String id, String userId);
+    public boolean hasUserPermission(String id, String userId);
 
-	public void updateGadgetTemplate(GadgetTemplate gadgettemplate);
+    public void updateGadgetTemplate(GadgetTemplate gadgettemplate);
 
-	public void createGadgetTemplate(GadgetTemplate gadgettemplate);
+    public void createGadgetTemplate(GadgetTemplate gadgettemplate);
 
-	public void deleteGadgetTemplate(String id, String userId);
+    public void deleteGadgetTemplate(String id, String userId);
 
-	public List<GadgetTemplate> getUserGadgetTemplate(String userId);
+    public List<GadgetTemplate> getUserGadgetTemplate(String userId);
 }

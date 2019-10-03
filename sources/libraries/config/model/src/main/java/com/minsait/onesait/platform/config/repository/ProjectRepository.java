@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,15 +23,15 @@ import com.minsait.onesait.platform.config.model.User;
 
 public interface ProjectRepository extends JpaRepository<Project, String> {
 
-	@SuppressWarnings("unchecked")
-	@Override
-	Project save(Project project);
+    @SuppressWarnings("unchecked")
+    @Override
+    Project save(Project project);
 
-	@Override
-	void delete(Project project);
+    @Override
+    void delete(Project project);
 
-	// @Query("select p from Project p where ?1 in p.users.userId")
-	public List<Project> findByUsersIn(List<User> users);
+    // @Query("select p from Project p where ?1 in p.users.userId")
+    public List<Project> findByUsersIn(List<User> users);
 
-	public List<Project> findByName(String name);
+    public List<Project> findByName(String name);
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,16 +19,16 @@ import com.minsait.onesait.platform.config.model.DroolsRule;
 
 public interface BusinessRuleService {
 
-	void save(DroolsRule rule, String userId) throws GenericOPException;
+    void save(DroolsRule rule, String userId) throws GenericOPException;
 
-	void update(DroolsRule rule, String userId, String identification) throws GenericOPException;
+    void update(DroolsRule rule, String userId, String identification) throws GenericOPException;
 
-	void delete(String identification);
+    void delete(String identification);
 
-	String test(String identification, String input);
+    String test(String identification, String input);
 
-	void updateActive(String identification);
+    void updateActive(String identification);
 
-	void updateDRL(String identification, String newDRL) throws GenericOPException;
+    void updateDRL(String identification, String newDRL) throws GenericOPException;
 
 }

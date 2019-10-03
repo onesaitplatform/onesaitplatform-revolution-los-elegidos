@@ -6,14 +6,14 @@
 * Version: 4.0.0-beta.19
 */
 
-!function(factory) {
-    "function" == typeof define && define.amd ? define([ "../inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("../inputmask")) : factory(window.Inputmask);
-}(function(Inputmask) {
+!function (factory) {
+    "function" == typeof define && define.amd ? define(["../inputmask"], factory) : "object" == typeof exports ? module.exports = factory(require("../inputmask")) : factory(window.Inputmask);
+}(function (Inputmask) {
     return Inputmask.extendAliases({
         phoneca: {
             alias: "abstractphone",
             countrycode: "1",
-            phoneCodes: [ {
+            phoneCodes: [{
                 mask: "+1(226)200-##-##",
                 cc: "CA",
                 cd: "Canada",
@@ -102549,7 +102549,7 @@
                 city: "Pickering",
                 operator: "Telus Mobility",
                 desc: "Wireless"
-            } ]
+            }]
         }
     }), Inputmask;
 });

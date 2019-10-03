@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -75,240 +75,242 @@ import net.sf.jasperreports.engine.JRException;
 @Controller
 public class ReportController {
 
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private UserService userService;
 
-	@Autowired
-	private ReportService reportService;
+    @Autowired
+    private ReportService reportService;
 
-	@Autowired
-	private ReportConverter reportConverter;
+    @Autowired
+    private ReportConverter reportConverter;
 
-	@Autowired
-	private ParameterMapConverter parameterMapConverter;
+    @Autowired
+    private ParameterMapConverter parameterMapConverter;
 
-	@Autowired
-	private ReportInfoService reportInfoService;
+    @Autowired
+    private ReportInfoService reportInfoService;
 
-	@Autowired
-	private AppWebUtils utils;
-	
-	private static final String REPORT = "report";
+    @Autowired
+    private AppWebUtils utils;
 
-	@GetMapping(value = "/list/data", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("!hasRole('ROLE_USER')")
-	public ResponseEntity<List<ReportDto>> listData() {
+    private static final String REPORT = "report";
 
-		final List<Report> reports = utils.isAdministrator() ? reportService.findAllActiveReports()
-				: reportService.findAllActiveReportsByUserId(utils.getUserId());
+    @GetMapping(value = "/list/data", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("!hasRole('ROLE_USER')")
+    public ResponseEntity<List<ReportDto>> listData() {
 
-		return new ResponseEntity<>(reports.stream().map(r -> reportConverter.convert(r)).collect(Collectors.toList()),
-				HttpStatus.OK);
-	}
+        final List<Report> reports = utils.isAdministrator() ? reportService.findAllActiveReports()
+                : reportService.findAllActiveReportsByUserId(utils.getUserId());
 
-	@GetMapping(value = "/list", produces = MediaType.TEXT_HTML_VALUE)
-	@PreAuthorize("!hasRole('ROLE_USER')")
-	public String list(Model model) {
-		model.addAttribute("owners",
-				userService.getAllActiveUsers().stream()
-						.filter(user -> !Type.ROLE_ADMINISTRATOR.toString().equals(user.getRole().getId())
-								&& !Type.ROLE_SYS_ADMIN.toString().equals(user.getRole().getId()))
-						.map(User::getUserId).collect(Collectors.toList()));
-		model.addAttribute("types", Arrays.asList(ReportType.values()).stream().filter(t -> !t.equals(ReportType.JRXML))
-				.collect(Collectors.toList()));
-		final List<Report> reports = utils.isAdministrator() ? reportService.findAllActiveReports()
-				: reportService.findAllActiveReportsByUserId(utils.getUserId());
+        return new ResponseEntity<>(reports.stream().map(r -> reportConverter.convert(r)).collect(Collectors.toList()),
+                                    HttpStatus.OK);
+    }
 
-		model.addAttribute("reports",
-				reports.stream().map(r -> reportConverter.convert(r)).collect(Collectors.toList()));
-		return "reports/list";
-	}
+    @GetMapping(value = "/list", produces = MediaType.TEXT_HTML_VALUE)
+    @PreAuthorize("!hasRole('ROLE_USER')")
+    public String list(Model model) {
+        model.addAttribute("owners", userService.getAllActiveUsers().stream().filter(
+                user -> !Type.ROLE_ADMINISTRATOR.toString().equals(
+                        user.getRole().getId()) && !Type.ROLE_SYS_ADMIN.toString().equals(user.getRole().getId())).map(
+                User::getUserId).collect(Collectors.toList()));
+        model.addAttribute("types",
+                           Arrays.asList(ReportType.values()).stream().filter(t -> !t.equals(ReportType.JRXML)).collect(
+                                   Collectors.toList()));
+        final List<Report> reports = utils.isAdministrator() ? reportService.findAllActiveReports()
+                : reportService.findAllActiveReportsByUserId(utils.getUserId());
 
-	@GetMapping(value = "/create", produces = MediaType.TEXT_HTML_VALUE)
-	@PreAuthorize("!hasRole('ROLE_USER')")
-	public ModelAndView create(Model model) {
+        model.addAttribute("reports",
+                           reports.stream().map(r -> reportConverter.convert(r)).collect(Collectors.toList()));
+        return "reports/list";
+    }
 
-		ReportDto report = ReportDto.builder().isPublic(Boolean.FALSE).build();
+    @GetMapping(value = "/create", produces = MediaType.TEXT_HTML_VALUE)
+    @PreAuthorize("!hasRole('ROLE_USER')")
+    public ModelAndView create(Model model) {
 
-		if (model.asMap().get(REPORT) != null)
-			report = (ReportDto) model.asMap().get(REPORT);
+        ReportDto report = ReportDto.builder().isPublic(Boolean.FALSE).build();
 
-		return new ModelAndView("reports/create", REPORT, report);
-	}
+        if (model.asMap().get(REPORT) != null)
+            report = (ReportDto) model.asMap().get(REPORT);
 
-	@GetMapping(value = "/edit/{id}", produces = MediaType.TEXT_HTML_VALUE)
-	@PreAuthorize("!hasRole('ROLE_USER')")
-	public String edit(@PathVariable("id") String id, Model model) {
+        return new ModelAndView("reports/create", REPORT, report);
+    }
 
-		final Report entity = reportService.findById(id);
-		if (entity == null)
-			return "redirect:/404";
-		if (!reportService.hasUserPermission(utils.getUserId(), entity, ResourceAccessType.MANAGE))
-			return "redirect:/403";
-		final ReportDto report = reportConverter.convert(entity);
-		if (StringUtils.isEmpty(entity.getDataSourceUrl())) {
-			final String dataSource = reportInfoService
-					.extract(new ArrayInputStream(entity.getFile()), entity.getExtension()).getDataSource();
-			if (!StringUtils.isEmpty(dataSource))
-				model.addAttribute("dataSource", dataSource);
-		}
+    @GetMapping(value = "/edit/{id}", produces = MediaType.TEXT_HTML_VALUE)
+    @PreAuthorize("!hasRole('ROLE_USER')")
+    public String edit(@PathVariable("id") String id, Model model) {
 
-		model.addAttribute(REPORT, report);
+        final Report entity = reportService.findById(id);
+        if (entity == null)
+            return "redirect:/404";
+        if (!reportService.hasUserPermission(utils.getUserId(), entity, ResourceAccessType.MANAGE))
+            return "redirect:/403";
+        final ReportDto report = reportConverter.convert(entity);
+        if (StringUtils.isEmpty(entity.getDataSourceUrl())) {
+            final String dataSource = reportInfoService.extract(new ArrayInputStream(entity.getFile()),
+                                                                entity.getExtension()).getDataSource();
+            if (!StringUtils.isEmpty(dataSource))
+                model.addAttribute("dataSource", dataSource);
+        }
 
-		return "reports/create";
-	}
+        model.addAttribute(REPORT, report);
 
-	@PostMapping(value = "/save", produces = MediaType.TEXT_HTML_VALUE)
-	@PreAuthorize("!hasRole('ROLE_USER')")
-	public String save(@Valid @ModelAttribute("report") ReportDto report, RedirectAttributes ra) {
-		try {
-			final Report entity = reportConverter.convert(report);
-			if (reportService.findByIdentificationOrId(entity.getIdentification()) != null) {
-				utils.addRedirectMessage("reports.duplicated", ra);
-				ra.addFlashAttribute(REPORT, report);
-				return "redirect:/reports/create";
-			}
-			reportService.saveOrUpdate(entity);
+        return "reports/create";
+    }
 
-			return "redirect:/reports/list";
-		} catch (final Exception e) {
-			log.error("Error creating Report", e);
-			utils.addRedirectException(e, ra);
-			ra.addFlashAttribute(REPORT, report);
-			return "redirect:/reports/create";
+    @PostMapping(value = "/save", produces = MediaType.TEXT_HTML_VALUE)
+    @PreAuthorize("!hasRole('ROLE_USER')")
+    public String save(@Valid @ModelAttribute("report") ReportDto report, RedirectAttributes ra) {
+        try {
+            final Report entity = reportConverter.convert(report);
+            if (reportService.findByIdentificationOrId(entity.getIdentification()) != null) {
+                utils.addRedirectMessage("reports.duplicated", ra);
+                ra.addFlashAttribute(REPORT, report);
+                return "redirect:/reports/create";
+            }
+            reportService.saveOrUpdate(entity);
 
-		}
-	}
+            return "redirect:/reports/list";
+        } catch (final Exception e) {
+            log.error("Error creating Report", e);
+            utils.addRedirectException(e, ra);
+            ra.addFlashAttribute(REPORT, report);
+            return "redirect:/reports/create";
 
-	@PostMapping(value = "/update", produces = MediaType.TEXT_HTML_VALUE)
-	@PreAuthorize("!hasRole('ROLE_USER')")
-	public String update(@Valid @ModelAttribute("report") ReportDto report, RedirectAttributes ra) {
+        }
+    }
 
-		final Report target = reportService.findById(report.getId());
-		if (target == null)
-			return "redirect:/404";
-		if (!reportService.hasUserPermission(utils.getUserId(), target, ResourceAccessType.MANAGE))
-			return "redirect:/403";
-		try {
-			final Report entity = reportConverter.merge(target, report);
+    @PostMapping(value = "/update", produces = MediaType.TEXT_HTML_VALUE)
+    @PreAuthorize("!hasRole('ROLE_USER')")
+    public String update(@Valid @ModelAttribute("report") ReportDto report, RedirectAttributes ra) {
 
-			reportService.saveOrUpdate(entity);
+        final Report target = reportService.findById(report.getId());
+        if (target == null)
+            return "redirect:/404";
+        if (!reportService.hasUserPermission(utils.getUserId(), target, ResourceAccessType.MANAGE))
+            return "redirect:/403";
+        try {
+            final Report entity = reportConverter.merge(target, report);
 
-			return "redirect:/reports/list";
-		} catch (final Exception e) {
-			log.error("Error updating report", e);
-			utils.addRedirectException(e, ra);
-			return "redirect:/update/" + target.getId();
+            reportService.saveOrUpdate(entity);
 
-		}
-	}
+            return "redirect:/reports/list";
+        } catch (final Exception e) {
+            log.error("Error updating report", e);
+            utils.addRedirectException(e, ra);
+            return "redirect:/update/" + target.getId();
 
-	@PostMapping(value = "/download/report/{id}", produces = { MediaType.APPLICATION_PDF_VALUE })
-	@PreAuthorize("!hasRole('ROLE_USER')")
-	public ResponseEntity<?> downloadReport(@PathVariable("id") String id, @RequestParam("parameters") String params,
-			@RequestParam("extension") ReportType extension) throws JRException, IOException {
+        }
+    }
 
-		final Report entity = reportService.findById(id);
+    @PostMapping(value = "/download/report/{id}", produces = {MediaType.APPLICATION_PDF_VALUE})
+    @PreAuthorize("!hasRole('ROLE_USER')")
+    public ResponseEntity<?> downloadReport(@PathVariable("id") String id, @RequestParam("parameters") String params,
+            @RequestParam("extension") ReportType extension) throws JRException, IOException {
 
-		if (entity == null || entity.getFile() == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		if (!reportService.hasUserPermission(utils.getUserId(), entity, ResourceAccessType.VIEW))
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		try {
+        final Report entity = reportService.findById(id);
 
-			final ObjectMapper mapper = new ObjectMapper();
-			mapper.enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE);
-			final List<ReportParameter> parameters = mapper.readValue(params,
-					new TypeReference<List<ReportParameter>>() {
-					});
-			if (!StringUtils.isEmpty(entity.getDataSourceUrl()))
-				parameters.add(ReportParameter.builder().name(JSON_DATA_SOURCE_ATT_NAME)
-						.type(ReportParameterType.STRING).value(entity.getDataSourceUrl()).build());
+        if (entity == null || entity.getFile() == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (!reportService.hasUserPermission(utils.getUserId(), entity, ResourceAccessType.VIEW))
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        try {
 
-			final Map<String, Object> map = parameters == null ? new HashMap<>()
-					: parameterMapConverter.convert(parameters);
+            final ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE);
+            final List<ReportParameter> parameters = mapper.readValue(params,
+                                                                      new TypeReference<List<ReportParameter>>() {
+                                                                      });
+            if (!StringUtils.isEmpty(entity.getDataSourceUrl()))
+                parameters.add(ReportParameter.builder().name(JSON_DATA_SOURCE_ATT_NAME).type(
+                        ReportParameterType.STRING).value(entity.getDataSourceUrl()).build());
 
-			final byte[] content = reportInfoService.generate(entity, extension, map);
+            final Map<String, Object> map =
+                    parameters == null ? new HashMap<>() : parameterMapConverter.convert(parameters);
 
-			return generateAttachmentResponse(content, extension.contentType(),
-					entity.getIdentification() + "." + extension.extension());
-		} catch (final Exception e) {
-			log.error("Could not generate report {}", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).header("X-Download-Error", e.getMessage())
-					.build();
-		}
+            final byte[] content = reportInfoService.generate(entity, extension, map);
 
-	}
+            return generateAttachmentResponse(content, extension.contentType(),
+                                              entity.getIdentification() + "." + extension.extension());
+        } catch (final Exception e) {
+            log.error("Could not generate report {}", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).header("X-Download-Error",
+                                                                                  e.getMessage()).build();
+        }
 
-	@GetMapping(value = "/download/report-design/{id}", produces = { MediaType.APPLICATION_PDF_VALUE })
-	@PreAuthorize("!hasRole('ROLE_USER')")
-	public ResponseEntity<?> downloadTemplate(@PathVariable("id") String id) {
+    }
 
-		final Report entity = reportService.findById(id);
+    @GetMapping(value = "/download/report-design/{id}", produces = {MediaType.APPLICATION_PDF_VALUE})
+    @PreAuthorize("!hasRole('ROLE_USER')")
+    public ResponseEntity<?> downloadTemplate(@PathVariable("id") String id) {
 
-		if (entity == null || entity.getFile() == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		if (!reportService.hasUserPermission(utils.getUserId(), entity, ResourceAccessType.VIEW))
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        final Report entity = reportService.findById(id);
 
-		return generateAttachmentResponse(entity.getFile(), ReportType.JRXML.contentType(),
-				entity.getIdentification() + "." + ReportType.JRXML.extension());
+        if (entity == null || entity.getFile() == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (!reportService.hasUserPermission(utils.getUserId(), entity, ResourceAccessType.VIEW))
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-	}
+        return generateAttachmentResponse(entity.getFile(), ReportType.JRXML.contentType(),
+                                          entity.getIdentification() + "." + ReportType.JRXML.extension());
 
-	@DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("!hasRole('ROLE_USER')")
-	public ResponseEntity<Boolean> delete(@PathVariable("id") String id) {
-		final Report entity = reportService.findById(id);
-		if (entity == null || entity.getFile() == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		if (!reportService.hasUserPermission(utils.getUserId(), entity, ResourceAccessType.MANAGE))
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		reportService.delete(id);
+    }
 
-		return new ResponseEntity<>(Boolean.TRUE, HttpStatus.OK);
-	}
+    @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("!hasRole('ROLE_USER')")
+    public ResponseEntity<Boolean> delete(@PathVariable("id") String id) {
+        final Report entity = reportService.findById(id);
+        if (entity == null || entity.getFile() == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (!reportService.hasUserPermission(utils.getUserId(), entity, ResourceAccessType.MANAGE))
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        reportService.delete(id);
 
-	@PostMapping(value = "/info", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("!hasRole('ROLE_USER')")
-	public ResponseEntity<ReportInfoDto> reportInfo(@RequestParam("file") MultipartFile multipartFile)
-			throws IOException {
+        return new ResponseEntity<>(Boolean.TRUE, HttpStatus.OK);
+    }
 
-		final ReportInfoDto reportInfoDto = reportInfoService.extract(multipartFile.getInputStream(),
-				ReportExtension.valueOf(FilenameUtils.getExtension(multipartFile.getOriginalFilename()).toUpperCase()));
+    @PostMapping(value = "/info", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("!hasRole('ROLE_USER')")
+    public ResponseEntity<ReportInfoDto> reportInfo(
+            @RequestParam("file") MultipartFile multipartFile) throws IOException {
 
-		return new ResponseEntity<>(reportInfoDto, HttpStatus.OK);
-	}
+        final ReportInfoDto reportInfoDto = reportInfoService.extract(multipartFile.getInputStream(),
+                                                                      ReportExtension.valueOf(
+                                                                              FilenameUtils.getExtension(
+                                                                                      multipartFile.getOriginalFilename()).toUpperCase()));
 
-	@GetMapping(value = "/{id}/parameters", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("!hasRole('ROLE_USER')")
-	public ResponseEntity<?> parameters(@PathVariable("id") String id) {
+        return new ResponseEntity<>(reportInfoDto, HttpStatus.OK);
+    }
 
-		final Report report = reportService.findById(id);
-		if (report == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		if (!reportService.hasUserPermission(utils.getUserId(), report, ResourceAccessType.VIEW))
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		try {
-			final ReportInfoDto reportInfoDto = reportInfoService.extract(new ByteArrayInputStream(report.getFile()),
-					report.getExtension());
+    @GetMapping(value = "/{id}/parameters", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("!hasRole('ROLE_USER')")
+    public ResponseEntity<?> parameters(@PathVariable("id") String id) {
 
-			return new ResponseEntity<>(reportInfoDto.getParameters(), HttpStatus.OK);
-		} catch (final Exception e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+        final Report report = reportService.findById(id);
+        if (report == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (!reportService.hasUserPermission(utils.getUserId(), report, ResourceAccessType.VIEW))
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        try {
+            final ReportInfoDto reportInfoDto = reportInfoService.extract(new ByteArrayInputStream(report.getFile()),
+                                                                          report.getExtension());
 
-	}
+            return new ResponseEntity<>(reportInfoDto.getParameters(), HttpStatus.OK);
+        } catch (final Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
-	private ResponseEntity<?> generateAttachmentResponse(byte[] byteArray, String contentType, String fileName) {
-		return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
-				.header(HttpHeaders.CONTENT_TYPE, contentType)
-				.header(HttpHeaders.CACHE_CONTROL, "max-age=60, must-revalidate").contentLength(byteArray.length)
-				.header(HttpHeaders.SET_COOKIE, "fileDownload=true").body(byteArray);
+    }
 
-	}
+    private ResponseEntity<?> generateAttachmentResponse(byte[] byteArray, String contentType, String fileName) {
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName).header(
+                HttpHeaders.CONTENT_TYPE, contentType).header(HttpHeaders.CACHE_CONTROL,
+                                                              "max-age=60, must-revalidate").contentLength(
+                byteArray.length).header(HttpHeaders.SET_COOKIE, "fileDownload=true").body(byteArray);
+
+    }
 }

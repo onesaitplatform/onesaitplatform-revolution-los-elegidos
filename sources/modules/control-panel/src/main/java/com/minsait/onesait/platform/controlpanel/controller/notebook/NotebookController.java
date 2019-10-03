@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -62,325 +62,311 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NotebookController {
 
-	@Autowired
-	private NotebookService notebookService;
+    @Autowired
+    private NotebookService notebookService;
 
-	@Autowired
-	private NotebookUserAccessRepository notebookUserAccessRepository;
+    @Autowired
+    private NotebookUserAccessRepository notebookUserAccessRepository;
 
-	@Autowired
-	private AppWebUtils utils;
+    @Autowired
+    private AppWebUtils utils;
 
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private UserService userService;
 
-	@Autowired
-	ServletContext context;
+    @Autowired
+    ServletContext context;
 
-	@Autowired
-	private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-	@Transactional
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
-	@PostMapping(value = "/createNotebook")
-	@ResponseBody
-	public ResponseEntity<String> createNotebook(@RequestParam("name") String name) {
-		try {
-			return new ResponseEntity<>(notebookService.createEmptyNotebook(name, utils.getUserId()).getIdzep(),HttpStatus.OK);
-		} 
-		catch (final NotebookServiceException e) {
-			switch(e.getError()) {
-				case DUPLICATE_NOTEBOOK_NAME:
-					return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
-				default:
-					return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-		}
-		catch (final Exception e) {
-			log.error("Cannot create notebook: ", e);
-			return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+    @Transactional
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
+    @PostMapping(value = "/createNotebook")
+    @ResponseBody
+    public ResponseEntity<String> createNotebook(@RequestParam("name") String name) {
+        try {
+            return new ResponseEntity<>(notebookService.createEmptyNotebook(name, utils.getUserId()).getIdzep(),
+                                        HttpStatus.OK);
+        } catch (final NotebookServiceException e) {
+            switch (e.getError()) {
+                case DUPLICATE_NOTEBOOK_NAME:
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+                default:
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (final Exception e) {
+            log.error("Cannot create notebook: ", e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-	@Transactional
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
-	@PostMapping(value = "/cloneNotebook")
-	@ResponseBody
-	public ResponseEntity<String> cloneNotebook(@RequestParam("name") String name, @RequestParam("idzep") String idzep) {
-		try {
-			return new ResponseEntity<>(notebookService.cloneNotebook(name, idzep, utils.getUserId()).getIdzep(),HttpStatus.OK);
-		}
-		catch (final NotebookServiceException e) {
-			switch(e.getError()) {
-				case DUPLICATE_NOTEBOOK_NAME:
-					return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
-				case PERMISSION_DENIED:
-					return new ResponseEntity<>(e.getMessage(),HttpStatus.UNAUTHORIZED);
-				default:
-					return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-		}
-		catch (final Exception e) {
-			log.error("Cannot clone notebook: ", e);
-			return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-	
-	@Transactional
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
-	@PostMapping(value = "/renameNotebook")
-	@ResponseBody
-	public ResponseEntity<String> renameNotebook(@RequestParam("name") String name, @RequestParam("idzep") String idzep) {
-		try {
-			notebookService.renameNotebook(name, idzep, utils.getUserId());
-			return new ResponseEntity<>(HttpStatus.OK);
-		} 
-		catch (final NotebookServiceException e) {
-			switch(e.getError()) {
-				case DUPLICATE_NOTEBOOK_NAME:
-					return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
-				case PERMISSION_DENIED:
-					return new ResponseEntity<>(e.getMessage(),HttpStatus.UNAUTHORIZED);
-				default:
-					return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-		}
-		catch (final Exception e) {
-			log.error("Cannot rename notebook: ", e);
-			return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+    @Transactional
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
+    @PostMapping(value = "/cloneNotebook")
+    @ResponseBody
+    public ResponseEntity<String> cloneNotebook(@RequestParam("name") String name,
+            @RequestParam("idzep") String idzep) {
+        try {
+            return new ResponseEntity<>(notebookService.cloneNotebook(name, idzep, utils.getUserId()).getIdzep(),
+                                        HttpStatus.OK);
+        } catch (final NotebookServiceException e) {
+            switch (e.getError()) {
+                case DUPLICATE_NOTEBOOK_NAME:
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+                case PERMISSION_DENIED:
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+                default:
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (final Exception e) {
+            log.error("Cannot clone notebook: ", e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-	@Transactional
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
-	@PostMapping(value = "/importNotebook")
-	@ResponseBody
-	public ResponseEntity<String> importNotebook(@RequestParam("name") String name, @RequestParam("data") String data) {
-		try {
-			return new ResponseEntity<>(notebookService.importNotebook(name, data, utils.getUserId()).getIdzep(),HttpStatus.OK);
-		} 
-		catch (final NotebookServiceException e) {
-			switch(e.getError()) {
-				case DUPLICATE_NOTEBOOK_NAME:
-					return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
-				default:
-					return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-		}
-		catch (final Exception e) {
-			log.error("Cannot import notebook: ", e);
-			return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-	
-	@Transactional
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
-	@PostMapping(value = "/importNotebookFromJupyter")
-	@ResponseBody
-	public ResponseEntity<String> importNotebookFromJupyter(@RequestParam("name") String name, @RequestParam("data") String data) {
-		try {
-			return new ResponseEntity<>(notebookService.importNotebookFromJupyter(name, data, utils.getUserId()).getIdzep(),HttpStatus.OK);
-		} 
-		catch (final NotebookServiceException e) {
-			switch(e.getError()) {
-				case DUPLICATE_NOTEBOOK_NAME:
-					return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
-				case INVALID_FORMAT_NOTEBOOK:
-					return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
-				default:
-					return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-		}
-		catch (final Exception e) {
-			log.error("Cannot import notebook: ", e);
-			return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+    @Transactional
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
+    @PostMapping(value = "/renameNotebook")
+    @ResponseBody
+    public ResponseEntity<String> renameNotebook(@RequestParam("name") String name,
+            @RequestParam("idzep") String idzep) {
+        try {
+            notebookService.renameNotebook(name, idzep, utils.getUserId());
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (final NotebookServiceException e) {
+            switch (e.getError()) {
+                case DUPLICATE_NOTEBOOK_NAME:
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+                case PERMISSION_DENIED:
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+                default:
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (final Exception e) {
+            log.error("Cannot rename notebook: ", e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
-	@GetMapping(value = "/exportNotebook/{id}", produces = "text/html")
-	@ResponseBody
-	public ResponseEntity<byte[]> exportNotebook(@PathVariable("id") String id, Model uiModel) {
-		JSONObject nt = notebookService.exportNotebook(id, utils.getUserId());
-		final HttpHeaders headers = notebookService.exportHeaders(nt.get("name").toString());
-		return new ResponseEntity<>(nt.toString().getBytes(Charset.forName("UTF-8")), headers,
-				HttpStatus.OK);
-	}
+    @Transactional
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
+    @PostMapping(value = "/importNotebook")
+    @ResponseBody
+    public ResponseEntity<String> importNotebook(@RequestParam("name") String name, @RequestParam("data") String data) {
+        try {
+            return new ResponseEntity<>(notebookService.importNotebook(name, data, utils.getUserId()).getIdzep(),
+                                        HttpStatus.OK);
+        } catch (final NotebookServiceException e) {
+            switch (e.getError()) {
+                case DUPLICATE_NOTEBOOK_NAME:
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+                default:
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (final Exception e) {
+            log.error("Cannot import notebook: ", e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-	@Transactional
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
-	@DeleteMapping(value = "/{id}", produces = "text/html")
-	public String removeNotebook(@PathVariable("id") String id, Model uiModel, RedirectAttributes ra) {
-		try {
-			notebookService.removeNotebook(id, utils.getUserId());
-			uiModel.asMap().clear();
-		} catch (final RuntimeException e) {
-			utils.addRedirectException(e, ra);
-		}
+    @Transactional
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
+    @PostMapping(value = "/importNotebookFromJupyter")
+    @ResponseBody
+    public ResponseEntity<String> importNotebookFromJupyter(@RequestParam("name") String name,
+            @RequestParam("data") String data) {
+        try {
+            return new ResponseEntity<>(
+                    notebookService.importNotebookFromJupyter(name, data, utils.getUserId()).getIdzep(), HttpStatus.OK);
+        } catch (final NotebookServiceException e) {
+            switch (e.getError()) {
+                case DUPLICATE_NOTEBOOK_NAME:
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+                case INVALID_FORMAT_NOTEBOOK:
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+                default:
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (final Exception e) {
+            log.error("Cannot import notebook: ", e);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-		return "redirect:/notebooks/list";
-	}
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
+    @GetMapping(value = "/exportNotebook/{id}", produces = "text/html")
+    @ResponseBody
+    public ResponseEntity<byte[]> exportNotebook(@PathVariable("id") String id, Model uiModel) {
+        JSONObject nt = notebookService.exportNotebook(id, utils.getUserId());
+        final HttpHeaders headers = notebookService.exportHeaders(nt.get("name").toString());
+        return new ResponseEntity<>(nt.toString().getBytes(Charset.forName("UTF-8")), headers, HttpStatus.OK);
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
-	@GetMapping(value = "/list", produces = "text/html")
-	public String list(Model uiModel) {
+    @Transactional
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
+    @DeleteMapping(value = "/{id}", produces = "text/html")
+    public String removeNotebook(@PathVariable("id") String id, Model uiModel, RedirectAttributes ra) {
+        try {
+            notebookService.removeNotebook(id, utils.getUserId());
+            uiModel.asMap().clear();
+        } catch (final RuntimeException e) {
+            utils.addRedirectException(e, ra);
+        }
 
-		uiModel.addAttribute("lnt", notebookService.getNotebooks(utils.getUserId()));
-		uiModel.addAttribute("user", utils.getUserId());
-		uiModel.addAttribute("userRole", utils.getRole());
+        return "redirect:/notebooks/list";
+    }
 
-		return "notebooks/list";
-	}
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
+    @GetMapping(value = "/list", produces = "text/html")
+    public String list(Model uiModel) {
 
-	@PostMapping("/public")
-	@ResponseBody
-	public String changePublic(@RequestParam("id") Notebook notebookId) {
-		if (notebookService.hasUserPermissionInNotebook(notebookId, utils.getUserId())) {
-			notebookService.changePublic(notebookId);
-			return "ok";
-		} else {
-			return "ko";
-		}
-	}
+        uiModel.addAttribute("lnt", notebookService.getNotebooks(utils.getUserId()));
+        uiModel.addAttribute("user", utils.getUserId());
+        uiModel.addAttribute("userRole", utils.getRole());
 
-	@GetMapping(value = "/share/{id}", produces = "text/html")
-	public String share(Model model, @PathVariable("id") Notebook notebook) {
-		String userId = utils.getUserId();
-		User user = userRepository.findByUserId(userId);
-		if (notebook.getUser().toString().equals(userId) || utils.getRole().equals("ROLE_ADMINISTRATOR")) {
-			final List<User> users = userService.getDifferentUsersWithRole(user, Role.Type.ROLE_DATASCIENTIST);
-			users.remove(notebook.getUser());
+        return "notebooks/list";
+    }
 
-			model.addAttribute("users", users);
-			model.addAttribute("int", notebookUserAccessRepository.findByNotebook(notebook));
-			model.addAttribute("notebookid", notebook.getId());
+    @PostMapping("/public")
+    @ResponseBody
+    public String changePublic(@RequestParam("id") Notebook notebookId) {
+        if (notebookService.hasUserPermissionInNotebook(notebookId, utils.getUserId())) {
+            notebookService.changePublic(notebookId);
+            return "ok";
+        } else {
+            return "ko";
+        }
+    }
 
-			return "notebooks/share";
-		} else {
-			return "error/403";
-		}
-	}
+    @GetMapping(value = "/share/{id}", produces = "text/html")
+    public String share(Model model, @PathVariable("id") Notebook notebook) {
+        String userId = utils.getUserId();
+        User user = userRepository.findByUserId(userId);
+        if (notebook.getUser().toString().equals(userId) || utils.getRole().equals("ROLE_ADMINISTRATOR")) {
+            final List<User> users = userService.getDifferentUsersWithRole(user, Role.Type.ROLE_DATASCIENTIST);
+            users.remove(notebook.getUser());
 
-	@Transactional
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
-	@PostMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<NotebookUserAccess> createAuthorization(@RequestParam String accesstype,
-			@RequestParam String notebook, @RequestParam String user) {
-		ResponseEntity<NotebookUserAccess> response;
-		try {
-			NotebookUserAccess notebookUserAccess = notebookService.createUserAccess(notebook, user, accesstype);
-			response = new ResponseEntity<>(notebookUserAccess, HttpStatus.CREATED);
+            model.addAttribute("users", users);
+            model.addAttribute("int", notebookUserAccessRepository.findByNotebook(notebook));
+            model.addAttribute("notebookid", notebook.getId());
 
-		} catch (final RuntimeException e) {
-			response =  new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-		return response;
+            return "notebooks/share";
+        } else {
+            return "error/403";
+        }
+    }
 
-	}
+    @Transactional
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
+    @PostMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<NotebookUserAccess> createAuthorization(@RequestParam String accesstype,
+            @RequestParam String notebook, @RequestParam String user) {
+        ResponseEntity<NotebookUserAccess> response;
+        try {
+            NotebookUserAccess notebookUserAccess = notebookService.createUserAccess(notebook, user, accesstype);
+            response = new ResponseEntity<>(notebookUserAccess, HttpStatus.CREATED);
 
-	@PostMapping(value = "/auth/delete", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<String> deleteAuthorization(@RequestParam String id) {
+        } catch (final RuntimeException e) {
+            response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return response;
 
-		try {
-			notebookService.deleteUserAccess(id);
-			return new ResponseEntity<>("{\"status\" : \"ok\"}", HttpStatus.OK);
-		} catch (final RuntimeException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
-	@GetMapping(value = "/app/api/security/ticket")
-	@ResponseBody
-	public String loginAppOrGetWSToken() {
-		if (utils.isAdministrator()) {
-			return notebookService.loginOrGetWSTokenAdmin();
-		} else {
-			return notebookService.loginOrGetWSToken();
-		}
+    @PostMapping(value = "/auth/delete", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<String> deleteAuthorization(@RequestParam String id) {
 
-	}
+        try {
+            notebookService.deleteUserAccess(id);
+            return new ResponseEntity<>("{\"status\" : \"ok\"}", HttpStatus.OK);
+        } catch (final RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 
-	@PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-	@GetMapping(value = { "/app/api/interpreter/**", "/app/api/configurations/**", "/app/api/credential/**",
-			"/app/api/version" })
-	@ResponseBody
-	public ResponseEntity<String> adminAppRest(Model uiModel, HttpServletRequest request)
-			throws URISyntaxException, IOException {
-		return notebookService.sendHttp(request, HttpMethod.GET, "");
-	}
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
+    @GetMapping(value = "/app/api/security/ticket")
+    @ResponseBody
+    public String loginAppOrGetWSToken() {
+        if (utils.isAdministrator()) {
+            return notebookService.loginOrGetWSTokenAdmin();
+        } else {
+            return notebookService.loginOrGetWSToken();
+        }
 
-	@PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-	@PutMapping(value = { "/app/api/interpreter/**",
-			"/app/api/helium/**" }, headers = "Accept=application/json")
-	@ResponseBody
-	public ResponseEntity<String> adminAppRestPutJSON(Model uiModel, HttpServletRequest request,
-			@RequestBody(required = false) String body)
-			throws URISyntaxException, IOException {
-		return notebookService.sendHttp(request, HttpMethod.valueOf(request.getMethod()), body);
-	}
+    }
 
-	@PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-	@PostMapping(value = { "/app/api/interpreter/**",
-			"/app/api/helium/**" }, headers = "Accept=application/json")
-	@ResponseBody
-	public ResponseEntity<String> adminAppRestPostJSON(Model uiModel, HttpServletRequest request,
-			@RequestBody(required = false) String body)
-			throws URISyntaxException, IOException {
-		return notebookService.sendHttp(request, HttpMethod.valueOf(request.getMethod()), body);
-	}
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+    @GetMapping(value = {"/app/api/interpreter/**", "/app/api/configurations/**", "/app/api/credential/**", "/app/api" +
+            "/version"})
+    @ResponseBody
+    public ResponseEntity<String> adminAppRest(Model uiModel,
+            HttpServletRequest request) throws URISyntaxException, IOException {
+        return notebookService.sendHttp(request, HttpMethod.GET, "");
+    }
 
-	@PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-	@DeleteMapping(value = { "/app/api/interpreter/**",
-			"/app/api/helium/**" }, headers = "Accept=application/json")
-	@ResponseBody
-	public ResponseEntity<String> adminAppRestDeleteJSON(Model uiModel, HttpServletRequest request,
-			@RequestBody(required = false) String body)
-			throws URISyntaxException, IOException {
-		return notebookService.sendHttp(request, HttpMethod.valueOf(request.getMethod()), body);
-	}
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+    @PutMapping(value = {"/app/api/interpreter/**", "/app/api/helium/**"}, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> adminAppRestPutJSON(Model uiModel, HttpServletRequest request,
+            @RequestBody(required = false) String body) throws URISyntaxException, IOException {
+        return notebookService.sendHttp(request, HttpMethod.valueOf(request.getMethod()), body);
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
-	@GetMapping(value = { "/app/api/notebook/**", "/app/api/helium/**" })
-	@ResponseBody
-	public ResponseEntity<String> analyAppRest(Model uiModel, HttpServletRequest request)
-			throws URISyntaxException, IOException {
-		return notebookService.sendHttp(request, HttpMethod.GET, "");
-	}
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+    @PostMapping(value = {"/app/api/interpreter/**", "/app/api/helium/**"}, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> adminAppRestPostJSON(Model uiModel, HttpServletRequest request,
+            @RequestBody(required = false) String body) throws URISyntaxException, IOException {
+        return notebookService.sendHttp(request, HttpMethod.valueOf(request.getMethod()), body);
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
-	@GetMapping(value = "/app/")
-	public String indexAppRedirectNoPath(Model uiModel, HttpServletRequest request) {
-		return "notebooks/index";
-	}
-	
-	@GetMapping(value = "/nameByIdZep/{id}", produces = "text/html")
-	@ResponseBody
-	public ResponseEntity<String> nameByIdZep(Model model, @PathVariable("id") String id) {
-		try {
-			return new ResponseEntity<>(notebookService.notebookNameByIdZep(id, utils.getUserId()),HttpStatus.OK);
-		}
-		catch(NotebookServiceException e) {
-			switch(e.getError()) {
-				case PERMISSION_DENIED:
-					return new ResponseEntity<>(e.getMessage(),HttpStatus.UNAUTHORIZED);
-				default:
-					return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-		}
-		catch(Exception e) {
-			return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-	
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
-	@PutMapping(value = { "/app/api/interpreter/setting/restart/**"
-			 }, headers = "Accept=application/json")
-	@ResponseBody
-	public ResponseEntity<String> analyAppRestPutJSON(Model uiModel, HttpServletRequest request,
-			@RequestBody(required = false) String body)
-			throws URISyntaxException, IOException {
-		return notebookService.sendHttp(request, HttpMethod.valueOf(request.getMethod()), body);
-	}
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+    @DeleteMapping(value = {"/app/api/interpreter/**", "/app/api/helium/**"}, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> adminAppRestDeleteJSON(Model uiModel, HttpServletRequest request,
+            @RequestBody(required = false) String body) throws URISyntaxException, IOException {
+        return notebookService.sendHttp(request, HttpMethod.valueOf(request.getMethod()), body);
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
+    @GetMapping(value = {"/app/api/notebook/**", "/app/api/helium/**"})
+    @ResponseBody
+    public ResponseEntity<String> analyAppRest(Model uiModel,
+            HttpServletRequest request) throws URISyntaxException, IOException {
+        return notebookService.sendHttp(request, HttpMethod.GET, "");
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
+    @GetMapping(value = "/app/")
+    public String indexAppRedirectNoPath(Model uiModel, HttpServletRequest request) {
+        return "notebooks/index";
+    }
+
+    @GetMapping(value = "/nameByIdZep/{id}", produces = "text/html")
+    @ResponseBody
+    public ResponseEntity<String> nameByIdZep(Model model, @PathVariable("id") String id) {
+        try {
+            return new ResponseEntity<>(notebookService.notebookNameByIdZep(id, utils.getUserId()), HttpStatus.OK);
+        } catch (NotebookServiceException e) {
+            switch (e.getError()) {
+                case PERMISSION_DENIED:
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+                default:
+                    return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST')")
+    @PutMapping(value = {"/app/api/interpreter/setting/restart/**"}, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> analyAppRestPutJSON(Model uiModel, HttpServletRequest request,
+            @RequestBody(required = false) String body) throws URISyntaxException, IOException {
+        return notebookService.sendHttp(request, HttpMethod.valueOf(request.getMethod()), body);
+    }
 
 }

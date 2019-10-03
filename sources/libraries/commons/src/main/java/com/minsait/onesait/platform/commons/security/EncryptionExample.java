@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,40 +22,40 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class EncryptionExample {
-	public static void main(String[] argv) {
+    public static void main(String[] argv) {
 
-		try {
+        try {
 
-			SecretKey myDesKey = new SecretKeySpec("Sofia2En".getBytes(), "AES");
+            SecretKey myDesKey = new SecretKeySpec("Sofia2En".getBytes(), "AES");
 
-			Cipher desCipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            Cipher desCipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
 
-			// Initialize the cipher for encryption
-			desCipher.init(Cipher.ENCRYPT_MODE, myDesKey);
+            // Initialize the cipher for encryption
+            desCipher.init(Cipher.ENCRYPT_MODE, myDesKey);
 
-			// sensitive information
-			byte[] text = "changeIt!".getBytes();
+            // sensitive information
+            byte[] text = "changeIt!".getBytes();
 
-			log.debug("Text [Byte Format] : " + text);
-			log.debug("Text : " + new String(text));
+            log.debug("Text [Byte Format] : " + text);
+            log.debug("Text : " + new String(text));
 
-			// Encrypt the text
-			byte[] textEncrypted = desCipher.doFinal(text);
+            // Encrypt the text
+            byte[] textEncrypted = desCipher.doFinal(text);
 
-			log.debug("Text Encrypted [Byte Format]: " + textEncrypted);
-			log.debug("Text Encrypted : " + new String(textEncrypted));
+            log.debug("Text Encrypted [Byte Format]: " + textEncrypted);
+            log.debug("Text Encrypted : " + new String(textEncrypted));
 
-			// Initialize the same cipher for decryption
-			desCipher.init(Cipher.DECRYPT_MODE, myDesKey);
+            // Initialize the same cipher for decryption
+            desCipher.init(Cipher.DECRYPT_MODE, myDesKey);
 
-			// Decrypt the text
-			byte[] textDecrypted = desCipher.doFinal(textEncrypted);
+            // Decrypt the text
+            byte[] textDecrypted = desCipher.doFinal(textEncrypted);
 
-			log.debug("Text Decryted : " + new String(textDecrypted));
+            log.debug("Text Decryted : " + new String(textDecrypted));
 
-		} catch (Exception e) {
-			log.error(e.getMessage());
-		}
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
 
-	}
+    }
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,31 +31,31 @@ import javassist.NotFoundException;
 
 public interface FlowEngineNodeService {
 
-	public ResponseEntity<String> deploymentNotification(String json);
+    public ResponseEntity<String> deploymentNotification(String json);
 
-	public List<String> getApiRestCategories(String authentication);
+    public List<String> getApiRestCategories(String authentication);
 
-	public List<RestApiDTO> getApiRestByUser(String authentication);
+    public List<RestApiDTO> getApiRestByUser(String authentication);
 
-	public List<RestApiOperationDTO> getApiRestOperationsByUser(String apiName, Integer version, String authentication);
+    public List<RestApiOperationDTO> getApiRestOperationsByUser(String apiName, Integer version, String authentication);
 
-	public Set<String> getOntologyByUser(String authentication);
+    public Set<String> getOntologyByUser(String authentication);
 
-	public List<String> getClientPlatformByUser(String authentication);
+    public List<String> getClientPlatformByUser(String authentication);
 
-	public String validateUserDomain(UserDomainValidationRequest request);
+    public String validateUserDomain(UserDomainValidationRequest request);
 
-	public String submitQuery(String ontology, String queryType, String query, String authentication)
-			throws JsonProcessingException, NotFoundException;
+    public String submitQuery(String ontology, String queryType, String query,
+            String authentication) throws JsonProcessingException, NotFoundException;
 
-	public String submitInsert(String ontology, String data, String authentication)
-			throws JsonProcessingException, NotFoundException;
+    public String submitInsert(String ontology, String data,
+            String authentication) throws JsonProcessingException, NotFoundException;
 
-	public List<DigitalTwinTypeDTO> getDigitalTwinTypes(String authentication);
+    public List<DigitalTwinTypeDTO> getDigitalTwinTypes(String authentication);
 
-	public ResponseEntity<String> invokeRestApiOperation(FlowEngineInvokeRestApiOperationRequest invokeRequest);
+    public ResponseEntity<String> invokeRestApiOperation(FlowEngineInvokeRestApiOperationRequest invokeRequest);
 
-	public void sendMail(MailRestDTO mail);
+    public void sendMail(MailRestDTO mail);
 
-	public void sendSimpleMail(MailRestDTO mail);
+    public void sendSimpleMail(MailRestDTO mail);
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,33 +35,33 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
 
-	public CustomUserDetailsService() {
-		super();
-	}
+    public CustomUserDetailsService() {
+        super();
+    }
 
-	@Override
-	public UserDetails loadUserByUsername(String username) {
-		try {
-			User user = new User();
-			user.setUser_id(1L);
-			user.setUsername("user");
-			user.setPassword("passsword");
-			List<Role> lRoles = new ArrayList<>();
-			lRoles.add(new Role(1L, "USER"));
-			user.setRoles(lRoles);
-			if (user != null)
-				return new CustomUserDetails(user, getAuthorities(user));
-		} catch (Exception ex) {
-			log.error("Exception in CustomUserDetailsService: " + ex);
-		}
-		return null;
-	}
+    @Override
+    public UserDetails loadUserByUsername(String username) {
+        try {
+            User user = new User();
+            user.setUser_id(1L);
+            user.setUsername("user");
+            user.setPassword("passsword");
+            List<Role> lRoles = new ArrayList<>();
+            lRoles.add(new Role(1L, "USER"));
+            user.setRoles(lRoles);
+            if (user != null)
+                return new CustomUserDetails(user, getAuthorities(user));
+        } catch (Exception ex) {
+            log.error("Exception in CustomUserDetailsService: " + ex);
+        }
+        return null;
+    }
 
-	private Collection<GrantedAuthority> getAuthorities(User user) {
-		Collection<GrantedAuthority> authorities = new HashSet<>();
-		GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("USER");
-		authorities.add(grantedAuthority);
+    private Collection<GrantedAuthority> getAuthorities(User user) {
+        Collection<GrantedAuthority> authorities = new HashSet<>();
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("USER");
+        authorities.add(grantedAuthority);
 
-		return authorities;
-	}
+        return authorities;
+    }
 }

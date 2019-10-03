@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,57 +37,57 @@ import lombok.Setter;
 @SpringBootApplication
 public class Oauth2AuthorizationServerApplication extends WebMvcConfigurerAdapter {
 
-	public static void main(String[] args) {
-		SpringApplication.run(Oauth2AuthorizationServerApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Oauth2AuthorizationServerApplication.class, args);
+    }
 
-	@Value("${onesaitplatform.locale.default:en}")
-	@Getter
-	@Setter
-	private String defaultLocale;
+    @Value("${onesaitplatform.locale.default:en}")
+    @Getter
+    @Setter
+    private String defaultLocale;
 
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
-	}
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+    }
 
-	@Bean
-	public ResourceBundleMessageSource messageSource() {
-		final ResourceBundleMessageSource resourceBundleMessageSource = new ResourceBundleMessageSource();
-		resourceBundleMessageSource.setBasenames("i18n/messages");
-		resourceBundleMessageSource.setDefaultEncoding("UTF-8");
-		return resourceBundleMessageSource;
-	}
+    @Bean
+    public ResourceBundleMessageSource messageSource() {
+        final ResourceBundleMessageSource resourceBundleMessageSource = new ResourceBundleMessageSource();
+        resourceBundleMessageSource.setBasenames("i18n/messages");
+        resourceBundleMessageSource.setDefaultEncoding("UTF-8");
+        return resourceBundleMessageSource;
+    }
 
-	@Bean
-	public LocaleResolver localeResolver() {
-		final SessionLocaleResolver slr = new SessionLocaleResolver();
-		final Locale locale = new Locale(defaultLocale);
-		slr.setDefaultLocale(locale);
-		return slr;
-	}
+    @Bean
+    public LocaleResolver localeResolver() {
+        final SessionLocaleResolver slr = new SessionLocaleResolver();
+        final Locale locale = new Locale(defaultLocale);
+        slr.setDefaultLocale(locale);
+        return slr;
+    }
 
-	@Bean
-	public LocaleChangeInterceptor localeChangeInterceptor() {
-		final LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
-		lci.setParamName("lang");
-		lci.setIgnoreInvalidLocale(true);
-		return lci;
-	}
+    @Bean
+    public LocaleChangeInterceptor localeChangeInterceptor() {
+        final LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
+        lci.setParamName("lang");
+        lci.setIgnoreInvalidLocale(true);
+        return lci;
+    }
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(localeChangeInterceptor());
-	}
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(localeChangeInterceptor());
+    }
 
-	@Bean
-	public FilterRegistrationBean filterRegistrationBean() {
-		final FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-		final CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
-		characterEncodingFilter.setForceEncoding(true);
-		characterEncodingFilter.setEncoding("UTF-8");
-		registrationBean.setFilter(characterEncodingFilter);
-		registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
-		return registrationBean;
-	}
+    @Bean
+    public FilterRegistrationBean filterRegistrationBean() {
+        final FilterRegistrationBean registrationBean = new FilterRegistrationBean();
+        final CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+        characterEncodingFilter.setForceEncoding(true);
+        characterEncodingFilter.setEncoding("UTF-8");
+        registrationBean.setFilter(characterEncodingFilter);
+        registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        return registrationBean;
+    }
 }

@@ -18,23 +18,23 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('ClearHistoryModalInstanceController', ["$scope", "$modalInstance", "pipelineInfo", "api", function ($scope, $modalInstance, pipelineInfo, api) {
-    angular.extend($scope, {
-      issues: [],
-      pipelineInfo: pipelineInfo,
+    .module('dataCollectorApp.home')
+    .controller('ClearHistoryModalInstanceController', ["$scope", "$modalInstance", "pipelineInfo", "api", function ($scope, $modalInstance, pipelineInfo, api) {
+        angular.extend($scope, {
+            issues: [],
+            pipelineInfo: pipelineInfo,
 
-      yes: function() {
-        api.pipelineAgent.clearHistory(pipelineInfo.pipelineId)
-          .then(function() {
-            $modalInstance.close(pipelineInfo);
-          })
-          .catch(function(res) {
-            $scope.issues = [res.data];
-          });
-      },
-      no: function() {
-        $modalInstance.dismiss('cancel');
-      }
-    });
-  }]);
+            yes: function () {
+                api.pipelineAgent.clearHistory(pipelineInfo.pipelineId)
+                    .then(function () {
+                        $modalInstance.close(pipelineInfo);
+                    })
+                    .catch(function (res) {
+                        $scope.issues = [res.data];
+                    });
+            },
+            no: function () {
+                $modalInstance.dismiss('cancel');
+            }
+        });
+    }]);

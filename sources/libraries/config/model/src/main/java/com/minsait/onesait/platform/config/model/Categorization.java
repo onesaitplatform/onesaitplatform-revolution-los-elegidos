@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,31 +32,31 @@ import lombok.Setter;
 @Entity
 @Table(name = "CATEGORIZATION")
 public class Categorization extends OPResource {
-	
-	private static final long serialVersionUID = 1L;
-	
-	@Column(name = "JSON", nullable = false)
-	@NotNull
-	@Lob
-	@JsonRawValue
-	@Getter
-	@Setter
-	private String json;
-	
-	@Override
-	public boolean equals(Object obj) {
 
-		if (this == obj)
-			return true;
+    private static final long serialVersionUID = 1L;
 
-		if (!(obj instanceof Categorization))
-			return false;
+    @Column(name = "JSON", nullable = false)
+    @NotNull
+    @Lob
+    @JsonRawValue
+    @Getter
+    @Setter
+    private String json;
 
-		return getIdentification().equals(((Categorization) obj).getIdentification());
-	}
-	
-	@Override
-	public int hashCode() {
-		return java.util.Objects.hash(getIdentification());
-	}
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj)
+            return true;
+
+        if (!(obj instanceof Categorization))
+            return false;
+
+        return getIdentification().equals(((Categorization) obj).getIdentification());
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(getIdentification());
+    }
 }

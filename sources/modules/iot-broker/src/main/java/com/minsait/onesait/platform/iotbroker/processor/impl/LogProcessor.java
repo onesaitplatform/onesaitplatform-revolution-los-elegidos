@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,84 +51,82 @@ import com.minsait.onesait.platform.router.service.app.service.RouterService;
 @Component
 public class LogProcessor implements MessageTypeProcessor {
 
-	@Autowired
-	private ClientPlatformService clientPlatformService;
-	@Autowired
-	private SecurityPluginManager securityPluginManager;
-	@Autowired
-	private RouterService routerService;
-	@Autowired
-	private DeviceManager deviceManager;
-	@Autowired
-	private OntologyBusinessService ontologyBussinessService;
+    @Autowired
+    private ClientPlatformService clientPlatformService;
+    @Autowired
+    private SecurityPluginManager securityPluginManager;
+    @Autowired
+    private RouterService routerService;
+    @Autowired
+    private DeviceManager deviceManager;
+    @Autowired
+    private OntologyBusinessService ontologyBussinessService;
 
-	@Override
-	public SSAPMessage<SSAPBodyReturnMessage> process(SSAPMessage<? extends SSAPBodyMessage> message)
-			throws OntologyBusinessServiceException, IOException {
-		final SSAPMessage<SSAPBodyLogMessage> logMessage = (SSAPMessage<SSAPBodyLogMessage>) message;
-		final SSAPMessage<SSAPBodyReturnMessage> response = new SSAPMessage<>();
-		final Optional<IoTSession> session = securityPluginManager.getSession(logMessage.getSessionKey());
-		ClientPlatform client = null;
-		Ontology ontology = null;
-		if (session.isPresent()) {
-			client = clientPlatformService.getByIdentification(session.get().getClientPlatform());
-			ontology = clientPlatformService.getDeviceLogOntology(client);
-			if (client != null && ontology == null) {
-				ontology = clientPlatformService.createDeviceLogOntology(client);
-				ontologyBussinessService.createOntology(ontology, ontology.getUser().getUserId(), null);
-				clientPlatformService.createOntologyRelation(ontology, client);
-			}
-		}
-		if (client != null) {
-			final JsonNode instance = deviceManager.createDeviceLog(client, session.get().getDevice(),
-					logMessage.getBody());
-			final OperationModel model = OperationModel
-					.builder(ontology.getIdentification(), OperationType.POST, client.getUser().getUserId(),
-							Source.IOTBROKER)
-					.body(instance.toString()).queryType(QueryType.NATIVE).deviceTemplate(client.getIdentification())
-					.device(session.get().getDevice()).clientSession(logMessage.getSessionKey()).clientConnection("")
-					.build();
+    @Override
+    public SSAPMessage<SSAPBodyReturnMessage> process(
+            SSAPMessage<? extends SSAPBodyMessage> message) throws OntologyBusinessServiceException, IOException {
+        final SSAPMessage<SSAPBodyLogMessage> logMessage = (SSAPMessage<SSAPBodyLogMessage>) message;
+        final SSAPMessage<SSAPBodyReturnMessage> response = new SSAPMessage<>();
+        final Optional<IoTSession> session = securityPluginManager.getSession(logMessage.getSessionKey());
+        ClientPlatform client = null;
+        Ontology ontology = null;
+        if (session.isPresent()) {
+            client = clientPlatformService.getByIdentification(session.get().getClientPlatform());
+            ontology = clientPlatformService.getDeviceLogOntology(client);
+            if (client != null && ontology == null) {
+                ontology = clientPlatformService.createDeviceLogOntology(client);
+                ontologyBussinessService.createOntology(ontology, ontology.getUser().getUserId(), null);
+                clientPlatformService.createOntologyRelation(ontology, client);
+            }
+        }
+        if (client != null) {
+            final JsonNode instance = deviceManager.createDeviceLog(client, session.get().getDevice(),
+                                                                    logMessage.getBody());
+            final OperationModel model = OperationModel.builder(ontology.getIdentification(), OperationType.POST,
+                                                                client.getUser().getUserId(), Source.IOTBROKER).body(
+                    instance.toString()).queryType(QueryType.NATIVE).deviceTemplate(client.getIdentification()).device(
+                    session.get().getDevice()).clientSession(logMessage.getSessionKey()).clientConnection("").build();
 
-			final NotificationModel modelNotification = new NotificationModel();
-			modelNotification.setOperationModel(model);
-			try {
-				final OperationResultModel result = routerService.insert(modelNotification);
-				if (!result.getResult().equals("ERROR")) {
-					response.setDirection(SSAPMessageDirection.RESPONSE);
-					response.setMessageId(logMessage.getMessageId());
-					response.setMessageType(logMessage.getMessageType());
-					// responseMessage.setOntology(insertMessage.getOntology());
-					response.setSessionKey(logMessage.getSessionKey());
-					response.setBody(new SSAPBodyReturnMessage());
-					response.getBody().setOk(true);
-					response.getBody().setData(instance);
-				} else {
-					throw new SSAPProcessorException(result.getMessage());
-				}
+            final NotificationModel modelNotification = new NotificationModel();
+            modelNotification.setOperationModel(model);
+            try {
+                final OperationResultModel result = routerService.insert(modelNotification);
+                if (!result.getResult().equals("ERROR")) {
+                    response.setDirection(SSAPMessageDirection.RESPONSE);
+                    response.setMessageId(logMessage.getMessageId());
+                    response.setMessageType(logMessage.getMessageType());
+                    // responseMessage.setOntology(insertMessage.getOntology());
+                    response.setSessionKey(logMessage.getSessionKey());
+                    response.setBody(new SSAPBodyReturnMessage());
+                    response.getBody().setOk(true);
+                    response.getBody().setData(instance);
+                } else {
+                    throw new SSAPProcessorException(result.getMessage());
+                }
 
-			} catch (final Exception e) {
-				throw new SSAPProcessorException("Could not create log: " + e);
-			}
-		} else
-			throw new SSAPProcessorException("Could not retrieve Device, log failed");
+            } catch (final Exception e) {
+                throw new SSAPProcessorException("Could not create log: " + e);
+            }
+        } else
+            throw new SSAPProcessorException("Could not retrieve Device, log failed");
 
-		return response;
-	}
+        return response;
+    }
 
-	@Override
-	public List<SSAPMessageTypes> getMessageTypes() {
-		return Collections.singletonList(SSAPMessageTypes.LOG);
-	}
+    @Override
+    public List<SSAPMessageTypes> getMessageTypes() {
+        return Collections.singletonList(SSAPMessageTypes.LOG);
+    }
 
-	@Override
-	public boolean validateMessage(SSAPMessage<? extends SSAPBodyMessage> message) {
-		final SSAPMessage<SSAPBodyLogMessage> logMessage = (SSAPMessage<SSAPBodyLogMessage>) message;
-		if (logMessage.getBody().getMessage().isEmpty() || logMessage.getBody().getLevel() == null
-				|| logMessage.getBody().getStatus() == null) {
-			throw new SSAPProcessorException(String.format(MessageException.ERR_FIELD_IS_MANDATORY,
-					"message, log level, status", message.getMessageType().name()));
-		}
-		return true;
-	}
+    @Override
+    public boolean validateMessage(SSAPMessage<? extends SSAPBodyMessage> message) {
+        final SSAPMessage<SSAPBodyLogMessage> logMessage = (SSAPMessage<SSAPBodyLogMessage>) message;
+        if (logMessage.getBody().getMessage().isEmpty() || logMessage.getBody().getLevel() == null || logMessage.getBody().getStatus() == null) {
+            throw new SSAPProcessorException(
+                    String.format(MessageException.ERR_FIELD_IS_MANDATORY, "message, log level, status",
+                                  message.getMessageType().name()));
+        }
+        return true;
+    }
 
 }

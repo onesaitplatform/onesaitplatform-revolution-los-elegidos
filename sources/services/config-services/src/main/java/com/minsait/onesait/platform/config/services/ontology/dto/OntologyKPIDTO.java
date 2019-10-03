@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,84 +23,84 @@ import lombok.Setter;
 
 public class OntologyKPIDTO {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	// KPI fields
+    // KPI fields
 
-	@Getter
-	@Setter
-	private String query;
+    @Getter
+    @Setter
+    private String query;
 
-	@Getter
-	@Setter
-	private String cron;
+    @Getter
+    @Setter
+    private String cron;
 
-	@Getter
-	@Setter
-	@DateTimeFormat(pattern = "MM/dd/yyyy")
-	private Date dateFrom;
+    @Getter
+    @Setter
+    @DateTimeFormat(pattern = "MM/dd/yyyy")
+    private Date dateFrom;
 
-	@Getter
-	@Setter
-	@DateTimeFormat(pattern = "MM/dd/yyyy")
-	private Date dateTo;
+    @Getter
+    @Setter
+    @DateTimeFormat(pattern = "MM/dd/yyyy")
+    private Date dateTo;
 
-	// KPI fields
+    // KPI fields
 
-	// ontology fields
+    // ontology fields
 
-	@Getter
-	@Setter
-	private String schema;
+    @Getter
+    @Setter
+    private String schema;
 
-	@Getter
-	@Setter
-	private String name;
+    @Getter
+    @Setter
+    private String name;
 
-	@Getter
-	@Setter
-	private String datasource;
+    @Getter
+    @Setter
+    private String datasource;
 
-	@Getter
-	@Setter
-	private String id;
+    @Getter
+    @Setter
+    private String id;
 
-	@Getter
-	@Setter
-	private String metainf;
+    @Getter
+    @Setter
+    private String metainf;
 
-	@Getter
-	@Setter
-	private boolean active;
-	@Getter
-	@Setter
-	private boolean isPublic;
+    @Getter
+    @Setter
+    private boolean active;
+    @Getter
+    @Setter
+    private boolean isPublic;
 
-	@Getter
-	@Setter
-	private boolean isNewOntology;
+    @Getter
+    @Setter
+    private boolean isNewOntology;
 
-	@Getter
-	@Setter
-	private String description;
+    @Getter
+    @Setter
+    private String description;
 
-	@Getter
-	@Setter
-	private String jobName;
+    @Getter
+    @Setter
+    private String jobName;
 
-	@Getter
-	@Setter
-	private boolean allowsCypherFields;
-	
-	@Getter
-	@Setter
-	private String postProcess;
+    @Getter
+    @Setter
+    private boolean allowsCypherFields;
 
-	// ontology fields
+    @Getter
+    @Setter
+    private String postProcess;
 
-	@Override
-	public String toString() {
-		return getName();
-	}
+    // ontology fields
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 
 }

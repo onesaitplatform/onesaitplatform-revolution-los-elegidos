@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,35 +30,35 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 @Configuration
 public class JWTAppConfig {
 
-	@Value("${security.signing-key}")
-	private String signingKey;
+    @Value("${security.signing-key}")
+    private String signingKey;
 
-	// README @Lazy solves a problem of circular dependencies with Hibernate.
-	// Mayby could exist a better configuration to avoid the circular dependency.
-	@Autowired
-	@Lazy
-	DataSource dataSource;
+    // README @Lazy solves a problem of circular dependencies with Hibernate.
+    // Mayby could exist a better configuration to avoid the circular dependency.
+    @Autowired
+    @Lazy
+    DataSource dataSource;
 
-	@Bean
-	public TokenStore tokenStore() {
-		return new JdbcTokenStore(dataSource);
-	}
+    @Bean
+    public TokenStore tokenStore() {
+        return new JdbcTokenStore(dataSource);
+    }
 
-	@Bean
-	public JwtAccessTokenConverter jwtAccessTokenConverter() {
-		final JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-		jwtAccessTokenConverter.setSigningKey(signingKey);
-		return jwtAccessTokenConverter;
-	}
+    @Bean
+    public JwtAccessTokenConverter jwtAccessTokenConverter() {
+        final JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
+        jwtAccessTokenConverter.setSigningKey(signingKey);
+        return jwtAccessTokenConverter;
+    }
 
-	@Bean
-	@Primary
-	public CustomTokenService tokenServices() {
-		final DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
-		defaultTokenServices.setTokenStore(tokenStore());
-		defaultTokenServices.setSupportRefreshToken(true);
-		defaultTokenServices.setReuseRefreshToken(true);
+    @Bean
+    @Primary
+    public CustomTokenService tokenServices() {
+        final DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
+        defaultTokenServices.setTokenStore(tokenStore());
+        defaultTokenServices.setSupportRefreshToken(true);
+        defaultTokenServices.setReuseRefreshToken(true);
 
-		return new CustomTokenService(defaultTokenServices);
-	}
+        return new CustomTokenService(defaultTokenServices);
+    }
 }

@@ -1,14 +1,14 @@
 var svgEditorExtensionLocale_helloworld_en = (function () {
-  'use strict';
+    'use strict';
 
-  var en = {
-    name: 'Hello World',
-    text: 'Hello World!\n\nYou clicked here: {x}, {y}',
-    buttons: [{
-      title: "Say 'Hello World'"
-    }]
-  };
+    var en = {
+        name: 'Hello World',
+        text: 'Hello World!\n\nYou clicked here: {x}, {y}',
+        buttons: [{
+            title: "Say 'Hello World'"
+        }]
+    };
 
-  return en;
+    return en;
 
 }());

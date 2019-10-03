@@ -18,62 +18,61 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('CreateModalInstanceController', function ($scope, $modalInstance, $translate, api) {
-    angular.extend($scope, {
-      common: {
-        errors: []
-      },
-      selectedSource: '',
-      selectedProcessors: {},
-      selectedTargets: {},
-      newConfig : {
-        name: '',
-        description: '',
-        executionMode: 'STANDALONE'
-      },
+    .module('dataCollectorApp.home')
+    .controller('CreateModalInstanceController', function ($scope, $modalInstance, $translate, api) {
+        angular.extend($scope, {
+            common: {
+                errors: []
+            },
+            selectedSource: '',
+            selectedProcessors: {},
+            selectedTargets: {},
+            newConfig: {
+                name: '',
+                description: '',
+                executionMode: 'STANDALONE'
+            },
 
-      save : function () {
-        if($scope.newConfig.name) {
-          api.pipelineAgent.createNewPipelineConfig($scope.newConfig.name, $scope.newConfig.description).
-            then(
-              function(res) {
-                if ($scope.newConfig.executionMode === 'STANDALONE') {
-                  $modalInstance.close(res.data);
-                } else {
-                  var newPipelineObject = res.data;
+            save: function () {
+                if ($scope.newConfig.name) {
+                    api.pipelineAgent.createNewPipelineConfig($scope.newConfig.name, $scope.newConfig.description).then(
+                        function (res) {
+                            if ($scope.newConfig.executionMode === 'STANDALONE') {
+                                $modalInstance.close(res.data);
+                            } else {
+                                var newPipelineObject = res.data;
 
-                  // Update execution mode
-                  var executionModeConfig = _.find(newPipelineObject.configuration, function(c) {
-                    return c.name === 'executionMode';
-                  });
+                                // Update execution mode
+                                var executionModeConfig = _.find(newPipelineObject.configuration, function (c) {
+                                    return c.name === 'executionMode';
+                                });
 
-                  executionModeConfig.value = $scope.newConfig.executionMode;
-                  api.pipelineAgent.savePipelineConfig(newPipelineObject.pipelineId, newPipelineObject)
-                    .then(
-                      function(res) {
-                        $modalInstance.close(res.data);
-                      },
-                      function(res) {
-                        $scope.common.errors = [res.data];
-                      }
+                                executionModeConfig.value = $scope.newConfig.executionMode;
+                                api.pipelineAgent.savePipelineConfig(newPipelineObject.pipelineId, newPipelineObject)
+                                    .then(
+                                        function (res) {
+                                            $modalInstance.close(res.data);
+                                        },
+                                        function (res) {
+                                            $scope.common.errors = [res.data];
+                                        }
+                                    );
+                            }
+                        },
+                        function (res) {
+                            $scope.common.errors = [res.data];
+                        }
                     );
+                } else {
+                    $translate('home.library.nameRequiredValidation').then(function (translation) {
+                        $scope.common.errors = [translation];
+                    });
+
                 }
-              },
-              function(res) {
-                $scope.common.errors = [res.data];
-              }
-            );
-        } else {
-          $translate('home.library.nameRequiredValidation').then(function(translation) {
-            $scope.common.errors = [translation];
-          });
+            },
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
+            }
+        });
 
-        }
-      },
-      cancel : function () {
-        $modalInstance.dismiss('cancel');
-      }
     });
-
-  });

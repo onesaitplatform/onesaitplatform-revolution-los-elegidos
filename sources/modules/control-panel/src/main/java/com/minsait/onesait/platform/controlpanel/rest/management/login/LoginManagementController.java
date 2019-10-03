@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -63,223 +63,226 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 
-@Api(value = "Login Oauth", tags = { "Login Oauth service" })
+@Api(value = "Login Oauth", tags = {"Login Oauth service"})
 @RestController
 @RequestMapping("api" + OP_LOGIN)
 @Slf4j
 public class LoginManagementController {
 
-	private static final String ERROR_STR = " Error: ";
+    private static final String ERROR_STR = " Error: ";
 
-	@Autowired
-	private TokenEndpoint tokenEndpoint;
+    @Autowired
+    private TokenEndpoint tokenEndpoint;
 
-	@Autowired
-	private ClientDetailsService clientDetailsService;
+    @Autowired
+    private ClientDetailsService clientDetailsService;
 
-	@Autowired
-	private AuthorizationServerTokenServices tokenServices;
+    @Autowired
+    private AuthorizationServerTokenServices tokenServices;
 
-	@Autowired
-	CustomTokenService customTokenService;
+    @Autowired
+    CustomTokenService customTokenService;
 
-	@Value("${security.jwt.client-id}")
-	private String clientId;
+    @Value("${security.jwt.client-id}")
+    private String clientId;
 
-	private static final String PSWD_STR = "password";
-	private static final String REFRESH_TOKEN = "refresh_token";
-	private static final String USERNAME = "username";
-	private static final String GRANT_TYPE = "grant_type";
+    private static final String PSWD_STR = "password";
+    private static final String REFRESH_TOKEN = "refresh_token";
+    private static final String USERNAME = "username";
+    private static final String GRANT_TYPE = "grant_type";
 
-	private static final String ERROR_RESPONSE = "Leaving Info Token with with Error response = ";
+    private static final String ERROR_RESPONSE = "Leaving Info Token with with Error response = ";
 
-	@ApiOperation(value = "Post Login Oauth2")
-	@PostMapping
-	public ResponseEntity<OAuth2AccessToken> postLoginOauth2(@Valid @RequestBody RequestLogin request) {
+    @ApiOperation(value = "Post Login Oauth2")
+    @PostMapping
+    public ResponseEntity<OAuth2AccessToken> postLoginOauth2(@Valid @RequestBody RequestLogin request) {
 
-		try {
+        try {
 
-			final ClientDetails authenticatedClient = clientDetailsService.loadClientByClientId(clientId);
+            final ClientDetails authenticatedClient = clientDetailsService.loadClientByClientId(clientId);
 
-			final Map<String, String> parameters = new HashMap<>();
-			parameters.put(GRANT_TYPE, PSWD_STR);
-			parameters.put(USERNAME, request.getUsername());
-			parameters.put(PSWD_STR, request.getPassword());
+            final Map<String, String> parameters = new HashMap<>();
+            parameters.put(GRANT_TYPE, PSWD_STR);
+            parameters.put(USERNAME, request.getUsername());
+            parameters.put(PSWD_STR, request.getPassword());
 
-			final Principal principal = new UsernamePasswordAuthenticationToken(authenticatedClient.getClientId(),
-					authenticatedClient.getClientSecret(), authenticatedClient.getAuthorities());
-			final ResponseEntity<OAuth2AccessToken> token = tokenEndpoint.postAccessToken(principal, parameters);
+            final Principal principal = new UsernamePasswordAuthenticationToken(authenticatedClient.getClientId(),
+                                                                                authenticatedClient.getClientSecret(),
+                                                                                authenticatedClient.getAuthorities());
+            final ResponseEntity<OAuth2AccessToken> token = tokenEndpoint.postAccessToken(principal, parameters);
 
-			final OAuth2AccessToken accessToken = token.getBody();
+            final OAuth2AccessToken accessToken = token.getBody();
 
-			final OAuth2Authentication authentication = customTokenService.loadAuthentication(accessToken.getValue());
-			final OAuth2AccessToken enhanced = enhance(accessToken, authentication);
+            final OAuth2Authentication authentication = customTokenService.loadAuthentication(accessToken.getValue());
+            final OAuth2AccessToken enhanced = enhance(accessToken, authentication);
 
-			return getResponse(enhanced);
+            return getResponse(enhanced);
 
-		} catch (final Exception e) {
-			log.error(OP_LOGIN + ERROR_STR + e.getMessage(), e);
-			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		}
-	}
+        } catch (final Exception e) {
+            log.error(OP_LOGIN + ERROR_STR + e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+    }
 
-	public OAuth2AccessToken postLoginOauthNopass(Authentication authentication) {
+    public OAuth2AccessToken postLoginOauthNopass(Authentication authentication) {
 
-		final String principal = authentication.getPrincipal() instanceof UserDetails
-				? ((UserDetails) authentication.getPrincipal()).getUsername()
-				: authentication.getPrincipal().toString();
-		final HashMap<String, String> authorizationParameters = new HashMap<>();
-		authorizationParameters.put("scope", "openid");
-		authorizationParameters.put(USERNAME, principal);
-		authorizationParameters.put("client_id", clientId);
+        final String principal = authentication.getPrincipal() instanceof UserDetails
+                ? ((UserDetails) authentication.getPrincipal()).getUsername()
+                : authentication.getPrincipal().toString();
+        final HashMap<String, String> authorizationParameters = new HashMap<>();
+        authorizationParameters.put("scope", "openid");
+        authorizationParameters.put(USERNAME, principal);
+        authorizationParameters.put("client_id", clientId);
 
-		final Set<String> responseType = new HashSet<>();
-		responseType.add(PSWD_STR);
+        final Set<String> responseType = new HashSet<>();
+        responseType.add(PSWD_STR);
 
-		final Set<String> scopes = new HashSet<>();
-		scopes.add("openid");
+        final Set<String> scopes = new HashSet<>();
+        scopes.add("openid");
 
-		final OAuth2Request authorizationRequest = new OAuth2Request(authorizationParameters, clientId,
-				authentication.getAuthorities(), true, scopes, null, "", responseType, null);
+        final OAuth2Request authorizationRequest = new OAuth2Request(authorizationParameters, clientId,
+                                                                     authentication.getAuthorities(), true, scopes,
+                                                                     null, "", responseType, null);
 
-		final UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-				principal, null, authentication.getAuthorities());
+        final UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                principal, null, authentication.getAuthorities());
 
-		final OAuth2Authentication authenticationRequest = new OAuth2Authentication(authorizationRequest,
-				authenticationToken);
-		authenticationRequest.setAuthenticated(true);
+        final OAuth2Authentication authenticationRequest = new OAuth2Authentication(authorizationRequest,
+                                                                                    authenticationToken);
+        authenticationRequest.setAuthenticated(true);
 
-		final OAuth2AccessToken accessToken = tokenServices.createAccessToken(authenticationRequest);
+        final OAuth2AccessToken accessToken = tokenServices.createAccessToken(authenticationRequest);
 
-		return enhance(accessToken, authenticationRequest);
-	}
+        return enhance(accessToken, authenticationRequest);
+    }
 
-	@ApiOperation(value = "GET Login Oauth2")
-	@GetMapping(value = "/username/{username}/password/{password}")
-	public ResponseEntity<OAuth2AccessToken> getLoginOauth2(
-			@ApiParam(value = USERNAME, required = true) @PathVariable(USERNAME) String username,
-			@ApiParam(value = PSWD_STR, required = true) @PathVariable(name = PSWD_STR) String password) {
+    @ApiOperation(value = "GET Login Oauth2")
+    @GetMapping(value = "/username/{username}/password/{password}")
+    public ResponseEntity<OAuth2AccessToken> getLoginOauth2(
+            @ApiParam(value = USERNAME, required = true) @PathVariable(USERNAME) String username,
+            @ApiParam(value = PSWD_STR, required = true) @PathVariable(name = PSWD_STR) String password) {
 
-		try {
+        try {
 
-			final RequestLogin request = new RequestLogin();
-			request.setPassword(password);
-			request.setUsername(username);
+            final RequestLogin request = new RequestLogin();
+            request.setPassword(password);
+            request.setUsername(username);
 
-			return postLoginOauth2(request);
+            return postLoginOauth2(request);
 
-		} catch (final Exception e) {
-			log.error(OP_LOGIN + ERROR_STR + e.getMessage(), e);
-			log.error(OP_LOGIN + ERROR_STR + e.getStackTrace());
-			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		}
-	}
+        } catch (final Exception e) {
+            log.error(OP_LOGIN + ERROR_STR + e.getMessage(), e);
+            log.error(OP_LOGIN + ERROR_STR + e.getStackTrace());
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+    }
 
-	@PostMapping(value = "/refresh")
-	public ResponseEntity<OAuth2AccessToken> renewToken(@RequestBody String id) {
-		try {
+    @PostMapping(value = "/refresh")
+    public ResponseEntity<OAuth2AccessToken> renewToken(@RequestBody String id) {
+        try {
 
-			log.info("Entering Renew Token with id = " + id);
+            log.info("Entering Renew Token with id = " + id);
 
-			final OAuth2Authentication authentication = customTokenService.loadAuthentication(id);
-			final OAuth2AccessToken token = customTokenService.getAccessToken(authentication);
+            final OAuth2Authentication authentication = customTokenService.loadAuthentication(id);
+            final OAuth2AccessToken token = customTokenService.getAccessToken(authentication);
 
-			final OAuth2RefreshToken refreshToken = token.getRefreshToken();
+            final OAuth2RefreshToken refreshToken = token.getRefreshToken();
 
-			final String client = authentication.getOAuth2Request().getClientId();
-			final Collection<String> scope = authentication.getOAuth2Request().getScope();
-			final Map<String, String> parameters = authentication.getOAuth2Request().getRequestParameters();
+            final String client = authentication.getOAuth2Request().getClientId();
+            final Collection<String> scope = authentication.getOAuth2Request().getScope();
+            final Map<String, String> parameters = authentication.getOAuth2Request().getRequestParameters();
 
-			final TokenRequest tokenRequest = new TokenRequest(parameters, client, scope, PSWD_STR);
+            final TokenRequest tokenRequest = new TokenRequest(parameters, client, scope, PSWD_STR);
 
-			final OAuth2AccessToken tokenRefreshed = customTokenService.refreshAccessToken(refreshToken.getValue(),
-					tokenRequest);
+            final OAuth2AccessToken tokenRefreshed = customTokenService.refreshAccessToken(refreshToken.getValue(),
+                                                                                           tokenRequest);
 
-			final OAuth2AccessToken enhanced = enhance(tokenRefreshed, authentication);
+            final OAuth2AccessToken enhanced = enhance(tokenRefreshed, authentication);
 
-			return getResponse(enhanced);
+            return getResponse(enhanced);
 
-		} catch (final Exception e) {
-			final ResponseToken r = new ResponseToken();
-			r.setToken("-1");
-			log.info(ERROR_RESPONSE + e.getLocalizedMessage());
-			return getResponse(null);
-		}
+        } catch (final Exception e) {
+            final ResponseToken r = new ResponseToken();
+            r.setToken("-1");
+            log.info(ERROR_RESPONSE + e.getLocalizedMessage());
+            return getResponse(null);
+        }
 
-	}
+    }
 
-	@PostMapping(value = "/refresh_token")
-	public ResponseEntity<OAuth2AccessToken> refreshToken(@RequestBody String refreshToken) {
-		try {
+    @PostMapping(value = "/refresh_token")
+    public ResponseEntity<OAuth2AccessToken> refreshToken(@RequestBody String refreshToken) {
+        try {
 
-			final ClientDetails authenticatedClient = clientDetailsService.loadClientByClientId(clientId);
+            final ClientDetails authenticatedClient = clientDetailsService.loadClientByClientId(clientId);
 
-			final Map<String, String> parameters = new HashMap<>();
-			parameters.put(GRANT_TYPE, REFRESH_TOKEN);
-			parameters.put(REFRESH_TOKEN, refreshToken);
+            final Map<String, String> parameters = new HashMap<>();
+            parameters.put(GRANT_TYPE, REFRESH_TOKEN);
+            parameters.put(REFRESH_TOKEN, refreshToken);
 
-			final Principal principal = new UsernamePasswordAuthenticationToken(authenticatedClient.getClientId(),
-					authenticatedClient.getClientSecret(), authenticatedClient.getAuthorities());
-			final ResponseEntity<OAuth2AccessToken> token = tokenEndpoint.postAccessToken(principal, parameters);
+            final Principal principal = new UsernamePasswordAuthenticationToken(authenticatedClient.getClientId(),
+                                                                                authenticatedClient.getClientSecret(),
+                                                                                authenticatedClient.getAuthorities());
+            final ResponseEntity<OAuth2AccessToken> token = tokenEndpoint.postAccessToken(principal, parameters);
 
-			final OAuth2AccessToken accessToken = token.getBody();
+            final OAuth2AccessToken accessToken = token.getBody();
 
-			final OAuth2Authentication authentication = customTokenService.loadAuthentication(accessToken.getValue());
-			final OAuth2AccessToken enhanced = enhance(accessToken, authentication);
+            final OAuth2Authentication authentication = customTokenService.loadAuthentication(accessToken.getValue());
+            final OAuth2AccessToken enhanced = enhance(accessToken, authentication);
 
-			return getResponse(enhanced);
+            return getResponse(enhanced);
 
-		} catch (final Exception e) {
-			final ResponseToken r = new ResponseToken();
-			r.setToken("-1");
-			log.info(ERROR_RESPONSE + e.getLocalizedMessage());
-			return getResponse(null);
-		}
+        } catch (final Exception e) {
+            final ResponseToken r = new ResponseToken();
+            r.setToken("-1");
+            log.info(ERROR_RESPONSE + e.getLocalizedMessage());
+            return getResponse(null);
+        }
 
-	}
+    }
 
-	public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
-		final Map<String, Object> additionalInfo = new HashMap<>();
-		additionalInfo.put("name", authentication.getName());
+    public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
+        final Map<String, Object> additionalInfo = new HashMap<>();
+        additionalInfo.put("name", authentication.getName());
 
-		final Collection<GrantedAuthority> authorities = authentication.getAuthorities();
-		final List<String> collect = authorities.stream().map(GrantedAuthority::getAuthority)
-				.collect(Collectors.toList());
-		final Object principal = authentication.getUserAuthentication().getPrincipal();
-		additionalInfo.put("authorities", collect);
-		additionalInfo.put("principal", principal instanceof String ? principal : ((User) principal).getUsername());
-		additionalInfo.put("parameters", authentication.getOAuth2Request().getRequestParameters());
-		additionalInfo.put("clientId", authentication.getOAuth2Request().getClientId());
-		additionalInfo.put("grantType", authentication.getOAuth2Request().getGrantType());
+        final Collection<GrantedAuthority> authorities = authentication.getAuthorities();
+        final List<String> collect = authorities.stream().map(GrantedAuthority::getAuthority).collect(
+                Collectors.toList());
+        final Object principal = authentication.getUserAuthentication().getPrincipal();
+        additionalInfo.put("authorities", collect);
+        additionalInfo.put("principal", principal instanceof String ? principal : ((User) principal).getUsername());
+        additionalInfo.put("parameters", authentication.getOAuth2Request().getRequestParameters());
+        additionalInfo.put("clientId", authentication.getOAuth2Request().getClientId());
+        additionalInfo.put("grantType", authentication.getOAuth2Request().getGrantType());
 
-		((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
-		return accessToken;
-	}
+        ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
+        return accessToken;
+    }
 
-	@PostMapping(value = "/info")
-	public ResponseEntity<OAuth2AccessToken> info(@RequestBody String tokenId) {
-		try {
+    @PostMapping(value = "/info")
+    public ResponseEntity<OAuth2AccessToken> info(@RequestBody String tokenId) {
+        try {
 
-			log.info("Entering Info Token with id = " + tokenId);
+            log.info("Entering Info Token with id = " + tokenId);
 
-			final OAuth2Authentication authentication = customTokenService.loadAuthentication(tokenId);
-			final OAuth2AccessToken token = customTokenService.getAccessToken(authentication);
+            final OAuth2Authentication authentication = customTokenService.loadAuthentication(tokenId);
+            final OAuth2AccessToken token = customTokenService.getAccessToken(authentication);
 
-			final OAuth2AccessToken enhanced = enhance(token, authentication);
+            final OAuth2AccessToken enhanced = enhance(token, authentication);
 
-			return getResponse(enhanced);
-		} catch (final Exception e) {
-			log.info(ERROR_RESPONSE + e.getLocalizedMessage());
-			return getResponse(null);
-		}
+            return getResponse(enhanced);
+        } catch (final Exception e) {
+            log.info(ERROR_RESPONSE + e.getLocalizedMessage());
+            return getResponse(null);
+        }
 
-	}
+    }
 
-	private ResponseEntity<OAuth2AccessToken> getResponse(OAuth2AccessToken accessToken) {
-		final HttpHeaders headers = new HttpHeaders();
-		headers.set("Cache-Control", "no-store");
-		headers.set("Pragma", "no-cache");
-		return new ResponseEntity<>(accessToken, headers, HttpStatus.OK);
-	}
+    private ResponseEntity<OAuth2AccessToken> getResponse(OAuth2AccessToken accessToken) {
+        final HttpHeaders headers = new HttpHeaders();
+        headers.set("Cache-Control", "no-store");
+        headers.set("Pragma", "no-cache");
+        return new ResponseEntity<>(accessToken, headers, HttpStatus.OK);
+    }
 
 }

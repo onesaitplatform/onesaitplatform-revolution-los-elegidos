@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,64 +32,64 @@ import com.minsait.onesait.platform.config.model.User;
 
 public interface ConfigurationService {
 
-	@PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-	List<Configuration> getAllConfigurations();
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+    List<Configuration> getAllConfigurations();
 
-	List<Configuration> getAllConfigurations(User user);
+    List<Configuration> getAllConfigurations(User user);
 
-	@PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-	void deleteConfiguration(String id);
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+    void deleteConfiguration(String id);
 
-	Configuration getConfiguration(String id);
+    Configuration getConfiguration(String id);
 
-	List<Configuration> getConfigurations(Configuration.Type configurationTypeId);
+    List<Configuration> getConfigurations(Configuration.Type configurationTypeId);
 
-	List<Configuration> getConfigurations(Configuration.Type configurationTypeId, User user);
+    List<Configuration> getConfigurations(Configuration.Type configurationTypeId, User user);
 
-	Configuration getConfiguration(Configuration.Type configurationType, String environment, String suffix);
+    Configuration getConfiguration(Configuration.Type configurationType, String environment, String suffix);
 
-	Configuration getConfiguration(Configuration.Type configurationType, String suffix);
+    Configuration getConfiguration(Configuration.Type configurationType, String suffix);
 
-	MailConfiguration getMailConfiguration(String environment);
+    MailConfiguration getMailConfiguration(String environment);
 
-	TwitterConfiguration getTwitterConfiguration(String environment, String suffix);
+    TwitterConfiguration getTwitterConfiguration(String environment, String suffix);
 
-	GitlabConfiguration getGitlabConfiguration(String id);
+    GitlabConfiguration getGitlabConfiguration(String id);
 
-	GitlabConfiguration getGitlabConfiguration(String suffix, String environment);
+    GitlabConfiguration getGitlabConfiguration(String suffix, String environment);
 
-	GitlabConfiguration getDefautlGitlabConfiguration();
+    GitlabConfiguration getDefautlGitlabConfiguration();
 
-	JenkinsConfiguration getJenkinsConfiguration(String environment);
+    JenkinsConfiguration getJenkinsConfiguration(String environment);
 
-	JenkinsConfiguration getDefaultJenkinsConfiguration();
+    JenkinsConfiguration getDefaultJenkinsConfiguration();
 
-	String getDefaultJenkinsXML(String suffix);
+    String getDefaultJenkinsXML(String suffix);
 
-	RancherConfiguration getRancherConfiguration(String id);
+    RancherConfiguration getRancherConfiguration(String id);
 
-	RancherConfiguration getRancherConfiguration(String suffix, String environment);
+    RancherConfiguration getRancherConfiguration(String suffix, String environment);
 
-	RancherConfiguration getDefaultRancherConfiguration();
+    RancherConfiguration getDefaultRancherConfiguration();
 
-	OpenshiftConfiguration getOpenshiftConfiguration(String id);
+    OpenshiftConfiguration getOpenshiftConfiguration(String id);
 
-	List<Configuration.Type> getAllConfigurationTypes();
+    List<Configuration.Type> getAllConfigurationTypes();
 
-	Configuration createConfiguration(Configuration configuration);
+    Configuration createConfiguration(Configuration configuration);
 
-	boolean existsConfiguration(Configuration configuration);
+    boolean existsConfiguration(Configuration configuration);
 
-	void updateConfiguration(Configuration configuration);
+    void updateConfiguration(Configuration configuration);
 
-	boolean isValidYaml(final String yaml);
+    boolean isValidYaml(final String yaml);
 
-	Map fromYaml(final String yaml);
+    Map fromYaml(final String yaml);
 
-	Configuration getConfigurationByDescription(String descrption);
+    Configuration getConfigurationByDescription(String descrption);
 
-	Urls getEndpointsUrls(String environment);
+    Urls getEndpointsUrls(String environment);
 
-	GlobalConfiguration getGlobalConfiguration(String environment);
+    GlobalConfiguration getGlobalConfiguration(String environment);
 
 }

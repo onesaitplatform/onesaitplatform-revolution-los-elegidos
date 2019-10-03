@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -53,93 +53,96 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DeviceManagerController {
 
-	@Autowired
-	private ClientPlatformService clientPlatformService;
-	@Autowired
-	private AppWebUtils utils;
-	@Autowired
-	private DeviceService deviceService;
-	@Autowired
-	private UserService userService;
-	@Autowired
-	private QueryToolService queryToolService;
-	@Autowired
-	private IntegrationResourcesService intregationResourcesService;
+    @Autowired
+    private ClientPlatformService clientPlatformService;
+    @Autowired
+    private AppWebUtils utils;
+    @Autowired
+    private DeviceService deviceService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private QueryToolService queryToolService;
+    @Autowired
+    private IntegrationResourcesService intregationResourcesService;
 
-	@Autowired
-	private GraphDeviceUtil graphDeviceUtil;
+    @Autowired
+    private GraphDeviceUtil graphDeviceUtil;
 
-	private static final String LOG_PREFIX = "LOG_";
-	private final ObjectMapper mapper = new ObjectMapper();
+    private static final String LOG_PREFIX = "LOG_";
+    private final ObjectMapper mapper = new ObjectMapper();
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@GetMapping(value = "/list", produces = "text/html")
-	public String list(Model model, @RequestParam(required = false) String identification,
-			@RequestParam(required = false) String[] ontologies) throws JsonProcessingException {
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @GetMapping(value = "/list", produces = "text/html")
+    public String list(Model model, @RequestParam(required = false) String identification,
+            @RequestParam(required = false) String[] ontologies) throws JsonProcessingException {
 
-		if (!utils.getRole().equals(Role.Type.ROLE_ADMINISTRATOR.name())) {
-			final List<Device> devices = new ArrayList<>();
-			for (final ClientPlatform client : clientPlatformService
-					.getclientPlatformsByUser(userService.getUser(utils.getUserId()))) {
-				devices.addAll(deviceService.getByClientPlatformId(client));
-			}
-			model.addAttribute("devices", devices);
-			model.addAttribute("devicesJson", mapper.writeValueAsString(devices));
-		} else {
-			final List<Device> devices = deviceService.getAll();
-			model.addAttribute("devices", devices);
-			model.addAttribute("devicesJson", mapper.writeValueAsString(devices));
-		}
+        if (!utils.getRole().equals(Role.Type.ROLE_ADMINISTRATOR.name())) {
+            final List<Device> devices = new ArrayList<>();
+            for (final ClientPlatform client : clientPlatformService.getclientPlatformsByUser(
+                    userService.getUser(utils.getUserId()))) {
+                devices.addAll(deviceService.getByClientPlatformId(client));
+            }
+            model.addAttribute("devices", devices);
+            model.addAttribute("devicesJson", mapper.writeValueAsString(devices));
+        } else {
+            final List<Device> devices = deviceService.getAll();
+            model.addAttribute("devices", devices);
+            model.addAttribute("devicesJson", mapper.writeValueAsString(devices));
+        }
 
-		return "devices/management/list";
+        return "devices/management/list";
 
-	}
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@PatchMapping
-	public String update(Model model, @RequestParam String id, @RequestParam String tags) {
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @PatchMapping
+    public String update(Model model, @RequestParam String id, @RequestParam String tags) {
 
-		deviceService.patchDevice(id, tags);
-		return "redirect:/devices/management/show/" + id;
-	}
+        deviceService.patchDevice(id, tags);
+        return "redirect:/devices/management/show/" + id;
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@GetMapping("/show")
-	public String show(Model model, RedirectAttributes redirect) {
-		return "devices/management/show";
-	}
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @GetMapping("/show")
+    public String show(Model model, RedirectAttributes redirect) {
+        return "devices/management/show";
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@GetMapping("/show/{id}")
-	public String info(Model model, RedirectAttributes redirect, @PathVariable String id) throws IOException {
-		final Device device = deviceService.getById(id);
-		if (null == device)
-			return "redirect:/devices/management/list";
-		model.addAttribute("device", device);
-		final String ontology = LOG_PREFIX + device.getClientPlatform().getIdentification().replaceAll(" ", "");
-		final String query = "select * from " + ontology + " as c where c.DeviceLog.device = \""
-				+ device.getIdentification() + "\" ORDER BY c.contextData.timestampMillis Desc limit 50";
-		final String result = queryToolService.querySQLAsJson(utils.getUserId(), ontology, query, 0);
-		model.addAttribute("commands", deviceService.getDeviceCommands(device));
-		model.addAttribute("query", query.replace(" limit 50", ""));
-		model.addAttribute("logs", deviceService.getLogInstances(result));
-		final String iotbrokerurl = intregationResourcesService.getUrl(
-				com.minsait.onesait.platform.resources.service.IntegrationResourcesServiceImpl.Module.IOTBROKER,
-				ServiceUrl.BASE);
-		model.addAttribute("iotbrokerUrl",
-				iotbrokerurl.contains(IntegrationResourcesServiceImpl.LOCALHOST) ? iotbrokerurl
-						: intregationResourcesService.getUrl(Module.DOMAIN, ServiceUrl.BASE).concat("iot-broker"));
-		return "devices/management/info";
-	}
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @GetMapping("/show/{id}")
+    public String info(Model model, RedirectAttributes redirect, @PathVariable String id) throws IOException {
+        final Device device = deviceService.getById(id);
+        if (null == device)
+            return "redirect:/devices/management/list";
+        model.addAttribute("device", device);
+        final String ontology = LOG_PREFIX + device.getClientPlatform().getIdentification().replaceAll(" ", "");
+        final String query =
+                "select * from " + ontology + " as c where c.DeviceLog.device = \"" + device.getIdentification() +
+                        "\" ORDER BY c.contextData.timestampMillis Desc limit 50";
+        final String result = queryToolService.querySQLAsJson(utils.getUserId(), ontology, query, 0);
+        model.addAttribute("commands", deviceService.getDeviceCommands(device));
+        model.addAttribute("query", query.replace(" limit 50", ""));
+        model.addAttribute("logs", deviceService.getLogInstances(result));
+        final String iotbrokerurl = intregationResourcesService.getUrl(
+                com.minsait.onesait.platform.resources.service.IntegrationResourcesServiceImpl.Module.IOTBROKER,
+                ServiceUrl.BASE);
+        model.addAttribute("iotbrokerUrl",
+                           iotbrokerurl.contains(IntegrationResourcesServiceImpl.LOCALHOST) ? iotbrokerurl
+                                   : intregationResourcesService.getUrl(Module.DOMAIN, ServiceUrl.BASE).concat(
+                                           "iot-broker"));
+        return "devices/management/info";
+    }
 
-	@GetMapping("/getgraph")
-	public @ResponseBody String getGraph(Model model) {
+    @GetMapping("/getgraph")
+    public @ResponseBody
+    String getGraph(Model model) {
 
-		final List<GraphDeviceDTO> arrayLinks = new LinkedList<>();
+        final List<GraphDeviceDTO> arrayLinks = new LinkedList<>();
 
-		arrayLinks.addAll(graphDeviceUtil.constructGraphWithClientPlatformsForUser());
+        arrayLinks.addAll(graphDeviceUtil.constructGraphWithClientPlatformsForUser());
 
-		return arrayLinks.toString();
-	}
+        return arrayLinks.toString();
+    }
 
 }

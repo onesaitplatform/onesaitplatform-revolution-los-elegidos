@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,122 +45,123 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class IotBrokerAuditProcessor {
 
-	@Autowired
-	private SecurityPluginManager securityPluginManager;
+    @Autowired
+    private SecurityPluginManager securityPluginManager;
 
-	@Autowired
-	private List<MessageAuditProcessor> processors;
+    @Autowired
+    private List<MessageAuditProcessor> processors;
 
-	public IotBrokerAuditEvent getEvent(SSAPMessage<? extends SSAPBodyMessage> message, GatewayInfo info) {
+    public IotBrokerAuditEvent getEvent(SSAPMessage<? extends SSAPBodyMessage> message, GatewayInfo info) {
 
-		log.debug("getEvent from message " + message);
+        log.debug("getEvent from message " + message);
 
-		IotBrokerAuditEvent event = null;
+        IotBrokerAuditEvent event = null;
 
-		IoTSession session = getSession(message);
+        IoTSession session = getSession(message);
 
-		MessageAuditProcessor processor = proxyProcesor(message);
+        MessageAuditProcessor processor = proxyProcesor(message);
 
-		event = processor.process(message, session, info);
+        event = processor.process(message, session, info);
 
-		return event;
-	}
+        return event;
+    }
 
-	public OPAuditError getErrorEvent(SSAPMessage<? extends SSAPBodyMessage> message, GatewayInfo info, Exception ex) {
+    public OPAuditError getErrorEvent(SSAPMessage<? extends SSAPBodyMessage> message, GatewayInfo info, Exception ex) {
 
-		log.debug("getErrorEvent from message " + message);
+        log.debug("getErrorEvent from message " + message);
 
-		OPAuditError event = null;
+        OPAuditError event = null;
 
-		if (message != null && info != null) {
+        if (message != null && info != null) {
 
-			final IotBrokerAuditEvent iotEvent = getEvent(message, info);
+            final IotBrokerAuditEvent iotEvent = getEvent(message, info);
 
-			if (iotEvent != null) {
+            if (iotEvent != null) {
 
-				IoTSession session = getSession(message);
+                IoTSession session = getSession(message);
 
-				if (session != null) {
-					String messageOperation = "Exception Detected while operation : " + iotEvent.getOntology()
-							+ " Type : " + iotEvent.getOperationType() + " By User : " + session.getUserID();
+                if (session != null) {
+                    String messageOperation = "Exception Detected while operation : " + iotEvent.getOntology() + " " +
+                            "Type : " + iotEvent.getOperationType() + " By User : " + session.getUserID();
 
-					event = OPEventFactory.builder().build().createAuditEventError(session.getUserID(),
-							messageOperation, Module.IOTBROKER, ex);
+                    event = OPEventFactory.builder().build().createAuditEventError(session.getUserID(),
+                                                                                   messageOperation, Module.IOTBROKER,
+                                                                                   ex);
 
-				} else {
-					String messageOperation = "Exception Detected while operation : " + iotEvent.getOntology()
-							+ " Type : " + iotEvent.getOperationType();
+                } else {
+                    String messageOperation = "Exception Detected while operation : " + iotEvent.getOntology() + " " +
+                            "Type : " + iotEvent.getOperationType();
 
-					event = OPEventFactory.builder().build().createAuditEventError(messageOperation, Module.IOTBROKER,
-							ex);
-				}
-			}
+                    event = OPEventFactory.builder().build().createAuditEventError(messageOperation, Module.IOTBROKER,
+                                                                                   ex);
+                }
+            }
 
-		} else {
+        } else {
 
-			event = OPEventFactory.builder().build().createAuditEventError("Exception Detected", Module.IOTBROKER, ex);
-		}
+            event = OPEventFactory.builder().build().createAuditEventError("Exception Detected", Module.IOTBROKER, ex);
+        }
 
-		OPEventFactory.builder().build().setErrorDetails(event, ex);
+        OPEventFactory.builder().build().setErrorDetails(event, ex);
 
-		return event;
-	}
+        return event;
+    }
 
-	public IotBrokerAuditEvent completeEventWithResponseMessage(SSAPMessage<SSAPBodyReturnMessage> message,
-			IotBrokerAuditEvent event) {
+    public IotBrokerAuditEvent completeEventWithResponseMessage(SSAPMessage<SSAPBodyReturnMessage> message,
+            IotBrokerAuditEvent event) {
 
-		if (SSAPMessageDirection.ERROR.equals(message.getDirection())) {
-			event.setMessage(message.getBody().getError());
-			event.setResultOperation(ResultOperationType.ERROR);
-		}
+        if (SSAPMessageDirection.ERROR.equals(message.getDirection())) {
+            event.setMessage(message.getBody().getError());
+            event.setResultOperation(ResultOperationType.ERROR);
+        }
 
-		IoTSession session = getSession(message);
+        IoTSession session = getSession(message);
 
-		if (session != null) {
-			event.setUser(session.getUserID());
-			event.setSessionKey(message.getSessionKey());
-			event.setClientPlatform(session.getClientPlatform());
-			event.setClientPlatformInstance(session.getDevice());
-		}
+        if (session != null) {
+            event.setUser(session.getUserID());
+            event.setSessionKey(message.getSessionKey());
+            event.setClientPlatform(session.getClientPlatform());
+            event.setClientPlatformInstance(session.getDevice());
+        }
 
-		if (event.getUser() == null || "".equals(event.getUser())) {
-			event.setUser(AuditConst.ANONYMOUS_USER);
-		}
+        if (event.getUser() == null || "".equals(event.getUser())) {
+            event.setUser(AuditConst.ANONYMOUS_USER);
+        }
 
-		return event;
-	}
+        return event;
+    }
 
-	private MessageAuditProcessor proxyProcesor(SSAPMessage<? extends SSAPBodyMessage> message) {
+    private MessageAuditProcessor proxyProcesor(SSAPMessage<? extends SSAPBodyMessage> message) {
 
-		if (null == message.getMessageType()) {
-			throw new SSAPAuditProcessorException(MessageException.ERR_SSAP_MESSAGETYPE_MANDATORY_NOT_NULL);
-		}
+        if (null == message.getMessageType()) {
+            throw new SSAPAuditProcessorException(MessageException.ERR_SSAP_MESSAGETYPE_MANDATORY_NOT_NULL);
+        }
 
-		final SSAPMessageTypes type = message.getMessageType();
+        final SSAPMessageTypes type = message.getMessageType();
 
-		final List<MessageAuditProcessor> filteredProcessors = processors.stream()
-				.filter(p -> p.getMessageTypes().contains(type)).collect(Collectors.toList());
+        final List<MessageAuditProcessor> filteredProcessors = processors.stream().filter(
+                p -> p.getMessageTypes().contains(type)).collect(Collectors.toList());
 
-		if (filteredProcessors.isEmpty()) {
-			throw new SSAPAuditProcessorException(
-					String.format(MessageException.ERR_PROCESSOR_NOT_FOUND, message.getMessageType()));
-		}
+        if (filteredProcessors.isEmpty()) {
+            throw new SSAPAuditProcessorException(
+                    String.format(MessageException.ERR_PROCESSOR_NOT_FOUND, message.getMessageType()));
+        }
 
-		return filteredProcessors.get(0);
+        return filteredProcessors.get(0);
 
-	}
+    }
 
-	private IoTSession getSession(SSAPMessage<? extends SSAPBodyMessage> message) {
+    private IoTSession getSession(SSAPMessage<? extends SSAPBodyMessage> message) {
 
-		IoTSession session = null;
+        IoTSession session = null;
 
-		Optional<IoTSession> sessionPlugin = securityPluginManager.getSession(message.getSessionKey());
+        Optional<IoTSession> sessionPlugin = securityPluginManager.getSession(message.getSessionKey());
 
-		if (sessionPlugin.isPresent()) {
-			session = sessionPlugin.get();
-		}
+        if (sessionPlugin.isPresent()) {
+            session = sessionPlugin.get();
+        }
 
-		return session;
-	}
+        return session;
+    }
 
 }

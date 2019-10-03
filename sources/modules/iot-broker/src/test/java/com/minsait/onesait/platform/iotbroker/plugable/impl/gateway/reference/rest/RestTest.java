@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,62 +48,63 @@ import com.minsait.onesait.platform.iotbroker.processor.DeviceManager;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class RestTest {
-	@Value("${local.server.port}")
-	private int port;
+    @Value("${local.server.port}")
+    private int port;
 
-	private MockMvc mockMvc;
-	@Autowired
-	private WebApplicationContext wac;
-	private ResultActions resultAction;
-	private final String URL_PATH = "/rest";
-	@Autowired
-	ObjectMapper mapper;
+    private MockMvc mockMvc;
+    @Autowired
+    private WebApplicationContext wac;
+    private ResultActions resultAction;
+    private final String URL_PATH = "/rest";
+    @Autowired
+    ObjectMapper mapper;
 
-	@MockBean
-	SecurityPluginManager securityPluginManager;
-	Person subject;
+    @MockBean
+    SecurityPluginManager securityPluginManager;
+    Person subject;
 
-	IoTSession session;
+    IoTSession session;
 
-	@MockBean
-	DeviceManager deviceManager;
+    @MockBean
+    DeviceManager deviceManager;
 
-	private void securityMocks() {
-		session = PojoGenerator.generateSession();
-		when(deviceManager.registerActivity(any(), any(), any(), any())).thenReturn(true);
+    private void securityMocks() {
+        session = PojoGenerator.generateSession();
+        when(deviceManager.registerActivity(any(), any(), any(), any())).thenReturn(true);
 
-		when(securityPluginManager.authenticate(any(), any(), any(), any())).thenReturn(Optional.of(session));
-		when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
-		when(securityPluginManager.checkSessionKeyActive(anyString())).thenReturn(true);
-		when(securityPluginManager.checkAuthorization(any(), any(), any())).thenReturn(true);
-	}
+        when(securityPluginManager.authenticate(any(), any(), any(), any())).thenReturn(Optional.of(session));
+        when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
+        when(securityPluginManager.checkSessionKeyActive(anyString())).thenReturn(true);
+        when(securityPluginManager.checkAuthorization(any(), any(), any())).thenReturn(true);
+    }
 
-	@Before
-	public void setup() {
-		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+    @Before
+    public void setup() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 
-		subject = PojoGenerator.generatePerson();
-		securityMocks();
-	}
+        subject = PojoGenerator.generatePerson();
+        securityMocks();
+    }
 
-	@Test
-	@Ignore
-	public void test_join() throws Exception {
+    @Test
+    @Ignore
+    public void test_join() throws Exception {
 
-		final StringBuilder url = new StringBuilder(URL_PATH);
-		url.append(
-				"/client/join?token=2382c702758c4f26ad1d38d1309335d0&clientPlatform=GTKP-Example&clientPlatformId=1111");
-		resultAction = mockMvc.perform(
-				MockMvcRequestBuilders.get(url.toString()).accept(org.springframework.http.MediaType.APPLICATION_JSON)
-						.contentType(org.springframework.http.MediaType.APPLICATION_JSON));
+        final StringBuilder url = new StringBuilder(URL_PATH);
+        url.append(
+                "/client/join?token=2382c702758c4f26ad1d38d1309335d0&clientPlatform=GTKP-Example&clientPlatformId" +
+                        "=1111");
+        resultAction = mockMvc.perform(MockMvcRequestBuilders.get(url.toString()).accept(
+                org.springframework.http.MediaType.APPLICATION_JSON).contentType(
+                org.springframework.http.MediaType.APPLICATION_JSON));
 
-		resultAction.andExpect(status().is2xxSuccessful());
-		final JsonNode result = mapper.readValue(resultAction.andReturn().getResponse().getContentAsString(),
-				JsonNode.class);
-		Assert.assertNotNull(result);
+        resultAction.andExpect(status().is2xxSuccessful());
+        final JsonNode result = mapper.readValue(resultAction.andReturn().getResponse().getContentAsString(),
+                                                 JsonNode.class);
+        Assert.assertNotNull(result);
 
-		// final String a = (String) result.getBody();
-		System.out.println(result);
-	}
+        // final String a = (String) result.getBody();
+        System.out.println(result);
+    }
 
 }

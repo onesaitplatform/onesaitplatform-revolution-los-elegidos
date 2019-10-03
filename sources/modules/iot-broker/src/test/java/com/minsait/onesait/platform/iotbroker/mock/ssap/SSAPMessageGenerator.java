@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,148 +37,148 @@ import com.minsait.onesait.platform.comms.protocol.enums.SSAPQueryType;
 
 public final class SSAPMessageGenerator {
 
-	private static final Faker faker = new Faker();
-	private static final ObjectMapper mapper = new ObjectMapper();
+    private static final Faker faker = new Faker();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
-	public static SSAPMessage<SSAPBodyJoinMessage> generateJoinMessageWithToken() {
-		final SSAPMessage<SSAPBodyJoinMessage> ssapMessage = new SSAPMessage<>();
-		final SSAPBodyJoinMessage body = new SSAPBodyJoinMessage();
-		ssapMessage.setDirection(SSAPMessageDirection.REQUEST);
-		ssapMessage.setMessageId(UUID.randomUUID().toString());
-		ssapMessage.setMessageType(SSAPMessageTypes.JOIN);
-		body.setDeviceTemplate(faker.name().firstName());
-		body.setDevice(UUID.randomUUID().toString());
-		body.setToken(UUID.randomUUID().toString());
+    public static SSAPMessage<SSAPBodyJoinMessage> generateJoinMessageWithToken() {
+        final SSAPMessage<SSAPBodyJoinMessage> ssapMessage = new SSAPMessage<>();
+        final SSAPBodyJoinMessage body = new SSAPBodyJoinMessage();
+        ssapMessage.setDirection(SSAPMessageDirection.REQUEST);
+        ssapMessage.setMessageId(UUID.randomUUID().toString());
+        ssapMessage.setMessageType(SSAPMessageTypes.JOIN);
+        body.setDeviceTemplate(faker.name().firstName());
+        body.setDevice(UUID.randomUUID().toString());
+        body.setToken(UUID.randomUUID().toString());
 
-		ssapMessage.setBody(body);
+        ssapMessage.setBody(body);
 
-		return ssapMessage;
-	}
+        return ssapMessage;
+    }
 
-	public static SSAPMessage<SSAPBodyInsertMessage> generateInsertMessage(String ontology, Object value)
-			throws Exception, IOException {
+    public static SSAPMessage<SSAPBodyInsertMessage> generateInsertMessage(String ontology,
+            Object value) throws Exception, IOException {
 
-		final SSAPMessage<SSAPBodyInsertMessage> message = new SSAPMessage<>();
-		message.setSessionKey(UUID.randomUUID().toString());
+        final SSAPMessage<SSAPBodyInsertMessage> message = new SSAPMessage<>();
+        message.setSessionKey(UUID.randomUUID().toString());
 
-		final SSAPBodyInsertMessage body = new SSAPBodyInsertMessage();
-		final JsonNode jsonValue = mapper.readTree(mapper.writeValueAsBytes(value));
-		body.setData(jsonValue);
-		body.setOntology(ontology);
-		message.setBody(body);
-		message.setDirection(SSAPMessageDirection.REQUEST);
-		message.setMessageType(SSAPMessageTypes.INSERT);
-		return message;
-	}
+        final SSAPBodyInsertMessage body = new SSAPBodyInsertMessage();
+        final JsonNode jsonValue = mapper.readTree(mapper.writeValueAsBytes(value));
+        body.setData(jsonValue);
+        body.setOntology(ontology);
+        message.setBody(body);
+        message.setDirection(SSAPMessageDirection.REQUEST);
+        message.setMessageType(SSAPMessageTypes.INSERT);
+        return message;
+    }
 
-	public static SSAPMessage<SSAPBodyUpdateMessage> generateUpdateMessage(String ontology, String query)
-			throws Exception, IOException {
+    public static SSAPMessage<SSAPBodyUpdateMessage> generateUpdateMessage(String ontology,
+            String query) throws Exception, IOException {
 
-		final SSAPMessage<SSAPBodyUpdateMessage> message = new SSAPMessage<>();
-		message.setSessionKey(UUID.randomUUID().toString());
+        final SSAPMessage<SSAPBodyUpdateMessage> message = new SSAPMessage<>();
+        message.setSessionKey(UUID.randomUUID().toString());
 
-		final SSAPBodyUpdateMessage body = new SSAPBodyUpdateMessage();
-		body.setQuery(query);
-		body.setOntology(ontology);
-		message.setBody(body);
-		message.setDirection(SSAPMessageDirection.REQUEST);
-		message.setMessageType(SSAPMessageTypes.UPDATE);
+        final SSAPBodyUpdateMessage body = new SSAPBodyUpdateMessage();
+        body.setQuery(query);
+        body.setOntology(ontology);
+        message.setBody(body);
+        message.setDirection(SSAPMessageDirection.REQUEST);
+        message.setMessageType(SSAPMessageTypes.UPDATE);
 
-		return message;
-	}
+        return message;
+    }
 
-	public static SSAPMessage<SSAPBodyUpdateByIdMessage> generateUpdateByIdtMessage(String ontology, JsonNode data) {
-		final SSAPMessage<SSAPBodyUpdateByIdMessage> message = new SSAPMessage<>();
-		message.setSessionKey(UUID.randomUUID().toString());
+    public static SSAPMessage<SSAPBodyUpdateByIdMessage> generateUpdateByIdtMessage(String ontology, JsonNode data) {
+        final SSAPMessage<SSAPBodyUpdateByIdMessage> message = new SSAPMessage<>();
+        message.setSessionKey(UUID.randomUUID().toString());
 
-		final SSAPBodyUpdateByIdMessage body = new SSAPBodyUpdateByIdMessage();
-		body.setData(data);
-		body.setOntology(ontology);
-		message.setBody(body);
-		message.setDirection(SSAPMessageDirection.REQUEST);
-		message.setMessageType(SSAPMessageTypes.UPDATE_BY_ID);
+        final SSAPBodyUpdateByIdMessage body = new SSAPBodyUpdateByIdMessage();
+        body.setData(data);
+        body.setOntology(ontology);
+        message.setBody(body);
+        message.setDirection(SSAPMessageDirection.REQUEST);
+        message.setMessageType(SSAPMessageTypes.UPDATE_BY_ID);
 
-		return message;
-	}
+        return message;
+    }
 
-	public static SSAPMessage<SSAPBodyDeleteMessage> generateDeleteMessage(String ontology, String query) {
-		final SSAPMessage<SSAPBodyDeleteMessage> message = new SSAPMessage<>();
-		message.setSessionKey(UUID.randomUUID().toString());
+    public static SSAPMessage<SSAPBodyDeleteMessage> generateDeleteMessage(String ontology, String query) {
+        final SSAPMessage<SSAPBodyDeleteMessage> message = new SSAPMessage<>();
+        message.setSessionKey(UUID.randomUUID().toString());
 
-		final SSAPBodyDeleteMessage body = new SSAPBodyDeleteMessage();
-		body.setOntology(ontology);
-		body.setQuery(query);
-		message.setBody(body);
-		message.setDirection(SSAPMessageDirection.REQUEST);
-		message.setMessageType(SSAPMessageTypes.DELETE);
+        final SSAPBodyDeleteMessage body = new SSAPBodyDeleteMessage();
+        body.setOntology(ontology);
+        body.setQuery(query);
+        message.setBody(body);
+        message.setDirection(SSAPMessageDirection.REQUEST);
+        message.setMessageType(SSAPMessageTypes.DELETE);
 
-		return message;
-	}
+        return message;
+    }
 
-	public static SSAPMessage<SSAPBodyDeleteByIdMessage> generateDeleteByIdMessage(String ontology, String id) {
-		final SSAPMessage<SSAPBodyDeleteByIdMessage> message = new SSAPMessage<>();
-		message.setSessionKey(UUID.randomUUID().toString());
+    public static SSAPMessage<SSAPBodyDeleteByIdMessage> generateDeleteByIdMessage(String ontology, String id) {
+        final SSAPMessage<SSAPBodyDeleteByIdMessage> message = new SSAPMessage<>();
+        message.setSessionKey(UUID.randomUUID().toString());
 
-		final SSAPBodyDeleteByIdMessage body = new SSAPBodyDeleteByIdMessage();
-		body.setOntology(ontology);
-		body.setId(id);
-		message.setBody(body);
-		message.setDirection(SSAPMessageDirection.REQUEST);
-		message.setMessageType(SSAPMessageTypes.DELETE_BY_ID);
+        final SSAPBodyDeleteByIdMessage body = new SSAPBodyDeleteByIdMessage();
+        body.setOntology(ontology);
+        body.setId(id);
+        message.setBody(body);
+        message.setDirection(SSAPMessageDirection.REQUEST);
+        message.setMessageType(SSAPMessageTypes.DELETE_BY_ID);
 
-		return message;
-	}
+        return message;
+    }
 
-	public static SSAPMessage<SSAPBodyQueryMessage> generateQueryMessage(String ontology, SSAPQueryType type,
-			String query) {
-		final SSAPMessage<SSAPBodyQueryMessage> message = new SSAPMessage<>();
-		message.setSessionKey(UUID.randomUUID().toString());
+    public static SSAPMessage<SSAPBodyQueryMessage> generateQueryMessage(String ontology, SSAPQueryType type,
+            String query) {
+        final SSAPMessage<SSAPBodyQueryMessage> message = new SSAPMessage<>();
+        message.setSessionKey(UUID.randomUUID().toString());
 
-		final SSAPBodyQueryMessage body = new SSAPBodyQueryMessage();
-		body.setOntology(ontology);
-		body.setQueryType(type);
-		body.setQuery(query);
-		message.setBody(body);
-		message.setDirection(SSAPMessageDirection.REQUEST);
-		message.setMessageType(SSAPMessageTypes.QUERY);
+        final SSAPBodyQueryMessage body = new SSAPBodyQueryMessage();
+        body.setOntology(ontology);
+        body.setQueryType(type);
+        body.setQuery(query);
+        message.setBody(body);
+        message.setDirection(SSAPMessageDirection.REQUEST);
+        message.setMessageType(SSAPMessageTypes.QUERY);
 
-		return message;
-	}
+        return message;
+    }
 
-	public static SSAPMessage<SSAPBodySubscribeMessage> generateSubscriptionMessage(String ontology, String sessionKey,
-			SSAPQueryType queryType, String query) {
-		final SSAPMessage<SSAPBodySubscribeMessage> message = new SSAPMessage<>();
-		message.setSessionKey(sessionKey);
+    public static SSAPMessage<SSAPBodySubscribeMessage> generateSubscriptionMessage(String ontology, String sessionKey,
+            SSAPQueryType queryType, String query) {
+        final SSAPMessage<SSAPBodySubscribeMessage> message = new SSAPMessage<>();
+        message.setSessionKey(sessionKey);
 
-		final SSAPBodySubscribeMessage body = new SSAPBodySubscribeMessage();
-		body.setOntology(ontology);
-		body.setQueryType(queryType);
-		body.setQuery(query);
-		message.setBody(body);
-		message.setDirection(SSAPMessageDirection.REQUEST);
-		message.setMessageType(SSAPMessageTypes.SUBSCRIBE);
+        final SSAPBodySubscribeMessage body = new SSAPBodySubscribeMessage();
+        body.setOntology(ontology);
+        body.setQueryType(queryType);
+        body.setQuery(query);
+        message.setBody(body);
+        message.setDirection(SSAPMessageDirection.REQUEST);
+        message.setMessageType(SSAPMessageTypes.SUBSCRIBE);
 
-		return message;
-	}
+        return message;
+    }
 
-	public static SSAPMessage<SSAPBodyCommandMessage> generateCommandMessage(String sessionKey)
-			throws JsonProcessingException, IOException {
-		final SSAPMessage<SSAPBodyCommandMessage> message = new SSAPMessage<>();
-		message.setSessionKey(sessionKey);
+    public static SSAPMessage<SSAPBodyCommandMessage> generateCommandMessage(
+            String sessionKey) throws JsonProcessingException, IOException {
+        final SSAPMessage<SSAPBodyCommandMessage> message = new SSAPMessage<>();
+        message.setSessionKey(sessionKey);
 
-		final SSAPBodyCommandMessage body = new SSAPBodyCommandMessage();
-		body.setCommand("COMMAND");
-		body.setCommandId(UUID.randomUUID().toString());
-		body.setParams(mapper.readTree("{}"));
-		message.setBody(body);
-		message.setDirection(SSAPMessageDirection.REQUEST);
-		message.setMessageType(SSAPMessageTypes.COMMAND);
+        final SSAPBodyCommandMessage body = new SSAPBodyCommandMessage();
+        body.setCommand("COMMAND");
+        body.setCommandId(UUID.randomUUID().toString());
+        body.setParams(mapper.readTree("{}"));
+        message.setBody(body);
+        message.setDirection(SSAPMessageDirection.REQUEST);
+        message.setMessageType(SSAPMessageTypes.COMMAND);
 
-		return message;
-	}
+        return message;
+    }
 
-	// public static SSAPMessage<SSAPBodyLeaveMessage> generateLeaveMessage() {
-	// final SSAPMessage<SSAPBodyLeaveMessage> message = new SSAPMessage<>();
-	//
-	// }
+    // public static SSAPMessage<SSAPBodyLeaveMessage> generateLeaveMessage() {
+    // final SSAPMessage<SSAPBodyLeaveMessage> message = new SSAPMessage<>();
+    //
+    // }
 }

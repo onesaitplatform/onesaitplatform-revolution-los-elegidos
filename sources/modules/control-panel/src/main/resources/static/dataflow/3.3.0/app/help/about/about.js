@@ -18,19 +18,19 @@
  */
 
 angular
-  .module('dataCollectorApp')
-  .controller('AboutModalInstanceController', function ($scope, $modalInstance, api) {
-    angular.extend($scope, {
-      buildInfo: {},
-      cancel: function() {
-        $modalInstance.dismiss('cancel');
-      }
-    });
+    .module('dataCollectorApp')
+    .controller('AboutModalInstanceController', function ($scope, $modalInstance, api) {
+        angular.extend($scope, {
+            buildInfo: {},
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
+            }
+        });
 
-    api.admin.getBuildInfo()
-      .then(function(res) {
-        $scope.buildInfo = res.data;
-      }, function(res) {
-        $scope.issues = [res.data];
-      });
-  });
+        api.admin.getBuildInfo()
+            .then(function (res) {
+                $scope.buildInfo = res.data;
+            }, function (res) {
+                $scope.issues = [res.data];
+            });
+    });

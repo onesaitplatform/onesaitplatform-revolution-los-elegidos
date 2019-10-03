@@ -8,7 +8,7 @@ services:
       - "20200:20200"
     environment:
       - SERVER_NAME=localhost:21000
-      - CONFIGDBSERVERS=localhost:3306   
+      - CONFIGDBSERVERS=localhost:3306
     extra_hosts:
       - "localhost:172.20.10.4"
       - "cacheservice:172.20.10.4"

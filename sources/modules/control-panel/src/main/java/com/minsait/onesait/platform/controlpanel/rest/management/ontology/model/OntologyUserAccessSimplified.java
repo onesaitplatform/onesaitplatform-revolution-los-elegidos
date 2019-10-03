@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,23 +23,23 @@ import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class OntologyUserAccessSimplified implements Comparable<OntologyUserAccessSimplified>{
+public class OntologyUserAccessSimplified implements Comparable<OntologyUserAccessSimplified> {
 
-	@Getter
-	@Setter
-	private String userId;
+    @Getter
+    @Setter
+    private String userId;
 
-	@Getter
-	@Setter
-	private String typeName;
-	
-	public OntologyUserAccessSimplified(OntologyUserAccess ontologyUserAccess) {
-		this.userId = ontologyUserAccess.getUser().getUserId();
-		this.typeName = ontologyUserAccess.getOntologyUserAccessType().getName();
-	}
+    @Getter
+    @Setter
+    private String typeName;
 
-	@Override
-	public int compareTo(OntologyUserAccessSimplified o) {
-		return userId.compareTo(o.getUserId());
-	}
+    public OntologyUserAccessSimplified(OntologyUserAccess ontologyUserAccess) {
+        this.userId = ontologyUserAccess.getUser().getUserId();
+        this.typeName = ontologyUserAccess.getOntologyUserAccessType().getName();
+    }
+
+    @Override
+    public int compareTo(OntologyUserAccessSimplified o) {
+        return userId.compareTo(o.getUserId());
+    }
 }

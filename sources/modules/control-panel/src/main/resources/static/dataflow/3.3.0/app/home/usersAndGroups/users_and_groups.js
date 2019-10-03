@@ -18,43 +18,43 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .config(['$routeProvider', function ($routeProvider) {
-    $routeProvider
-      .when('/collector/usersAndGroups', {
-        templateUrl: 'app/home/usersAndGroups/users_and_groups.tpl.html',
-        controller: 'UsersAndGroupsController',
-        resolve: {
-          myVar: function(authService) {
-            return authService.init();
-          }
-        },
-        data: {
-          authorizedRoles: ['admin']
-        }
-      });
-  }])
-  .controller('UsersAndGroupsController', function ($scope, api) {
-    angular.extend($scope, {
-      fetching: false,
-      userList: []
+    .module('dataCollectorApp.home')
+    .config(['$routeProvider', function ($routeProvider) {
+        $routeProvider
+            .when('/collector/usersAndGroups', {
+                templateUrl: 'app/home/usersAndGroups/users_and_groups.tpl.html',
+                controller: 'UsersAndGroupsController',
+                resolve: {
+                    myVar: function (authService) {
+                        return authService.init();
+                    }
+                },
+                data: {
+                    authorizedRoles: ['admin']
+                }
+            });
+    }])
+    .controller('UsersAndGroupsController', function ($scope, api) {
+        angular.extend($scope, {
+            fetching: false,
+            userList: []
+        });
+
+        var getUsers = function () {
+            $scope.fetching = true;
+            $scope.userList = [];
+            api.admin.getUsers()
+                .then(
+                    function (res) {
+                        $scope.fetching = false;
+                        $scope.userList = _.sortBy(res.data, 'name');
+                    },
+                    function (res) {
+                        $rootScope.common.errors = [res.data];
+                    }
+                );
+        };
+
+        getUsers();
+
     });
-
-    var getUsers = function() {
-      $scope.fetching = true;
-      $scope.userList = [];
-      api.admin.getUsers()
-        .then(
-          function (res) {
-            $scope.fetching = false;
-            $scope.userList = _.sortBy(res.data, 'name');
-          },
-          function (res) {
-            $rootScope.common.errors = [res.data];
-          }
-        );
-    };
-
-    getUsers();
-
-  });

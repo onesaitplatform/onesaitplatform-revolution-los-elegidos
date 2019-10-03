@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,88 +40,88 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RollbackController {
 
-	@Autowired
-	private RollbackService rollbackService;
-	
-	private static final String ERROR_SERIALIZATING_ENTITY = "Error serializating the entity. {}";
+    @Autowired
+    private RollbackService rollbackService;
 
-	@PostMapping(value = "/saveRollback")
-	public Rollback saveRollback(Object entity, Rollback.EntityType entityType) {
+    private static final String ERROR_SERIALIZATING_ENTITY = "Error serializating the entity. {}";
 
-		Rollback rollback = null;
-		if (entityType.equals(Rollback.EntityType.VIEWER)) {
-			Viewer viewer = (Viewer) entity;
-			rollback = rollbackService.findByEntityId(viewer.getId());
-			if (rollback == null) {
-				rollback = new Rollback();
-			}
-			try {
-				String result = toString(viewer);
+    @PostMapping(value = "/saveRollback")
+    public Rollback saveRollback(Object entity, Rollback.EntityType entityType) {
 
-				rollback.setEntityId(viewer.getId());
-				rollback.setType(entityType);
-				rollback.setSerialization(result);
+        Rollback rollback = null;
+        if (entityType.equals(Rollback.EntityType.VIEWER)) {
+            Viewer viewer = (Viewer) entity;
+            rollback = rollbackService.findByEntityId(viewer.getId());
+            if (rollback == null) {
+                rollback = new Rollback();
+            }
+            try {
+                String result = toString(viewer);
 
-				rollbackService.save(rollback);
-			} catch (IOException e) {
-				log.error(ERROR_SERIALIZATING_ENTITY, e);
-				return null;
-			}
-		}else if (entityType.equals(Rollback.EntityType.MENU)) {
-			ConsoleMenu menu = (ConsoleMenu) entity;
-			rollback = rollbackService.findByEntityId(menu.getId());
-			if (rollback == null) {
-				rollback = new Rollback();
-			}
-			try {
-				String result = toString(menu);
+                rollback.setEntityId(viewer.getId());
+                rollback.setType(entityType);
+                rollback.setSerialization(result);
 
-				rollback.setEntityId(menu.getId());
-				rollback.setType(entityType);
-				rollback.setSerialization(result);
+                rollbackService.save(rollback);
+            } catch (IOException e) {
+                log.error(ERROR_SERIALIZATING_ENTITY, e);
+                return null;
+            }
+        } else if (entityType.equals(Rollback.EntityType.MENU)) {
+            ConsoleMenu menu = (ConsoleMenu) entity;
+            rollback = rollbackService.findByEntityId(menu.getId());
+            if (rollback == null) {
+                rollback = new Rollback();
+            }
+            try {
+                String result = toString(menu);
 
-				rollbackService.save(rollback);
-			} catch (IOException e) {
-				log.error(ERROR_SERIALIZATING_ENTITY, e);
-				return null;
-			}
-		}
+                rollback.setEntityId(menu.getId());
+                rollback.setType(entityType);
+                rollback.setSerialization(result);
 
-		return rollback;
-	}
+                rollbackService.save(rollback);
+            } catch (IOException e) {
+                log.error(ERROR_SERIALIZATING_ENTITY, e);
+                return null;
+            }
+        }
 
-	@PostMapping(value = "/serialize")
-	public Object getRollback(String entityId) {
+        return rollback;
+    }
 
-		Object result = null;
-		try {
-			Rollback rollback = rollbackService.findByEntityId(entityId);
-			result = fromString(rollback.getSerialization());
-		} catch (IOException | ClassNotFoundException e) {
-			log.error(ERROR_SERIALIZATING_ENTITY, e);
-			return null;
-		}
+    @PostMapping(value = "/serialize")
+    public Object getRollback(String entityId) {
 
-		return result;
-	}
+        Object result = null;
+        try {
+            Rollback rollback = rollbackService.findByEntityId(entityId);
+            result = fromString(rollback.getSerialization());
+        } catch (IOException | ClassNotFoundException e) {
+            log.error(ERROR_SERIALIZATING_ENTITY, e);
+            return null;
+        }
 
-	private static Object fromString(String s) throws IOException, ClassNotFoundException {
-		byte[] data = Base64.getDecoder().decode(s);
-		InputStream targetStream = new ByteArrayInputStream(data);
-		ObjectInputStream ois = new ObjectInputStream(targetStream);
-		Object o = ois.readObject();
-		ois.close();
-		return o;
-	}
+        return result;
+    }
 
-	private static String toString(Serializable o) throws IOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = new ObjectOutputStream(baos);
-		oos.writeObject(o);
-		oos.close();
+    private static Object fromString(String s) throws IOException, ClassNotFoundException {
+        byte[] data = Base64.getDecoder().decode(s);
+        InputStream targetStream = new ByteArrayInputStream(data);
+        ObjectInputStream ois = new ObjectInputStream(targetStream);
+        Object o = ois.readObject();
+        ois.close();
+        return o;
+    }
 
-		return Base64.getEncoder().encodeToString(baos.toByteArray());
+    private static String toString(Serializable o) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(o);
+        oos.close();
 
-	}
+        return Base64.getEncoder().encodeToString(baos.toByteArray());
+
+    }
 
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,187 +49,190 @@ import io.swagger.models.parameters.Parameter;
 
 public class RestSwaggerReader {
 
-	private static final String INFO_VERSION = "Apache 2.0 License";
-	private static final String INFO_TITLE = "Platform  API Manager";
-	private static final String INFO_DESCRIPTION = "Platform";
+    private static final String INFO_VERSION = "Apache 2.0 License";
+    private static final String INFO_TITLE = "Platform  API Manager";
+    private static final String INFO_DESCRIPTION = "Platform";
 
-	private static final String LICENSE_NAME = "1.0.0";
-	private static final String LICENSE_URL = "http://www.apache.org/licenses/LICENSE-2.0.html";
+    private static final String LICENSE_NAME = "1.0.0";
+    private static final String LICENSE_URL = "http://www.apache.org/licenses/LICENSE-2.0.html";
 
-	private static final String CONTACT_NAME = "Platform Team";
-	private static final String CONTACT_URL = "https://sofia2.com";
-	private static final String CONTACT_EMAIL = "supportsofia2@indra.es";
+    private static final String CONTACT_NAME = "Platform Team";
+    private static final String CONTACT_URL = "https://sofia2.com";
+    private static final String CONTACT_EMAIL = "supportsofia2@indra.es";
 
-	private static final String DATA_TYPE_VALUE_SEPARATOR = "|";
+    private static final String DATA_TYPE_VALUE_SEPARATOR = "|";
 
-	private static final String XSOFIAEXTENSION = "x-sofia2-extension";
+    private static final String XSOFIAEXTENSION = "x-sofia2-extension";
 
-	private static List<String> produces = new ArrayList<>(Arrays.asList(MediaType.APPLICATION_JSON,
-			MediaType.APPLICATION_ATOM_XML, MediaType.TEXT_PLAIN, "text/csv"));
-	private static List<String> consumes = new ArrayList<>(
-			Arrays.asList(MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML));
+    private static List<String> produces = new ArrayList<>(
+            Arrays.asList(MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML, MediaType.TEXT_PLAIN,
+                          "text/csv"));
+    private static List<String> consumes = new ArrayList<>(
+            Arrays.asList(MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML));
 
-	private static Map<String, Response> responses = new HashMap<>();
-	private static List<Scheme> schemes = new ArrayList<>();
+    private static Map<String, Response> responses = new HashMap<>();
+    private static List<Scheme> schemes = new ArrayList<>();
 
-	private static List<String> excludeParms = Arrays.asList("query", "queryType", "targetdb", "cacheable");
-	static {
+    private static List<String> excludeParms = Arrays.asList("query", "queryType", "targetdb", "cacheable");
 
-		final Response r1 = new Response();
-		r1.setDescription("No Content");
-		responses.put("204", r1);
+    static {
 
-		final Response r2 = new Response();
-		r2.setDescription("Bad Request");
-		responses.put("400", r2);
+        final Response r1 = new Response();
+        r1.setDescription("No Content");
+        responses.put("204", r1);
 
-		final Response r3 = new Response();
-		r3.setDescription("Unauthorized");
-		responses.put("401", r3);
+        final Response r2 = new Response();
+        r2.setDescription("Bad Request");
+        responses.put("400", r2);
 
-		final Response r4 = new Response();
-		r4.setDescription("Internal Server Error");
-		responses.put("501", r4);
+        final Response r3 = new Response();
+        r3.setDescription("Unauthorized");
+        responses.put("401", r3);
 
-		final Response r5 = new Response();
-		r5.setDescription("OK");
-		responses.put("200", r5);
+        final Response r4 = new Response();
+        r4.setDescription("Internal Server Error");
+        responses.put("501", r4);
 
-		schemes.add(Scheme.HTTPS);
-		schemes.add(Scheme.HTTP);
+        final Response r5 = new Response();
+        r5.setDescription("OK");
+        responses.put("200", r5);
 
-	}
+        schemes.add(Scheme.HTTPS);
+        schemes.add(Scheme.HTTP);
 
-	public Swagger read(ApiDTO apiDto, BeanConfig config) {
-		final Swagger swagger = new Swagger();
+    }
 
-		final Info info = new Info();
-		info.setDescription(INFO_DESCRIPTION);
-		final License license = new License();
-		license.setName(LICENSE_NAME);
-		license.setUrl(LICENSE_URL);
+    public Swagger read(ApiDTO apiDto, BeanConfig config) {
+        final Swagger swagger = new Swagger();
 
-		info.setLicense(license);
+        final Info info = new Info();
+        info.setDescription(INFO_DESCRIPTION);
+        final License license = new License();
+        license.setName(LICENSE_NAME);
+        license.setUrl(LICENSE_URL);
 
-		info.setTitle(INFO_TITLE);
-		info.setVersion(INFO_VERSION);
+        info.setLicense(license);
 
-		final Contact contact = new Contact();
-		contact.setName(CONTACT_NAME);
-		contact.setUrl(CONTACT_URL);
-		contact.setEmail(CONTACT_EMAIL);
-		info.setContact(contact);
-		swagger.setInfo(info);
+        info.setTitle(INFO_TITLE);
+        info.setVersion(INFO_VERSION);
 
-		swagger.setConsumes(consumes);
-		swagger.setProduces(produces);
-		swagger.setResponses(responses);
+        final Contact contact = new Contact();
+        contact.setName(CONTACT_NAME);
+        contact.setUrl(CONTACT_URL);
+        contact.setEmail(CONTACT_EMAIL);
+        info.setContact(contact);
+        swagger.setInfo(info);
 
-		final int version = apiDto.getVersion();
-		final String vVersion = "v" + version;
-		final String identification = apiDto.getIdentification();
+        swagger.setConsumes(consumes);
+        swagger.setProduces(produces);
+        swagger.setResponses(responses);
 
-		info.setDescription(INFO_DESCRIPTION + " - " + identification + " - " + vVersion);
-		if (!StringUtils.isEmpty(config.getHost()))
-			swagger.setHost(config.getHost());
-		swagger.setBasePath(config.getBasePath());
+        final int version = apiDto.getVersion();
+        final String vVersion = "v" + version;
+        final String identification = apiDto.getIdentification();
 
-		swagger.setSchemes(schemes);
+        info.setDescription(INFO_DESCRIPTION + " - " + identification + " - " + vVersion);
+        if (!StringUtils.isEmpty(config.getHost()))
+            swagger.setHost(config.getHost());
+        swagger.setBasePath(config.getBasePath());
 
-		final List<Tag> tags = new ArrayList<>();
-		final Tag tag = new Tag();
-		tag.setName(apiDto.getIdentification());
-		tags.add(tag);
-		swagger.setTags(tags);
+        swagger.setSchemes(schemes);
 
-		swagger.setVendorExtension(XSOFIAEXTENSION, populateApiDTOLite(apiDto));
+        final List<Tag> tags = new ArrayList<>();
+        final Tag tag = new Tag();
+        tag.setName(apiDto.getIdentification());
+        tags.add(tag);
+        swagger.setTags(tags);
 
-		final ArrayList<OperacionDTO> operations = apiDto.getOperations();
+        swagger.setVendorExtension(XSOFIAEXTENSION, populateApiDTOLite(apiDto));
 
-		for (final OperacionDTO operacionDTO : operations) {
-			parse(swagger, operacionDTO);
-		}
+        final ArrayList<OperacionDTO> operations = apiDto.getOperations();
 
-		return swagger;
-	}
+        for (final OperacionDTO operacionDTO : operations) {
+            parse(swagger, operacionDTO);
+        }
 
-	private ApiDTO populateApiDTOLite(ApiDTO apidto) {
-		final ApiDTO api2 = SerializationUtils.clone(apidto);
-		api2.setOperations(null);
-		api2.setAuthentication(null);
-		return api2;
-	}
+        return swagger;
+    }
 
-	private void createPARAMETER(Swagger swagger, Operation op, String name, String description, String parameterType,
-			String dataType, List<String> value) {
-		final Parameter sofia2Api = RestSwaggerReaderHelper.populateParameter(swagger, name, description, true,
-				parameterType, dataType, null, value);
-		op.addParameter(sofia2Api);
-		op.setConsumes(consumes);
-		op.setProduces(produces);
-		op.setResponses(responses);
-	}
+    private ApiDTO populateApiDTOLite(ApiDTO apidto) {
+        final ApiDTO api2 = SerializationUtils.clone(apidto);
+        api2.setOperations(null);
+        api2.setAuthentication(null);
+        return api2;
+    }
 
-	private void parse(Swagger swagger, OperacionDTO operacionDTO) {
+    private void createPARAMETER(Swagger swagger, Operation op, String name, String description, String parameterType,
+            String dataType, List<String> value) {
+        final Parameter sofia2Api = RestSwaggerReaderHelper.populateParameter(swagger, name, description, true,
+                                                                              parameterType, dataType, null, value);
+        op.addParameter(sofia2Api);
+        op.setConsumes(consumes);
+        op.setProduces(produces);
+        op.setResponses(responses);
+    }
 
-		final String description = operacionDTO.getDescription();
-		final String operation = operacionDTO.getOperation().name();
-		String path = operacionDTO.getPath();
-		if (!path.startsWith("/"))
-			path = "/" + path;
-		final List<ApiQueryParameterDTO> queryParams = operacionDTO.getQueryParams().stream()
-				.filter(p -> !excludeParms.contains(p.getName())).collect(Collectors.toList());
+    private void parse(Swagger swagger, OperacionDTO operacionDTO) {
 
-		Path swaggerPath = swagger.getPath(path);
-		if (swaggerPath == null) {
-			swaggerPath = new Path();
-			swagger.path(path, swaggerPath);
-		}
+        final String description = operacionDTO.getDescription();
+        final String operation = operacionDTO.getOperation().name();
+        String path = operacionDTO.getPath();
+        if (!path.startsWith("/"))
+            path = "/" + path;
+        final List<ApiQueryParameterDTO> queryParams = operacionDTO.getQueryParams().stream().filter(
+                p -> !excludeParms.contains(p.getName())).collect(Collectors.toList());
 
-		final Operation op = new Operation();
-		op.operationId(description.replaceAll(" ", "_"));
+        Path swaggerPath = swagger.getPath(path);
+        if (swaggerPath == null) {
+            swaggerPath = new Path();
+            swagger.path(path, swaggerPath);
+        }
 
-		final String method = operation.toLowerCase(Locale.US);
+        final Operation op = new Operation();
+        op.operationId(description.replaceAll(" ", "_"));
 
-		createPARAMETER(swagger, op, Constants.AUTHENTICATION_HEADER, Constants.AUTHENTICATION_HEADER,
-				ApiQueryParameter.HeaderType.HEADER.name(), ApiQueryParameter.DataType.STRING.name().toLowerCase(),
-				null);
+        final String method = operation.toLowerCase(Locale.US);
 
-		swaggerPath = swaggerPath.set(method, op);
+        createPARAMETER(swagger, op, Constants.AUTHENTICATION_HEADER, Constants.AUTHENTICATION_HEADER,
+                        ApiQueryParameter.HeaderType.HEADER.name(),
+                        ApiQueryParameter.DataType.STRING.name().toLowerCase(), null);
 
-		for (final ApiQueryParameterDTO apiQueryParameterDTO : queryParams) {
+        swaggerPath = swaggerPath.set(method, op);
 
-			final String desc = apiQueryParameterDTO.getDescription();
-			final String name = apiQueryParameterDTO.getName();
-			final String type = apiQueryParameterDTO.getDataType().name();
-			final String value = apiQueryParameterDTO.getValue();
-			final String condition = apiQueryParameterDTO.getHeaderType().name();
+        for (final ApiQueryParameterDTO apiQueryParameterDTO : queryParams) {
 
-			final Parameter parameter = RestSwaggerReaderHelper.populateParameter(swagger, name, desc, true, condition,
-					type.toLowerCase(), null, splitStringValue(value));
+            final String desc = apiQueryParameterDTO.getDescription();
+            final String name = apiQueryParameterDTO.getName();
+            final String type = apiQueryParameterDTO.getDataType().name();
+            final String value = apiQueryParameterDTO.getValue();
+            final String condition = apiQueryParameterDTO.getHeaderType().name();
 
-			op.addParameter(parameter);
-		}
-		op.setTags(swagger.getTags().stream().map(t -> t.getName()).collect(Collectors.toList()));
+            final Parameter parameter = RestSwaggerReaderHelper.populateParameter(swagger, name, desc, true, condition,
+                                                                                  type.toLowerCase(), null,
+                                                                                  splitStringValue(value));
 
-	}
+            op.addParameter(parameter);
+        }
+        op.setTags(swagger.getTags().stream().map(t -> t.getName()).collect(Collectors.toList()));
 
-	private static List<String> splitStringValue(String value) {
-		final List<String> enumValue = new ArrayList<>();
-		if (value == null)
-			return Collections.emptyList();
+    }
 
-		if (value.contains(RestSwaggerReader.DATA_TYPE_VALUE_SEPARATOR)) {
-			enumValue.add(value);
-			return enumValue;
-		} else {
-			final StringTokenizer st = new StringTokenizer(value, RestSwaggerReader.DATA_TYPE_VALUE_SEPARATOR);
-			while (st.hasMoreTokens()) {
-				final String token = st.nextToken();
-				enumValue.add(token);
-			}
-		}
-		return enumValue;
-	}
+    private static List<String> splitStringValue(String value) {
+        final List<String> enumValue = new ArrayList<>();
+        if (value == null)
+            return Collections.emptyList();
+
+        if (value.contains(RestSwaggerReader.DATA_TYPE_VALUE_SEPARATOR)) {
+            enumValue.add(value);
+            return enumValue;
+        } else {
+            final StringTokenizer st = new StringTokenizer(value, RestSwaggerReader.DATA_TYPE_VALUE_SEPARATOR);
+            while (st.hasMoreTokens()) {
+                final String token = st.nextToken();
+                enumValue.add(token);
+            }
+        }
+        return enumValue;
+    }
 
 }

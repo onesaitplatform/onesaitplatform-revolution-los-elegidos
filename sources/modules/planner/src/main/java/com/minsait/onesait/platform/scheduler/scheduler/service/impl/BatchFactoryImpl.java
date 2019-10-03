@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,47 +33,47 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BatchFactoryImpl implements BatchSchedulerFactory {
 
-	@Autowired
-	List<BatchScheduler> schedulers;
+    @Autowired
+    List<BatchScheduler> schedulers;
 
-	Map<String, BatchScheduler> schedulerMap;
+    Map<String, BatchScheduler> schedulerMap;
 
-	@Autowired
-	public BatchFactoryImpl(List<BatchScheduler> schedulers) {
+    @Autowired
+    public BatchFactoryImpl(List<BatchScheduler> schedulers) {
 
-		this.schedulers = schedulers;
+        this.schedulers = schedulers;
 
-		schedulerMap = schedulers.stream().collect(Collectors.toMap(x -> {
-			try {
-				return x.getSchedulerName();
-			} catch (SchedulerException e) {
-				log.error("error loading schedulers ", e);
-			}
-			return null;
-		}, x -> x));
+        schedulerMap = schedulers.stream().collect(Collectors.toMap(x -> {
+            try {
+                return x.getSchedulerName();
+            } catch (SchedulerException e) {
+                log.error("error loading schedulers ", e);
+            }
+            return null;
+        }, x -> x));
 
-	}
+    }
 
-	@Override
-	public BatchScheduler getScheduler(SchedulerType schedulerType) throws NotFoundException {
-		BatchScheduler scheduler = schedulerMap.get(schedulerType.getSchedulerName());
+    @Override
+    public BatchScheduler getScheduler(SchedulerType schedulerType) throws NotFoundException {
+        BatchScheduler scheduler = schedulerMap.get(schedulerType.getSchedulerName());
 
-		if (scheduler == null) {
-			throw new NotFoundException("Scheduler for type " + schedulerType + " not found");
-		}
+        if (scheduler == null) {
+            throw new NotFoundException("Scheduler for type " + schedulerType + " not found");
+        }
 
-		return scheduler;
+        return scheduler;
 
-	}
+    }
 
-	@Override
-	public List<BatchScheduler> getSchedulers() {
-		return schedulers;
-	}
+    @Override
+    public List<BatchScheduler> getSchedulers() {
+        return schedulers;
+    }
 
-	@Override
-	public BatchScheduler getScheduler(String schedulerName) throws NotFoundException {
-		return getScheduler(SchedulerType.valueOf(schedulerName));
-	}
+    @Override
+    public BatchScheduler getScheduler(String schedulerName) throws NotFoundException {
+        return getScheduler(SchedulerType.valueOf(schedulerName));
+    }
 
 }

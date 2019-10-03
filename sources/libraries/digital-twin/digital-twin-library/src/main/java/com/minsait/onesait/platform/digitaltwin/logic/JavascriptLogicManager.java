@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,45 +36,45 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JavascriptLogicManager implements LogicManager {
 
-	private final static String ENGINE_NAME = "nashorn";
-	private final static String LOGIC_FILE = "static/js/logic.js";
+    private final static String ENGINE_NAME = "nashorn";
+    private final static String LOGIC_FILE = "static/js/logic.js";
 
-	private Invocable invocable;
+    private Invocable invocable;
 
-	@Autowired
-	private List<JavascriptAPI> twinApis;
+    @Autowired
+    private List<JavascriptAPI> twinApis;
 
-	@PostConstruct
-	public void init() {
-		for (JavascriptAPI twinApi : twinApis) {
-			twinApi.init();
-		}
+    @PostConstruct
+    public void init() {
+        for (JavascriptAPI twinApi : twinApis) {
+            twinApi.init();
+        }
 
-		ScriptEngine engine = new ScriptEngineManager().getEngineByName(ENGINE_NAME);
-		invocable = (Invocable) engine;
-		try {
-			ClassLoader classLoader = this.getClass().getClassLoader();
-			engine.eval(new InputStreamReader(classLoader.getResource(LOGIC_FILE).openStream()));
+        ScriptEngine engine = new ScriptEngineManager().getEngineByName(ENGINE_NAME);
+        invocable = (Invocable) engine;
+        try {
+            ClassLoader classLoader = this.getClass().getClassLoader();
+            engine.eval(new InputStreamReader(classLoader.getResource(LOGIC_FILE).openStream()));
 
-		} catch (ScriptException e1) {
-			log.error("Execution logic for action", e1);
-			this.invocable = null;
-		} catch (FileNotFoundException e) {
-			log.error("File logic.js not found.", e);
-			this.invocable = null;
-		} catch (IOException e) {
-			log.error("File logic.js not found.", e);
-			this.invocable = null;
-		}
-	}
+        } catch (ScriptException e1) {
+            log.error("Execution logic for action", e1);
+            this.invocable = null;
+        } catch (FileNotFoundException e) {
+            log.error("File logic.js not found.", e);
+            this.invocable = null;
+        } catch (IOException e) {
+            log.error("File logic.js not found.", e);
+            this.invocable = null;
+        }
+    }
 
-	@Override
-	public void invokeFunction(String name, Object... args) throws ScriptException, NoSuchMethodException {
-		if (null != this.invocable) {
-			this.invocable.invokeFunction(name, args);
-		} else {
-			log.error("Cannot invoke function, invocable is null");
-		}
-	}
+    @Override
+    public void invokeFunction(String name, Object... args) throws ScriptException, NoSuchMethodException {
+        if (null != this.invocable) {
+            this.invocable.invokeFunction(name, args);
+        } else {
+            log.error("Cannot invoke function, invocable is null");
+        }
+    }
 
 }

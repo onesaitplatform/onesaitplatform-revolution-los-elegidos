@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 angular.module('tabDirectives', [])
-  .directive('showtab',
-    function () {
-      return {
-        link: function (scope, element) {
-          element.click(function(e) {
-            e.preventDefault();
-            $(element).tab('show');
-          });
+    .directive('showtab',
+        function () {
+            return {
+                link: function (scope, element) {
+                    element.click(function (e) {
+                        e.preventDefault();
+                        $(element).tab('show');
+                    });
+                }
+            };
         }
-      };
-    }
-  );
+    );

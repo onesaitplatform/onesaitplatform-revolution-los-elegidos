@@ -6,14 +6,14 @@
 * Version: 4.0.0-beta.19
 */
 
-!function(factory) {
-    "function" == typeof define && define.amd ? define([ "../inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("../inputmask")) : factory(window.Inputmask);
-}(function(Inputmask) {
+!function (factory) {
+    "function" == typeof define && define.amd ? define(["../inputmask"], factory) : "object" == typeof exports ? module.exports = factory(require("../inputmask")) : factory(window.Inputmask);
+}(function (Inputmask) {
     return Inputmask.extendAliases({
         phonehu: {
             alias: "abstractphone",
             countrycode: "36",
-            phoneCodes: [ {
+            phoneCodes: [{
                 mask: "+36(20)###-####",
                 cc: "HU",
                 cd: "Hungary",
@@ -482,7 +482,7 @@
                 region: "Győr-Moson-Sopron megye",
                 operator: "",
                 desc: ""
-            } ]
+            }]
         }
     }), Inputmask;
 });

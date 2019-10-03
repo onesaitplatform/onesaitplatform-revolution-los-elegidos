@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,34 +26,34 @@ import lombok.Setter;
 
 public class QuasarAuditEvent extends OPAuditRemoteEvent {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Getter
-	@Setter
-	private String result;
+    @Getter
+    @Setter
+    private String result;
 
-	@Getter
-	@Setter
-	private String query;
+    @Getter
+    @Setter
+    private String query;
 
-	@Builder
-	private QuasarAuditEvent(String message, String id, EventType type, long timeStamp, String formatedTimeStamp,
-			String user, String ontology, String operationType, Module module, Map<String, Object> extraData,
-			String otherType, String remoteAddress, ResultOperationType resultOperation, String query, String data,
-			String result) {
-		super(message, id, type, timeStamp, formatedTimeStamp, user, ontology, operationType, module, extraData,
-				otherType, remoteAddress, resultOperation);
-		this.result = result;
-		this.query = query;
-	}
+    @Builder
+    private QuasarAuditEvent(String message, String id, EventType type, long timeStamp, String formatedTimeStamp,
+            String user, String ontology, String operationType, Module module, Map<String, Object> extraData,
+            String otherType, String remoteAddress, ResultOperationType resultOperation, String query, String data,
+            String result) {
+        super(message, id, type, timeStamp, formatedTimeStamp, user, ontology, operationType, module, extraData,
+              otherType, remoteAddress, resultOperation);
+        this.result = result;
+        this.query = query;
+    }
 
-	@Override
-	public String toJson() {
-		final ObjectMapper mapper = new ObjectMapper();
-		try {
-			return mapper.writeValueAsString(this);
-		} catch (final JsonProcessingException e) {
-			return super.toJson();
-		}
-	}
+    @Override
+    public String toJson() {
+        final ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(this);
+        } catch (final JsonProcessingException e) {
+            return super.toJson();
+        }
+    }
 }

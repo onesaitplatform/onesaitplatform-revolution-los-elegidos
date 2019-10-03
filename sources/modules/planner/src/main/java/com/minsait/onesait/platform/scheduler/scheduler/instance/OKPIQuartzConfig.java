@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,23 +33,23 @@ import com.minsait.onesait.platform.scheduler.scheduler.GenericQuartzConfig;
 @ConditionalOnResource(resources = SCHEDULER_PROPERTIES_LOCATION)
 public class OKPIQuartzConfig extends GenericQuartzConfig {
 
-	private static final String SCHEDULER_BEAN_FACTORY_NAME = "okpi-scheduler-factory";
+    private static final String SCHEDULER_BEAN_FACTORY_NAME = "okpi-scheduler-factory";
 
-	@Bean(SCHEDULER_BEAN_FACTORY_NAME)
-	public SchedulerFactoryBean okpiSchedulerFactoryBean(JobFactory jobFactory,
-			PlatformTransactionManager transactionManager) {
-		return getSchedulerFactoryBean(jobFactory, transactionManager);
-	}
+    @Bean(SCHEDULER_BEAN_FACTORY_NAME)
+    public SchedulerFactoryBean okpiSchedulerFactoryBean(JobFactory jobFactory,
+            PlatformTransactionManager transactionManager) {
+        return getSchedulerFactoryBean(jobFactory, transactionManager);
+    }
 
-	@Bean(SchedulerNames.OKPI_SCHEDULER_NAME)
-	public BatchScheduler okpiScheduler(
-			@Autowired @Qualifier(SCHEDULER_BEAN_FACTORY_NAME) SchedulerFactoryBean schedulerFactoryBean) {
-		return new GenericBatchScheduler(schedulerFactoryBean.getScheduler(), getSchedulerBeanName());
-	}
+    @Bean(SchedulerNames.OKPI_SCHEDULER_NAME)
+    public BatchScheduler okpiScheduler(
+            @Autowired @Qualifier(SCHEDULER_BEAN_FACTORY_NAME) SchedulerFactoryBean schedulerFactoryBean) {
+        return new GenericBatchScheduler(schedulerFactoryBean.getScheduler(), getSchedulerBeanName());
+    }
 
-	@Override
-	public String getSchedulerBeanName() {
-		return SchedulerNames.OKPI_SCHEDULER_NAME;
-	}
+    @Override
+    public String getSchedulerBeanName() {
+        return SchedulerNames.OKPI_SCHEDULER_NAME;
+    }
 
 }

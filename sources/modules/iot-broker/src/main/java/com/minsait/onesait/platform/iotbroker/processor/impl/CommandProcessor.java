@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,50 +44,50 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(origins = "*")
 public class CommandProcessor {
 
-	@Autowired
-	GatewayNotifier notifier;
-	@Autowired
-	ObjectMapper mapper;
-	@Autowired
-	SecurityPluginManager securityPluginManager;
+    @Autowired
+    GatewayNotifier notifier;
+    @Autowired
+    ObjectMapper mapper;
+    @Autowired
+    SecurityPluginManager securityPluginManager;
 
-	@RequestMapping(value = "/commandAsync/{command}", method = RequestMethod.POST)
-	public boolean sendAsync(@PathVariable(name = "command") String command,
-			@RequestHeader(value = "Authorization", required = true) String sessionKey, @RequestBody JsonNode params) {
+    @RequestMapping(value = "/commandAsync/{command}", method = RequestMethod.POST)
+    public boolean sendAsync(@PathVariable(name = "command") String command,
+            @RequestHeader(value = "Authorization", required = true) String sessionKey, @RequestBody JsonNode params) {
 
-		if (this.securityPluginManager.checkSessionKeyActive(sessionKey)) {
-			final SSAPMessage<SSAPBodyCommandMessage> cmd = new SSAPMessage<>();
-			cmd.setBody(new SSAPBodyCommandMessage());
-			cmd.setDirection(SSAPMessageDirection.REQUEST);
-			cmd.setMessageType(SSAPMessageTypes.COMMAND);
-			cmd.setSessionKey(sessionKey);
-			cmd.getBody().setCommandId(UUID.randomUUID().toString());
-			cmd.getBody().setCommand(command);
-			cmd.getBody().setParams(params);
+        if (this.securityPluginManager.checkSessionKeyActive(sessionKey)) {
+            final SSAPMessage<SSAPBodyCommandMessage> cmd = new SSAPMessage<>();
+            cmd.setBody(new SSAPBodyCommandMessage());
+            cmd.setDirection(SSAPMessageDirection.REQUEST);
+            cmd.setMessageType(SSAPMessageTypes.COMMAND);
+            cmd.setSessionKey(sessionKey);
+            cmd.getBody().setCommandId(UUID.randomUUID().toString());
+            cmd.getBody().setCommand(command);
+            cmd.getBody().setParams(params);
 
-			notifier.sendCommandAsync(cmd);
+            notifier.sendCommandAsync(cmd);
 
-			return true;
-		} else
-			return false;
-	}
+            return true;
+        } else
+            return false;
+    }
 
-	// @RequestMapping(value="/commandSync/{command}", method=RequestMethod.POST)
-	// public JsonNode sendSync(@PathVariable(name="command") String command, String
-	// sessionKey, @RequestBody JsonNode params) {
-	//
-	// final SSAPMessage<SSAPBodyCommandMessage> cmd = new SSAPMessage<>();
-	// cmd.setBody(new SSAPBodyCommandMessage());
-	// cmd.setDirection(SSAPMessageDirection.REQUEST);
-	// cmd.setMessageType(SSAPMessageTypes.COMMAND);
-	// cmd.setSessionKey(sessionKey);
-	// cmd.getBody().setCommand(UUID.randomUUID().toString());
-	// cmd.getBody().setCommand(command);
-	// cmd.getBody().setParams(params);
-	//
-	// notifier.sendCommandSync(cmd);
-	//
-	// return JsonNodeFactory.instance.nullNode();
-	// }
+    // @RequestMapping(value="/commandSync/{command}", method=RequestMethod.POST)
+    // public JsonNode sendSync(@PathVariable(name="command") String command, String
+    // sessionKey, @RequestBody JsonNode params) {
+    //
+    // final SSAPMessage<SSAPBodyCommandMessage> cmd = new SSAPMessage<>();
+    // cmd.setBody(new SSAPBodyCommandMessage());
+    // cmd.setDirection(SSAPMessageDirection.REQUEST);
+    // cmd.setMessageType(SSAPMessageTypes.COMMAND);
+    // cmd.setSessionKey(sessionKey);
+    // cmd.getBody().setCommand(UUID.randomUUID().toString());
+    // cmd.getBody().setCommand(command);
+    // cmd.getBody().setParams(params);
+    //
+    // notifier.sendCommandSync(cmd);
+    //
+    // return JsonNodeFactory.instance.nullNode();
+    // }
 
 }

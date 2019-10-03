@@ -18,82 +18,82 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('CommitHistoryModalInstanceController', function (
-    $scope, $modalInstance, api, authService, pipelineInfo, metadata
-  ) {
-    angular.extend($scope, {
-      remoteBaseUrl: authService.getRemoteBaseUrl(),
-      common: {
-        errors: []
-      },
-      pipelineInfo: pipelineInfo,
-      pipelineId: metadata['dpm.pipeline.id'],
-      pipelineVersion: metadata['dpm.pipeline.version'],
-      pipelinesCommit: [],
-      updatedPipelineConfig: undefined,
-
-      downloadRemotePipeline : function(remotePipeline) {
-        $scope.downloading = true;
-        api.remote.getPipeline(authService.getRemoteBaseUrl(), authService.getSSOToken(), remotePipeline)
-          .then(
-            function(res) {
-              var remotePipeline = res.data;
-              var pipelineEnvelope = {
-                pipelineConfig: JSON.parse(remotePipeline.pipelineDefinition),
-                pipelineRules: JSON.parse(remotePipeline.currentRules.rulesDefinition)
-              };
-
-              api.pipelineAgent.importPipelineConfig(pipelineInfo.pipelineId, pipelineEnvelope, true)
-                .then(
-                  function(res) {
-                    $scope.updatedPipelineConfig = res.data.pipelineConfig;
-                    $scope.pipelineVersion = remotePipeline.version;
-                    var newMetadata = res.data.pipelineConfig.metadata;
-                    newMetadata['lastConfigId'] = res.data.pipelineConfig.uuid;
-                    newMetadata['lastRulesId'] = res.data.pipelineRules.uuid;
-                    api.pipelineAgent.savePipelineMetadata(pipelineInfo.pipelineId, newMetadata)
-                      .then(
-                        function(res) {
-                          $modalInstance.close($scope.updatedPipelineConfig);
-                        },
-                        function(res) {
-                          $scope.common.errors = [res.data];
-                          $scope.downloading = false;
-                        }
-                      );
-                  },
-                  function(res) {
-                    $scope.common.errors = [res.data];
-                    $scope.downloading = false;
-                  }
-                );
+    .module('dataCollectorApp.home')
+    .controller('CommitHistoryModalInstanceController', function (
+        $scope, $modalInstance, api, authService, pipelineInfo, metadata
+    ) {
+        angular.extend($scope, {
+            remoteBaseUrl: authService.getRemoteBaseUrl(),
+            common: {
+                errors: []
             },
-            function(res) {
-              $scope.common.errors = [res.data];
+            pipelineInfo: pipelineInfo,
+            pipelineId: metadata['dpm.pipeline.id'],
+            pipelineVersion: metadata['dpm.pipeline.version'],
+            pipelinesCommit: [],
+            updatedPipelineConfig: undefined,
+
+            downloadRemotePipeline: function (remotePipeline) {
+                $scope.downloading = true;
+                api.remote.getPipeline(authService.getRemoteBaseUrl(), authService.getSSOToken(), remotePipeline)
+                    .then(
+                        function (res) {
+                            var remotePipeline = res.data;
+                            var pipelineEnvelope = {
+                                pipelineConfig: JSON.parse(remotePipeline.pipelineDefinition),
+                                pipelineRules: JSON.parse(remotePipeline.currentRules.rulesDefinition)
+                            };
+
+                            api.pipelineAgent.importPipelineConfig(pipelineInfo.pipelineId, pipelineEnvelope, true)
+                                .then(
+                                    function (res) {
+                                        $scope.updatedPipelineConfig = res.data.pipelineConfig;
+                                        $scope.pipelineVersion = remotePipeline.version;
+                                        var newMetadata = res.data.pipelineConfig.metadata;
+                                        newMetadata['lastConfigId'] = res.data.pipelineConfig.uuid;
+                                        newMetadata['lastRulesId'] = res.data.pipelineRules.uuid;
+                                        api.pipelineAgent.savePipelineMetadata(pipelineInfo.pipelineId, newMetadata)
+                                            .then(
+                                                function (res) {
+                                                    $modalInstance.close($scope.updatedPipelineConfig);
+                                                },
+                                                function (res) {
+                                                    $scope.common.errors = [res.data];
+                                                    $scope.downloading = false;
+                                                }
+                                            );
+                                    },
+                                    function (res) {
+                                        $scope.common.errors = [res.data];
+                                        $scope.downloading = false;
+                                    }
+                                );
+                        },
+                        function (res) {
+                            $scope.common.errors = [res.data];
+                        }
+                    );
+            },
+            close: function () {
+                $modalInstance.close();
             }
-          );
-      },
-      close : function () {
-        $modalInstance.close();
-      }
+        });
+
+        var getPipelineCommitHistory = function () {
+            api.remote.getPipelineCommitHistory(
+                authService.getRemoteBaseUrl(),
+                authService.getSSOToken(),
+                $scope.pipelineId
+            ).then(
+                function (res) {
+                    $scope.pipelinesCommit = res.data;
+                },
+                function (res) {
+                    $scope.common.errors = [res.data];
+                }
+            );
+        };
+
+        getPipelineCommitHistory();
+
     });
-
-    var getPipelineCommitHistory = function() {
-      api.remote.getPipelineCommitHistory(
-        authService.getRemoteBaseUrl(),
-        authService.getSSOToken(),
-        $scope.pipelineId
-      ).then(
-        function(res) {
-          $scope.pipelinesCommit = res.data;
-        },
-        function(res) {
-          $scope.common.errors = [res.data];
-        }
-      );
-    };
-
-    getPipelineCommitHistory();
-
-  });

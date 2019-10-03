@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,46 +41,46 @@ import lombok.extern.slf4j.Slf4j;
 @Lazy
 public class PlannerController {
 
-	@Autowired
-	private TaskService taskService;
+    @Autowired
+    private TaskService taskService;
 
-	@Autowired
-	private AppWebUtils utils;
+    @Autowired
+    private AppWebUtils utils;
 
-	private static final String REDIRECT_PLANNER_LIST = "redirect:/planner/list";
+    private static final String REDIRECT_PLANNER_LIST = "redirect:/planner/list";
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@GetMapping(value = "/list", produces = "text/html")
-	public String list(Model model, HttpServletRequest request) {
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @GetMapping(value = "/list", produces = "text/html")
+    public String list(Model model, HttpServletRequest request) {
 
-		List<ListTaskInfo> tasks = taskService.list(utils.getUserId());
+        List<ListTaskInfo> tasks = taskService.list(utils.getUserId());
 
-		model.addAttribute("tasks", tasks);
-		return "planner/list";
-	}
+        model.addAttribute("tasks", tasks);
+        return "planner/list";
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@RequestMapping(method = RequestMethod.GET, value = "/unschedule/{jobName}")
-	public String unschedule(@PathVariable String jobName) {
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @RequestMapping(method = RequestMethod.GET, value = "/unschedule/{jobName}")
+    public String unschedule(@PathVariable String jobName) {
 
-		boolean unscheduled = taskService.unscheduled(new TaskOperation(jobName));
-		return REDIRECT_PLANNER_LIST;
-	}
+        boolean unscheduled = taskService.unscheduled(new TaskOperation(jobName));
+        return REDIRECT_PLANNER_LIST;
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@RequestMapping(method = RequestMethod.GET, value = "/pause/{jobName}")
-	public String pause(@PathVariable String jobName) {
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @RequestMapping(method = RequestMethod.GET, value = "/pause/{jobName}")
+    public String pause(@PathVariable String jobName) {
 
-		boolean resumed = taskService.pause(new TaskOperation(jobName));
-		return REDIRECT_PLANNER_LIST;
-	}
+        boolean resumed = taskService.pause(new TaskOperation(jobName));
+        return REDIRECT_PLANNER_LIST;
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@RequestMapping(method = RequestMethod.GET, value = "/resume/{jobName}")
-	public String resume(@PathVariable String jobName) {
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @RequestMapping(method = RequestMethod.GET, value = "/resume/{jobName}")
+    public String resume(@PathVariable String jobName) {
 
-		boolean resumed = taskService.resume(new TaskOperation(jobName));
-		return REDIRECT_PLANNER_LIST;
-	}
+        boolean resumed = taskService.resume(new TaskOperation(jobName));
+        return REDIRECT_PLANNER_LIST;
+    }
 
 }

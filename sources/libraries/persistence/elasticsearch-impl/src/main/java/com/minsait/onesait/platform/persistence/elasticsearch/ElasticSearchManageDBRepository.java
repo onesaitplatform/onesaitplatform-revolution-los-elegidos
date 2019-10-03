@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,216 +48,215 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ElasticSearchManageDBRepository implements ManageDBRepository {
 
-	private static final String NOT_IMPLEMENTED_ALREADY = "Not Implemented Already";
+    private static final String NOT_IMPLEMENTED_ALREADY = "Not Implemented Already";
 
-	@Autowired
-	private ESBaseApi connector;
-	@Autowired
-	private ESCountService eSCountService;
+    @Autowired
+    private ESBaseApi connector;
+    @Autowired
+    private ESCountService eSCountService;
 
-	@Autowired
-	private ESDeleteService eSDeleteService;
+    @Autowired
+    private ESDeleteService eSDeleteService;
 
-	@Value("${onesaitplatform.database.elasticsearch.dump.path:null}")
-	@Getter
-	@Setter
-	private String dumpPath;
+    @Value("${onesaitplatform.database.elasticsearch.dump.path:null}")
+    @Getter
+    @Setter
+    private String dumpPath;
 
-	@Value("${onesaitplatform.database.elasticsearch.elasticdump.path:null}")
-	@Getter
-	@Setter
-	private String elasticDumpPath;
+    @Value("${onesaitplatform.database.elasticsearch.elasticdump.path:null}")
+    @Getter
+    @Setter
+    private String elasticDumpPath;
 
-	@Value("${onesaitplatform.database.elasticsearch.sql.connector.http.endpoint:http://localhost:9300}")
-	@Getter
-	@Setter
-	private String elasticSearchEndpoint;
+    @Value("${onesaitplatform.database.elasticsearch.sql.connector.http.endpoint:http://localhost:9300}")
+    @Getter
+    @Setter
+    private String elasticSearchEndpoint;
 
-	private String createTestIndex(String index) {
-		final String res = connector.createIndex(index);
-		log.debug("ElasticSearchManageDBRepository createTestIndex {}, res: ",index, res);
-		return res;
-	}
+    private String createTestIndex(String index) {
+        final String res = connector.createIndex(index);
+        log.debug("ElasticSearchManageDBRepository createTestIndex {}, res: ", index, res);
+        return res;
+    }
 
-	@Override
-	public Map<String, Boolean> getStatusDatabase() {
-		log.error("Error implementing");
-		throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
-	}
+    @Override
+    public Map<String, Boolean> getStatusDatabase() {
+        log.error("Error implementing");
+        throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
+    }
 
-	@Override
-	public String createTable4Ontology(final String ontology, final String schema, final Map<String, String> config) {
-		try {
-			if (JSONPersistenceUtilsElasticSearch.isJSONSchema(schema)) {
+    @Override
+    public String createTable4Ontology(final String ontology, final String schema, final Map<String, String> config) {
+        try {
+            if (JSONPersistenceUtilsElasticSearch.isJSONSchema(schema)) {
 
-				String elasticIndex = JSONPersistenceUtilsElasticSearch.getElasticSearchSchemaFromJSONSchema(schema);
-				try {
-					final String res = connector.createIndex(ontology.toLowerCase());
-					log.info("Index result : {} ", res);
+                String elasticIndex = JSONPersistenceUtilsElasticSearch.getElasticSearchSchemaFromJSONSchema(schema);
+                try {
+                    final String res = connector.createIndex(ontology.toLowerCase());
+                    log.info("Index result : {} ", res);
 
-					try {
-						if (!elasticIndex.isEmpty() && (!connector.createType(ontology.toLowerCase(),
-								ontology.toLowerCase(), elasticIndex))) {
-							log.error("Error mapping");
-							throw new DBPersistenceException("Error mapping type.");
-						}
-					} catch (final Exception e) {
-						connector.deleteIndex(ontology.toLowerCase());
-						log.error("Error mapping type: " + e.getMessage(), e);
-						throw new DBPersistenceException("Error mapping type. Message: " + e.getMessage(), e);
-					}
+                    try {
+                        if (!elasticIndex.isEmpty() && (!connector.createType(ontology.toLowerCase(),
+                                                                              ontology.toLowerCase(), elasticIndex))) {
+                            log.error("Error mapping");
+                            throw new DBPersistenceException("Error mapping type.");
+                        }
+                    } catch (final Exception e) {
+                        connector.deleteIndex(ontology.toLowerCase());
+                        log.error("Error mapping type: " + e.getMessage(), e);
+                        throw new DBPersistenceException("Error mapping type. Message: " + e.getMessage(), e);
+                    }
 
-				} catch (final Exception e) {
-					log.error("Error creating index: " + e.getMessage(), e);
-					throw new DBPersistenceException("Error creating index. Message: " + e.getMessage(), e);
-				}
+                } catch (final Exception e) {
+                    log.error("Error creating index: " + e.getMessage(), e);
+                    throw new DBPersistenceException("Error creating index. Message: " + e.getMessage(), e);
+                }
 
-			} else {
-				log.error("Json schema is not valid. It does not contains $schema field.");
-				throw new DBPersistenceException("Json schema is not valid. It does not contains $schema field.");
-			}
+            } else {
+                log.error("Json schema is not valid. It does not contains $schema field.");
+                throw new DBPersistenceException("Json schema is not valid. It does not contains $schema field.");
+            }
 
-		} catch (final Exception e) {
-			log.error("Could not generate elasticSearch index. Message: " + e.getMessage(), e);
-			throw new DBPersistenceException("Could not generate Elastic Search index. Message: " + e.getMessage(), e);
-		}
+        } catch (final Exception e) {
+            log.error("Could not generate elasticSearch index. Message: " + e.getMessage(), e);
+            throw new DBPersistenceException("Could not generate Elastic Search index. Message: " + e.getMessage(), e);
+        }
 
-		return ontology.toLowerCase();
-	}
+        return ontology.toLowerCase();
+    }
 
-	@Override
-	public List<String> getListOfTables() {
-		final List<String> list = new ArrayList<>();
-		final String result = connector.getIndexes();
-		if (result != null)
-			list.add(result);
-		return list;
+    @Override
+    public List<String> getListOfTables() {
+        final List<String> list = new ArrayList<>();
+        final String result = connector.getIndexes();
+        if (result != null)
+            list.add(result);
+        return list;
 
-	}
+    }
 
-	@Override
-	public List<String> getListOfTables4Ontology(String ontology) {
-		ontology = ontology.toLowerCase();
-		final List<String> list = new ArrayList<>();
-		final String result = connector.getIndexes();
-		if (result != null && result.indexOf(ontology) != .1) {
-			list.add(ontology);
-		}
-		return list;
-	}
+    @Override
+    public List<String> getListOfTables4Ontology(String ontology) {
+        ontology = ontology.toLowerCase();
+        final List<String> list = new ArrayList<>();
+        final String result = connector.getIndexes();
+        if (result != null && result.indexOf(ontology) != .1) {
+            list.add(ontology);
+        }
+        return list;
+    }
 
-	@Override
-	public void removeTable4Ontology(String ontology) {
-		ontology = ontology.toLowerCase();
-		eSDeleteService.deleteAll(ontology, ontology);
+    @Override
+    public void removeTable4Ontology(String ontology) {
+        ontology = ontology.toLowerCase();
+        eSDeleteService.deleteAll(ontology, ontology);
 
-	}
+    }
 
-	@Override
-	public void createIndex(String ontology, String attribute) {
-		log.error(NOT_IMPLEMENTED_ALREADY);
-		throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
+    @Override
+    public void createIndex(String ontology, String attribute) {
+        log.error(NOT_IMPLEMENTED_ALREADY);
+        throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
 
-	}
+    }
 
-	@Override
-	public void createIndex(String ontology, String nameIndex, String attribute) {
-		log.error(NOT_IMPLEMENTED_ALREADY);
-		throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
+    @Override
+    public void createIndex(String ontology, String nameIndex, String attribute) {
+        log.error(NOT_IMPLEMENTED_ALREADY);
+        throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
 
-	}
+    }
 
-	@Override
-	public void createIndex(String sentence) {
-		log.error(NOT_IMPLEMENTED_ALREADY);
-		throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
-	}
+    @Override
+    public void createIndex(String sentence) {
+        log.error(NOT_IMPLEMENTED_ALREADY);
+        throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
+    }
 
-	@Override
-	public void dropIndex(String ontology, String indexName) {
-		log.error(NOT_IMPLEMENTED_ALREADY);
-		throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
+    @Override
+    public void dropIndex(String ontology, String indexName) {
+        log.error(NOT_IMPLEMENTED_ALREADY);
+        throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
 
-	}
+    }
 
-	@Override
-	public List<String> getListIndexes(String ontology) {
-		log.error(NOT_IMPLEMENTED_ALREADY);
-		throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
+    @Override
+    public List<String> getListIndexes(String ontology) {
+        log.error(NOT_IMPLEMENTED_ALREADY);
+        throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
 
-	}
+    }
 
-	@Override
-	public String getIndexes(String ontology) {
-		log.error(NOT_IMPLEMENTED_ALREADY);
-		throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
-	}
+    @Override
+    public String getIndexes(String ontology) {
+        log.error(NOT_IMPLEMENTED_ALREADY);
+        throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
+    }
 
-	@Override
-	public void validateIndexes(String ontology, String schema) {
-		log.error(NOT_IMPLEMENTED_ALREADY);
-		throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
+    @Override
+    public void validateIndexes(String ontology, String schema) {
+        log.error(NOT_IMPLEMENTED_ALREADY);
+        throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
 
-	}
+    }
 
-	@Override
-	public ExportData exportToJson(String ontology, long startDateMillis, String pathToFile) {
-		final SimpleDateFormat format = new SimpleDateFormat("yyyy-dd-MM-hh-mm");
-		final String query = "--searchBody {\\\"query\\\":{\\\"range\\\":{\\\"contextData.timestampMillis\\\":{\\\"lte\\\":"
-				+ startDateMillis + "}}}}";
-		final String queryElastic = "{\r\n" + "\"query\" : {\r\n"
-				+ "    \"range\" : {\r\n  \"contextData.timestampMillis\" : {\r\n \"lte\" : " + startDateMillis
-				+ " \r\n} \r\n} \r\n" + "  }\r\n" + "}";
-		final String path;
+    @Override
+    public ExportData exportToJson(String ontology, long startDateMillis, String pathToFile) {
+        final SimpleDateFormat format = new SimpleDateFormat("yyyy-dd-MM-hh-mm");
+        final String query = "--searchBody {\\\"query\\\":{\\\"range\\\":{\\\"contextData" +
+                ".timestampMillis\\\":{\\\"lte\\\":" + startDateMillis + "}}}}";
+        final String queryElastic = "{\r\n" + "\"query\" : {\r\n" + "    \"range\" : {\r\n  \"contextData" +
+                ".timestampMillis\" : {\r\n \"lte\" : " + startDateMillis + " \r\n} \r\n} \r\n" + "  }\r\n" + "}";
+        final String path;
 
-		if (pathToFile.equals("default"))
-			path = dumpPath + ontology.toLowerCase() + format.format(new Date()) + ".json";
-		else
-			path = pathToFile;
-		if (eSCountService.getQueryCount(queryElastic, ontology.toLowerCase()) > 0) {
-			final ProcessBuilder pb;
+        if (pathToFile.equals("default"))
+            path = dumpPath + ontology.toLowerCase() + format.format(new Date()) + ".json";
+        else
+            path = pathToFile;
+        if (eSCountService.getQueryCount(queryElastic, ontology.toLowerCase()) > 0) {
+            final ProcessBuilder pb;
 
-			pb = new ProcessBuilder("elasticdump", "--input=" + elasticSearchEndpoint + "/" + ontology.toLowerCase(),
-					"--output=" + path, query, "--delete=true");
-			try {
-				final Process p = pb.start();
-				final BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-				final StringBuilder builder = new StringBuilder();
-				String line = null;
-				p.waitFor();
-				while ((line = reader.readLine()) != null) {
-					builder.append(line);
-					builder.append(System.getProperty("line.separator"));
-				}
-				builder.toString();
-				log.info("Cmd elasticdump output: {}",builder.toString());
-				log.info("Created export file for ontology {} at {}", ontology, path);
-			} catch (IOException | InterruptedException e) {
-				log.error("Could not execute command {}", e.getMessage());
-				throw new DBPersistenceException("Could not execute command: " + pb.command().toString() + e);
-			}
-		}
-		return ExportData.builder().filterQuery(queryElastic).path(path).build();
-	}
+            pb = new ProcessBuilder("elasticdump", "--input=" + elasticSearchEndpoint + "/" + ontology.toLowerCase(),
+                                    "--output=" + path, query, "--delete=true");
+            try {
+                final Process p = pb.start();
+                final BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                final StringBuilder builder = new StringBuilder();
+                String line = null;
+                p.waitFor();
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                    builder.append(System.getProperty("line.separator"));
+                }
+                builder.toString();
+                log.info("Cmd elasticdump output: {}", builder.toString());
+                log.info("Created export file for ontology {} at {}", ontology, path);
+            } catch (IOException | InterruptedException e) {
+                log.error("Could not execute command {}", e.getMessage());
+                throw new DBPersistenceException("Could not execute command: " + pb.command().toString() + e);
+            }
+        }
+        return ExportData.builder().filterQuery(queryElastic).path(path).build();
+    }
 
-	@Override
-	public long deleteAfterExport(String ontology, String query) {
-		return eSDeleteService.deleteByQuery(ontology.toLowerCase(), ontology.toLowerCase(), query, false).getCount();
-	}
+    @Override
+    public long deleteAfterExport(String ontology, String query) {
+        return eSDeleteService.deleteByQuery(ontology.toLowerCase(), ontology.toLowerCase(), query, false).getCount();
+    }
 
-	@Override
-	public List<DescribeColumnData> describeTable(String name) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
-	}
+    @Override
+    public List<DescribeColumnData> describeTable(String name) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
+    }
 
-	@Override
-	public Map<String, String> getAdditionalDBConfig(String ontology) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
-	}
+    @Override
+    public Map<String, String> getAdditionalDBConfig(String ontology) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
+    }
 
-	@Override
-	public String updateTable4Ontology(String identification, String jsonSchema, Map<String, String> config) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
-	}
+    @Override
+    public String updateTable4Ontology(String identification, String jsonSchema, Map<String, String> config) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED_ALREADY);
+    }
 
 }

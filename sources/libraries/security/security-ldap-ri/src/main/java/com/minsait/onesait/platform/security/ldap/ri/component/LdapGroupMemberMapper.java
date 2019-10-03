@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,27 +30,27 @@ import com.minsait.onesait.platform.config.model.User;
 
 public class LdapGroupMemberMapper implements AttributesMapper<List<User>> {
 
-	private String member;
+    private String member;
 
-	public LdapGroupMemberMapper(String member) {
-		this.member = member;
-	}
+    public LdapGroupMemberMapper(String member) {
+        this.member = member;
+    }
 
-	@Override
-	public List<User> mapFromAttributes(Attributes attributes) throws NamingException {
-		final List<User> users = new ArrayList<>();
+    @Override
+    public List<User> mapFromAttributes(Attributes attributes) throws NamingException {
+        final List<User> users = new ArrayList<>();
 
-		final NamingEnumeration<?> enumeration = attributes.get(member).getAll();
-		while (enumeration.hasMoreElements()) {
-			final String next = (String) enumeration.next();
-			final User user = new User();
-			final HashMap<String, String> mapFromAttr = (HashMap<String, String>) Arrays.asList(next.split(","))
-					.stream().filter(s -> s.contains("uid")).map(s -> s.split("="))
-					.collect(Collectors.toMap(e -> e[0], e -> e[1]));
-			user.setUserId(mapFromAttr.get("uid"));
-			users.add(user);
-		}
-		return users;
-	}
+        final NamingEnumeration<?> enumeration = attributes.get(member).getAll();
+        while (enumeration.hasMoreElements()) {
+            final String next = (String) enumeration.next();
+            final User user = new User();
+            final HashMap<String, String> mapFromAttr = (HashMap<String, String>) Arrays.asList(
+                    next.split(",")).stream().filter(s -> s.contains("uid")).map(s -> s.split("=")).collect(
+                    Collectors.toMap(e -> e[0], e -> e[1]));
+            user.setUserId(mapFromAttr.get("uid"));
+            users.add(user);
+        }
+        return users;
+    }
 
 }

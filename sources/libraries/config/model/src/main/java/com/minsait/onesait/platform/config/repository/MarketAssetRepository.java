@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,48 +25,44 @@ import com.minsait.onesait.platform.config.model.MarketAsset;
 
 public interface MarketAssetRepository extends JpaRepository<MarketAsset, String> {
 
-	@Override
+    @Override
+    <S extends MarketAsset> List<S> save(Iterable<S> entities);
 
-	<S extends MarketAsset> List<S> save(Iterable<S> entities);
+    @Override
+    void flush();
 
-	@Override
+    @Override
+    <S extends MarketAsset> S saveAndFlush(S entity);
 
-	void flush();
+    @SuppressWarnings("unchecked")
+    @Override
+    MarketAsset save(MarketAsset entity);
 
-	@Override
+    @Override
+    void delete(MarketAsset id);
 
-	<S extends MarketAsset> S saveAndFlush(S entity);
+    @Override
+    List<MarketAsset> findAll();
 
-	@SuppressWarnings("unchecked")
-	@Override
+    @Override
+    @CacheEvict(cacheNames = "OntologyRepository")
+    void deleteAll();
 
-	MarketAsset save(MarketAsset entity);
+    @Query("SELECT o FROM MarketAsset AS o WHERE (o.id = :id AND o.deletedAt = null)")
+    MarketAsset findById(@Param("id") String id);
 
-	@Override
+    @Query("SELECT o FROM MarketAsset AS o WHERE (o.identification = :marketAssetId) order by o.identification")
+    MarketAsset findByIdentification(@Param("marketAssetId") String marketAssetId);
 
-	void delete(MarketAsset id);
+    @Query("SELECT o FROM MarketAsset AS o WHERE (o.identification LIKE %:marketAssetId% AND o.deletedAt = null) " +
+            "order by o.identification")
+    List<MarketAsset> findByIdentificationLike(@Param("marketAssetId") String marketAssetId);
 
-	@Override
+    @Query("SELECT o FROM MarketAsset AS o WHERE (((o.user.userId = :userId OR o.isPublic = true) AND o.state = " +
+            "'APPROVED')) AND (o.deletedAt = null)) order by o.createdAt desc")
+    List<MarketAsset> findByUser(@Param("userId") String userId);
 
-	List<MarketAsset> findAll();
-
-	@Override
-	@CacheEvict(cacheNames = "OntologyRepository")
-	void deleteAll();
-
-	@Query("SELECT o FROM MarketAsset AS o WHERE (o.id = :id AND o.deletedAt = null)")
-	MarketAsset findById(@Param("id") String id);
-
-	@Query("SELECT o FROM MarketAsset AS o WHERE (o.identification = :marketAssetId) order by o.identification")
-	MarketAsset findByIdentification(@Param("marketAssetId") String marketAssetId);
-
-	@Query("SELECT o FROM MarketAsset AS o WHERE (o.identification LIKE %:marketAssetId% AND o.deletedAt = null) order by o.identification")
-	List<MarketAsset> findByIdentificationLike(@Param("marketAssetId") String marketAssetId);
-
-	@Query("SELECT o FROM MarketAsset AS o WHERE (((o.user.userId = :userId OR o.isPublic = true) AND o.state = 'APPROVED')) AND (o.deletedAt = null)) order by o.createdAt desc")
-	List<MarketAsset> findByUser(@Param("userId") String userId);
-
-	@Query("SELECT o.jsonDesc FROM MarketAsset AS o WHERE (o.deletedAt = null)")
-	List<String> findJsonDescs();
+    @Query("SELECT o.jsonDesc FROM MarketAsset AS o WHERE (o.deletedAt = null)")
+    List<String> findJsonDescs();
 
 }

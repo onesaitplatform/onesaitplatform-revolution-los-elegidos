@@ -18,4 +18,4 @@
  */
 
 angular
-  .module('commonUI.filters', []);
+    .module('commonUI.filters', []);

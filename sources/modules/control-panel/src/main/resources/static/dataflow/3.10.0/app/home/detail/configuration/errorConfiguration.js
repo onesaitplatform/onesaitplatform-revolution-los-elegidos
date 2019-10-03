@@ -16,22 +16,22 @@
 
 // Controller for Error Configuration.
 angular
-  .module('dataCollectorApp.home')
-  .controller('ErrorConfigurationController', ["$scope", function ($scope) {
-    var initialize = function() {
-      $scope.detailPaneConfig = $scope.errorStageConfig;
-      $scope.detailPaneServices = [];
-      angular.forEach($scope.detailPaneConfig.services, function(serviceConfig) {
-        $scope.detailPaneServices.push({
-          definition: pipelineService.getServiceDefinition(serviceConfig.service),
-          config: serviceConfig
+    .module('dataCollectorApp.home')
+    .controller('ErrorConfigurationController', ["$scope", function ($scope) {
+        var initialize = function () {
+            $scope.detailPaneConfig = $scope.errorStageConfig;
+            $scope.detailPaneServices = [];
+            angular.forEach($scope.detailPaneConfig.services, function (serviceConfig) {
+                $scope.detailPaneServices.push({
+                    definition: pipelineService.getServiceDefinition(serviceConfig.service),
+                    config: serviceConfig
+                });
+            });
+        };
+
+        $scope.$watch('errorStageConfig', function () {
+            initialize();
         });
-      });
-    };
 
-    $scope.$watch('errorStageConfig', function() {
-      initialize();
-    });
-
-    initialize();
-  }]);
+        initialize();
+    }]);

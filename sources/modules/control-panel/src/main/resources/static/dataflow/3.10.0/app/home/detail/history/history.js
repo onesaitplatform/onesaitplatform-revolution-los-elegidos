@@ -18,138 +18,138 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('HistoryController', ["$rootScope", "$scope", "_", "api", "$modal", function ($rootScope, $scope, _, api, $modal) {
+    .module('dataCollectorApp.home')
+    .controller('HistoryController', ["$rootScope", "$scope", "_", "api", "$modal", function ($rootScope, $scope, _, api, $modal) {
 
-    angular.extend($scope, {
-      showLoading: false,
-      runHistory: [],
+        angular.extend($scope, {
+            showLoading: false,
+            runHistory: [],
 
-      /**
-       * Refresh the History by fetching from server.
-       */
-      refreshHistory: function() {
-        updateHistory($scope.activeConfigInfo.pipelineId);
-      },
-
-      /**
-       * Show summary of the pipeline run.
-       *
-       * @param history
-       * @param $index
-       */
-      viewSummary: function(history, $index) {
-        var prevHistory,
-          runHistory = $scope.runHistory;
-
-        while($index + 1 < $scope.runHistory.length) {
-          if(runHistory[$index + 1].status === 'STARTING') {
-            prevHistory = runHistory[$index + 1];
-            break;
-          }
-          $index++;
-        }
-
-        $modal.open({
-          templateUrl: 'app/home/detail/history/summary/summaryModal.tpl.html',
-          controller: 'SummaryModalInstanceController',
-          size: 'lg',
-          backdrop: 'static',
-          resolve: {
-            pipelineConfig: function() {
-              return $scope.pipelineConfig;
+            /**
+             * Refresh the History by fetching from server.
+             */
+            refreshHistory: function () {
+                updateHistory($scope.activeConfigInfo.pipelineId);
             },
-            history: function () {
-              return history;
-            },
-            prevHistory: function() {
-              return prevHistory;
-            }
-          }
-        });
-      },
 
-      /**
-       * Clear History Callback function.
-       *
-       * @param $event
-       */
-      clearHistory: function($event) {
-        var modalInstance = $modal.open({
-            templateUrl: 'app/home/detail/history/clearHistory/clearHistory.tpl.html',
-            controller: 'ClearHistoryModalInstanceController',
-            size: '',
-            backdrop: 'static',
-            resolve: {
-              pipelineInfo: function () {
-                return $scope.pipelineConfig.info;
-              }
-            }
-          });
+            /**
+             * Show summary of the pipeline run.
+             *
+             * @param history
+             * @param $index
+             */
+            viewSummary: function (history, $index) {
+                var prevHistory,
+                    runHistory = $scope.runHistory;
 
-        if($event) {
-          $event.stopPropagation();
-        }
-
-        modalInstance.result.then(function () {
-          updateHistory($scope.pipelineConfig.info.pipelineId);
-        }, function () {
-
-        });
-      },
-
-      /**
-       * Create modal window and display the details for exception.
-       */
-      showStackTrace: function(history) {
-        $modal.open({
-          templateUrl: 'errorModalContent.html',
-          controller: 'ErrorModalInstanceController',
-          size: 'lg',
-          backdrop: true,
-          resolve: {
-            errorObj: function () {
-              return {
-                RemoteException: {
-                  antennaDoctorMessages: history.attributes['ANTENNA_DOCTOR_MESSAGES'],
-                  localizedMessage: history.attributes['ERROR_MESSAGE'],
-                  stackTrace: history.attributes['ERROR_STACKTRACE']
+                while ($index + 1 < $scope.runHistory.length) {
+                    if (runHistory[$index + 1].status === 'STARTING') {
+                        prevHistory = runHistory[$index + 1];
+                        break;
+                    }
+                    $index++;
                 }
-              };
+
+                $modal.open({
+                    templateUrl: 'app/home/detail/history/summary/summaryModal.tpl.html',
+                    controller: 'SummaryModalInstanceController',
+                    size: 'lg',
+                    backdrop: 'static',
+                    resolve: {
+                        pipelineConfig: function () {
+                            return $scope.pipelineConfig;
+                        },
+                        history: function () {
+                            return history;
+                        },
+                        prevHistory: function () {
+                            return prevHistory;
+                        }
+                    }
+                });
+            },
+
+            /**
+             * Clear History Callback function.
+             *
+             * @param $event
+             */
+            clearHistory: function ($event) {
+                var modalInstance = $modal.open({
+                    templateUrl: 'app/home/detail/history/clearHistory/clearHistory.tpl.html',
+                    controller: 'ClearHistoryModalInstanceController',
+                    size: '',
+                    backdrop: 'static',
+                    resolve: {
+                        pipelineInfo: function () {
+                            return $scope.pipelineConfig.info;
+                        }
+                    }
+                });
+
+                if ($event) {
+                    $event.stopPropagation();
+                }
+
+                modalInstance.result.then(function () {
+                    updateHistory($scope.pipelineConfig.info.pipelineId);
+                }, function () {
+
+                });
+            },
+
+            /**
+             * Create modal window and display the details for exception.
+             */
+            showStackTrace: function (history) {
+                $modal.open({
+                    templateUrl: 'errorModalContent.html',
+                    controller: 'ErrorModalInstanceController',
+                    size: 'lg',
+                    backdrop: true,
+                    resolve: {
+                        errorObj: function () {
+                            return {
+                                RemoteException: {
+                                    antennaDoctorMessages: history.attributes['ANTENNA_DOCTOR_MESSAGES'],
+                                    localizedMessage: history.attributes['ERROR_MESSAGE'],
+                                    stackTrace: history.attributes['ERROR_STACKTRACE']
+                                }
+                            };
+                        }
+                    }
+                });
             }
-          }
+
         });
-      }
 
-    });
+        var updateHistory = function (pipelineName) {
+            $scope.showLoading = true;
+            api.pipelineAgent.getHistory(pipelineName)
+                .then(function (res) {
+                    if (res.data && res.data.length) {
+                        $scope.runHistory = res.data;
+                    } else {
+                        $scope.runHistory = [];
+                    }
+                    $scope.showLoading = false;
+                })
+                .catch(function (res) {
+                    $scope.showLoading = false;
+                    $rootScope.common.errors = [res.data];
+                });
+        };
 
-    var updateHistory = function(pipelineName) {
-      $scope.showLoading = true;
-      api.pipelineAgent.getHistory(pipelineName)
-        .then(function(res) {
-          if(res.data && res.data.length) {
-            $scope.runHistory = res.data;
-          } else {
-            $scope.runHistory = [];
-          }
-          $scope.showLoading = false;
-        })
-        .catch(function(res) {
-          $scope.showLoading = false;
-          $rootScope.common.errors = [res.data];
+        $scope.$on('onPipelineConfigSelect', function (event, configInfo) {
+            if (configInfo) {
+                updateHistory(configInfo.pipelineId);
+            }
         });
-    };
 
-    $scope.$on('onPipelineConfigSelect', function(event, configInfo) {
-      if(configInfo) {
-        updateHistory(configInfo.pipelineId);
-      }
-    });
+        $scope.$watch('isPipelineRunning', function (newValue) {
+            if ($scope.pipelineConfig) {
+                updateHistory($scope.pipelineConfig.info.pipelineId);
+            }
+        });
 
-    $scope.$watch('isPipelineRunning', function(newValue) {
-      if($scope.pipelineConfig) {
-        updateHistory($scope.pipelineConfig.info.pipelineId);
-      }
-    });
-
-  }]);
+    }]);

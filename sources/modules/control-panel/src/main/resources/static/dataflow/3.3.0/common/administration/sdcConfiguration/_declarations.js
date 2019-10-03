@@ -18,6 +18,6 @@
  */
 
 angular
-  .module('commonUI.sdcConfiguration', [
-    'ngRoute'
-  ]);
+    .module('commonUI.sdcConfiguration', [
+        'ngRoute'
+    ]);

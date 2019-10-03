@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,50 +33,50 @@ import com.minsait.onesait.platform.persistence.mongodb.MongoNativeManageDBRepos
 @Component
 public class MockMongoOntologies {
 
-	@Autowired
-	ObjectMapper objectMapper;
+    @Autowired
+    ObjectMapper objectMapper;
 
-	@Autowired
-	MongoNativeManageDBRepository manage;
+    @Autowired
+    MongoNativeManageDBRepository manage;
 
-	@Autowired
-	MongoBasicOpsDBRepository repository;
+    @Autowired
+    MongoBasicOpsDBRepository repository;
 
-	public <T> boolean createOntology(Class<T> ontology)
-			throws JsonGenerationException, JsonMappingException, IOException {
-		final List<String> list = manage.getListOfTables();
-		if (list.contains(ontology.getSimpleName())) {
-			repository.delete(ontology.getSimpleName(), false);
-			return true;
-		}
+    public <T> boolean createOntology(
+            Class<T> ontology) throws JsonGenerationException, JsonMappingException, IOException {
+        final List<String> list = manage.getListOfTables();
+        if (list.contains(ontology.getSimpleName())) {
+            repository.delete(ontology.getSimpleName(), false);
+            return true;
+        }
 
-		final JsonSchemaGenerator generator = new JsonSchemaGenerator(objectMapper);
-		final JsonSchema jsonSchema = generator.generateSchema(ontology);
+        final JsonSchemaGenerator generator = new JsonSchemaGenerator(objectMapper);
+        final JsonSchema jsonSchema = generator.generateSchema(ontology);
 
-		final StringWriter json = new StringWriter();
-		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-		objectMapper.writeValue(json, jsonSchema);
+        final StringWriter json = new StringWriter();
+        objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+        objectMapper.writeValue(json, jsonSchema);
 
-		System.out.println(json.toString());
-		manage.createTable4Ontology(ontology.getSimpleName(), json.toString(), null);
+        System.out.println(json.toString());
+        manage.createTable4Ontology(ontology.getSimpleName(), json.toString(), null);
 
-		return true;
-	}
+        return true;
+    }
 
-	public <T> void deleteOntology(Class<T> ontology) {
-		repository.delete(ontology.getSimpleName(), false);
-		manage.removeTable4Ontology(ontology.getSimpleName());
-	}
+    public <T> void deleteOntology(Class<T> ontology) {
+        repository.delete(ontology.getSimpleName(), false);
+        manage.removeTable4Ontology(ontology.getSimpleName());
+    }
 
-	public <T> String getJSONSchema(Class<T> ontology)
-			throws JsonGenerationException, JsonMappingException, IOException {
-		final JsonSchemaGenerator generator = new JsonSchemaGenerator(objectMapper);
-		final JsonSchema jsonSchema = generator.generateSchema(ontology);
+    public <T> String getJSONSchema(
+            Class<T> ontology) throws JsonGenerationException, JsonMappingException, IOException {
+        final JsonSchemaGenerator generator = new JsonSchemaGenerator(objectMapper);
+        final JsonSchema jsonSchema = generator.generateSchema(ontology);
 
-		final StringWriter json = new StringWriter();
-		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-		objectMapper.writeValue(json, jsonSchema);
-		return json.toString();
-	}
+        final StringWriter json = new StringWriter();
+        objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+        objectMapper.writeValue(json, jsonSchema);
+        return json.toString();
+    }
 
 }

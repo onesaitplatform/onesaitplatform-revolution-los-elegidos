@@ -13,26 +13,26 @@ body {
     border-radius: 5px;
 }
 
-#sendLeft{
-	position: absolute;
+#sendLeft {
+    position: absolute;
     top: 238px;
     left: 277px;
 }
 
-#sendRight{
-	position: absolute;
+#sendRight {
+    position: absolute;
     top: 238px;
     left: 341px;
 }
 
-#sendUp{
-	position: absolute;
+#sendUp {
+    position: absolute;
     top: 204px;
     left: 308px;
 }
 
-#sendDown{
-	position: absolute;
+#sendDown {
+    position: absolute;
     top: 272px;
     left: 309px;
 }
@@ -45,19 +45,19 @@ body {
 }
 
 .arrow {
-	position: absolute;
-	top: 79px;
-	left: 81px;
+    position: absolute;
+    top: 79px;
+    left: 81px;
 }
 
 .text-logo-panel {
-   	color: darkturquoise;
-	position: relative;
-	top: -25px;
-	left: 71px;
-	font-size: 11px;
-	white-space: nowrap;
-	display: block;
+    color: darkturquoise;
+    position: relative;
+    top: -25px;
+    left: 71px;
+    font-size: 11px;
+    white-space: nowrap;
+    display: block;
 }
 
 .text-logo-s4c {
@@ -79,7 +79,8 @@ body {
     background-color: #212529;
     width: 340px;
 }
+
 .page-header-inner {
-	background-color: #333333;
+    background-color: #333333;
 }
 

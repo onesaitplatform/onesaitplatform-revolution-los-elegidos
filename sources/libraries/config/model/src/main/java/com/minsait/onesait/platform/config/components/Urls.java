@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,24 +19,24 @@ import lombok.Data;
 @Data
 public class Urls {
 
-	private Iotbroker iotbroker;
+    private Iotbroker iotbroker;
 
-	private ScriptingEngine scriptingEngine;
+    private ScriptingEngine scriptingEngine;
 
-	private FlowEngine flowEngine;
+    private FlowEngine flowEngine;
 
-	private RouterStandAlone routerStandAlone;
+    private RouterStandAlone routerStandAlone;
 
-	private ApiManager apiManager;
+    private ApiManager apiManager;
 
-	private Controlpanel controlpanel;
+    private Controlpanel controlpanel;
 
-	private DigitalTwinBroker digitalTwinBroker;
+    private DigitalTwinBroker digitalTwinBroker;
 
-	private Domain domain;
+    private Domain domain;
 
-	private MonitoringUI monitoringUI;
+    private MonitoringUI monitoringUI;
 
-	private RulesEngine rulesEngine;
+    private RulesEngine rulesEngine;
 
 }

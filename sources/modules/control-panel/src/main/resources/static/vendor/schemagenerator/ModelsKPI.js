@@ -1,5 +1,5 @@
 // ------------------- Models ------------------- //
-$(document).ready(function() {
+$(document).ready(function () {
 
     Type = Backbone.Model.extend({
         defaults: {
@@ -10,43 +10,42 @@ $(document).ready(function() {
     TypeList = Backbone.Collection.extend({
         model: Type,
 
-        filterByType: function(aType) {
+        filterByType: function (aType) {
             return this.filter(
-
-            function(item) {
-                return item.get('t') == aType;
-            });
+                function (item) {
+                    return item.get('t') == aType;
+                });
         },
 
-        isObject: function() {
+        isObject: function () {
             return (this.filterByType('object').length > 0);
         },
 
-        isString: function() {
+        isString: function () {
             return (this.filterByType('string').length > 0);
         },
 
-        isNumber: function() {
+        isNumber: function () {
             return (this.filterByType('number').length > 0);
         },
 
-        isInteger: function() {
+        isInteger: function () {
             return (this.filterByType('integer').length > 0);
         },
 
-        isBoolean: function() {
+        isBoolean: function () {
             return (this.filterByType('boolean').length > 0);
         },
 
-        isNull: function() {
+        isNull: function () {
             return (this.filterByType('null').length > 0);
         },
 
-        isAny: function() {
+        isAny: function () {
             return (this.filterByType('any').length > 0);
         },
 
-        isArray: function() {
+        isArray: function () {
             return (this.filterByType('array').length > 0);
         }
     });
@@ -59,7 +58,7 @@ $(document).ready(function() {
             root: false
         },
 
-        constructId: function(aParentId, aPos, aType) {
+        constructId: function (aParentId, aPos, aType) {
             console.log(this.get('schema').get('schemaid'));
             if (this.get('schema').get('schemaid') != "")
                 return;
@@ -83,9 +82,9 @@ $(document).ready(function() {
             this.get('schema').setId(id);
         },
 
-        validate: function(attrs) {
+        validate: function (attrs) {
 
-            if (typeof(attrs.key) != "undefined") {
+            if (typeof (attrs.key) != "undefined") {
                 if (!attrs.key) {
                     var k = attrs.key.replace(/\s/g, '');
                     if (k == '') {
@@ -99,27 +98,25 @@ $(document).ready(function() {
     SchemaPairList = Backbone.Collection.extend({
         model: SchemaPair,
 
-        initialize: function() {
-            this.comparator = function(aSchemaPair) {
+        initialize: function () {
+            this.comparator = function (aSchemaPair) {
 
                 return (aSchemaPair.get('key') + aSchemaPair.cid);
             };
         },
 
-        filterByRemoved: function() {
+        filterByRemoved: function () {
             return this.filter(
-
-            function(item) {
-                return item.get('removed');
-            });
+                function (item) {
+                    return item.get('removed');
+                });
         },
 
-        filterByName: function(aName) {
+        filterByName: function (aName) {
             return this.filter(
-
-            function(item) {
-                return (item.get('key') == aName);
-            });
+                function (item) {
+                    return (item.get('key') == aName);
+                });
         },
     });
 
@@ -146,7 +143,7 @@ $(document).ready(function() {
             extensions: undefined
         },
 
-        setId: function(aId) {
+        setId: function (aId) {
             this.set({
                 schemaid: aId
             });
@@ -164,42 +161,42 @@ $(document).ready(function() {
             }
         },
 
-        complexKeys: function() {
+        complexKeys: function () {
             return ['properties', 'type', 'items', 'extensions'];
         },
 
         /* Used when input is schema to treat schema attributes 
         appropriately. These names must match schema definition, 
         hence 'extends' and not 'extensions'. */
-        complexSchemaKeys: function() {
+        complexSchemaKeys: function () {
             return ['properties', 'type', 'items', 'extends', '$ref'];
         },
 
-        simpleKeys: function() {
+        simpleKeys: function () {
             return _.difference(_.keys(this.attributes), this.complexKeys());
         },
 
-        simpleAttributes: function() {
+        simpleAttributes: function () {
             return _.pick(this.attributes, this.simpleKeys());
         },
 
-        complexAttributes: function() {
+        complexAttributes: function () {
             return _.pick(this.attributes, this.complexKeys());
         },
 
-        simpleKeysWithVal: function() {
+        simpleKeysWithVal: function () {
             return _.keys(this.simpleAttributesWithVal());
         },
 
-        simpleKeysWithValConcise: function() {
+        simpleKeysWithValConcise: function () {
             return _.keys(this.simpleAttributesWithValConcise());
 
         },
 
-        simpleAttributesWithVal: function() {
+        simpleAttributesWithVal: function () {
 
             var self = this;
-            var keepAttributes = _.filter(this.simpleKeys(), function(key) {
+            var keepAttributes = _.filter(this.simpleKeys(), function (key) {
 
                 var value = self.attributes[key];
                 var type = RealTypeOf(value);
@@ -209,37 +206,34 @@ $(document).ready(function() {
                     return true;
                 }
 
-                return (value != '' && 
-                        type != TypeEnum.UNDEFINED &&
-                        type != TypeEnum.NULL);
-                
+                return (value != '' &&
+                    type != TypeEnum.UNDEFINED &&
+                    type != TypeEnum.NULL);
+
             });
 
             return _.pick(this.attributes, keepAttributes);
         },
 
-        simpleAttributesWithValConcise: function() {
+        simpleAttributesWithValConcise: function () {
 
             var self = this;
-            var keepAttributes = _.filter(this.simpleKeys(), function(key) {
+            var keepAttributes = _.filter(this.simpleKeys(), function (key) {
 
                 var value = self.attributes[key];
                 var type = RealTypeOf(value);
-             
+
                 if (key === 'required') {
                     // Only show required if true
                     return value;
-                }
-                else if (key === 'id') {
+                } else if (key === 'id') {
                     // Never show
                     return false;
-                }
-                else if (key === 'dollarschema') {
+                } else if (key === 'dollarschema') {
                     // Never show
                     return false;
-                }
-                else {
-                    return (value != '' && 
+                } else {
+                    return (value != '' &&
                         type != TypeEnum.UNDEFINED &&
                         type != TypeEnum.NULL);
                 }
@@ -248,7 +242,7 @@ $(document).ready(function() {
             return _.pick(this.attributes, keepAttributes);
         },
 
-        initialize: function() {
+        initialize: function () {
 
             this.set({
                 properties: new SchemaPairList()
@@ -264,13 +258,13 @@ $(document).ready(function() {
             });
         },
 
-        clearItems: function() {
+        clearItems: function () {
             this.set({
                 'items': new SchemaPairList()
             });
         },
 
-        addNewProperty: function(aKey) {
+        addNewProperty: function (aKey) {
 
             var schemaPair = new SchemaPair({
                 key: aKey,
@@ -279,7 +273,7 @@ $(document).ready(function() {
             this.addProperty(schemaPair);
         },
 
-        addNewItem: function() {
+        addNewItem: function () {
             var schemaPair = new SchemaPair({
                 schema: new Schema()
             });
@@ -295,7 +289,7 @@ $(document).ready(function() {
             }
         },
 
-        addItemCount: function(aItemCount) {
+        addItemCount: function (aItemCount) {
 
             if ('' == aItemCount) {
                 // User didn't request any Items.
@@ -317,7 +311,7 @@ $(document).ready(function() {
             return (aItemCount == i);
         },
 
-        validate: function(attrs) {
+        validate: function (attrs) {
 
             // Number
             if (attrs.minimum) {
@@ -354,7 +348,7 @@ $(document).ready(function() {
             }
         },
 
-        addOrReplaceProperty: function(aSchemaPair) {
+        addOrReplaceProperty: function (aSchemaPair) {
             if (!aSchemaPair) {
                 return;
             }
@@ -369,7 +363,7 @@ $(document).ready(function() {
             }
         },
 
-        addOrReplaceProperties: function(aSchemaPairs) {
+        addOrReplaceProperties: function (aSchemaPairs) {
 
             if (!aSchemaPairs) {
                 return;
@@ -379,14 +373,14 @@ $(document).ready(function() {
             }
         },
 
-        addProperty: function(aSchemaPair) {
+        addProperty: function (aSchemaPair) {
             if (!aSchemaPair) {
                 return;
             }
             this.get('properties').add(aSchemaPair);
         },
 
-        addItem: function(aSchemaPair) {
+        addItem: function (aSchemaPair) {
             if (!aSchemaPair) {
                 return;
             }
@@ -395,7 +389,7 @@ $(document).ready(function() {
             this.get('items').add(aSchemaPair);
         },
 
-        addItems: function(aSchemaPairs) {
+        addItems: function (aSchemaPairs) {
             if (!aSchemaPairs) {
                 return;
             }
@@ -405,14 +399,14 @@ $(document).ready(function() {
             }
         },
 
-        addExtension: function(aSchemaPair) {
+        addExtension: function (aSchemaPair) {
             if (!aSchemaPair) {
                 return;
             }
             this.get('extensions').add(aSchemaPair);
         },
 
-        addType: function(aType) {
+        addType: function (aType) {
             if (!aType) {
                 return;
             }
@@ -423,7 +417,7 @@ $(document).ready(function() {
             }
         },
 
-        addTypes: function(aTypes) {
+        addTypes: function (aTypes) {
             if (!aTypes) {
                 return;
             }
@@ -432,7 +426,7 @@ $(document).ready(function() {
             }
         },
 
-        addExtension: function(aSchemaPair) {
+        addExtension: function (aSchemaPair) {
             if (!aSchemaPair) {
                 return;
             }

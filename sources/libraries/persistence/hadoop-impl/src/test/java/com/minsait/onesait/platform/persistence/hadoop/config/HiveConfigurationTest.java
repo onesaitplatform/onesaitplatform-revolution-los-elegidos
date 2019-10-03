@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,38 +35,38 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HiveConfigurationTest {
 
-	@Value("${onesaitplatform.database.hive.url}")
-	private String url;
+    @Value("${onesaitplatform.database.hive.url}")
+    private String url;
 
-	@Value("${onesaitplatform.database.hive.password:''}")
-	private String password;
+    @Value("${onesaitplatform.database.hive.password:''}")
+    private String password;
 
-	@Value("${onesaitplatform.database.hive.username:hive}")
-	private String username;
+    @Value("${onesaitplatform.database.hive.username:hive}")
+    private String username;
 
-	@Primary
-	@Bean(name = NameBeanConst.HIVE_DATASOURCE_BEAN_NAME)
-	public DataSource dataSource() {
+    @Primary
+    @Bean(name = NameBeanConst.HIVE_DATASOURCE_BEAN_NAME)
+    public DataSource dataSource() {
 
-		BasicDataSource dataSource = new BasicDataSource();
+        BasicDataSource dataSource = new BasicDataSource();
 
-		dataSource.setUrl(url);
-		dataSource.setDriverClassName("org.apache.hive.jdbc.HiveDriver");
-		dataSource.setUsername(username);
-		dataSource.setPassword(password);
+        dataSource.setUrl(url);
+        dataSource.setDriverClassName("org.apache.hive.jdbc.HiveDriver");
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
 
-		log.error("Initialized Hive");
+        log.error("Initialized Hive");
 
-		return dataSource;
-	}
+        return dataSource;
+    }
 
-	@Bean(name = NameBeanConst.HIVE_TEMPLATE_JDBC_BEAN_NAME)
-	public JdbcTemplate hiveJdbcTemplate(@Qualifier(NameBeanConst.HIVE_DATASOURCE_BEAN_NAME) DataSource dataSource) {
-		return new JdbcTemplate(dataSource);
-	}
-	
-	@Test
-	public void testSimple() {
-		assertTrue(true);
-	}
+    @Bean(name = NameBeanConst.HIVE_TEMPLATE_JDBC_BEAN_NAME)
+    public JdbcTemplate hiveJdbcTemplate(@Qualifier(NameBeanConst.HIVE_DATASOURCE_BEAN_NAME) DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
+
+    @Test
+    public void testSimple() {
+        assertTrue(true);
+    }
 }

@@ -33,222 +33,221 @@ import lombok.ToString;
 @ToString
 public class ContextData implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Getter
-	private String deviceTemplate;
-	@Getter
-	private String device;
-	@Getter
-	private String clientConnection;
-	@Getter
-	private String clientSession;
-	@Getter
-	private String user;
-	@Getter
-	private String timezoneId;
-	@Getter
-	private String timestamp;
-	@Getter
-	private long timestampMillis;
-	@Getter
-	private String source;
-	
-	
-	
-	public ContextData(JsonNode node) {
+    @Getter
+    private String deviceTemplate;
+    @Getter
+    private String device;
+    @Getter
+    private String clientConnection;
+    @Getter
+    private String clientSession;
+    @Getter
+    private String user;
+    @Getter
+    private String timezoneId;
+    @Getter
+    private String timestamp;
+    @Getter
+    private long timestampMillis;
+    @Getter
+    private String source;
 
-		this.setDeviceTemplate(node);
 
-		this.setDevice(node);
-		
-		this.setClientConnection(node);
+    public ContextData(JsonNode node) {
 
-		this.setClientSession(node);
-		
-		this.setUser(node);
-		
-		this.setTimeZone(node);
+        this.setDeviceTemplate(node);
 
-		this.setTimestamp(node);
+        this.setDevice(node);
 
-		this.setTimestampMillis(node);
-		
-		this.setSource(node);
-	}
+        this.setClientConnection(node);
 
-	public ContextData(ContextData other) {
-		user = other.user;
-		deviceTemplate = other.deviceTemplate;
-		device = other.device;
-		clientConnection = other.clientConnection;
-		clientSession = other.clientSession;
-		timezoneId = other.timezoneId;
-		timestamp = other.timestamp;
-		timestampMillis = other.timestampMillis;
-		source = other.source;
-	}
+        this.setClientSession(node);
 
-	@Override
-	public boolean equals(Object other) {
-		if (other == null)
-			return false;
-		if (!(other instanceof ContextData))
-			return false;
-		final ContextData that = (ContextData) other;
-		return Objects.equals(user, that.user) && Objects.equals(device, that.device)
-				&& Objects.equals(deviceTemplate, that.deviceTemplate)
-				&& Objects.equals(clientConnection, that.clientConnection)
-				&& Objects.equals(clientSession, that.clientSession) && Objects.equals(timezoneId, that.timezoneId)
-				&& Objects.equals(timestamp, that.timestamp) && Objects.equals(timestampMillis, that.timestampMillis)
-				&& Objects.equals(source, that.source);
-	}
+        this.setUser(node);
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(user, deviceTemplate, device, clientConnection, clientSession, timezoneId, timestamp,
-				source);
-	}
+        this.setTimeZone(node);
 
-	private ContextData(Builder build) {
-		user = build.user;
-		timezoneId = build.timezoneId;
-		timestamp = build.timestamp;
-		clientConnection = build.clientConnection;
-		deviceTemplate = build.deviceTemplate;
-		device = build.device;
-		clientSession = build.clientSession;
-		timestampMillis = build.timestampMillis;
-		source = build.source;
-	}
+        this.setTimestamp(node);
 
-	public static Builder builder(String user, String timezoneId, String timestamp, long timestampMillis,
-			String source) {
-		return new Builder(user, timezoneId, timestamp, timestampMillis, source);
-	}
+        this.setTimestampMillis(node);
 
-	public static class Builder {
-		private String deviceTemplate;
-		private String device;
-		private String clientConnection;
-		private String clientSession;
-		private final String user;
-		private final String timezoneId;
-		private final String timestamp;
-		private final long timestampMillis;
-		private final String source;
+        this.setSource(node);
+    }
 
-		public Builder(String user, String timezoneId, String timestamp, long timestampMillis, String source) {
-			this.user = user;
-			this.timezoneId = timezoneId;
-			this.timestamp = timestamp;
-			this.timestampMillis = timestampMillis;
-			this.source = source;
-		}
+    public ContextData(ContextData other) {
+        user = other.user;
+        deviceTemplate = other.deviceTemplate;
+        device = other.device;
+        clientConnection = other.clientConnection;
+        clientSession = other.clientSession;
+        timezoneId = other.timezoneId;
+        timestamp = other.timestamp;
+        timestampMillis = other.timestampMillis;
+        source = other.source;
+    }
 
-		public ContextData build() {
-			return new ContextData(this);
-		}
+    @Override
+    public boolean equals(Object other) {
+        if (other == null)
+            return false;
+        if (!(other instanceof ContextData))
+            return false;
+        final ContextData that = (ContextData) other;
+        return Objects.equals(user, that.user) && Objects.equals(device, that.device) && Objects.equals(deviceTemplate,
+                                                                                                        that.deviceTemplate) && Objects.equals(
+                clientConnection, that.clientConnection) && Objects.equals(clientSession,
+                                                                           that.clientSession) && Objects.equals(
+                timezoneId, that.timezoneId) && Objects.equals(timestamp, that.timestamp) && Objects.equals(
+                timestampMillis, that.timestampMillis) && Objects.equals(source, that.source);
+    }
 
-		public Builder clientSession(String clientSession) {
-			this.clientSession = clientSession;
-			return this;
-		}
+    @Override
+    public int hashCode() {
+        return Objects.hash(user, deviceTemplate, device, clientConnection, clientSession, timezoneId, timestamp,
+                            source);
+    }
 
-		public Builder clientConnection(String clientConnection) {
-			this.clientConnection = clientConnection;
-			return this;
-		}
+    private ContextData(Builder build) {
+        user = build.user;
+        timezoneId = build.timezoneId;
+        timestamp = build.timestamp;
+        clientConnection = build.clientConnection;
+        deviceTemplate = build.deviceTemplate;
+        device = build.device;
+        clientSession = build.clientSession;
+        timestampMillis = build.timestampMillis;
+        source = build.source;
+    }
 
-		public Builder device(String device) {
-			this.device = device;
-			return this;
-		}
+    public static Builder builder(String user, String timezoneId, String timestamp, long timestampMillis,
+            String source) {
+        return new Builder(user, timezoneId, timestamp, timestampMillis, source);
+    }
 
-		public Builder deviceTemplate(String deviceTemplate) {
-			this.deviceTemplate = deviceTemplate;
-			return this;
-		}
-	}
-	
-	private void setDeviceTemplate(JsonNode node) {
-		final JsonNode deviceTemplateFound = node.findValue("deviceTemplate");
-		if (deviceTemplateFound != null) {
-			this.deviceTemplate = deviceTemplateFound.asText();
-		} else {
-			this.deviceTemplate = "";
-		}
-	}
-	
-	private void setDevice(JsonNode node) {
-		final JsonNode deviceFound = node.findValue("device");
-		if (deviceFound != null) {
-			this.device = deviceFound.asText();
-		} else {
-			this.device = "";
-		}
-	}
-	
-	private void setClientConnection(JsonNode node) {
-		final JsonNode clientConnectionFound = node.findValue("clientConnection");
-		if (clientConnectionFound != null) {
-			this.clientConnection = clientConnectionFound.asText();
-		} else {
-			this.clientConnection = "";
-		}
-	}
-	
-	private void setClientSession(JsonNode node) {
-		final JsonNode clientSessionFound = node.findValue("clientSession");
-		if (clientSessionFound != null) {
-			this.clientSession = clientSessionFound.asText();
-		} else {
-			this.clientSession = "";
-		}
-	}
-	
-	private void setUser(JsonNode node) {
-		final JsonNode userFound = node.findValue("user");
-		if (userFound != null) {
-			this.user = userFound.asText();
-		} else {
-			this.user = "";
-		}
-	}
-	
-	private void setTimeZone(JsonNode node) {
-		final JsonNode timezoneIdFound = node.findValue("timezoneId");
-		if (timezoneIdFound != null) {
-			this.timezoneId = timezoneIdFound.asText();
-		} else {
-			this.timezoneId = CalendarAdapter.getServerTimezoneId();
-		}
-	}
-	
-	private void setTimestamp(JsonNode node) {
-		final JsonNode timestampFound = node.findValue("timestamp");
-		if (timestampFound != null) {
-			this.timestamp = timestampFound.asText();
-		} else {
-			this.timestamp = Calendar.getInstance(TimeZone.getTimeZone(this.timezoneId)).getTime().toString();
-		}
-	}
-	
-	private void setTimestampMillis(JsonNode node) {
-		final JsonNode timestampMillisFound = node.findValue("timestampMillis");
-		if (timestampMillisFound != null) {
-			this.timestampMillis = timestampMillisFound.asLong();
-		} else {
-			this.timestampMillis = System.currentTimeMillis();
-		}
-	}
-	
-	private void setSource(JsonNode node) {
-		final JsonNode sourceFound = node.findValue("source");
-		if (sourceFound != null) {
-			this.source = sourceFound.toString();
-		} else {
-			this.source = "";
-		}
-	}
+    public static class Builder {
+        private String deviceTemplate;
+        private String device;
+        private String clientConnection;
+        private String clientSession;
+        private final String user;
+        private final String timezoneId;
+        private final String timestamp;
+        private final long timestampMillis;
+        private final String source;
+
+        public Builder(String user, String timezoneId, String timestamp, long timestampMillis, String source) {
+            this.user = user;
+            this.timezoneId = timezoneId;
+            this.timestamp = timestamp;
+            this.timestampMillis = timestampMillis;
+            this.source = source;
+        }
+
+        public ContextData build() {
+            return new ContextData(this);
+        }
+
+        public Builder clientSession(String clientSession) {
+            this.clientSession = clientSession;
+            return this;
+        }
+
+        public Builder clientConnection(String clientConnection) {
+            this.clientConnection = clientConnection;
+            return this;
+        }
+
+        public Builder device(String device) {
+            this.device = device;
+            return this;
+        }
+
+        public Builder deviceTemplate(String deviceTemplate) {
+            this.deviceTemplate = deviceTemplate;
+            return this;
+        }
+    }
+
+    private void setDeviceTemplate(JsonNode node) {
+        final JsonNode deviceTemplateFound = node.findValue("deviceTemplate");
+        if (deviceTemplateFound != null) {
+            this.deviceTemplate = deviceTemplateFound.asText();
+        } else {
+            this.deviceTemplate = "";
+        }
+    }
+
+    private void setDevice(JsonNode node) {
+        final JsonNode deviceFound = node.findValue("device");
+        if (deviceFound != null) {
+            this.device = deviceFound.asText();
+        } else {
+            this.device = "";
+        }
+    }
+
+    private void setClientConnection(JsonNode node) {
+        final JsonNode clientConnectionFound = node.findValue("clientConnection");
+        if (clientConnectionFound != null) {
+            this.clientConnection = clientConnectionFound.asText();
+        } else {
+            this.clientConnection = "";
+        }
+    }
+
+    private void setClientSession(JsonNode node) {
+        final JsonNode clientSessionFound = node.findValue("clientSession");
+        if (clientSessionFound != null) {
+            this.clientSession = clientSessionFound.asText();
+        } else {
+            this.clientSession = "";
+        }
+    }
+
+    private void setUser(JsonNode node) {
+        final JsonNode userFound = node.findValue("user");
+        if (userFound != null) {
+            this.user = userFound.asText();
+        } else {
+            this.user = "";
+        }
+    }
+
+    private void setTimeZone(JsonNode node) {
+        final JsonNode timezoneIdFound = node.findValue("timezoneId");
+        if (timezoneIdFound != null) {
+            this.timezoneId = timezoneIdFound.asText();
+        } else {
+            this.timezoneId = CalendarAdapter.getServerTimezoneId();
+        }
+    }
+
+    private void setTimestamp(JsonNode node) {
+        final JsonNode timestampFound = node.findValue("timestamp");
+        if (timestampFound != null) {
+            this.timestamp = timestampFound.asText();
+        } else {
+            this.timestamp = Calendar.getInstance(TimeZone.getTimeZone(this.timezoneId)).getTime().toString();
+        }
+    }
+
+    private void setTimestampMillis(JsonNode node) {
+        final JsonNode timestampMillisFound = node.findValue("timestampMillis");
+        if (timestampMillisFound != null) {
+            this.timestampMillis = timestampMillisFound.asLong();
+        } else {
+            this.timestampMillis = System.currentTimeMillis();
+        }
+    }
+
+    private void setSource(JsonNode node) {
+        final JsonNode sourceFound = node.findValue("source");
+        if (sourceFound != null) {
+            this.source = sourceFound.toString();
+        } else {
+            this.source = "";
+        }
+    }
 }

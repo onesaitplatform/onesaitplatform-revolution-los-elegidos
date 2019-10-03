@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,29 +38,29 @@ import lombok.Setter;
 @Table(name = "ONTOLOGY_VIRTUAL")
 public class OntologyVirtual extends AuditableEntityWithUUID {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	@OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "ONTOLOGY_ID", referencedColumnName = "ID")
-	@Getter
-	@Setter
-	private Ontology ontologyId;
+    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "ONTOLOGY_ID", referencedColumnName = "ID")
+    @Getter
+    @Setter
+    private Ontology ontologyId;
 
-	@ManyToOne
-	@OnDelete(action = OnDeleteAction.NO_ACTION)
-	@JoinColumn(name = "DATASOURCE_ID", referencedColumnName = "ID")
-	@Getter
-	@Setter
-	private OntologyVirtualDatasource datasourceId;
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @JoinColumn(name = "DATASOURCE_ID", referencedColumnName = "ID")
+    @Getter
+    @Setter
+    private OntologyVirtualDatasource datasourceId;
 
-	@Column(name = "OBJECT_ID", length = 50, nullable = true)
-	@NotNull
-	@Getter
-	@Setter
-	private String objectId;
+    @Column(name = "OBJECT_ID", length = 50, nullable = true)
+    @NotNull
+    @Getter
+    @Setter
+    private String objectId;
 
 }

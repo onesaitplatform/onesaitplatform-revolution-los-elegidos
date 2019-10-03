@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,54 +33,55 @@ import com.minsait.onesait.platform.config.repository.IoTSessionRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
-@ConditionalOnProperty(prefix = "onesaitplatform.iotbroker.session.update.schedule", name = "enable", havingValue = "true")
+@ConditionalOnProperty(prefix = "onesaitplatform.iotbroker.session.update.schedule", name = "enable", havingValue =
+        "true")
 @Slf4j
 public class SessionSchedulerUpdaterImpl implements SessionSchedulerUpdater {
 
-	@Autowired
-	IoTSessionRepository ioTSessionRepository;
+    @Autowired
+    IoTSessionRepository ioTSessionRepository;
 
-	private Map<String, IoTSession> mLastUpdates;
-	private List<String> removed;
+    private Map<String, IoTSession> mLastUpdates;
+    private List<String> removed;
 
-	@PostConstruct
-	public void init() {
-		this.mLastUpdates = new ConcurrentHashMap<>();
-		this.removed = new ArrayList<>();
-	}
+    @PostConstruct
+    public void init() {
+        this.mLastUpdates = new ConcurrentHashMap<>();
+        this.removed = new ArrayList<>();
+    }
 
-	@Override
-	public void saveSession(String sessionkey, IoTSession session) {
-		synchronized (this.mLastUpdates) {
-			this.mLastUpdates.put(sessionkey, session);
-		}
-	}
+    @Override
+    public void saveSession(String sessionkey, IoTSession session) {
+        synchronized (this.mLastUpdates) {
+            this.mLastUpdates.put(sessionkey, session);
+        }
+    }
 
-	@Override
-	public void notifyDeleteSession(String sessionkey) {
-		synchronized (this.mLastUpdates) {
-			this.mLastUpdates.remove(sessionkey);
-			this.removed.add(sessionkey);
-		}
-	}
+    @Override
+    public void notifyDeleteSession(String sessionkey) {
+        synchronized (this.mLastUpdates) {
+            this.mLastUpdates.remove(sessionkey);
+            this.removed.add(sessionkey);
+        }
+    }
 
-	@Scheduled(fixedDelayString = "${onesaitplatform.iotbroker.device.update.schedule.delay.millis: 5000}")
-	@Transactional
-	public void updateSessionPhysically() {
-		log.info("Update Sessions in ConfigDB");
-		synchronized (this.mLastUpdates) {
-			for (Map.Entry<String, IoTSession> entry : this.mLastUpdates.entrySet()) {
-				IoTSession session = entry.getValue();
-				if (!this.removed.contains(entry.getKey())) {// Due to concurrent conditions can happen
-					if (log.isDebugEnabled()) {
-						log.debug("Save Session: {} " ,entry.getKey());
-					}
-					ioTSessionRepository.save(session);
-				}
-			}
-			this.mLastUpdates.clear();
-			this.removed.clear();
-		}
-	}
+    @Scheduled(fixedDelayString = "${onesaitplatform.iotbroker.device.update.schedule.delay.millis: 5000}")
+    @Transactional
+    public void updateSessionPhysically() {
+        log.info("Update Sessions in ConfigDB");
+        synchronized (this.mLastUpdates) {
+            for (Map.Entry<String, IoTSession> entry : this.mLastUpdates.entrySet()) {
+                IoTSession session = entry.getValue();
+                if (!this.removed.contains(entry.getKey())) {// Due to concurrent conditions can happen
+                    if (log.isDebugEnabled()) {
+                        log.debug("Save Session: {} ", entry.getKey());
+                    }
+                    ioTSessionRepository.save(session);
+                }
+            }
+            this.mLastUpdates.clear();
+            this.removed.clear();
+        }
+    }
 
 }

@@ -18,91 +18,91 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('RevertChangesModalInstanceController', ["$scope", "$modalInstance", "pipelineInfo", "metadata", "api", "authService", function (
-    $scope, $modalInstance, pipelineInfo, metadata, api, authService
-  ) {
-    angular.extend($scope, {
-      common: {
-        errors: []
-      },
-      pipelineInfo: pipelineInfo,
-      operationInProgress: false,
-      dpmPipelineId: metadata['dpm.pipeline.id'],
-      dpmPipelineVersion: metadata['dpm.pipeline.version'],
-      yes: function() {
-        $scope.operationInProgress = true;
+    .module('dataCollectorApp.home')
+    .controller('RevertChangesModalInstanceController', ["$scope", "$modalInstance", "pipelineInfo", "metadata", "api", "authService", function (
+        $scope, $modalInstance, pipelineInfo, metadata, api, authService
+    ) {
+        angular.extend($scope, {
+            common: {
+                errors: []
+            },
+            pipelineInfo: pipelineInfo,
+            operationInProgress: false,
+            dpmPipelineId: metadata['dpm.pipeline.id'],
+            dpmPipelineVersion: metadata['dpm.pipeline.version'],
+            yes: function () {
+                $scope.operationInProgress = true;
 
-        api.remote.getPipelineCommitHistory(
-          authService.getRemoteBaseUrl(),
-          authService.getSSOToken(),
-          $scope.dpmPipelineId
-        ).then(
-          function(res) {
-            var commits = res.data;
-            var remotePipeline;
-            if (commits && commits.length) {
-              remotePipeline = _.find(commits, function(commit) {
-                return commit.version === $scope.dpmPipelineVersion;
-              });
-            }
-
-            if (remotePipeline) {
-              api.remote.getPipeline(authService.getRemoteBaseUrl(), authService.getSSOToken(), remotePipeline)
-                .then(
-                  function(res) {
-                    var orgRemotePipeline = res.data;
-                    var pipelineEnvelope = {
-                      pipelineConfig: JSON.parse(orgRemotePipeline.pipelineDefinition),
-                      pipelineRules: JSON.parse(orgRemotePipeline.currentRules.rulesDefinition)
-                    };
-
-                    api.pipelineAgent.importPipelineConfig(pipelineInfo.pipelineId, pipelineEnvelope, true, false)
-                      .then(
-                        function(res) {
-                          $scope.updatedPipelineConfig = res.data.pipelineConfig;
-                          $scope.pipelineVersion = orgRemotePipeline.version;
-                          var newMetadata = res.data.pipelineConfig.metadata;
-                          newMetadata['lastConfigId'] = res.data.pipelineConfig.uuid;
-                          newMetadata['lastRulesId'] = res.data.pipelineRules.uuid;
-                          api.pipelineAgent.savePipelineMetadata(pipelineInfo.pipelineId, newMetadata)
-                            .then(
-                              function(res) {
-                                $modalInstance.close($scope.updatedPipelineConfig);
-                              },
-                              function(res) {
-                                $scope.common.errors = [res.data];
-                                $scope.operationInProgress = false;
-                              }
-                            );
-                        },
-                        function(res) {
-                          $scope.common.errors = [res.data];
-                          $scope.operationInProgress = false;
+                api.remote.getPipelineCommitHistory(
+                    authService.getRemoteBaseUrl(),
+                    authService.getSSOToken(),
+                    $scope.dpmPipelineId
+                ).then(
+                    function (res) {
+                        var commits = res.data;
+                        var remotePipeline;
+                        if (commits && commits.length) {
+                            remotePipeline = _.find(commits, function (commit) {
+                                return commit.version === $scope.dpmPipelineVersion;
+                            });
                         }
-                      );
-                  },
-                  function(res) {
-                    $scope.common.errors = [res.data];
-                  }
+
+                        if (remotePipeline) {
+                            api.remote.getPipeline(authService.getRemoteBaseUrl(), authService.getSSOToken(), remotePipeline)
+                                .then(
+                                    function (res) {
+                                        var orgRemotePipeline = res.data;
+                                        var pipelineEnvelope = {
+                                            pipelineConfig: JSON.parse(orgRemotePipeline.pipelineDefinition),
+                                            pipelineRules: JSON.parse(orgRemotePipeline.currentRules.rulesDefinition)
+                                        };
+
+                                        api.pipelineAgent.importPipelineConfig(pipelineInfo.pipelineId, pipelineEnvelope, true, false)
+                                            .then(
+                                                function (res) {
+                                                    $scope.updatedPipelineConfig = res.data.pipelineConfig;
+                                                    $scope.pipelineVersion = orgRemotePipeline.version;
+                                                    var newMetadata = res.data.pipelineConfig.metadata;
+                                                    newMetadata['lastConfigId'] = res.data.pipelineConfig.uuid;
+                                                    newMetadata['lastRulesId'] = res.data.pipelineRules.uuid;
+                                                    api.pipelineAgent.savePipelineMetadata(pipelineInfo.pipelineId, newMetadata)
+                                                        .then(
+                                                            function (res) {
+                                                                $modalInstance.close($scope.updatedPipelineConfig);
+                                                            },
+                                                            function (res) {
+                                                                $scope.common.errors = [res.data];
+                                                                $scope.operationInProgress = false;
+                                                            }
+                                                        );
+                                                },
+                                                function (res) {
+                                                    $scope.common.errors = [res.data];
+                                                    $scope.operationInProgress = false;
+                                                }
+                                            );
+                                    },
+                                    function (res) {
+                                        $scope.common.errors = [res.data];
+                                    }
+                                );
+                        } else {
+                            $scope.common.errors = ['No pipeline found in Control Hub Pipeline Repository with pipeline ID: ' +
+                            $scope.dpmPipelineId];
+                            $scope.operationInProgress = false;
+                        }
+                    },
+                    function (res) {
+                        $scope.operationInProgress = false;
+                        $scope.common.errors = [res.data];
+                    }
                 );
-            } else {
-              $scope.common.errors = ['No pipeline found in Control Hub Pipeline Repository with pipeline ID: ' +
-              $scope.dpmPipelineId];
-              $scope.operationInProgress = false;
+            },
+
+            no: function () {
+                $modalInstance.dismiss('cancel');
             }
-          },
-          function(res) {
-            $scope.operationInProgress = false;
-            $scope.common.errors = [res.data];
-          }
-        );
-      },
-
-      no: function() {
-        $modalInstance.dismiss('cancel');
-      }
-    });
+        });
 
 
-  }]);
+    }]);

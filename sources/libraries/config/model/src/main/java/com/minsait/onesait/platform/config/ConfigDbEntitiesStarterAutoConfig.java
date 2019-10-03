@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,52 +38,52 @@ import com.minsait.onesait.platform.config.repository.OntologyRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
-@ComponentScan(value = "com.minsait.onesait.platform", excludeFilters = {
-		@ComponentScan.Filter(type = FilterType.REGEX, pattern = {
-				"com.minsait.onesait.platform.config.services.*" }) })
+@ComponentScan(value = "com.minsait.onesait.platform", excludeFilters = {@ComponentScan.Filter(type =
+        FilterType.REGEX, pattern = {"com.minsait.onesait.platform.config.services.*"})})
 // @ComponentScan(value="com.minsait.onesait.platform")
-@EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", transactionManagerRef = "transactionManager", basePackageClasses = OntologyRepository.class)
+@EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", transactionManagerRef = "transactionManager"
+        , basePackageClasses = OntologyRepository.class)
 @EnableTransactionManagement
 @Slf4j
 public class ConfigDbEntitiesStarterAutoConfig {
 
-	@Autowired
-	@Lazy
-	private JpaVendorAdapter jpaVendorAdapter;
+    @Autowired
+    @Lazy
+    private JpaVendorAdapter jpaVendorAdapter;
 
-	@Bean
-	@Primary
-	@ConfigurationProperties("spring.jpa")
-	public JpaProperties jpaProperties() {
-		return new JpaProperties();
-	}
+    @Bean
+    @Primary
+    @ConfigurationProperties("spring.jpa")
+    public JpaProperties jpaProperties() {
+        return new JpaProperties();
+    }
 
-	@Bean(name = "configDBdatasource")
-	@Primary
-	@ConfigurationProperties(prefix = "spring.datasource")
-	public DataSource dataSource() {
-		return DataSourceBuilder.create().build();
-	}
+    @Bean(name = "configDBdatasource")
+    @Primary
+    @ConfigurationProperties(prefix = "spring.datasource")
+    public DataSource dataSource() {
+        return DataSourceBuilder.create().build();
+    }
 
-	@Bean(name = "entityManagerFactory")
-	@Primary
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-		final LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
-		log.info("DatasourceProperties: " + dataSource().toString());
+    @Bean(name = "entityManagerFactory")
+    @Primary
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        final LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
+        log.info("DatasourceProperties: " + dataSource().toString());
 
-		lef.setDataSource(dataSource());
-		lef.setJpaVendorAdapter(jpaVendorAdapter);
-		lef.setJpaPropertyMap(jpaProperties().getHibernateProperties(dataSource()));
-		lef.setPackagesToScan("com.minsait.onesait.platform.config");
-		lef.setPersistenceUnitName("onesaitPlatform");
-		return lef;
-	}
+        lef.setDataSource(dataSource());
+        lef.setJpaVendorAdapter(jpaVendorAdapter);
+        lef.setJpaPropertyMap(jpaProperties().getHibernateProperties(dataSource()));
+        lef.setPackagesToScan("com.minsait.onesait.platform.config");
+        lef.setPersistenceUnitName("onesaitPlatform");
+        return lef;
+    }
 
-	@Bean(name = "transactionManager")
-	@Primary
-	public PlatformTransactionManager transactionManager() {
-		final JpaTransactionManager tm = new JpaTransactionManager();
-		tm.setEntityManagerFactory(entityManagerFactory().getObject());
-		return tm;
-	}
+    @Bean(name = "transactionManager")
+    @Primary
+    public PlatformTransactionManager transactionManager() {
+        final JpaTransactionManager tm = new JpaTransactionManager();
+        tm.setEntityManagerFactory(entityManagerFactory().getObject());
+        return tm;
+    }
 }

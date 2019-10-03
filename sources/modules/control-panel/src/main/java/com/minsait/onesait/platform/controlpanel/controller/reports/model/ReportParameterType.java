@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,50 +29,49 @@ import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
  */
 public enum ReportParameterType {
 
-	@JsonEnumDefaultValue
-	STRING("java.lang.String", "VARCHAR"), INTEGER("java.lang.Integer", "INTEGER"), DOUBLE("java.lang.Double",
-			"DOUBLE"), DATE("java.util.Date", "DATE"), LIST("java.util.List",
-					"LIST"), COLLECTION("java.util.Collection", "COLLECTION"), BOOLEAN("java.lang.Boolean", "BOOLEAN");
+    @JsonEnumDefaultValue STRING("java.lang.String", "VARCHAR"), INTEGER("java.lang.Integer", "INTEGER"),
+    DOUBLE("java.lang.Double", "DOUBLE"), DATE("java.util.Date", "DATE"), LIST("java.util.List", "LIST"),
+    COLLECTION("java.util.Collection", "COLLECTION"), BOOLEAN("java.lang.Boolean", "BOOLEAN");
 
-	private String javaType;
-	private String dbType;
+    private String javaType;
+    private String dbType;
 
-	private ReportParameterType(String javaType, String dbType) {
-		this.javaType = javaType;
-		this.dbType = dbType;
-	}
+    private ReportParameterType(String javaType, String dbType) {
+        this.javaType = javaType;
+        this.dbType = dbType;
+    }
 
-	public String getDbType() {
-		return dbType;
-	}
+    public String getDbType() {
+        return dbType;
+    }
 
-	public String getJavaType() {
-		return javaType;
-	}
+    public String getJavaType() {
+        return javaType;
+    }
 
-	public static ReportParameterType fromDatabaseType(String dbType) {
+    public static ReportParameterType fromDatabaseType(String dbType) {
 
-		final ReportParameterType[] values = ReportParameterType.values();
+        final ReportParameterType[] values = ReportParameterType.values();
 
-		for (final ReportParameterType value : values) {
-			if (value.dbType.equals(dbType)) {
-				return value;
-			}
-		}
+        for (final ReportParameterType value : values) {
+            if (value.dbType.equals(dbType)) {
+                return value;
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public static ReportParameterType fromJavaType(String javaType) {
+    public static ReportParameterType fromJavaType(String javaType) {
 
-		final ReportParameterType[] values = ReportParameterType.values();
+        final ReportParameterType[] values = ReportParameterType.values();
 
-		for (final ReportParameterType value : values) {
-			if (value.javaType.equals(javaType)) {
-				return value;
-			}
-		}
+        for (final ReportParameterType value : values) {
+            if (value.javaType.equals(javaType)) {
+                return value;
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 }

@@ -15,34 +15,34 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('DownloadEdgePipelinesModalInstanceController', ["$scope", "$modalInstance", "api", function ($scope, $modalInstance, api) {
-    angular.extend($scope, {
-      common: {
-        errors: []
-      },
-      downloadModel : {
-        edgeHttpUrl: 'http://localhost:18633',
-        proxy: 'server'
-      },
-      operationInProgress: false,
-
-      downloadPipelines : function() {
-        $scope.operationInProgress = true;
-        api.pipelineAgent.downloadPipelinesFromEdge($scope.downloadModel.edgeHttpUrl)
-          .then(
-            function() {
-              $modalInstance.close();
+    .module('dataCollectorApp.home')
+    .controller('DownloadEdgePipelinesModalInstanceController', ["$scope", "$modalInstance", "api", function ($scope, $modalInstance, api) {
+        angular.extend($scope, {
+            common: {
+                errors: []
             },
-            function (res) {
-              $scope.operationInProgress = false;
-              $scope.common.errors = [res.data];
-            }
-          );
-      },
+            downloadModel: {
+                edgeHttpUrl: 'http://localhost:18633',
+                proxy: 'server'
+            },
+            operationInProgress: false,
 
-      cancel : function () {
-        $modalInstance.close();
-      }
-    });
-  }]);
+            downloadPipelines: function () {
+                $scope.operationInProgress = true;
+                api.pipelineAgent.downloadPipelinesFromEdge($scope.downloadModel.edgeHttpUrl)
+                    .then(
+                        function () {
+                            $modalInstance.close();
+                        },
+                        function (res) {
+                            $scope.operationInProgress = false;
+                            $scope.common.errors = [res.data];
+                        }
+                    );
+            },
+
+            cancel: function () {
+                $modalInstance.close();
+            }
+        });
+    }]);

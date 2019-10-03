@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,39 +40,38 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class IotBrokerAuditableAspect extends BaseAspect {
 
-	@Autowired
-	private IotBrokerAuditProcessor auditProcessor;
+    @Autowired
+    private IotBrokerAuditProcessor auditProcessor;
 
-	@Around(value = "@annotation(auditable) && args(message, info,..)")
-	public Object processTx(ProceedingJoinPoint joinPoint, IotBrokerAuditable auditable,
-			SSAPMessage<? extends SSAPBodyMessage> message, GatewayInfo info) throws java.lang.Throwable {
-		log.debug("execute iotbroker aspect method process");
-		try {
-			IotBrokerAuditEvent event = auditProcessor.getEvent(message, info);
-			@SuppressWarnings("unchecked")
-			final SSAPMessage<SSAPBodyReturnMessage> returnVal = (SSAPMessage<SSAPBodyReturnMessage>) joinPoint
-					.proceed();
-			event = auditProcessor.completeEventWithResponseMessage(returnVal, event);
-			eventProducer.publish(event);
-			return returnVal;
-		} catch (final Throwable e) {
-			log.error("Error processTx by:", e);
-			throw e;
-		}
+    @Around(value = "@annotation(auditable) && args(message, info,..)")
+    public Object processTx(ProceedingJoinPoint joinPoint, IotBrokerAuditable auditable,
+            SSAPMessage<? extends SSAPBodyMessage> message, GatewayInfo info) throws java.lang.Throwable {
+        log.debug("execute iotbroker aspect method process");
+        try {
+            IotBrokerAuditEvent event = auditProcessor.getEvent(message, info);
+            @SuppressWarnings("unchecked") final SSAPMessage<SSAPBodyReturnMessage> returnVal =
+                    (SSAPMessage<SSAPBodyReturnMessage>) joinPoint.proceed();
+            event = auditProcessor.completeEventWithResponseMessage(returnVal, event);
+            eventProducer.publish(event);
+            return returnVal;
+        } catch (final Throwable e) {
+            log.error("Error processTx by:", e);
+            throw e;
+        }
 
-	}
+    }
 
-	@AfterThrowing(pointcut = "@annotation(auditable) && args(message, info,..)", throwing = "ex")
-	public void doRecoveryActions(JoinPoint joinPoint, Exception ex, IotBrokerAuditable auditable,
-			SSAPMessage<? extends SSAPBodyMessage> message, GatewayInfo info) {
-		log.debug("execute aspect iotborkerauditable method doRecoveryActions");
-		try {
-			final OPAuditError event = auditProcessor.getErrorEvent(message, info, ex);
-			eventProducer.publish(event);
-		} catch (final Exception e) {
-			log.error("error auditing doRecoveryActions", e);
-		}
+    @AfterThrowing(pointcut = "@annotation(auditable) && args(message, info,..)", throwing = "ex")
+    public void doRecoveryActions(JoinPoint joinPoint, Exception ex, IotBrokerAuditable auditable,
+            SSAPMessage<? extends SSAPBodyMessage> message, GatewayInfo info) {
+        log.debug("execute aspect iotborkerauditable method doRecoveryActions");
+        try {
+            final OPAuditError event = auditProcessor.getErrorEvent(message, info, ex);
+            eventProducer.publish(event);
+        } catch (final Exception e) {
+            log.error("error auditing doRecoveryActions", e);
+        }
 
-	}
+    }
 
 }

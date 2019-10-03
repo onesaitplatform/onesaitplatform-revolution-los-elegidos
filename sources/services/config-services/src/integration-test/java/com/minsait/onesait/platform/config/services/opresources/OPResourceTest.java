@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,53 +50,54 @@ import com.minsait.onesait.platform.config.services.opresource.OPResourceService
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class OPResourceTest {
 
-	@Autowired
-	private OPResourceService resourceService;
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private AppRepository appRepository;
-	@Autowired
-	private ProjectRepository projectRepository;
+    @Autowired
+    private OPResourceService resourceService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private AppRepository appRepository;
+    @Autowired
+    private ProjectRepository projectRepository;
 
-	@Transactional
-	@Test
-	public void whenAssigningProjectResourceToAppUser_ThenTheUserHasAccessToThatResource() {
-		final User user = userRepository.findByUserId("developer");
+    @Transactional
+    @Test
+    public void whenAssigningProjectResourceToAppUser_ThenTheUserHasAccessToThatResource() {
+        final User user = userRepository.findByUserId("developer");
 
-		final Project project = new Project();
-		project.setDescription("Example project");
-		project.setName("THis is the project name");
-		project.setType(ProjectType.ENGINE);
-		project.setUser(user);
-		Project pdb = projectRepository.save(project);
-		App realm = new App();
-		realm.setName("Realm test");
-		final AppRole role = new AppRole();
-		realm.setAppId("TestRealm");
-		role.setApp(realm);
-		role.setName("DEVOPS");
-		role.getAppUsers().addAll(userRepository.findAll().stream()
-				.map(u -> AppUser.builder().user(u).role(role).build()).collect(Collectors.toSet()));
-		realm.getAppRoles().add(role);
-		realm = appRepository.save(realm);
-		pdb.setApp(realm);
-		realm.setProject(pdb);
-		realm = appRepository.save(realm);
-		final OPResource resource = ((Set<OPResource>) resourceService.getResources("developer", "")).iterator().next();
-		final ProjectResourceAccess pra = ProjectResourceAccess.builder().access(ResourceAccessType.VIEW)
-				.appRole(realm.getAppRoles().iterator().next()).project(pdb).resource(resource).build();
-		pdb.getProjectResourceAccesses().add(pra);
-		pdb = projectRepository.save(pdb);
-		Assert.assertTrue(!resourceService.hasAccess(user.getUserId(), resource.getId(), ResourceAccessType.MANAGE));
-		Assert.assertTrue(resourceService.hasAccess(user.getUserId(), resource.getId(), ResourceAccessType.VIEW));
-		Assert.assertTrue(!resourceService.getResourceAccess(user.getUserId(), resource.getId())
-				.equals(ResourceAccessType.MANAGE));
-		realm.setProject(null);
-		pdb.setApp(null);
-		appRepository.delete(realm);
-		projectRepository.delete(pdb);
+        final Project project = new Project();
+        project.setDescription("Example project");
+        project.setName("THis is the project name");
+        project.setType(ProjectType.ENGINE);
+        project.setUser(user);
+        Project pdb = projectRepository.save(project);
+        App realm = new App();
+        realm.setName("Realm test");
+        final AppRole role = new AppRole();
+        realm.setAppId("TestRealm");
+        role.setApp(realm);
+        role.setName("DEVOPS");
+        role.getAppUsers().addAll(
+                userRepository.findAll().stream().map(u -> AppUser.builder().user(u).role(role).build()).collect(
+                        Collectors.toSet()));
+        realm.getAppRoles().add(role);
+        realm = appRepository.save(realm);
+        pdb.setApp(realm);
+        realm.setProject(pdb);
+        realm = appRepository.save(realm);
+        final OPResource resource = ((Set<OPResource>) resourceService.getResources("developer", "")).iterator().next();
+        final ProjectResourceAccess pra = ProjectResourceAccess.builder().access(ResourceAccessType.VIEW).appRole(
+                realm.getAppRoles().iterator().next()).project(pdb).resource(resource).build();
+        pdb.getProjectResourceAccesses().add(pra);
+        pdb = projectRepository.save(pdb);
+        Assert.assertTrue(!resourceService.hasAccess(user.getUserId(), resource.getId(), ResourceAccessType.MANAGE));
+        Assert.assertTrue(resourceService.hasAccess(user.getUserId(), resource.getId(), ResourceAccessType.VIEW));
+        Assert.assertTrue(!resourceService.getResourceAccess(user.getUserId(), resource.getId()).equals(
+                ResourceAccessType.MANAGE));
+        realm.setProject(null);
+        pdb.setApp(null);
+        appRepository.delete(realm);
+        projectRepository.delete(pdb);
 
-	}
+    }
 
 }

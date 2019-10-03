@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -64,214 +64,220 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BinaryFileController {
 
-	@Autowired
-	private BinaryRepositoryLogicService binaryRepositoryLogicService;
-	@Autowired
-	private BinaryFileService binaryFileService;
-	@Autowired
-	private AppWebUtils webUtils;
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private BinaryRepositoryLogicService binaryRepositoryLogicService;
+    @Autowired
+    private BinaryFileService binaryFileService;
+    @Autowired
+    private AppWebUtils webUtils;
+    @Autowired
+    private UserService userService;
 
-	private static final String REDIRECT_FILES_LIST = "redirect:/files/list";
+    private static final String REDIRECT_FILES_LIST = "redirect:/files/list";
 
-	@GetMapping("list")
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER','ROLE_USER')")
-	@Transactional
-	public String list(Model model) {
-		final List<BinaryFile> list = binaryFileService.getAllFiles(userService.getUser(webUtils.getUserId()));
-		final Map<String, String> accessMap = new HashMap<>();
-		final List<BinaryFile> filteredList = list.stream()
-				.filter(bf -> !bf.getOwner().getUserId().equals(webUtils.getUserId())).collect(Collectors.toList());
-		filteredList.forEach(bf -> bf.getFileAccesses().forEach(bfa -> {
-			if (bfa.getUser().getUserId().equals(webUtils.getUserId()))
-				accessMap.put(bf.getFileId(), bfa.getAccessType().name());
-		}));
-		model.addAttribute("files", list);
-		model.addAttribute("accessMap", accessMap);
-		model.addAttribute("accessTypes", BinaryFileAccess.Type.values());
-		model.addAttribute("users", userService.getAllUsers());
-		model.addAttribute("repos", RepositoryType.values());
-		return "binaryfiles/list";
-	}
+    @GetMapping("list")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER','ROLE_USER')")
+    @Transactional
+    public String list(Model model) {
+        final List<BinaryFile> list = binaryFileService.getAllFiles(userService.getUser(webUtils.getUserId()));
+        final Map<String, String> accessMap = new HashMap<>();
+        final List<BinaryFile> filteredList = list.stream().filter(
+                bf -> !bf.getOwner().getUserId().equals(webUtils.getUserId())).collect(Collectors.toList());
+        filteredList.forEach(bf -> bf.getFileAccesses().forEach(bfa -> {
+            if (bfa.getUser().getUserId().equals(webUtils.getUserId()))
+                accessMap.put(bf.getFileId(), bfa.getAccessType().name());
+        }));
+        model.addAttribute("files", list);
+        model.addAttribute("accessMap", accessMap);
+        model.addAttribute("accessTypes", BinaryFileAccess.Type.values());
+        model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("repos", RepositoryType.values());
+        return "binaryfiles/list";
+    }
 
-	@PostMapping
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	public String addBinary(@RequestParam("file") MultipartFile file,
-			@RequestParam(value = "metadata", required = false) String metadata,
-			@RequestParam(value = "repository", required = false) RepositoryType repository,
-			RedirectAttributes redirectAttributes) {
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    public String addBinary(@RequestParam("file") MultipartFile file,
+            @RequestParam(value = "metadata", required = false) String metadata,
+            @RequestParam(value = "repository", required = false) RepositoryType repository,
+            RedirectAttributes redirectAttributes) {
 
-		if (file.getSize() <= 0) {
-			webUtils.addRedirectMessage("binaryfiles.error.empty", redirectAttributes);
-			return REDIRECT_FILES_LIST;
-		}
+        if (file.getSize() <= 0) {
+            webUtils.addRedirectMessage("binaryfiles.error.empty", redirectAttributes);
+            return REDIRECT_FILES_LIST;
+        }
 
-		if (webUtils.isFileExtensionForbidden(file)) {
-			webUtils.addRedirectMessage("binaryfiles.error.extensionnotallowed", redirectAttributes);
-			return REDIRECT_FILES_LIST;
-		}
+        if (webUtils.isFileExtensionForbidden(file)) {
+            webUtils.addRedirectMessage("binaryfiles.error.extensionnotallowed", redirectAttributes);
+            return REDIRECT_FILES_LIST;
+        }
 
-		try {
-			if (file.getSize() > webUtils.getMaxFileSizeAllowed().longValue())
-				throw new BinarySizeException("The file size is larger than max allowed");
-			binaryRepositoryLogicService.addBinary(file, metadata, repository);
-			return REDIRECT_FILES_LIST;
+        try {
+            if (file.getSize() > webUtils.getMaxFileSizeAllowed().longValue())
+                throw new BinarySizeException("The file size is larger than max allowed");
+            binaryRepositoryLogicService.addBinary(file, metadata, repository);
+            return REDIRECT_FILES_LIST;
 
-		} catch (final Exception e) {
-			log.error("Could not create binary file: {}", e);
-			webUtils.addRedirectMessage("binaryfiles.error", redirectAttributes);
-			return REDIRECT_FILES_LIST;
-		}
+        } catch (final Exception e) {
+            log.error("Could not create binary file: {}", e);
+            webUtils.addRedirectMessage("binaryfiles.error", redirectAttributes);
+            return REDIRECT_FILES_LIST;
+        }
 
-	}
+    }
 
-	@GetMapping("/{id}")
-	public ResponseEntity<ByteArrayResource> getBinary(@PathVariable("id") String fileId,
-			@RequestParam(value = "disposition", required = false) String disposition) {
-		try {
+    @GetMapping("/{id}")
+    public ResponseEntity<ByteArrayResource> getBinary(@PathVariable("id") String fileId,
+            @RequestParam(value = "disposition", required = false) String disposition) {
+        try {
 
-			final BinaryFileData file = binaryRepositoryLogicService.getBinaryFile(fileId);
-			final ByteArrayResource resource = new ByteArrayResource(
-					((ByteArrayOutputStream) file.getData()).toByteArray());
+            final BinaryFileData file = binaryRepositoryLogicService.getBinaryFile(fileId);
+            final ByteArrayResource resource = new ByteArrayResource(
+                    ((ByteArrayOutputStream) file.getData()).toByteArray());
 
-			if (StringUtils.isEmpty(disposition)) {
-				return ResponseEntity.ok()
-						.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=".concat(file.getFileName()))
-						.contentLength(resource.contentLength())
-						.contentType(MediaType.parseMediaType("application/octet-stream")).body(resource);
-			} else {
-				return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "inline")
-						.contentType(MediaType.parseMediaType(file.getContentType()))
-						.contentLength(resource.contentLength()).body(resource);
-			}
+            if (StringUtils.isEmpty(disposition)) {
+                return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+                                                  "attachment; filename=".concat(file.getFileName())).contentLength(
+                        resource.contentLength()).contentType(
+                        MediaType.parseMediaType("application/octet-stream")).body(resource);
+            } else {
+                return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "inline").contentType(
+                        MediaType.parseMediaType(file.getContentType())).contentLength(resource.contentLength()).body(
+                        resource);
+            }
 
-		} catch (final BinaryRepositoryException e) {
+        } catch (final BinaryRepositoryException e) {
 
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} catch (final IOException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (final IOException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
-	}
+    }
 
-	@PostMapping("/public")
-	@ResponseBody
-	public String changePublic(@RequestParam("id") String fileId) {
-		if (binaryFileService.isUserOwner(fileId, userService.getUser(webUtils.getUserId()))) {
-			binaryFileService.changePublic(fileId);
-			return "ok";
-		} else {
-			return "ko";
-		}
-	}
+    @PostMapping("/public")
+    @ResponseBody
+    public String changePublic(@RequestParam("id") String fileId) {
+        if (binaryFileService.isUserOwner(fileId, userService.getUser(webUtils.getUserId()))) {
+            binaryFileService.changePublic(fileId);
+            return "ok";
+        } else {
+            return "ko";
+        }
+    }
 
-	@DeleteMapping("/{fileId}")
-	@ResponseBody
-	public String delete(@PathVariable String fileId) {
-		if (binaryFileService.isUserOwner(fileId, userService.getUser(webUtils.getUserId()))) {
-			try {
-				binaryRepositoryLogicService.removeBinary(fileId);
-				return "ok";
-			} catch (final BinaryRepositoryException e) {
-				log.error("Something went wrong while trying to delete file");
-				return "ko";
-			}
+    @DeleteMapping("/{fileId}")
+    @ResponseBody
+    public String delete(@PathVariable String fileId) {
+        if (binaryFileService.isUserOwner(fileId, userService.getUser(webUtils.getUserId()))) {
+            try {
+                binaryRepositoryLogicService.removeBinary(fileId);
+                return "ok";
+            } catch (final BinaryRepositoryException e) {
+                log.error("Something went wrong while trying to delete file");
+                return "ko";
+            }
 
-		}
-		return "ok";
-	}
+        }
+        return "ok";
+    }
 
-	@PutMapping
-	public String update(@RequestParam("file") MultipartFile file,
-			@RequestParam(value = "metadata", required = false) String metadata, @RequestParam("fileId") String fileId,
-			RedirectAttributes redirectAttributes) {
-		try {
-			if (file.getSize() > webUtils.getMaxFileSizeAllowed().longValue())
-				throw new BinarySizeException("The file size is larger than max allowed");
-			binaryRepositoryLogicService.updateBinary(fileId, file, metadata);
-			return REDIRECT_FILES_LIST;
+    @PutMapping
+    public String update(@RequestParam("file") MultipartFile file,
+            @RequestParam(value = "metadata", required = false) String metadata, @RequestParam("fileId") String fileId,
+            RedirectAttributes redirectAttributes) {
+        try {
+            if (file.getSize() > webUtils.getMaxFileSizeAllowed().longValue())
+                throw new BinarySizeException("The file size is larger than max allowed");
+            binaryRepositoryLogicService.updateBinary(fileId, file, metadata);
+            return REDIRECT_FILES_LIST;
 
-		} catch (final Exception e) {
-			log.error("Could not update binary file: {}", e);
-			webUtils.addRedirectMessage("binaryfiles.error", redirectAttributes);
-			return REDIRECT_FILES_LIST;
-		}
+        } catch (final Exception e) {
+            log.error("Could not update binary file: {}", e);
+            webUtils.addRedirectMessage("binaryfiles.error", redirectAttributes);
+            return REDIRECT_FILES_LIST;
+        }
 
-	}
+    }
 
-	@GetMapping("/metadata/{fileId}")
-	@ResponseBody
-	public String getMetadata(@PathVariable String fileId) {
-		if (binaryFileService.hasUserPermissionRead(fileId, userService.getUser(webUtils.getUserId())))
-			return binaryFileService.getFile(fileId).getMetadata();
-		else
-			return "forbidden";
+    @GetMapping("/metadata/{fileId}")
+    @ResponseBody
+    public String getMetadata(@PathVariable String fileId) {
+        if (binaryFileService.hasUserPermissionRead(fileId, userService.getUser(webUtils.getUserId())))
+            return binaryFileService.getFile(fileId).getMetadata();
+        else
+            return "forbidden";
 
-	}
+    }
 
-	@GetMapping(value = "/authorization/{fileId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	@Transactional
-	public @ResponseBody ResponseEntity<List<BinaryFileAccessDTO>> getAuthorizations(@PathVariable String fileId) {
+    @GetMapping(value = "/authorization/{fileId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Transactional
+    public @ResponseBody
+    ResponseEntity<List<BinaryFileAccessDTO>> getAuthorizations(@PathVariable String fileId) {
 
-		try {
-			final List<BinaryFileAccess> accesses = binaryFileService.getAuthorizations(fileId,
-					userService.getUser(webUtils.getUserId()));
-			final List<BinaryFileAccessDTO> authorizationsDTO = new ArrayList<>();
-			accesses.stream().forEach(a -> authorizationsDTO.add(new BinaryFileAccessDTO(a)));
-			return new ResponseEntity<>(authorizationsDTO, HttpStatus.OK);
-		} catch (final RuntimeException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
+        try {
+            final List<BinaryFileAccess> accesses = binaryFileService.getAuthorizations(fileId, userService.getUser(
+                    webUtils.getUserId()));
+            final List<BinaryFileAccessDTO> authorizationsDTO = new ArrayList<>();
+            accesses.stream().forEach(a -> authorizationsDTO.add(new BinaryFileAccessDTO(a)));
+            return new ResponseEntity<>(authorizationsDTO, HttpStatus.OK);
+        } catch (final RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 
-	@PostMapping(value = "/authorization", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<BinaryFileAccessDTO> createAuthorization(@RequestParam String accesstype,
-			@RequestParam String fileId, @RequestParam String user) throws GenericOPException {
+    @PostMapping(value = "/authorization", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<BinaryFileAccessDTO> createAuthorization(@RequestParam String accesstype,
+            @RequestParam String fileId, @RequestParam String user) throws GenericOPException {
 
-		try {
-			final BinaryFileAccess binaryFileAccessCreated = binaryFileService.createBinaryFileAccess(fileId, user,
-					accesstype, userService.getUser(webUtils.getUserId()));
-			final BinaryFileAccessDTO binaryFileAccessDTO = new BinaryFileAccessDTO(binaryFileAccessCreated);
-			return new ResponseEntity<>(binaryFileAccessDTO, HttpStatus.CREATED);
+        try {
+            final BinaryFileAccess binaryFileAccessCreated = binaryFileService.createBinaryFileAccess(fileId, user,
+                                                                                                      accesstype,
+                                                                                                      userService.getUser(
+                                                                                                              webUtils.getUserId()));
+            final BinaryFileAccessDTO binaryFileAccessDTO = new BinaryFileAccessDTO(binaryFileAccessCreated);
+            return new ResponseEntity<>(binaryFileAccessDTO, HttpStatus.CREATED);
 
-		} catch (final RuntimeException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+        } catch (final RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
-	}
+    }
 
-	@PostMapping(value = "/authorization/delete", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<String> deleteAuthorization(@RequestParam String id) throws GenericOPException {
+    @PostMapping(value = "/authorization/delete", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<String> deleteAuthorization(@RequestParam String id) throws GenericOPException {
 
-		try {
-			binaryFileService.deleteBinaryFileAccess(id, userService.getUser(webUtils.getUserId()));
-			return new ResponseEntity<>("{\"status\" : \"ok\"}", HttpStatus.OK);
-		} catch (final RuntimeException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
+        try {
+            binaryFileService.deleteBinaryFileAccess(id, userService.getUser(webUtils.getUserId()));
+            return new ResponseEntity<>("{\"status\" : \"ok\"}", HttpStatus.OK);
+        } catch (final RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 
-	@PostMapping(value = "/authorization/update", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public @ResponseBody ResponseEntity<BinaryFileAccessDTO> updateAuthorization(@RequestParam String id,
-			@RequestParam String accesstype) throws GenericOPException {
+    @PostMapping(value = "/authorization/update", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public @ResponseBody
+    ResponseEntity<BinaryFileAccessDTO> updateAuthorization(@RequestParam String id,
+            @RequestParam String accesstype) throws GenericOPException {
 
-		try {
-			final BinaryFileAccess binaryFileAccessUpdated = binaryFileService.updateBinaryFileAccess(id, accesstype,
-					userService.getUser(webUtils.getUserId()));
-			final BinaryFileAccessDTO binaryFileAccessDTO = new BinaryFileAccessDTO(binaryFileAccessUpdated);
+        try {
+            final BinaryFileAccess binaryFileAccessUpdated = binaryFileService.updateBinaryFileAccess(id, accesstype,
+                                                                                                      userService.getUser(
+                                                                                                              webUtils.getUserId()));
+            final BinaryFileAccessDTO binaryFileAccessDTO = new BinaryFileAccessDTO(binaryFileAccessUpdated);
 
-			return new ResponseEntity<>(binaryFileAccessDTO, HttpStatus.OK);
-		} catch (final RuntimeException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
+            return new ResponseEntity<>(binaryFileAccessDTO, HttpStatus.OK);
+        } catch (final RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 
-	@GetMapping(value = "/maxsize", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public @ResponseBody ResponseEntity<Map<String, Long>> maxSize() {
-		final Map<String, Long> map = new HashMap<>();
-		map.put("maxsize", webUtils.getMaxFileSizeAllowed());
-		return new ResponseEntity<>(map, HttpStatus.OK);
-	}
+    @GetMapping(value = "/maxsize", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public @ResponseBody
+    ResponseEntity<Map<String, Long>> maxSize() {
+        final Map<String, Long> map = new HashMap<>();
+        map.put("maxsize", webUtils.getMaxFileSizeAllowed());
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
 
 }

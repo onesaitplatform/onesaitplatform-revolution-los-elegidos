@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,187 +49,187 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ESNativeService {
 
-	private TransportClient client;
+    private TransportClient client;
 
-	@Value("${onesaitplatform.database.elasticsearch.url:elasticdb}")
-	private String host;
+    @Value("${onesaitplatform.database.elasticsearch.url:elasticdb}")
+    private String host;
 
-	@Value("${onesaitplatform.database.elasticsearch.port:9300}")
-	private String port;
+    @Value("${onesaitplatform.database.elasticsearch.port:9300}")
+    private String port;
 
-	@Value("${onesaitplatform.database.elasticsearch.cluster.name:sofia2_s4c}")
-	private String clusterName;
+    @Value("${onesaitplatform.database.elasticsearch.cluster.name:sofia2_s4c}")
+    private String clusterName;
 
-	private PreBuiltTransportClient preBuiltTransportClient;
+    private PreBuiltTransportClient preBuiltTransportClient;
 
-	@PostConstruct
-	void initializeIt() {
+    @PostConstruct
+    void initializeIt() {
 
-		try {
-			System.setProperty("es.set.netty.runtime.available.processors", "false");
-			Settings settings = Settings.builder().put("client.transport.ignore_cluster_name", true)
-					.put("client.transport.sniff", false).put("cluster.name", clusterName).build();
-			preBuiltTransportClient = new PreBuiltTransportClient(settings);
-			client = preBuiltTransportClient.addTransportAddress(getTransportAddress());
-			log.info(String.format("Settings %s ", client.settings().toString()));
-		} catch (Exception e) {
-			log.info(String.format("Cannot Instantiate ElasticSearch Feature due to : %s ", e.getMessage()));
-			log.error(String.format("Cannot Instantiate ElasticSearch Feature due to : %s ", e.getMessage()));
+        try {
+            System.setProperty("es.set.netty.runtime.available.processors", "false");
+            Settings settings = Settings.builder().put("client.transport.ignore_cluster_name", true).put(
+                    "client.transport.sniff", false).put("cluster.name", clusterName).build();
+            preBuiltTransportClient = new PreBuiltTransportClient(settings);
+            client = preBuiltTransportClient.addTransportAddress(getTransportAddress());
+            log.info(String.format("Settings %s ", client.settings().toString()));
+        } catch (Exception e) {
+            log.info(String.format("Cannot Instantiate ElasticSearch Feature due to : %s ", e.getMessage()));
+            log.error(String.format("Cannot Instantiate ElasticSearch Feature due to : %s ", e.getMessage()));
 
-		}
+        }
 
-	}
+    }
 
-	private TransportAddress getTransportAddress() throws UnknownHostException {
-		log.info(String.format("Connection details: host: %s. port:%s.", host, port));
-		return new TransportAddress(InetAddress.getByName(host), Integer.parseInt(port));
-	}
+    private TransportAddress getTransportAddress() throws UnknownHostException {
+        log.info(String.format("Connection details: host: %s. port:%s.", host, port));
+        return new TransportAddress(InetAddress.getByName(host), Integer.parseInt(port));
+    }
 
-	public TransportClient getClient() {
-		if (client == null) {
-			log.error("CLIENT IS NULL");
-			return null;
-		}
+    public TransportClient getClient() {
+        if (client == null) {
+            log.error("CLIENT IS NULL");
+            return null;
+        } else
+            return client;
+    }
 
-		else
-			return client;
-	}
+    /**
+     *
+     * @deprecated (Use ESInsertService instead)
+     */
+    @Deprecated
+    public boolean loadBulkFromArray(String index, String type, List<String> docs) throws GenericOPException {
+        log.info(String.format("Ingest content: %s Size of Files into elasticsearch %s %s", docs.size(), index, type));
+        BulkRequestBuilder bulkRequest = getClient().prepareBulk();
+        docs.forEach(doc -> bulkRequest.add(getClient().prepareIndex(index, type).setSource(doc)));
 
-	/**
-	 * 
-	 * @deprecated (Use ESInsertService instead)
-	 */
-	@Deprecated
-	public boolean loadBulkFromArray(String index, String type, List<String> docs) throws GenericOPException {
-		log.info(String.format("Ingest content: %s Size of Files into elasticsearch %s %s", docs.size(), index, type));
-		BulkRequestBuilder bulkRequest = getClient().prepareBulk();
-		docs.forEach(doc -> bulkRequest.add(getClient().prepareIndex(index, type).setSource(doc)));
+        if (bulkRequest.get().hasFailures()) {
+            throw new GenericOPException(
+                    String.format("Failed during bulk load of files %s.", bulkRequest.get().buildFailureMessage()));
+        }
+        return bulkRequest.get().hasFailures();
+    }
 
-		if (bulkRequest.get().hasFailures()) {
-			throw new GenericOPException(
-					String.format("Failed during bulk load of files %s.", bulkRequest.get().buildFailureMessage()));
-		}
-		return bulkRequest.get().hasFailures();
-	}
+    /**
+     *
+     * @deprecated (Use ESInsertService instead)
+     */
+    @Deprecated
+    public BulkResponse loadBulkFromFile(String index, File jsonPath) throws GenericOPException, IOException {
+        log.info(String.format("Loading file %s into elasticsearch cluster", jsonPath));
 
-	/**
-	 * 
-	 * @deprecated (Use ESInsertService instead)
-	 */
-	@Deprecated
-	public BulkResponse loadBulkFromFile(String index, File jsonPath) throws GenericOPException, IOException {
-		log.info(String.format("Loading file %s into elasticsearch cluster", jsonPath));
+        BulkRequestBuilder bulkBuilder = getClient().prepareBulk();
+        byte[] buffer = ByteStreams.toByteArray(new FileInputStream(jsonPath));
 
-		BulkRequestBuilder bulkBuilder = getClient().prepareBulk();
-		byte[] buffer = ByteStreams.toByteArray(new FileInputStream(jsonPath));
+        try {
+            bulkBuilder.add(buffer, 0, buffer.length, index, null, XContentType.JSON);
+        } catch (Exception e) {
+            throw new GenericOPException(e);
+        }
 
-		try {
-			bulkBuilder.add(buffer, 0, buffer.length, index, null, XContentType.JSON);
-		} catch (Exception e) {
-			throw new GenericOPException(e);
-		}
+        BulkResponse response = bulkBuilder.get();
 
-		BulkResponse response = bulkBuilder.get();
+        if (response.hasFailures()) {
+            throw new GenericOPException(
+                    String.format("Failed during bulk load of file %s. failure message: %s", jsonPath,
+                                  response.buildFailureMessage()));
+        }
+        return response;
+    }
 
-		if (response.hasFailures()) {
-			throw new GenericOPException(String.format("Failed during bulk load of file %s. failure message: %s",
-					jsonPath, response.buildFailureMessage()));
-		}
-		return response;
-	}
+    /**
+     *
+     * @deprecated (Use ESInsertService instead)
+     */
+    @Deprecated
+    public BulkResponse loadBulkFromFileResource(String index, String jsonPath) throws GenericOPException, IOException {
+        log.info(String.format("Loading file %s into elasticsearch cluster", jsonPath));
 
-	/**
-	 * 
-	 * @deprecated (Use ESInsertService instead)
-	 */
-	@Deprecated
-	public BulkResponse loadBulkFromFileResource(String index, String jsonPath) throws GenericOPException, IOException {
-		log.info(String.format("Loading file %s into elasticsearch cluster", jsonPath));
+        BulkRequestBuilder bulkBuilder = getClient().prepareBulk();
+        byte[] buffer = ByteStreams.toByteArray(new FileInputStream(jsonPath));
 
-		BulkRequestBuilder bulkBuilder = getClient().prepareBulk();
-		byte[] buffer = ByteStreams.toByteArray(new FileInputStream(jsonPath));
+        try {
+            bulkBuilder.add(buffer, 0, buffer.length, index, null, XContentType.JSON);
+        } catch (Exception e) {
+            throw new GenericOPException(e);
+        }
 
-		try {
-			bulkBuilder.add(buffer, 0, buffer.length, index, null, XContentType.JSON);
-		} catch (Exception e) {
-			throw new GenericOPException(e);
-		}
+        BulkResponse response = bulkBuilder.get();
 
-		BulkResponse response = bulkBuilder.get();
+        if (response.hasFailures()) {
+            throw new GenericOPException(
+                    String.format("Failed during bulk load of file %s. failure message: %s", jsonPath,
+                                  response.buildFailureMessage()));
+        }
+        return response;
+    }
 
-		if (response.hasFailures()) {
-			throw new GenericOPException(String.format("Failed during bulk load of file %s. failure message: %s",
-					jsonPath, response.buildFailureMessage()));
-		}
-		return response;
-	}
+    /**
+     *
+     * @deprecated (Use ESInsertService instead)
+     */
+    @Deprecated
+    public BulkResponse loadBulkFromJson(String index, String content) throws GenericOPException {
 
-	/**
-	 * 
-	 * @deprecated (Use ESInsertService instead)
-	 */
-	@Deprecated
-	public BulkResponse loadBulkFromJson(String index, String content) throws GenericOPException {
+        BulkRequestBuilder bulkBuilder = getClient().prepareBulk();
+        byte[] buffer = content.getBytes();
+        try {
+            bulkBuilder.add(buffer, 0, buffer.length, index, null, XContentType.JSON);
+        } catch (Exception e) {
+            throw new GenericOPException(e);
+        }
+        BulkResponse response = bulkBuilder.get();
 
-		BulkRequestBuilder bulkBuilder = getClient().prepareBulk();
-		byte[] buffer = content.getBytes();
-		try {
-			bulkBuilder.add(buffer, 0, buffer.length, index, null, XContentType.JSON);
-		} catch (Exception e) {
-			throw new GenericOPException(e);
-		}
-		BulkResponse response = bulkBuilder.get();
+        if (response.hasFailures()) {
+            throw new GenericOPException(
+                    String.format("Failed during bulk load failure message: %s", response.buildFailureMessage()));
+        }
+        return response;
+    }
 
-		if (response.hasFailures()) {
-			throw new GenericOPException(
-					String.format("Failed during bulk load failure message: %s", response.buildFailureMessage()));
-		}
-		return response;
-	}
+    /**
+     *
+     * @deprecated (Use ESInsertService instead)
+     */
+    @Deprecated
+    public SearchResponse updateByQuery(String index, String type,
+            String jsonScript) throws InterruptedException, ExecutionException {
 
-	/**
-	 * 
-	 * @deprecated (Use ESInsertService instead)
-	 */
-	@Deprecated
-	public SearchResponse updateByQuery(String index, String type, String jsonScript)
-			throws InterruptedException, ExecutionException {
+        log.info("updateByQuery ");
+        SearchResponse response = null;
 
-		log.info("updateByQuery ");
-		SearchResponse response = null;
+        UpdateByQueryRequestBuilder ubqrb = UpdateByQueryAction.INSTANCE.newRequestBuilder(getClient());
 
-		UpdateByQueryRequestBuilder ubqrb = UpdateByQueryAction.INSTANCE.newRequestBuilder(getClient());
+        Script script = new Script(jsonScript);
 
-		Script script = new Script(jsonScript);
+        response = ubqrb.source(index).script(script).source().setTypes(type).execute().get();
 
-		response = ubqrb.source(index).script(script).source().setTypes(type).execute().get();
+        log.info("updateByQuery response " + response);
+        return response;
 
-		log.info("updateByQuery response " + response);
-		return response;
+    }
 
-	}
+    /**
+     *
+     * @deprecated (Use ESInsertService instead)
+     */
+    @Deprecated
+    public SearchResponse updateByQueryAndFilter(String index, String type, String jsonScript,
+            String jsonFilter) throws InterruptedException, ExecutionException {
 
-	/**
-	 * 
-	 * @deprecated (Use ESInsertService instead)
-	 */
-	@Deprecated
-	public SearchResponse updateByQueryAndFilter(String index, String type, String jsonScript, String jsonFilter)
-			throws InterruptedException, ExecutionException {
+        log.info("updateByQuery ");
+        SearchResponse response = null;
 
-		log.info("updateByQuery ");
-		SearchResponse response = null;
+        UpdateByQueryRequestBuilder ubqrb = UpdateByQueryAction.INSTANCE.newRequestBuilder(getClient());
 
-		UpdateByQueryRequestBuilder ubqrb = UpdateByQueryAction.INSTANCE.newRequestBuilder(getClient());
+        Script script = new Script(jsonScript);
 
-		Script script = new Script(jsonScript);
+        WrapperQueryBuilder build = QueryBuilders.wrapperQuery(jsonFilter);
+        response = ubqrb.source(index).script(script).filter(build).source().setTypes(type).execute().get();
 
-		WrapperQueryBuilder build = QueryBuilders.wrapperQuery(jsonFilter);
-		response = ubqrb.source(index).script(script).filter(build).source().setTypes(type).execute().get();
+        log.info("updateByQuery response " + response);
+        return response;
 
-		log.info("updateByQuery response " + response);
-		return response;
-
-	}
+    }
 
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,28 +21,28 @@ import com.minsait.onesait.platform.commons.flow.engine.dto.FlowEngineDomainStat
 
 public interface NodeRedAdminClient {
 
-	// Shuts down the Flow Engine Admin
-	public String stopFlowEngine();
+    // Shuts down the Flow Engine Admin
+    public String stopFlowEngine();
 
-	// Flow Engine Domain Management
-	public void stopFlowEngineDomain(String domain);
+    // Flow Engine Domain Management
+    public void stopFlowEngineDomain(String domain);
 
-	public String startFlowEngineDomain(FlowEngineDomain domain);
+    public String startFlowEngineDomain(FlowEngineDomain domain);
 
-	public String createFlowengineDomain(FlowEngineDomain domain);
+    public String createFlowengineDomain(FlowEngineDomain domain);
 
-	public void deleteFlowEngineDomain(String domainId);
+    public void deleteFlowEngineDomain(String domainId);
 
-	public FlowEngineDomain getFlowEngineDomain(String domainId);
+    public FlowEngineDomain getFlowEngineDomain(String domainId);
 
-	// Generic Flow Engine Requests
-	public List<FlowEngineDomainStatus> getAllFlowEnginesDomains();
+    // Generic Flow Engine Requests
+    public List<FlowEngineDomainStatus> getAllFlowEnginesDomains();
 
-	public List<FlowEngineDomainStatus> getFlowEngineDomainStatus(List<String> domainList);
+    public List<FlowEngineDomainStatus> getFlowEngineDomainStatus(List<String> domainList);
 
-	// Synchronization of the active/inactive domains with CDB
-	void resetSynchronizedWithBDC();
+    // Synchronization of the active/inactive domains with CDB
+    void resetSynchronizedWithBDC();
 
-	public String synchronizeMF(List<FlowEngineDomainStatus> domainList);
+    public String synchronizeMF(List<FlowEngineDomainStatus> domainList);
 
 }

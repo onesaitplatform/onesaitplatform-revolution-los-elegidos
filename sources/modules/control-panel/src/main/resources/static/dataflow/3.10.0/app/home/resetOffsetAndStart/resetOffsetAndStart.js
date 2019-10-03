@@ -16,53 +16,53 @@
 
 // Controller for Reset Offset and Start Modal.
 angular
-  .module('dataCollectorApp.home')
-  .controller('ResetOffsetAndStartModalInstanceController', ["$scope", "$modalInstance", "pipelineInfo", "originStageDef", "$translate", "api", function (
-    $scope, $modalInstance, pipelineInfo, originStageDef, $translate, api
-  ) {
-    angular.extend($scope, {
-      showLoading: false,
-      isOffsetResetSucceed: false,
-      common: {
-        errors: []
-      },
-      pipelineInfo: pipelineInfo,
-      isList: _.isArray(pipelineInfo),
+    .module('dataCollectorApp.home')
+    .controller('ResetOffsetAndStartModalInstanceController', ["$scope", "$modalInstance", "pipelineInfo", "originStageDef", "$translate", "api", function (
+        $scope, $modalInstance, pipelineInfo, originStageDef, $translate, api
+    ) {
+        angular.extend($scope, {
+            showLoading: false,
+            isOffsetResetSucceed: false,
+            common: {
+                errors: []
+            },
+            pipelineInfo: pipelineInfo,
+            isList: _.isArray(pipelineInfo),
 
-      /**
-       * Callback function Yes button
-       */
-      yes: function() {
-        $scope.showLoading = true;
-        api.pipelineAgent.resetOffset(pipelineInfo.pipelineId)
-          .then(function() {
-            return api.pipelineAgent.startPipeline(pipelineInfo.pipelineId, '0')
-              .then(function () {
+            /**
+             * Callback function Yes button
+             */
+            yes: function () {
+                $scope.showLoading = true;
+                api.pipelineAgent.resetOffset(pipelineInfo.pipelineId)
+                    .then(function () {
+                        return api.pipelineAgent.startPipeline(pipelineInfo.pipelineId, '0')
+                            .then(function () {
+                                $modalInstance.close(pipelineInfo);
+                            });
+                    })
+                    .then(function () {
+                        $scope.showLoading = false;
+                        $scope.isOffsetResetSucceed = true;
+                    })
+                    .catch(function (res) {
+                        $scope.showLoading = false;
+                        $scope.common.errors = [res.data];
+                    });
+            },
+
+            /**
+             * Callback function for No button
+             */
+            no: function () {
+                $modalInstance.dismiss('cancel');
+            },
+
+            /**
+             * Callback function for Close button
+             */
+            close: function () {
                 $modalInstance.close(pipelineInfo);
-              });
-          })
-          .then(function () {
-            $scope.showLoading = false;
-            $scope.isOffsetResetSucceed = true;
-          })
-          .catch(function(res) {
-            $scope.showLoading = false;
-            $scope.common.errors = [res.data];
-          });
-      },
-
-      /**
-       * Callback function for No button
-       */
-      no: function() {
-        $modalInstance.dismiss('cancel');
-      },
-
-      /**
-       * Callback function for Close button
-       */
-      close: function() {
-        $modalInstance.close(pipelineInfo);
-      }
-    });
-  }]);
+            }
+        });
+    }]);

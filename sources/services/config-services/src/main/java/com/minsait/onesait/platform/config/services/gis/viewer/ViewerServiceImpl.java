@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,100 +33,100 @@ import com.minsait.onesait.platform.config.services.user.UserService;
 @Service
 public class ViewerServiceImpl implements ViewerService {
 
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private UserService userService;
 
-	@Autowired
-	private ViewerRepository viewerRepository;
+    @Autowired
+    private ViewerRepository viewerRepository;
 
-	@Autowired
-	OntologyRepository ontologyRepository;
+    @Autowired
+    OntologyRepository ontologyRepository;
 
-	@Autowired
-	BaseLayerRepository baseLayerRepository;
+    @Autowired
+    BaseLayerRepository baseLayerRepository;
 
-	@Autowired(required = false)
-	private MetricsManager metricsManager;
+    @Autowired(required = false)
+    private MetricsManager metricsManager;
 
-	@Override
-	public List<Viewer> findAllViewers(String userId) {
-		List<Viewer> viewers;
-		final User sessionUser = userService.getUser(userId);
+    @Override
+    public List<Viewer> findAllViewers(String userId) {
+        List<Viewer> viewers;
+        final User sessionUser = userService.getUser(userId);
 
-		if (sessionUser.getRole().getId().equals(Role.Type.ROLE_ADMINISTRATOR.toString())) {
-			viewers = viewerRepository.findAll();
-		} else {
-			viewers = viewerRepository.findByIsPublicTrueOrUser(sessionUser);
-		}
+        if (sessionUser.getRole().getId().equals(Role.Type.ROLE_ADMINISTRATOR.toString())) {
+            viewers = viewerRepository.findAll();
+        } else {
+            viewers = viewerRepository.findByIsPublicTrueOrUser(sessionUser);
+        }
 
-		return viewers;
-	}
+        return viewers;
+    }
 
-	@Override
-	public List<BaseLayer> findAllBaseLayers() {
-		return baseLayerRepository.findAll();
-	}
+    @Override
+    public List<BaseLayer> findAllBaseLayers() {
+        return baseLayerRepository.findAll();
+    }
 
-	@Override
-	public List<BaseLayer> getBaseLayersByTechnology(String technology) {
-		return baseLayerRepository.findByTechnologyOrderByIdentificationAsc(technology);
-	}
+    @Override
+    public List<BaseLayer> getBaseLayersByTechnology(String technology) {
+        return baseLayerRepository.findByTechnologyOrderByIdentificationAsc(technology);
+    }
 
-	@Override
-	public Viewer create(Viewer viewer, String baseMap) {
+    @Override
+    public Viewer create(Viewer viewer, String baseMap) {
 
-		BaseLayer baseLayer = baseLayerRepository.findByIdentification(baseMap).get(0);
-		viewer.setBaseLayer(baseLayer);
+        BaseLayer baseLayer = baseLayerRepository.findByIdentification(baseMap).get(0);
+        viewer.setBaseLayer(baseLayer);
 
-		this.metricsManagerLogControlPanelGisViewersCreation(viewer.getUser().getUserId(), "OK");
-		return viewerRepository.save(viewer);
-	}
+        this.metricsManagerLogControlPanelGisViewersCreation(viewer.getUser().getUserId(), "OK");
+        return viewerRepository.save(viewer);
+    }
 
-	@Override
-	public Boolean hasUserViewPermission(String id, String userId, String userIdToken) {
-		final User sessionUser = userService.getUser(userId);
-		Viewer viewer = viewerRepository.findById(id);
-		boolean isViewerPublic = viewer.isPublic();
-		boolean isSessionUserAdmin = sessionUser.getRole().getId().equals(Role.Type.ROLE_ADMINISTRATOR.toString());
-		boolean hasUserViewPerm;
+    @Override
+    public Boolean hasUserViewPermission(String id, String userId, String userIdToken) {
+        final User sessionUser = userService.getUser(userId);
+        Viewer viewer = viewerRepository.findById(id);
+        boolean isViewerPublic = viewer.isPublic();
+        boolean isSessionUserAdmin = sessionUser.getRole().getId().equals(Role.Type.ROLE_ADMINISTRATOR.toString());
+        boolean hasUserViewPerm;
 
-		if (userIdToken != null) {
-			hasUserViewPerm = isViewerPublic || isSessionUserAdmin || userIdToken.equals(viewer.getUser().getUserId());
-		} else {
-			hasUserViewPerm = isViewerPublic || isSessionUserAdmin || viewer.getUser().equals(sessionUser);
-		}
-		return hasUserViewPerm;
-	}
+        if (userIdToken != null) {
+            hasUserViewPerm = isViewerPublic || isSessionUserAdmin || userIdToken.equals(viewer.getUser().getUserId());
+        } else {
+            hasUserViewPerm = isViewerPublic || isSessionUserAdmin || viewer.getUser().equals(sessionUser);
+        }
+        return hasUserViewPerm;
+    }
 
-	@Override
-	public Viewer getViewerById(String id, String userId) {
-		final User sessionUser = userService.getUser(userId);
-		Viewer viewer = viewerRepository.findById(id);
+    @Override
+    public Viewer getViewerById(String id, String userId) {
+        final User sessionUser = userService.getUser(userId);
+        Viewer viewer = viewerRepository.findById(id);
 
-		if (sessionUser.getRole().getId().equals(Role.Type.ROLE_ADMINISTRATOR.toString())
-				|| viewer.getUser().equals(sessionUser) || viewer.isPublic()) {
-			return viewer;
-		} else {
-			throw new ViewerServiceException("The user is not authorized");
-		}
-	}
+        if (sessionUser.getRole().getId().equals(Role.Type.ROLE_ADMINISTRATOR.toString()) || viewer.getUser().equals(
+                sessionUser) || viewer.isPublic()) {
+            return viewer;
+        } else {
+            throw new ViewerServiceException("The user is not authorized");
+        }
+    }
 
-	@Override
-	public void deleteViewer(Viewer viewer, String userId) {
-		final User sessionUser = userService.getUser(userId);
+    @Override
+    public void deleteViewer(Viewer viewer, String userId) {
+        final User sessionUser = userService.getUser(userId);
 
-		if (sessionUser.getRole().getId().equals(Role.Type.ROLE_ADMINISTRATOR.toString())
-				|| viewer.getUser().equals(sessionUser) || viewer.isPublic()) {
-			viewerRepository.delete(viewer);
-		} else {
-			throw new ViewerServiceException("The user is not authorized");
-		}
-	}
+        if (sessionUser.getRole().getId().equals(Role.Type.ROLE_ADMINISTRATOR.toString()) || viewer.getUser().equals(
+                sessionUser) || viewer.isPublic()) {
+            viewerRepository.delete(viewer);
+        } else {
+            throw new ViewerServiceException("The user is not authorized");
+        }
+    }
 
-	private void metricsManagerLogControlPanelGisViewersCreation(String userId, String result) {
-		if (null != this.metricsManager) {
-			this.metricsManager.logControlPanelGisViewersCreation(userId, result);
-		}
-	}
+    private void metricsManagerLogControlPanelGisViewersCreation(String userId, String result) {
+        if (null != this.metricsManager) {
+            this.metricsManager.logControlPanelGisViewersCreation(userId, result);
+        }
+    }
 
 }

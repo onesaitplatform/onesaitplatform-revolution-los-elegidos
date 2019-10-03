@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,32 +25,32 @@ import com.minsait.onesait.platform.config.model.User;
 
 public interface ModelService {
 
-	List<Model> getModelsByIdentification(String identification);
+    List<Model> getModelsByIdentification(String identification);
 
-	List<String> getAllIdentifications();
+    List<String> getAllIdentifications();
 
-	void createModel(Model model);
+    void createModel(Model model);
 
-	Model getModelToUpdate(String id);
+    Model getModelToUpdate(String id);
 
-	void updateModel(Model model);
+    void updateModel(Model model);
 
-	Model getModelById(String id);
+    Model getModelById(String id);
 
-	Model getModelByIdentification(String identification);
+    Model getModelByIdentification(String identification);
 
-	List<Model> findAllModels();
+    List<Model> findAllModels();
 
-	List<Model> findAllModelsByUser(String userId);
+    List<Model> findAllModelsByUser(String userId);
 
-	void deleteModel(String id);
+    void deleteModel(String id);
 
-	boolean isIdValid(String identification);
+    boolean isIdValid(String identification);
 
-	void createModel(Model modelp, Category category, Subcategory subcategory, HttpServletRequest httpServletRequest);
+    void createModel(Model modelp, Category category, Subcategory subcategory, HttpServletRequest httpServletRequest);
 
-	void updateModel(Model model, Category category, Subcategory subcategory, HttpServletRequest request);
+    void updateModel(Model model, Category category, Subcategory subcategory, HttpServletRequest request);
 
-	List<Model> findAllModelsByUserHasPermission(User user);
+    List<Model> findAllModelsByUserHasPermission(User user);
 
 }

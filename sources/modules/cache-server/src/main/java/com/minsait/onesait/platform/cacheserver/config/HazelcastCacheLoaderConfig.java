@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,33 +34,33 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HazelcastCacheLoaderConfig {
 
-	@Value("${onesaitplatform.hazelcast.service.discovery.strategy:service}")
-	private String hazelcastServiceDiscoveryStrategy;
+    @Value("${onesaitplatform.hazelcast.service.discovery.strategy:service}")
+    private String hazelcastServiceDiscoveryStrategy;
 
-	@Autowired
-	private Environment environment;
+    @Autowired
+    private Environment environment;
 
-	@Bean
-	@Profile("default")
-	public HazelcastInstance defaultHazelcastInstanceEmbedded() {
-		Config config = new ClasspathXmlConfig("hazelcast.xml");
-		log.info("Configured Cache with data: Name : {} Instance Name: {} Group Name: {} ",
-				config.getConfigurationFile(), config.getInstanceName(),  config.getGroupConfig().getName());
-		return Hazelcast.newHazelcastInstance(config);
-	}
+    @Bean
+    @Profile("default")
+    public HazelcastInstance defaultHazelcastInstanceEmbedded() {
+        Config config = new ClasspathXmlConfig("hazelcast.xml");
+        log.info("Configured Cache with data: Name : {} Instance Name: {} Group Name: {} ",
+                 config.getConfigurationFile(), config.getInstanceName(), config.getGroupConfig().getName());
+        return Hazelcast.newHazelcastInstance(config);
+    }
 
-	@Bean
-	@Profile("docker")
-	public HazelcastInstance dockerHazelcastInstanceEmbedded() {
-		Properties props = new Properties();
-		if (hazelcastServiceDiscoveryStrategy.equals("zookeeper")) {
-			props.put("onesaitplatform.hazelcast.service.discovery.zookeeper.url",
-					environment.getProperty("onesaitplatform.hazelcast.service.discovery.zookeeper.url"));
-		}
-		Config config = new ClasspathXmlConfig("hazelcast-" + hazelcastServiceDiscoveryStrategy + "-docker.xml", props);
+    @Bean
+    @Profile("docker")
+    public HazelcastInstance dockerHazelcastInstanceEmbedded() {
+        Properties props = new Properties();
+        if (hazelcastServiceDiscoveryStrategy.equals("zookeeper")) {
+            props.put("onesaitplatform.hazelcast.service.discovery.zookeeper.url",
+                      environment.getProperty("onesaitplatform.hazelcast.service.discovery.zookeeper.url"));
+        }
+        Config config = new ClasspathXmlConfig("hazelcast-" + hazelcastServiceDiscoveryStrategy + "-docker.xml", props);
 
-		log.info("Configured Cache with data: Name : " + config.getConfigurationFile() + " Instance Name: "
-				+ config.getInstanceName() + " Group Name: " + config.getGroupConfig().getName());
-		return Hazelcast.newHazelcastInstance(config);
-	}
+        log.info(
+                "Configured Cache with data: Name : " + config.getConfigurationFile() + " Instance Name: " + config.getInstanceName() + " Group Name: " + config.getGroupConfig().getName());
+        return Hazelcast.newHazelcastInstance(config);
+    }
 }

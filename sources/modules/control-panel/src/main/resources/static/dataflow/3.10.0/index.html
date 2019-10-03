@@ -18,35 +18,35 @@
 <!doctype html>
 <html lang="en" ng-app="dataCollectorApp">
 <head>
-  <meta charset="utf-8">
-  <meta name="description" content="StreamSets Data Collector">
-  <title ng-bind="common.title"></title>
+    <meta charset="utf-8">
+    <meta name="description" content="StreamSets Data Collector">
+    <title ng-bind="common.title"></title>
 
-  <script type="text/javascript">
-    function escapeHtml(str) {
-      var div = document.createElement('div');
-      div.appendChild(document.createTextNode(str));
-      return div.innerHTML;
-    }
+    <script type="text/javascript">
+        function escapeHtml(str) {
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        }
 
-    var baseHref = document.location.pathname,
-      collectorIndex = baseHref.indexOf('/collector/');
+        var baseHref = document.location.pathname,
+            collectorIndex = baseHref.indexOf('/collector/');
 
-    if(collectorIndex !== -1) {
-      baseHref = baseHref.substr(0, collectorIndex + 1);
-    }
+        if (collectorIndex !== -1) {
+            baseHref = baseHref.substr(0, collectorIndex + 1);
+        }
 
-    document.write("<base href='" + escapeHtml(baseHref) + "' />");
-  </script>
+        document.write("<base href='" + escapeHtml(baseHref) + "' />");
+    </script>
 
-  <link rel="icon" type="image/png" href="assets/favicon.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- compiled CSS -->
-  <link rel="stylesheet" type="text/css" href="assets/data-collector-ui-3.10.0-2019-08-29-12-15.css" />
+    <!-- compiled CSS -->
+    <link rel="stylesheet" type="text/css" href="assets/data-collector-ui-3.10.0-2019-08-29-12-15.css"/>
 
-  <!-- compiled JavaScript -->
-  <script type="text/javascript" src="assets/data-collector-ui-3.10.0-2019-08-29-12-15.js"></script>
+    <!-- compiled JavaScript -->
+    <script type="text/javascript" src="assets/data-collector-ui-3.10.0-2019-08-29-12-15.js"></script>
 
 </head>
 <body ng-keydown="common.bodyKeyEvent($event)">
@@ -434,7 +434,7 @@
 <div class="panel panel-default page-panel not-authorized-page"
      ng-class="{'show': true}"
      ng-if="notAuthorized">
-  <h4>{{'global.messages.error.notAuthorized' | translate}}</h4>
+    <h4>{{'global.messages.error.notAuthorized' | translate}}</h4>
 </div>
 
 </body>

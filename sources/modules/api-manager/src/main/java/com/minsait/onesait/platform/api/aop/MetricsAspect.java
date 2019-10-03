@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,73 +34,74 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MetricsAspect extends BaseAspect {
 
-	private final CounterService counterService;
+    private final CounterService counterService;
 
-	@Autowired
-	public MetricsAspect(CounterService counterService) {
-		this.counterService = counterService;
-	}
+    @Autowired
+    public MetricsAspect(CounterService counterService) {
+        this.counterService = counterService;
+    }
 
-	@Around(value = "execution(* com.minsait.onesait.platform.api.rest.api.*.*(..))")
-	public Object processTx(ProceedingJoinPoint joinPoint) throws java.lang.Throwable {
+    @Around(value = "execution(* com.minsait.onesait.platform.api.rest.api.*.*(..))")
+    public Object processTx(ProceedingJoinPoint joinPoint) throws java.lang.Throwable {
 
-		counterService.increment("counter.calls." + getMethod(joinPoint) + "." + joinPoint.getSignature());
+        counterService.increment("counter.calls." + getMethod(joinPoint) + "." + joinPoint.getSignature());
 
-		log.info("Controller @Around for {}, Interceptor Call {}",getMethod(joinPoint),joinPoint.getSignature());
+        log.info("Controller @Around for {}, Interceptor Call {}", getMethod(joinPoint), joinPoint.getSignature());
 
-		final long start = System.currentTimeMillis();
-		Object proceed = null;
+        final long start = System.currentTimeMillis();
+        Object proceed = null;
 
-		try {
-			proceed = joinPoint.proceed();
+        try {
+            proceed = joinPoint.proceed();
 
-		} finally {
-			updateStats(getClassName(joinPoint), getMethod(joinPoint).getName(), (System.currentTimeMillis() - start));
-		}
+        } finally {
+            updateStats(getClassName(joinPoint), getMethod(joinPoint).getName(), (System.currentTimeMillis() - start));
+        }
 
-		final long executionTime = System.currentTimeMillis() - start;
-		log.info("Controller @Around for {}, Interceptor Called: {} executed in {} ms", getMethod(joinPoint), joinPoint.getSignature(),executionTime );
+        final long executionTime = System.currentTimeMillis() - start;
+        log.info("Controller @Around for {}, Interceptor Called: {} executed in {} ms", getMethod(joinPoint),
+                 joinPoint.getSignature(), executionTime);
 
-		return proceed;
-	}
+        return proceed;
+    }
 
-	@Before("execution(* com.minsait.onesait.platform.api.rest.api.*.*(..))")
-	public void beforeSampleCreation(JoinPoint joinPoint) {
+    @Before("execution(* com.minsait.onesait.platform.api.rest.api.*.*(..))")
+    public void beforeSampleCreation(JoinPoint joinPoint) {
 
-		counterService.increment("counter.calls.beforeSampleCreation");
-		log.info("Controller @Before for {}, Method Invoked: {}"
-				,getMethod(joinPoint), joinPoint.getSignature().getName());
-		
+        counterService.increment("counter.calls.beforeSampleCreation");
+        log.info("Controller @Before for {}, Method Invoked: {}", getMethod(joinPoint),
+                 joinPoint.getSignature().getName());
 
-		if (joinPoint.getArgs() != null) {
-			int size = joinPoint.getArgs().length;
-			if (size > 0) {
-				log.info("Controller @Before for {}, Arguments Passed: {}"
-						,getMethod(joinPoint), joinPoint.getArgs()[0]);
 
-			}
-		}
-	}
+        if (joinPoint.getArgs() != null) {
+            int size = joinPoint.getArgs().length;
+            if (size > 0) {
+                log.info("Controller @Before for {}, Arguments Passed: {}", getMethod(joinPoint),
+                         joinPoint.getArgs()[0]);
 
-	@AfterReturning(pointcut = "execution(* com.minsait.onesait.platform.api.rest.api.*.*(..))", returning = "retVal")
-	public void logServiceAccess(JoinPoint joinPoint, Object retVal) {
+            }
+        }
+    }
 
-		counterService.increment("counter.calls.logServiceAccess");
+    @AfterReturning(pointcut = "execution(* com.minsait.onesait.platform.api.rest.api.*.*(..))", returning = "retVal")
+    public void logServiceAccess(JoinPoint joinPoint, Object retVal) {
 
-		log.info("Controller @AfterReturning for {} Completed: {} " ,getMethod(joinPoint), joinPoint);
+        counterService.increment("counter.calls.logServiceAccess");
 
-		if (retVal != null) {
-			log.info("Controller @AfterReturning for {} Returned: {}", getMethod(joinPoint), retVal.toString());
-		}
+        log.info("Controller @AfterReturning for {} Completed: {} ", getMethod(joinPoint), joinPoint);
 
-	}
+        if (retVal != null) {
+            log.info("Controller @AfterReturning for {} Returned: {}", getMethod(joinPoint), retVal.toString());
+        }
 
-	@AfterThrowing(pointcut = "execution(* com.minsait.onesait.platform.api.rest.api.*.*(..))", throwing = "ex")
-	public void doRecoveryActions(JoinPoint joinPoint, Exception ex) {
+    }
 
-		log.info("After Throwing {} Method Invoked: {} ",getMethod(joinPoint), joinPoint.getSignature().getName());
-		log.info(" Exception Message: {} ", ex.getMessage());
+    @AfterThrowing(pointcut = "execution(* com.minsait.onesait.platform.api.rest.api.*.*(..))", throwing = "ex")
+    public void doRecoveryActions(JoinPoint joinPoint, Exception ex) {
 
-	}
+        log.info("After Throwing {} Method Invoked: {} ", getMethod(joinPoint), joinPoint.getSignature().getName());
+        log.info(" Exception Message: {} ", ex.getMessage());
+
+    }
 
 }

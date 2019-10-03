@@ -6,13 +6,13 @@
 * Version: 4.0.0-beta.19
 */
 
-!function(factory) {
-    "function" == typeof define && define.amd ? define([ "../inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("../inputmask")) : factory(window.Inputmask);
-}(function(Inputmask) {
+!function (factory) {
+    "function" == typeof define && define.amd ? define(["../inputmask"], factory) : "object" == typeof exports ? module.exports = factory(require("../inputmask")) : factory(window.Inputmask);
+}(function (Inputmask) {
     return Inputmask.extendAliases({
         phone: {
             alias: "abstractphone",
-            phoneCodes: [ {
+            phoneCodes: [{
                 mask: "+247-####",
                 cc: "AC",
                 cd: "Ascension",
@@ -2149,12 +2149,12 @@
                 desc_ru: ""
             }, {
                 mask: "+1(###)###-####",
-                cc: [ "US", "CA" ],
+                cc: ["US", "CA"],
                 cd: "USA and Canada",
                 desc_en: "",
                 name_ru: "США и Канада",
                 desc_ru: ""
-            } ]
+            }]
         }
     }), Inputmask;
 });

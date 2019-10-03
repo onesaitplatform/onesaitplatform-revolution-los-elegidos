@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,130 +33,127 @@ import com.minsait.onesait.platform.config.model.User;
 import com.minsait.onesait.platform.config.services.datamodel.dto.DataModelDTO;
 
 public interface OntologyService {
-	
-	static final String QUERY_SQL = "SQL";
-	static final String QUERY_NATIVE = "NATIVE";
-	static final String DATAMODEL_DEFAULT_NAME = "EmptyBase";
-	static final String SCHEMA_DRAFT_VERSION = "http://json-schema.org/draft-04/schema#";	
 
-	List<Ontology> getAllOntologies(String sessionUserId);
+    static final String QUERY_SQL = "SQL";
+    static final String QUERY_NATIVE = "NATIVE";
+    static final String DATAMODEL_DEFAULT_NAME = "EmptyBase";
+    static final String SCHEMA_DRAFT_VERSION = "http://json-schema.org/draft-04/schema#";
 
-	List<Ontology> getOntologiesByUserId(String sessionUserId);
+    List<Ontology> getAllOntologies(String sessionUserId);
 
-	List<Ontology> getOntologiesByUserAndAccess(String sessionUserId, String identification, String description);
+    List<Ontology> getOntologiesByUserId(String sessionUserId);
 
-	List<Ontology> getOntologiesWithDescriptionAndIdentification(String sessionUserId, String identification,
-			String description);
+    List<Ontology> getOntologiesByUserAndAccess(String sessionUserId, String identification, String description);
 
-	List<Ontology> getOntologiesByUserIdAndDataModel(String sessionUserId, String datamodel);
+    List<Ontology> getOntologiesWithDescriptionAndIdentification(String sessionUserId, String identification,
+            String description);
 
-	List<Ontology> getOntologiesByUserIdAndType(String sessionUserId, String type);
+    List<Ontology> getOntologiesByUserIdAndDataModel(String sessionUserId, String datamodel);
 
-	List<String> getAllIdentificationsByUser(String userId);
+    List<Ontology> getOntologiesByUserIdAndType(String sessionUserId, String type);
 
-	Ontology getOntologyById(String ontologyId, String sessionUserId);
+    List<String> getAllIdentificationsByUser(String userId);
 
-	Ontology getOntologyByIdentification(String identification, String sessionUserId);
+    Ontology getOntologyById(String ontologyId, String sessionUserId);
 
-	List<DataModel> getAllDataModels();
+    Ontology getOntologyByIdentification(String identification, String sessionUserId);
 
-	List<String> getAllDataModelTypes();
+    List<DataModel> getAllDataModels();
 
-	boolean hasUserPermissionForQuery(User user, Ontology ontology);
+    List<String> getAllDataModelTypes();
 
-	boolean hasUserPermissionForQuery(String userId, Ontology ontology);
+    boolean hasUserPermissionForQuery(User user, Ontology ontology);
 
-	boolean hasUserPermissionForQuery(String userId, String ontologyId);
+    boolean hasUserPermissionForQuery(String userId, Ontology ontology);
 
-	boolean hasUserPermission(User user, AccessType access, Ontology ontology);
+    boolean hasUserPermissionForQuery(String userId, String ontologyId);
 
-	boolean hasUserPermissionForInsert(User user, Ontology ontology);
+    boolean hasUserPermission(User user, AccessType access, Ontology ontology);
 
-	boolean hasUserPermissionForInsert(String userId, Ontology ontology);
+    boolean hasUserPermissionForInsert(User user, Ontology ontology);
 
-	boolean hasUserPermissionForInsert(String userId, String ontologyIdentificator);
+    boolean hasUserPermissionForInsert(String userId, Ontology ontology);
 
-	boolean hasUserPermisionForChangeOntology(User user, Ontology ontology);
+    boolean hasUserPermissionForInsert(String userId, String ontologyIdentificator);
 
-	boolean hasClientPlatformPermisionForInsert(String clientPlatformId, String ontologyId);
+    boolean hasUserPermisionForChangeOntology(User user, Ontology ontology);
 
-	boolean hasClientPlatformPermisionForQuery(String clientPlatformId, String ontologyId);
+    boolean hasClientPlatformPermisionForInsert(String clientPlatformId, String ontologyId);
 
-	void updateOntology(Ontology ontology, String sessionUserId, OntologyConfiguration config);
+    boolean hasClientPlatformPermisionForQuery(String clientPlatformId, String ontologyId);
 
-	void updateOntology(Ontology ontology, String sessionUserId, OntologyConfiguration config, boolean hasDocuments);
+    void updateOntology(Ontology ontology, String sessionUserId, OntologyConfiguration config);
 
-	boolean isIdValid(String ontologyId);
+    void updateOntology(Ontology ontology, String sessionUserId, OntologyConfiguration config, boolean hasDocuments);
 
-	void createOntology(Ontology ontology, OntologyConfiguration config);
+    boolean isIdValid(String ontologyId);
 
-	List<Ontology> getOntologiesByClientPlatform(ClientPlatform clientPlatform);
+    void createOntology(Ontology ontology, OntologyConfiguration config);
 
-	List<Ontology> getAllAuditOntologies();
+    List<Ontology> getOntologiesByClientPlatform(ClientPlatform clientPlatform);
 
-	/**
-	 * This method checks if an ontology has authorizations for other users
-	 * different from its owner.
-	 *
-	 * @param ontologyId the id of the ontology.
-	 * @return true if any other user has authorization over the ontology.
-	 */
-	boolean hasOntologyUsersAuthorized(String ontologyId);
+    List<Ontology> getAllAuditOntologies();
 
-	List<OntologyUserAccess> getOntologyUserAccesses(String ontologyId, String sessionUserId);
+    /**
+     * This method checks if an ontology has authorizations for other users
+     * different from its owner.
+     *
+     * @param ontologyId the id of the ontology.
+     * @return true if any other user has authorization over the ontology.
+     */
+    boolean hasOntologyUsersAuthorized(String ontologyId);
 
-	OntologyUserAccess createUserAccess(String ontologyId, String userId, String typeName, String sessionUserId);
+    List<OntologyUserAccess> getOntologyUserAccesses(String ontologyId, String sessionUserId);
 
-	OntologyUserAccess getOntologyUserAccessByOntologyIdAndUserId(String ontologyId, String userId,
-			String sessionUserId);
+    OntologyUserAccess createUserAccess(String ontologyId, String userId, String typeName, String sessionUserId);
 
-	OntologyUserAccess getOntologyUserAccessById(String userAccessId, String sessionUserId);
+    OntologyUserAccess getOntologyUserAccessByOntologyIdAndUserId(String ontologyId, String userId,
+            String sessionUserId);
 
-	void deleteOntologyUserAccess(String userAccessId, String sessionUserId);
+    OntologyUserAccess getOntologyUserAccessById(String userAccessId, String sessionUserId);
 
-	void updateOntologyUserAccess(String userAccessId, String typeName, String sessionUserId);
+    void deleteOntologyUserAccess(String userAccessId, String sessionUserId);
 
-	Map<String, String> getOntologyFieldsQueryTool(String identification, String sessionUserId)
-			throws IOException;
+    void updateOntologyUserAccess(String userAccessId, String typeName, String sessionUserId);
 
-	Map<String, String> getOntologyFields(String identification, String sessionUserId)
-			throws IOException;
+    Map<String, String> getOntologyFieldsQueryTool(String identification, String sessionUserId) throws IOException;
 
-	List<Ontology.RtdbDatasource> getDatasources();
+    Map<String, String> getOntologyFields(String identification, String sessionUserId) throws IOException;
 
-	List<Ontology> getCleanableOntologies();
+    List<Ontology.RtdbDatasource> getDatasources();
 
-	void delete(Ontology ontology);
+    List<Ontology> getCleanableOntologies();
 
-	OntologyRest getOntologyRestByOntologyId(Ontology ontologyId);
+    void delete(Ontology ontology);
 
-	OntologyRestSecurity getOntologyRestSecurityByOntologyRest(OntologyRest ontologyRest);
+    OntologyRest getOntologyRestByOntologyId(Ontology ontologyId);
 
-	List<OntologyRestOperation> getOperationsByOntologyRest(OntologyRest ontologyRest);
+    OntologyRestSecurity getOntologyRestSecurityByOntologyRest(OntologyRest ontologyRest);
 
-	OntologyRestHeaders getOntologyRestHeadersByOntologyRest(OntologyRest ontologyRest);
+    List<OntologyRestOperation> getOperationsByOntologyRest(OntologyRest ontologyRest);
 
-	List<OntologyRestOperationParam> getOperationsParamsByOperation(OntologyRestOperation operation);
+    OntologyRestHeaders getOntologyRestHeadersByOntologyRest(OntologyRest ontologyRest);
 
-	List<DataModelDTO> getEmptyBaseDataModel();
+    List<OntologyRestOperationParam> getOperationsParamsByOperation(OntologyRestOperation operation);
 
-	List<String> getDatasourcesRelationals();
+    List<DataModelDTO> getEmptyBaseDataModel();
 
-	OntologyVirtual getOntologyVirtualByOntologyId(Ontology ontology);
+    List<String> getDatasourcesRelationals();
 
-	String getRtdbFromOntology(String ontologyIdentification);
+    OntologyVirtual getOntologyVirtualByOntologyId(Ontology ontology);
 
-	void checkOntologySchema(String schema);
+    String getRtdbFromOntology(String ontologyIdentification);
 
-	List<String> getPublicDatasourcesRelationals();
+    void checkOntologySchema(String schema);
 
-	void executeKPI(String user, String query, String ontology, String context)
-			throws Exception;
+    List<String> getPublicDatasourcesRelationals();
 
-	public boolean existsOntology(String identificacion);
+    void executeKPI(String user, String query, String ontology, String context) throws Exception;
 
-	Ontology getOntologyByIdentification(String identification);
-	
-	public String getOntologyFromQuery(String query);
+    public boolean existsOntology(String identificacion);
+
+    Ontology getOntologyByIdentification(String identification);
+
+    public String getOntologyFromQuery(String query);
 
 }

@@ -16,22 +16,22 @@
 
 // Controller for Stop Event Configuration.
 angular
-  .module('dataCollectorApp.home')
-  .controller('StopEventConfigurationController', ["$scope", function ($scope) {
-    var initialize = function() {
-      $scope.detailPaneConfig = $scope.stopEventStageConfig;
-      $scope.detailPaneServices = [];
-      angular.forEach($scope.detailPaneConfig.services, function(serviceConfig) {
-        $scope.detailPaneServices.push({
-          definition: pipelineService.getServiceDefinition(serviceConfig.service),
-          config: serviceConfig
+    .module('dataCollectorApp.home')
+    .controller('StopEventConfigurationController', ["$scope", function ($scope) {
+        var initialize = function () {
+            $scope.detailPaneConfig = $scope.stopEventStageConfig;
+            $scope.detailPaneServices = [];
+            angular.forEach($scope.detailPaneConfig.services, function (serviceConfig) {
+                $scope.detailPaneServices.push({
+                    definition: pipelineService.getServiceDefinition(serviceConfig.service),
+                    config: serviceConfig
+                });
+            });
+        };
+
+        $scope.$watch('stopEventStageConfig', function () {
+            initialize();
         });
-      });
-    };
 
-    $scope.$watch('stopEventStageConfig', function() {
-      initialize();
-    });
-
-    initialize();
-  }]);
+        initialize();
+    }]);

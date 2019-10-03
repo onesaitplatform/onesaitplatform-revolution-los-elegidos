@@ -1,95 +1,95 @@
-var gadgetJSON = [ {
+var gadgetJSON = [{
 
-	type : "line",
+    type: "line",
 
-	icon : "../static/images/dashboards/linechart.jpg",
+    icon: "../static/images/dashboards/linechart.jpg",
 
-	attributes : [
+    attributes: [
 
-	{
+        {
 
-		name : "X axis",
+            name: "X axis",
 
-		types : [ "date", "number" ]
+            types: ["date", "number"]
 
-	},
+        },
 
-	{
+        {
 
-		name : "Y axis",
+            name: "Y axis",
 
-		types : [ "number" ]
+            types: ["number"]
 
-	}
+        }
 
-	],
+    ],
 
-	series : {
+    series: {
 
-		maxseries : -1,
+        maxseries: -1,
 
-		options : {
+        options: {
 
-			"title" : "Series options",
+            "title": "Series options",
 
-			"type" : "object",
+            "type": "object",
 
-			"properties" : {
+            "properties": {
 
-				"Name" : {
+                "Name": {
 
-					"type" : "string",
+                    "type": "string",
 
-					"description" : "Serie name"
+                    "description": "Serie name"
 
-				},
+                },
 
-				"Color" : {
+                "Color": {
 
-					"type" : "string",
+                    "type": "string",
 
-					"format" : "color",
+                    "format": "color",
 
-					"title" : "Serie color",
+                    "title": "Serie color",
 
-					"default" : "#ffa500"
+                    "default": "#ffa500"
 
-				}
+                }
 
-			}
+            }
 
-		}
+        }
 
-	},
+    },
 
-	options : {
+    options: {
 
-		beginToZero : true
+        beginToZero: true
 
-	}
+    }
 
 },
 
-{
-	type : "bar",
-	icon : "../static/images/dashboards/barchart.jpg",
-	options : ""
-},
+    {
+        type: "bar",
+        icon: "../static/images/dashboards/barchart.jpg",
+        options: ""
+    },
 
-{
-	type : "pie",
-	icon : "../static/images/dashboards/piechart.jpg",
-	options : ""
-},
+    {
+        type: "pie",
+        icon: "../static/images/dashboards/piechart.jpg",
+        options: ""
+    },
 
-{
-	type : "map",
-	icon : "../static/images/dashboards/bordermap.png",
-	options : ""
-}, {
-	type : "wordcloud",
-	icon : "../static/images/dashboards/wordchart.jpg",
-	options : ""
-}
+    {
+        type: "map",
+        icon: "../static/images/dashboards/bordermap.png",
+        options: ""
+    }, {
+        type: "wordcloud",
+        icon: "../static/images/dashboards/wordchart.jpg",
+        options: ""
+    }
 
 ]

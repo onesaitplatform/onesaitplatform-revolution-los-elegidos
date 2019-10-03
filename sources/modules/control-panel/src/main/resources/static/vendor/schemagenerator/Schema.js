@@ -1,5 +1,5 @@
 // Namespace.
-var JsonSchema = new function() {
+var JsonSchema = new function () {
 
     StateEnum = {
         COMPLETE: 0
@@ -238,7 +238,7 @@ var JsonSchema = new function() {
 
         var keys = Object.keys(aJsonObject);
 
-        for (var i=0; i<keys.length; i++) {
+        for (var i = 0; i < keys.length; i++) {
             var propertyKey = keys[i];
             var propertyValue = aJsonObject[propertyKey];
             var propertyValueType = RealTypeOf(propertyValue);
@@ -341,7 +341,7 @@ var JsonSchema = new function() {
 
 
     // ---------- Public Objects ---------- //
-    this.GenerateSchema = function() {
+    this.GenerateSchema = function () {
 
         var schemaVersion = 'http://json-schema.org/draft-03/schema';
         var jsonObject = null;
@@ -355,7 +355,7 @@ var JsonSchema = new function() {
         schema = Schema4Object(jsonObject);
         schema.set({
             dollarschema: schemaVersion
-        }); 
+        });
         return schema;
     }
 };

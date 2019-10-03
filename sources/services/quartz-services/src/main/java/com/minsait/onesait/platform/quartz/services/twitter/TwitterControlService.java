@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,61 +33,61 @@ import com.minsait.onesait.platform.scheduler.scheduler.service.TaskService;
 @Lazy
 public class TwitterControlService {
 
-	@Autowired
-	private TaskService taskService;
+    @Autowired
+    private TaskService taskService;
 
-	@Autowired
-	private TwitterListeningService twitterListeningService;
+    @Autowired
+    private TwitterListeningService twitterListeningService;
 
-	public void scheduleTwitterListening(TwitterListening twitterListening) {
+    public void scheduleTwitterListening(TwitterListening twitterListening) {
 
-		TaskInfo task = new TaskInfo();
-		task.setJobName(twitterListening.getId());
-		task.setSchedulerType(SchedulerType.TWITTER);
+        TaskInfo task = new TaskInfo();
+        task.setJobName(twitterListening.getId());
+        task.setSchedulerType(SchedulerType.TWITTER);
 
-		Map<String, Object> jobContext = new HashMap<>();
-		jobContext.put("id", twitterListening.getId());
-		jobContext.put("ontology", twitterListening.getOntology().getIdentification());
-		jobContext.put("clientPlatform", twitterListening.getToken().getClientPlatform().getIdentification());
-		jobContext.put("token", twitterListening.getToken().getTokenName());
-		jobContext.put("topics", twitterListening.getTopics());
-		jobContext.put("geolocation", false);
-		jobContext.put("userId", twitterListening.getUser().getUserId());
-		jobContext.put("timeout", 2);
-		if (twitterListening.getConfiguration() != null) {
-			jobContext.put("configurationId", twitterListening.getConfiguration().getId());
-		} else {
-			jobContext.put("configurationId", null);
-		}
+        Map<String, Object> jobContext = new HashMap<>();
+        jobContext.put("id", twitterListening.getId());
+        jobContext.put("ontology", twitterListening.getOntology().getIdentification());
+        jobContext.put("clientPlatform", twitterListening.getToken().getClientPlatform().getIdentification());
+        jobContext.put("token", twitterListening.getToken().getTokenName());
+        jobContext.put("topics", twitterListening.getTopics());
+        jobContext.put("geolocation", false);
+        jobContext.put("userId", twitterListening.getUser().getUserId());
+        jobContext.put("timeout", 2);
+        if (twitterListening.getConfiguration() != null) {
+            jobContext.put("configurationId", twitterListening.getConfiguration().getId());
+        } else {
+            jobContext.put("configurationId", null);
+        }
 
-		task.setUsername(twitterListening.getUser().getUserId());
-		task.setData(jobContext);
-		task.setSingleton(false);
-		task.setCronExpression("0/20 * * ? * * *");
+        task.setUsername(twitterListening.getUser().getUserId());
+        task.setData(jobContext);
+        task.setSingleton(false);
+        task.setCronExpression("0/20 * * ? * * *");
 
-		task.setStartAt(twitterListening.getDateFrom());
-		task.setEndAt(twitterListening.getDateTo());
-		ScheduleResponseInfo response = taskService.addJob(task);
-		twitterListening.setJobName(response.getJobName());
-		this.twitterListeningService.updateListening(twitterListening);
+        task.setStartAt(twitterListening.getDateFrom());
+        task.setEndAt(twitterListening.getDateTo());
+        ScheduleResponseInfo response = taskService.addJob(task);
+        twitterListening.setJobName(response.getJobName());
+        this.twitterListeningService.updateListening(twitterListening);
 
-	}
+    }
 
-	public void unscheduleTwitterListening(TwitterListening twitterListening) {
-		TaskOperation operation = new TaskOperation();
-		operation.setJobName(twitterListening.getJobName());
-		if (operation.getJobName() != null) {
-			this.taskService.unscheduled(operation);
-		}
+    public void unscheduleTwitterListening(TwitterListening twitterListening) {
+        TaskOperation operation = new TaskOperation();
+        operation.setJobName(twitterListening.getJobName());
+        if (operation.getJobName() != null) {
+            this.taskService.unscheduled(operation);
+        }
 
-	}
+    }
 
-	public void updateTwitterListening(TwitterListening twitterListening) {
-		this.twitterListeningService.updateListening(twitterListening);
-		twitterListening = this.twitterListeningService.getListenById(twitterListening.getId());
-		this.unscheduleTwitterListening(twitterListening);
-		if (twitterListening.getDateTo().getTime() > System.currentTimeMillis())
-			this.scheduleTwitterListening(twitterListening);
-	}
+    public void updateTwitterListening(TwitterListening twitterListening) {
+        this.twitterListeningService.updateListening(twitterListening);
+        twitterListening = this.twitterListeningService.getListenById(twitterListening.getId());
+        this.unscheduleTwitterListening(twitterListening);
+        if (twitterListening.getDateTo().getTime() > System.currentTimeMillis())
+            this.scheduleTwitterListening(twitterListening);
+    }
 
 }

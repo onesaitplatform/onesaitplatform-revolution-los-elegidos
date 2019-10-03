@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,30 +37,30 @@ import com.minsait.onesait.platform.config.model.DataModel;
 @Category(IntegrationTest.class)
 public class DataModelRepositoryIntegrationTest {
 
-	@Autowired
-	DataModelRepository repository;
-	@Autowired
-	UserRepository userRepository;
+    @Autowired
+    DataModelRepository repository;
+    @Autowired
+    UserRepository userRepository;
 
-	@Before
-	public void setUp() {
-		List<DataModel> dataModels = this.repository.findAll();
-		if (dataModels.isEmpty()) {
-			throw new RuntimeException(
-					"There must be DataModels loaded in your dastabase. Please execute systemconfig-init");
-		}
-	}
+    @Before
+    public void setUp() {
+        List<DataModel> dataModels = this.repository.findAll();
+        if (dataModels.isEmpty()) {
+            throw new RuntimeException(
+                    "There must be DataModels loaded in your dastabase. Please execute systemconfig-init");
+        }
+    }
 
-	@Test
-	@Transactional
-	public void given_SomeDataModelsExist_When_TheirNumberIsRequested_Then_TheCorrectNumberIsObtained() {
-		Assert.assertTrue(this.repository.count() > 0);
-	}
+    @Test
+    @Transactional
+    public void given_SomeDataModelsExist_When_TheirNumberIsRequested_Then_TheCorrectNumberIsObtained() {
+        Assert.assertTrue(this.repository.count() > 0);
+    }
 
-	@Test
-	@Transactional
-	public void given_SomeDataModelsExist_When_TheyAreSearchedByType_Then_TheCorrectObjectsAreObtained() {
-		Assert.assertTrue(this.repository.findByType("IoT").size() > 1L);
-	}
+    @Test
+    @Transactional
+    public void given_SomeDataModelsExist_When_TheyAreSearchedByType_Then_TheCorrectObjectsAreObtained() {
+        Assert.assertTrue(this.repository.findByType("IoT").size() > 1L);
+    }
 
 }

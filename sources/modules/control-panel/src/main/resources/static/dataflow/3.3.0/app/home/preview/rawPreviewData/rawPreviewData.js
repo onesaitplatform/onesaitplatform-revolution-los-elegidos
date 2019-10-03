@@ -18,34 +18,34 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('RawPreviewDataModalInstanceController', function ($scope, $rootScope, $modalInstance, previewData,
-                                                                 $timeout, pipelineService) {
-    angular.extend($scope, {
-      previewData: JSON.stringify(previewData, null, '  '),
-      refreshCodemirror: false,
-      snapshotsInfo: [],
+    .module('dataCollectorApp.home')
+    .controller('RawPreviewDataModalInstanceController', function ($scope, $rootScope, $modalInstance, previewData,
+                                                                   $timeout, pipelineService) {
+        angular.extend($scope, {
+            previewData: JSON.stringify(previewData, null, '  '),
+            refreshCodemirror: false,
+            snapshotsInfo: [],
 
-      /**
-       * Returns Codemirror Options
-       * @param options
-       * @returns {*}
-       */
-      getCodeMirrorOptions: function(options) {
-        return angular.extend({}, pipelineService.getDefaultELEditorOptions(), options);
-      },
+            /**
+             * Returns Codemirror Options
+             * @param options
+             * @returns {*}
+             */
+            getCodeMirrorOptions: function (options) {
+                return angular.extend({}, pipelineService.getDefaultELEditorOptions(), options);
+            },
 
-      /**
-       * Cancel and Escape Command Handler
-       */
-      close: function() {
-        $modalInstance.dismiss('cancel');
-      }
+            /**
+             * Cancel and Escape Command Handler
+             */
+            close: function () {
+                $modalInstance.dismiss('cancel');
+            }
+
+        });
+
+        $timeout(function () {
+            $scope.refreshCodemirror = true;
+        });
 
     });
-
-    $timeout(function() {
-      $scope.refreshCodemirror = true;
-    });
-
-  });

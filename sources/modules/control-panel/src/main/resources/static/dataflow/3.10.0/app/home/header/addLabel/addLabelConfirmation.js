@@ -20,32 +20,32 @@
 angular
     .module('dataCollectorApp.home')
     .controller('AddLabelConfirmationModalInstanceController', ["$scope", "$modalInstance", "pipelineInfoList", "api", function ($scope, $modalInstance, pipelineInfoList, api) {
-      angular.extend($scope, {
-        pipelineInfoList: pipelineInfoList,
-        data: {
-          labels: []
-        },
-        common: {
-          errors: []
-        },
+        angular.extend($scope, {
+            pipelineInfoList: pipelineInfoList,
+            data: {
+                labels: []
+            },
+            common: {
+                errors: []
+            },
 
-        save: function() {
-          var pipelineNames = _.pluck(pipelineInfoList, 'name');
-          api.pipelineAgent.addLabelsToPipelines($scope.data.labels, pipelineNames)
-            .then(function(response) {
-              var res = response.data;
-              if (res.errorMessages.length === 0) {
-                $modalInstance.close(_.extend(res, {labels: $scope.data.labels}));
-              } else {
-                $scope.common.errors = res.errorMessages;
-              }
-            })
-            .catch(function(res) {
-              $scope.common.errors = [res.data];
-            });
-        },
-        cancel: function() {
-          $modalInstance.dismiss('cancel');
-        }
-      });
+            save: function () {
+                var pipelineNames = _.pluck(pipelineInfoList, 'name');
+                api.pipelineAgent.addLabelsToPipelines($scope.data.labels, pipelineNames)
+                    .then(function (response) {
+                        var res = response.data;
+                        if (res.errorMessages.length === 0) {
+                            $modalInstance.close(_.extend(res, {labels: $scope.data.labels}));
+                        } else {
+                            $scope.common.errors = res.errorMessages;
+                        }
+                    })
+                    .catch(function (res) {
+                        $scope.common.errors = [res.data];
+                    });
+            },
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
+            }
+        });
     }]);

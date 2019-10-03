@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,34 +29,34 @@ import com.minsait.onesait.platform.persistence.mongodb.MongoNativeManageDBRepos
 @Component
 public class ManageDBRepositoryFactory {
 
-	@Autowired
-	private MongoNativeManageDBRepository mongoManage;
+    @Autowired
+    private MongoNativeManageDBRepository mongoManage;
 
-	@Autowired
-	private ElasticSearchManageDBRepository elasticManage;
+    @Autowired
+    private ElasticSearchManageDBRepository elasticManage;
 
-	@Autowired(required = false)
-	@Qualifier(NameBeanConst.KUDU_MANAGE_DB_REPO_BEAN_NAME)
-	private ManageDBRepository kuduManageDBRepository;
+    @Autowired(required = false)
+    @Qualifier(NameBeanConst.KUDU_MANAGE_DB_REPO_BEAN_NAME)
+    private ManageDBRepository kuduManageDBRepository;
 
-	@Autowired
-	private OntologyRepository ontologyRepository;
+    @Autowired
+    private OntologyRepository ontologyRepository;
 
-	public ManageDBRepository getInstance(String ontologyId) {
-		Ontology ds = ontologyRepository.findByIdentification(ontologyId);
-		RtdbDatasource dataSource = ds.getRtdbDatasource();
-		return getInstance(dataSource);
-	}
+    public ManageDBRepository getInstance(String ontologyId) {
+        Ontology ds = ontologyRepository.findByIdentification(ontologyId);
+        RtdbDatasource dataSource = ds.getRtdbDatasource();
+        return getInstance(dataSource);
+    }
 
-	public ManageDBRepository getInstance(RtdbDatasource dataSource) {
-		if (dataSource.equals(RtdbDatasource.MONGO))
-			return mongoManage;
-		else if (dataSource.equals(RtdbDatasource.ELASTIC_SEARCH))
-			return elasticManage;
-		else if (dataSource.equals(RtdbDatasource.KUDU)) {
-			return kuduManageDBRepository;
-		} else
-			return mongoManage;
-	}
+    public ManageDBRepository getInstance(RtdbDatasource dataSource) {
+        if (dataSource.equals(RtdbDatasource.MONGO))
+            return mongoManage;
+        else if (dataSource.equals(RtdbDatasource.ELASTIC_SEARCH))
+            return elasticManage;
+        else if (dataSource.equals(RtdbDatasource.KUDU)) {
+            return kuduManageDBRepository;
+        } else
+            return mongoManage;
+    }
 
 }

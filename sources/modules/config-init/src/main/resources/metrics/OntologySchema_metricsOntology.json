@@ -1,61 +1,61 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "MetricsOntology",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MetricsOntology",
+  "type": "object",
+  "required": [
+    "TimeSerie"
+  ],
+  "properties": {
+    "TimeSerie": {
+      "type": "string",
+      "$ref": "#/datos"
+    }
+  },
+  "datos": {
+    "description": "Properties for DataModel TimeSerie",
     "type": "object",
-    "required": [
-        "TimeSerie"
-    ],
     "properties": {
-        "TimeSerie": {
-            "type": "string",
-            "$ref": "#/datos"
-        }
-    },
-    "datos": {
-        "description": "Properties for DataModel TimeSerie",
+      "timestamp": {
         "type": "object",
-        "properties": {
-            "timestamp": {
-                "type": "object",
-                "required": [
-                    "$date"
-                ],
-                "properties": {
-                    "$date": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                }
-            },
-            "user": {
-                "type": "string"
-            },
-            "result": {
-                "type": "string"
-            },
-            "source": {
-                "type": "string"
-            },
-            "ontology": {
-                "type": "string"
-            },
-            "operationType": {
-                "type": "string"
-            },
-            "value": {
-                "type": "integer"
-            }
-        },
         "required": [
-            "timestamp",
-            "user",
-            "result",
-            "source",
-            "ontology",
-            "operationType",
-            "value"
-        ]
+          "$date"
+        ],
+        "properties": {
+          "$date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "user": {
+        "type": "string"
+      },
+      "result": {
+        "type": "string"
+      },
+      "source": {
+        "type": "string"
+      },
+      "ontology": {
+        "type": "string"
+      },
+      "operationType": {
+        "type": "string"
+      },
+      "value": {
+        "type": "integer"
+      }
     },
-    "description": "Metrics of ontologies usage in the platform",
-    "additionalProperties": true
+    "required": [
+      "timestamp",
+      "user",
+      "result",
+      "source",
+      "ontology",
+      "operationType",
+      "value"
+    ]
+  },
+  "description": "Metrics of ontologies usage in the platform",
+  "additionalProperties": true
 }

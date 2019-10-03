@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,26 +35,26 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
-@Api(value = "Videobroker Management", tags = { "Videobroker management service" })
-@ApiResponses({ @ApiResponse(code = 400, message = "Bad request"),
-		@ApiResponse(code = 500, message = "Internal server error"), @ApiResponse(code = 403, message = "Forbidden") })
+@Api(value = "Videobroker Management", tags = {"Videobroker management service"})
+@ApiResponses({@ApiResponse(code = 400, message = "Bad request"), @ApiResponse(code = 500, message = "Internal server" +
+        " error"), @ApiResponse(code = 403, message = "Forbidden")})
 @RequestMapping("api" + VideobrokerUrl.OP_VIDEOBROKER)
 public class VideobrokerRestService {
 
-	@Autowired
-	@Qualifier("globalCache")
-	private HazelcastInstance hazelcastInstance;
-	@Value("${onesaitplatform.videobroker.hazelcast.queue}")
-	private String videoQueueName;
+    @Autowired
+    @Qualifier("globalCache")
+    private HazelcastInstance hazelcastInstance;
+    @Value("${onesaitplatform.videobroker.hazelcast.queue}")
+    private String videoQueueName;
 
-	@ApiOperation("Insert parameters")
-	@PostMapping
-	public ResponseEntity<?> insert(@ApiParam @RequestBody VideobrokerParameters parameters)
-			throws JsonProcessingException {
-		final ObjectMapper mapper = new ObjectMapper();
-		hazelcastInstance.getQueue(videoQueueName).offer(mapper.writeValueAsString(parameters));
-		return new ResponseEntity<>(HttpStatus.OK);
+    @ApiOperation("Insert parameters")
+    @PostMapping
+    public ResponseEntity<?> insert(
+            @ApiParam @RequestBody VideobrokerParameters parameters) throws JsonProcessingException {
+        final ObjectMapper mapper = new ObjectMapper();
+        hazelcastInstance.getQueue(videoQueueName).offer(mapper.writeValueAsString(parameters));
+        return new ResponseEntity<>(HttpStatus.OK);
 
-	}
+    }
 
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,103 +50,105 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class QueryProcessor implements MessageTypeProcessor {
-	@Autowired
-	private RouterService routerService;
-	@Autowired
-	ObjectMapper objectMapper;
-	@Autowired
-	SecurityPluginManager securityPluginManager;
+    @Autowired
+    private RouterService routerService;
+    @Autowired
+    ObjectMapper objectMapper;
+    @Autowired
+    SecurityPluginManager securityPluginManager;
 
-	@Override
-	public SSAPMessage<SSAPBodyReturnMessage> process(SSAPMessage<? extends SSAPBodyMessage> message) {
+    @Override
+    public SSAPMessage<SSAPBodyReturnMessage> process(SSAPMessage<? extends SSAPBodyMessage> message) {
 
-		final SSAPMessage<SSAPBodyQueryMessage> queryMessage = (SSAPMessage<SSAPBodyQueryMessage>) message;
-		SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
-		responseMessage.setBody(new SSAPBodyReturnMessage());
-		responseMessage.getBody().setOk(true);
-		final Optional<IoTSession> session = securityPluginManager.getSession(queryMessage.getSessionKey());
+        final SSAPMessage<SSAPBodyQueryMessage> queryMessage = (SSAPMessage<SSAPBodyQueryMessage>) message;
+        SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
+        responseMessage.setBody(new SSAPBodyReturnMessage());
+        responseMessage.getBody().setOk(true);
+        final Optional<IoTSession> session = securityPluginManager.getSession(queryMessage.getSessionKey());
 
-		String user = null;
+        String user = null;
 
-		if (session.isPresent()) {
-			user = session.get().getUserID();
-		}
+        if (session.isPresent()) {
+            user = session.get().getUserID();
+        }
 
-		QueryType type;
-		if (SSAPQueryType.SQL.equals(queryMessage.getBody().getQueryType())) {
-			type = OperationModel.QueryType.SQL;
-		} else {
-			type = QueryType.valueOf(queryMessage.getBody().getQueryType().name());
-		}
+        QueryType type;
+        if (SSAPQueryType.SQL.equals(queryMessage.getBody().getQueryType())) {
+            type = OperationModel.QueryType.SQL;
+        } else {
+            type = QueryType.valueOf(queryMessage.getBody().getQueryType().name());
+        }
 
-		final OperationModel model = OperationModel
-				.builder(queryMessage.getBody().getOntology(), OperationType.QUERY, user, Source.IOTBROKER)
-				.body(queryMessage.getBody().getQuery()).queryType(type).build();
+        final OperationModel model = OperationModel.builder(queryMessage.getBody().getOntology(), OperationType.QUERY,
+                                                            user, Source.IOTBROKER).body(
+                queryMessage.getBody().getQuery()).queryType(type).build();
 
-		final NotificationModel modelNotification = new NotificationModel();
-		modelNotification.setOperationModel(model);
+        final NotificationModel modelNotification = new NotificationModel();
+        modelNotification.setOperationModel(model);
 
-		OperationResultModel result;
-		String responseStr = null;
-		String messageStr = null;
-		try {
-			result = routerService.query(modelNotification);
-			responseStr = result.getResult();
-			messageStr = result.getMessage();
+        OperationResultModel result;
+        String responseStr = null;
+        String messageStr = null;
+        try {
+            result = routerService.query(modelNotification);
+            responseStr = result.getResult();
+            messageStr = result.getMessage();
 
-			if (SSAPQueryType.SQL.equals(queryMessage.getBody().getQueryType())
-					&& queryMessage.getBody().getQuery().trim().toLowerCase().startsWith("update")) {// Update
+            if (SSAPQueryType.SQL.equals(
+                    queryMessage.getBody().getQueryType()) && queryMessage.getBody().getQuery().trim().toLowerCase().startsWith(
+                    "update")) {// Update
 
-				final MultiDocumentOperationResult multidocument = MultiDocumentOperationResult.fromString(responseStr);
+                final MultiDocumentOperationResult multidocument = MultiDocumentOperationResult.fromString(responseStr);
 
-				final String response = String.format("{\"nModified\":%s }", multidocument.getCount());
-				responseMessage.getBody().setData(objectMapper.readTree(response));
-			} else if (SSAPQueryType.SQL.equals(queryMessage.getBody().getQueryType())
-					&& queryMessage.getBody().getQuery().trim().toLowerCase().startsWith("delete")) {// Delete
-				final MultiDocumentOperationResult multidocument = MultiDocumentOperationResult.fromString(responseStr);
-				final String response = String.format("{\"nDeleted\":%s }", multidocument.getCount());
-				responseMessage.getBody().setData(objectMapper.readTree(response));
-			} else {
-				responseMessage.getBody().setData(objectMapper.readTree(responseStr));
-			}
+                final String response = String.format("{\"nModified\":%s }", multidocument.getCount());
+                responseMessage.getBody().setData(objectMapper.readTree(response));
+            } else if (SSAPQueryType.SQL.equals(
+                    queryMessage.getBody().getQueryType()) && queryMessage.getBody().getQuery().trim().toLowerCase().startsWith(
+                    "delete")) {// Delete
+                final MultiDocumentOperationResult multidocument = MultiDocumentOperationResult.fromString(responseStr);
+                final String response = String.format("{\"nDeleted\":%s }", multidocument.getCount());
+                responseMessage.getBody().setData(objectMapper.readTree(response));
+            } else {
+                responseMessage.getBody().setData(objectMapper.readTree(responseStr));
+            }
 
-			if (session.isPresent()) {
-				responseMessage.setSessionKey(session.get().getSessionKey());
-			}
+            if (session.isPresent()) {
+                responseMessage.setSessionKey(session.get().getSessionKey());
+            }
 
-		} catch (final Exception e) {
-			log.error("Error proccesing query", e);
+        } catch (final Exception e) {
+            log.error("Error proccesing query", e);
 
-			final String error = MessageException.ERR_DATABASE;
-			responseMessage = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.PROCESSOR, error);
-			if (messageStr != null) {
-				responseMessage.getBody().setError(messageStr);
-			}
-		}
+            final String error = MessageException.ERR_DATABASE;
+            responseMessage = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.PROCESSOR, error);
+            if (messageStr != null) {
+                responseMessage.getBody().setError(messageStr);
+            }
+        }
 
-		return responseMessage;
-	}
+        return responseMessage;
+    }
 
-	@Override
-	public List<SSAPMessageTypes> getMessageTypes() {
-		return Collections.singletonList(SSAPMessageTypes.QUERY);
-	}
+    @Override
+    public List<SSAPMessageTypes> getMessageTypes() {
+        return Collections.singletonList(SSAPMessageTypes.QUERY);
+    }
 
-	@Override
-	public boolean validateMessage(SSAPMessage<? extends SSAPBodyMessage> message) {
-		final SSAPMessage<SSAPBodyQueryMessage> queryMessage = (SSAPMessage<SSAPBodyQueryMessage>) message;
+    @Override
+    public boolean validateMessage(SSAPMessage<? extends SSAPBodyMessage> message) {
+        final SSAPMessage<SSAPBodyQueryMessage> queryMessage = (SSAPMessage<SSAPBodyQueryMessage>) message;
 
-		if (StringUtils.isEmpty(queryMessage.getBody().getQuery())) {
-			throw new SSAPProcessorException(
-					String.format(MessageException.ERR_FIELD_IS_MANDATORY, "query", message.getMessageType().name()));
-		}
+        if (StringUtils.isEmpty(queryMessage.getBody().getQuery())) {
+            throw new SSAPProcessorException(
+                    String.format(MessageException.ERR_FIELD_IS_MANDATORY, "query", message.getMessageType().name()));
+        }
 
-		if (queryMessage.getBody().getQueryType() == null) {
-			throw new SSAPProcessorException(String.format(MessageException.ERR_FIELD_IS_MANDATORY, "queryType",
-					message.getMessageType().name()));
-		}
+        if (queryMessage.getBody().getQueryType() == null) {
+            throw new SSAPProcessorException(String.format(MessageException.ERR_FIELD_IS_MANDATORY, "queryType",
+                                                           message.getMessageType().name()));
+        }
 
-		return true;
-	}
+        return true;
+    }
 
 }

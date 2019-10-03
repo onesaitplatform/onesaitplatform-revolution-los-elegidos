@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,38 +38,38 @@ import com.minsait.onesait.platform.config.model.User;
 @Rule
 public class SecurityOntologyRule extends DefaultRuleBase {
 
-	@Autowired
-	private ApiSecurityService apiSecurityService;
+    @Autowired
+    private ApiSecurityService apiSecurityService;
 
-	@Priority
-	public int getPriority() {
-		return 5;
-	}
+    @Priority
+    public int getPriority() {
+        return 5;
+    }
 
-	@Condition
-	public boolean existsRequest(Facts facts) {
-		final HttpServletRequest request = facts.get(RuleManager.REQUEST);
-		final Map<String, Object> data = facts.get(RuleManager.FACTS);
-		final Ontology ontology = (Ontology) data.get(Constants.ONTOLOGY);
+    @Condition
+    public boolean existsRequest(Facts facts) {
+        final HttpServletRequest request = facts.get(RuleManager.REQUEST);
+        final Map<String, Object> data = facts.get(RuleManager.FACTS);
+        final Ontology ontology = (Ontology) data.get(Constants.ONTOLOGY);
 
-		return ((request != null && ontology != null) && canExecuteRule(facts)) ;
-	}
+        return ((request != null && ontology != null) && canExecuteRule(facts));
+    }
 
-	@Action
-	public void setFirstDerivedData(Facts facts) {
-		final Map<String, Object> data = facts.get(RuleManager.FACTS);
+    @Action
+    public void setFirstDerivedData(Facts facts) {
+        final Map<String, Object> data = facts.get(RuleManager.FACTS);
 
-		final User user = (User) data.get(Constants.USER);
-		final Ontology ontology = (Ontology) data.get(Constants.ONTOLOGY);
-		final boolean insert = !((String) data.get(Constants.METHOD)).equals(ApiOperation.Type.GET.name());
+        final User user = (User) data.get(Constants.USER);
+        final Ontology ontology = (Ontology) data.get(Constants.ONTOLOGY);
+        final boolean insert = !((String) data.get(Constants.METHOD)).equals(ApiOperation.Type.GET.name());
 
-		final boolean ontologyPermission = apiSecurityService.checkRole(user, ontology, insert);
+        final boolean ontologyPermission = apiSecurityService.checkRole(user, ontology, insert);
 
-		if (!ontologyPermission) {
-			stopAllNextRules(facts, "User has no permission to use Ontology " + ontology.getIdentification(),
-					DefaultRuleBase.ReasonType.SECURITY);
-		}
+        if (!ontologyPermission) {
+            stopAllNextRules(facts, "User has no permission to use Ontology " + ontology.getIdentification(),
+                             DefaultRuleBase.ReasonType.SECURITY);
+        }
 
-	}
+    }
 
 }

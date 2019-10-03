@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,107 +41,110 @@ import com.minsait.onesait.platform.config.model.KsqlResource.KsqlResourceType;
 @Category(IntegrationTest.class)
 public class KsqlFlowRepositoryIntegrationTests {
 
-	@Autowired
-	private KsqlFlowRepository ksqlFlowRepository;
+    @Autowired
+    private KsqlFlowRepository ksqlFlowRepository;
 
-	@Autowired
-	private KsqlResourceRepository ksqlResourceRepository;
+    @Autowired
+    private KsqlResourceRepository ksqlResourceRepository;
 
-	@Autowired
-	private KsqlRelationRepository ksqlRelationRepository;
+    @Autowired
+    private KsqlRelationRepository ksqlRelationRepository;
 
-	@Autowired
-	private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-	@Before
-	public void init() {
+    @Before
+    public void init() {
 
-		final KsqlFlow ksqlFlow = new KsqlFlow();
-		ksqlFlow.setIdentification("ksqlFlowTest000");
-		ksqlFlow.setDescription("Ksql Flow for testing purposes.");
-		ksqlFlow.setUser(userRepository.findByUserId("developer"));
-		ksqlFlow.setJsonFlow("{}");
-		ksqlFlowRepository.save(ksqlFlow);
+        final KsqlFlow ksqlFlow = new KsqlFlow();
+        ksqlFlow.setIdentification("ksqlFlowTest000");
+        ksqlFlow.setDescription("Ksql Flow for testing purposes.");
+        ksqlFlow.setUser(userRepository.findByUserId("developer"));
+        ksqlFlow.setJsonFlow("{}");
+        ksqlFlowRepository.save(ksqlFlow);
 
-		final KsqlResource ksqlResource = new KsqlResource();
+        final KsqlResource ksqlResource = new KsqlResource();
 
-		ksqlResource.setDescription("Ksql Test Resource 1");
-		ksqlResource.setIdentification("ontologyInit");
-		ksqlResource.setOntology(null);
-		ksqlResource.setResourceType(FlowResourceType.ORIGIN);
-		String statemetnText = "create stream ontologyInit (ontology varchar) WITH (kafka_topic='jsonTest',value_Format='JSON');";
-		ksqlResource.setStatementText(statemetnText);
-		ksqlResource.setIdentification("ontologyInit");
-		ksqlResource.setKafkaTopic("jsonTest");
-		ksqlResource.setKsqlType(KsqlResourceType.STREAM);
+        ksqlResource.setDescription("Ksql Test Resource 1");
+        ksqlResource.setIdentification("ontologyInit");
+        ksqlResource.setOntology(null);
+        ksqlResource.setResourceType(FlowResourceType.ORIGIN);
+        String statemetnText = "create stream ontologyInit (ontology varchar) WITH (kafka_topic='jsonTest'," +
+                "value_Format='JSON');";
+        ksqlResource.setStatementText(statemetnText);
+        ksqlResource.setIdentification("ontologyInit");
+        ksqlResource.setKafkaTopic("jsonTest");
+        ksqlResource.setKsqlType(KsqlResourceType.STREAM);
 
-		final KsqlRelation ksqlRelation = new KsqlRelation();
-		ksqlRelation.setKsqlFlow(ksqlFlow);
+        final KsqlRelation ksqlRelation = new KsqlRelation();
+        ksqlRelation.setKsqlFlow(ksqlFlow);
 
-		ksqlRelation.setKsqlResource(ksqlResource);
-		ksqlFlow.addResourceRelation(ksqlRelation);
+        ksqlRelation.setKsqlResource(ksqlResource);
+        ksqlFlow.addResourceRelation(ksqlRelation);
 
-		ksqlResourceRepository.save(ksqlResource);
-		ksqlRelationRepository.save(ksqlRelation);
-		ksqlFlowRepository.save(ksqlFlow);
+        ksqlResourceRepository.save(ksqlResource);
+        ksqlRelationRepository.save(ksqlRelation);
+        ksqlFlowRepository.save(ksqlFlow);
 
-		final KsqlResource ksqlResource2 = new KsqlResource();
+        final KsqlResource ksqlResource2 = new KsqlResource();
 
-		ksqlResource2.setDescription("Ksql Test Resource 2");
-		ksqlResource2.setIdentification("ontologyFields");
-		ksqlResource2.setOntology(null);
-		ksqlResource2.setResourceType(FlowResourceType.PROCESS);
-		statemetnText = "create stream ontologyFields as select EXTRACTJSONFIELD(ontology, '$.viewtime') as viewtime, EXTRACTJSONFIELD(ontology, '$.userid') as  userid, EXTRACTJSONFIELD(ontology, '$.pageid') as pageid from ontologyInit;";
-		ksqlResource2.setStatementText(statemetnText);
-		ksqlResource2.setKafkaTopic("ONTOLOGYFIELDS");
-		ksqlResource2.setKsqlType(KsqlResourceType.STREAM);
+        ksqlResource2.setDescription("Ksql Test Resource 2");
+        ksqlResource2.setIdentification("ontologyFields");
+        ksqlResource2.setOntology(null);
+        ksqlResource2.setResourceType(FlowResourceType.PROCESS);
+        statemetnText = "create stream ontologyFields as select EXTRACTJSONFIELD(ontology, '$.viewtime') as viewtime," +
+                " EXTRACTJSONFIELD(ontology, '$.userid') as  userid, EXTRACTJSONFIELD(ontology, '$.pageid') as pageid" +
+                " from ontologyInit;";
+        ksqlResource2.setStatementText(statemetnText);
+        ksqlResource2.setKafkaTopic("ONTOLOGYFIELDS");
+        ksqlResource2.setKsqlType(KsqlResourceType.STREAM);
 
-		final KsqlRelation ksqlRelation2 = new KsqlRelation();
-		ksqlRelation2.setKsqlFlow(ksqlFlow);
-		ksqlRelation2.setKsqlResource(ksqlResource2);
-		ksqlFlow.addResourceRelation(ksqlRelation2);
-		ksqlRelation2.addPredecessor(ksqlRelation);
-		ksqlRelation.addSucessor(ksqlRelation);
+        final KsqlRelation ksqlRelation2 = new KsqlRelation();
+        ksqlRelation2.setKsqlFlow(ksqlFlow);
+        ksqlRelation2.setKsqlResource(ksqlResource2);
+        ksqlFlow.addResourceRelation(ksqlRelation2);
+        ksqlRelation2.addPredecessor(ksqlRelation);
+        ksqlRelation.addSucessor(ksqlRelation);
 
-		ksqlResourceRepository.save(ksqlResource2);
-		ksqlRelationRepository.save(ksqlRelation2);
-		ksqlRelationRepository.save(ksqlRelation);
-		ksqlFlowRepository.save(ksqlFlow);
+        ksqlResourceRepository.save(ksqlResource2);
+        ksqlRelationRepository.save(ksqlRelation2);
+        ksqlRelationRepository.save(ksqlRelation);
+        ksqlFlowRepository.save(ksqlFlow);
 
-	}
+    }
 
-	@Test
-	public void given_SomeKsqlFlowExists_When_IsSearchedById_Then_TheCorrectObjectIsObtained() {
-		final List<KsqlFlow> ksqlFlowList = ksqlFlowRepository.findByIdentification("ksqlFlowTest000");
-		// ksqlFlowList.get(0).getResourcesRelations()
-		// .forEach(ksqlRelation ->
-		// log.info(ksqlRelation.getKsqlResource().getIdentification()));
-		Assert.assertTrue(ksqlFlowList.size() > 0);
-	}
+    @Test
+    public void given_SomeKsqlFlowExists_When_IsSearchedById_Then_TheCorrectObjectIsObtained() {
+        final List<KsqlFlow> ksqlFlowList = ksqlFlowRepository.findByIdentification("ksqlFlowTest000");
+        // ksqlFlowList.get(0).getResourcesRelations()
+        // .forEach(ksqlRelation ->
+        // log.info(ksqlRelation.getKsqlResource().getIdentification()));
+        Assert.assertTrue(ksqlFlowList.size() > 0);
+    }
 
-	@After
-	public void cleanUp() {
+    @After
+    public void cleanUp() {
 
-		final KsqlFlow flow = ksqlFlowRepository.findByIdentification("ksqlFlowTest000").get(0);
+        final KsqlFlow flow = ksqlFlowRepository.findByIdentification("ksqlFlowTest000").get(0);
 
-		final List<KsqlRelation> elements = ksqlRelationRepository.findByKsqlFlow(flow);
+        final List<KsqlRelation> elements = ksqlRelationRepository.findByKsqlFlow(flow);
 
-		for (final KsqlRelation element : elements) {
-			element.getPredecessors().forEach(predecessor -> {
-				predecessor.removeSucessor(element);
-				ksqlRelationRepository.save(predecessor);
-			});
-			element.getSuccessors().forEach(successor -> {
-				successor.removePredecessor(element);
-				ksqlRelationRepository.save(successor);
-			});
+        for (final KsqlRelation element : elements) {
+            element.getPredecessors().forEach(predecessor -> {
+                predecessor.removeSucessor(element);
+                ksqlRelationRepository.save(predecessor);
+            });
+            element.getSuccessors().forEach(successor -> {
+                successor.removePredecessor(element);
+                ksqlRelationRepository.save(successor);
+            });
 
-			final String resourceIdentification = element.getKsqlResource().getIdentification();
-			ksqlRelationRepository.deleteByKsqlFlowIdentificationAndKsqlResourceIdentification(flow.getIdentification(),
-					resourceIdentification);
-			ksqlResourceRepository.deleteByIdentification(resourceIdentification);
-		}
+            final String resourceIdentification = element.getKsqlResource().getIdentification();
+            ksqlRelationRepository.deleteByKsqlFlowIdentificationAndKsqlResourceIdentification(flow.getIdentification(),
+                                                                                               resourceIdentification);
+            ksqlResourceRepository.deleteByIdentification(resourceIdentification);
+        }
 
-		ksqlFlowRepository.deleteByIdentificationAndUserUserId("ksqlFlowTest000", "developer");
-	}
+        ksqlFlowRepository.deleteByIdentificationAndUserUserId("ksqlFlowTest000", "developer");
+    }
 }

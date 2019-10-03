@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,66 +42,64 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserAndAPIRule extends DefaultRuleBase {
 
-	@Autowired
-	private ApiManagerService apiManagerService;
+    @Autowired
+    private ApiManagerService apiManagerService;
 
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private UserService userService;
 
-	@Autowired(required = false)
-	private JWTService jwtService;
+    @Autowired(required = false)
+    private JWTService jwtService;
 
-	@Priority
-	public int getPriority() {
-		return 2;
-	}
+    @Priority
+    public int getPriority() {
+        return 2;
+    }
 
-	@Condition
-	public boolean existsRequest(Facts facts) {
-		final HttpServletRequest request = facts.get(RuleManager.REQUEST);
-		return ((request != null) && canExecuteRule(facts));
-	}
+    @Condition
+    public boolean existsRequest(Facts facts) {
+        final HttpServletRequest request = facts.get(RuleManager.REQUEST);
+        return ((request != null) && canExecuteRule(facts));
+    }
 
-	@Action
-	public void setFirstDerivedData(Facts facts) {
+    @Action
+    public void setFirstDerivedData(Facts facts) {
 
-		final Map<String, Object> data = facts.get(RuleManager.FACTS);
+        final Map<String, Object> data = facts.get(RuleManager.FACTS);
 
-		final String PATH_INFO = (String) data.get(Constants.PATH_INFO);
-		final String TOKEN = (String) data.get(Constants.AUTHENTICATION_HEADER);
-		final String JWT_TOKEN = (String) data.get(Constants.JWT_TOKEN);
-		User user = null;
-		try {
-			user = userService.getUserByToken(TOKEN);
-		} catch (final Exception e) {
-			log.error(e.getMessage());
-		}
+        final String PATH_INFO = (String) data.get(Constants.PATH_INFO);
+        final String TOKEN = (String) data.get(Constants.AUTHENTICATION_HEADER);
+        final String JWT_TOKEN = (String) data.get(Constants.JWT_TOKEN);
+        User user = null;
+        try {
+            user = userService.getUserByToken(TOKEN);
+        } catch (final Exception e) {
+            log.error(e.getMessage());
+        }
 
-		Api api = null;
-		if (user == null && JWT_TOKEN.length() > 0 && jwtService != null) {
-			final String userid = jwtService.extractToken(JWT_TOKEN);
+        Api api = null;
+        if (user == null && JWT_TOKEN.length() > 0 && jwtService != null) {
+            final String userid = jwtService.extractToken(JWT_TOKEN);
 
-			if (userid != null)
-				user = userService.getUser(userid);
-		}
-		if (user == null) {
+            if (userid != null)
+                user = userService.getUser(userid);
+        }
+        if (user == null) {
 
-			stopAllNextRules(facts, "Token " + TOKEN + " not recognized for user ",
-					DefaultRuleBase.ReasonType.SECURITY);
+            stopAllNextRules(facts, "Token " + TOKEN + " not recognized for user ",
+                             DefaultRuleBase.ReasonType.SECURITY);
 
-		}
+        } else {
+            api = apiManagerService.getApi(PATH_INFO);
+            if (api == null)
 
-		else {
-			api = apiManagerService.getApi(PATH_INFO);
-			if (api == null)
+                stopAllNextRules(facts, "API not found with Token :" + TOKEN + " and Path Info" + PATH_INFO,
 
-				stopAllNextRules(facts, "API not found with Token :" + TOKEN + " and Path Info" + PATH_INFO,
+                                 DefaultRuleBase.ReasonType.SECURITY);
+        }
 
-						DefaultRuleBase.ReasonType.SECURITY);
-		}
-
-		data.put(Constants.USER, user);
-		data.put(Constants.API, api);
-	}
+        data.put(Constants.USER, user);
+        data.put(Constants.API, api);
+    }
 
 }

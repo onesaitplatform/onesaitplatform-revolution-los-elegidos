@@ -1,7 +1,7 @@
-ace.define("ace/snippets/php",[], function(require, exports, module) {
-"use strict";
+ace.define("ace/snippets/php", [], function (require, exports, module) {
+    "use strict";
 
-exports.snippetText = "snippet <?\n\
+    exports.snippetText = "snippet <?\n\
 	<?php\n\
 \n\
 	${1}\n\
@@ -379,14 +379,14 @@ snippet rett\n\
 snippet retf\n\
 	return false;\n\
 ";
-exports.scope = "php";
+    exports.scope = "php";
 
 });
-                (function() {
-                    ace.require(["ace/snippets/php"], function(m) {
-                        if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
-                        }
-                    });
-                })();
+(function () {
+    ace.require(["ace/snippets/php"], function (m) {
+        if (typeof module == "object" && typeof exports == "object" && module) {
+            module.exports = m;
+        }
+    });
+})();
             

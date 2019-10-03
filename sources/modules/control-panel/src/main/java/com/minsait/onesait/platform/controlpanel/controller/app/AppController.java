@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -70,315 +70,320 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AppController {
 
-	@Autowired
-	private AppService appService;
-	@Autowired
-	private AppWebUtils utils;
-	@Autowired
-	private UserService userService;
-	@Autowired
-	private AppRoleRepository appRoleRepository;
-	@Autowired
-	private ProjectService projectService;
-	@Autowired
-	private AppHelper appHelper;
+    @Autowired
+    private AppService appService;
+    @Autowired
+    private AppWebUtils utils;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private AppRoleRepository appRoleRepository;
+    @Autowired
+    private ProjectService projectService;
+    @Autowired
+    private AppHelper appHelper;
 
-	private static final String NO_APP_CREATION = "Cannot create app";
-	private static final String REDIRECT_APPS_CREATE = "redirect:/apps/create";
-	private static final String REDIRECT_APPS_LIST = "redirect:/apps/list";
-	private static final String REDIRECT_APPS_UPDATE = "redirect:/apps/update/";
+    private static final String NO_APP_CREATION = "Cannot create app";
+    private static final String REDIRECT_APPS_CREATE = "redirect:/apps/create";
+    private static final String REDIRECT_APPS_LIST = "redirect:/apps/list";
+    private static final String REDIRECT_APPS_UPDATE = "redirect:/apps/update/";
 
-	@Autowired(required = false)
-	private LdapUserService ldapUserService;
-	@Value("${onesaitplatform.authentication.provider}")
-	private String provider;
-	@Value("${ldap.base}")
-	private String ldapBaseDn;
-	private static final String LDAP = "ldap";
+    @Autowired(required = false)
+    private LdapUserService ldapUserService;
+    @Value("${onesaitplatform.authentication.provider}")
+    private String provider;
+    @Value("${ldap.base}")
+    private String ldapBaseDn;
+    private static final String LDAP = "ldap";
 
-	@GetMapping(value = "/list", produces = "text/html")
-	public String list(Model model, @RequestParam(required = false) String identification) {
+    @GetMapping(value = "/list", produces = "text/html")
+    public String list(Model model, @RequestParam(required = false) String identification) {
 
-		final List<App> apps = appService.getAppsByUser(utils.getUserId(), identification);
+        final List<App> apps = appService.getAppsByUser(utils.getUserId(), identification);
 
-		appHelper.populateAppList(model, apps);
+        appHelper.populateAppList(model, apps);
 
-		return "apps/list";
+        return "apps/list";
 
-	}
+    }
 
-	@GetMapping(value = "/create")
-	public String create(Model model) {
-		model.addAttribute("app", new AppCreateDTO());
-		return "apps/create";
-	}
+    @GetMapping(value = "/create")
+    public String create(Model model) {
+        model.addAttribute("app", new AppCreateDTO());
+        return "apps/create";
+    }
 
-	@PostMapping(value = { "/create" })
-	public String createApp(Model model, @Valid AppCreateDTO app, BindingResult bindingResult,
-			RedirectAttributes redirect) {
+    @PostMapping(value = {"/create"})
+    public String createApp(Model model, @Valid AppCreateDTO app, BindingResult bindingResult,
+            RedirectAttributes redirect) {
 
-		try {
-			appService.createApp(appHelper.dto2app(app));
+        try {
+            appService.createApp(appHelper.dto2app(app));
 
-		} catch (final AppServiceException | IOException e) {
-			log.debug(NO_APP_CREATION);
-			utils.addRedirectException(e, redirect);
-			return REDIRECT_APPS_CREATE;
-		}
-		return REDIRECT_APPS_LIST;
-	}
+        } catch (final AppServiceException | IOException e) {
+            log.debug(NO_APP_CREATION);
+            utils.addRedirectException(e, redirect);
+            return REDIRECT_APPS_CREATE;
+        }
+        return REDIRECT_APPS_LIST;
+    }
 
-	@GetMapping(value = "/update/{id}", produces = "text/html")
-	@Transactional
-	public String update(Model model, @PathVariable("id") String id) {
-		final App app = appService.getByIdentification(id);
+    @GetMapping(value = "/update/{id}", produces = "text/html")
+    @Transactional
+    public String update(Model model, @PathVariable("id") String id) {
+        final App app = appService.getByIdentification(id);
 
-		if (app != null) {
+        if (app != null) {
 
-			final User sessionUser = userService.getUser(utils.getUserId());
-			if (((null != app.getUser()) && app.getUser().getUserId().equals(sessionUser.getUserId()))
-					|| Role.Type.ROLE_ADMINISTRATOR.toString().equals(sessionUser.getRole().getId())) {
+            final User sessionUser = userService.getUser(utils.getUserId());
+            if (((null != app.getUser()) && app.getUser().getUserId().equals(
+                    sessionUser.getUserId())) || Role.Type.ROLE_ADMINISTRATOR.toString().equals(
+                    sessionUser.getRole().getId())) {
 
-				appHelper.populateAppUpdate(model, app, sessionUser, ldapBaseDn, ldapActive());				
-				
-				return "apps/create";
+                appHelper.populateAppUpdate(model, app, sessionUser, ldapBaseDn, ldapActive());
 
-			} else {
-				return REDIRECT_APPS_LIST;
-			}
-		} else {
-			return REDIRECT_APPS_LIST;
-		}
-	}
+                return "apps/create";
 
-	@PutMapping(value = "/update/{id}", produces = "text/html")
-	public String updateApp(Model model, @PathVariable("id") String id, @Valid AppCreateDTO appDTO,
-			BindingResult bindingResult, RedirectAttributes redirect) {
+            } else {
+                return REDIRECT_APPS_LIST;
+            }
+        } else {
+            return REDIRECT_APPS_LIST;
+        }
+    }
 
-		if (bindingResult.hasErrors()) {
-			log.debug("Some app properties missing");
-			utils.addRedirectMessage("app.validation.error", redirect);
-			return REDIRECT_APPS_UPDATE + id;
-		}
+    @PutMapping(value = "/update/{id}", produces = "text/html")
+    public String updateApp(Model model, @PathVariable("id") String id, @Valid AppCreateDTO appDTO,
+            BindingResult bindingResult, RedirectAttributes redirect) {
 
-		try {
+        if (bindingResult.hasErrors()) {
+            log.debug("Some app properties missing");
+            utils.addRedirectMessage("app.validation.error", redirect);
+            return REDIRECT_APPS_UPDATE + id;
+        }
 
-			final App app = appService.getByIdentification(id);
-			if (app != null) {
-				final User sessionUser = userService.getUser(utils.getUserId());
-				if (((null != app.getUser()) && app.getUser().getUserId().equals(sessionUser.getUserId()))
-						|| Role.Type.ROLE_ADMINISTRATOR.toString().equals(sessionUser.getRole().getId())) {
-					appService.updateApp(appDTO);
-				} else {
-					return REDIRECT_APPS_LIST;
-				}
-			} else {
-				return REDIRECT_APPS_LIST;
-			}
+        try {
 
-		} catch (final AppServiceException e) {
-			log.debug("Cannot update app");
-			utils.addRedirectMessage("app.update.error", redirect);
-			return REDIRECT_APPS_CREATE;
-		}
+            final App app = appService.getByIdentification(id);
+            if (app != null) {
+                final User sessionUser = userService.getUser(utils.getUserId());
+                if (((null != app.getUser()) && app.getUser().getUserId().equals(
+                        sessionUser.getUserId())) || Role.Type.ROLE_ADMINISTRATOR.toString().equals(
+                        sessionUser.getRole().getId())) {
+                    appService.updateApp(appDTO);
+                } else {
+                    return REDIRECT_APPS_LIST;
+                }
+            } else {
+                return REDIRECT_APPS_LIST;
+            }
 
-		return REDIRECT_APPS_LIST;
-	}
+        } catch (final AppServiceException e) {
+            log.debug("Cannot update app");
+            utils.addRedirectMessage("app.update.error", redirect);
+            return REDIRECT_APPS_CREATE;
+        }
 
-	@GetMapping("/show/{id}")
-	@Transactional
-	public String show(Model model, @PathVariable("id") String id, RedirectAttributes redirect) {
-		final App app = appService.getByIdentification(id);
+        return REDIRECT_APPS_LIST;
+    }
 
-		if (app != null) {
+    @GetMapping("/show/{id}")
+    @Transactional
+    public String show(Model model, @PathVariable("id") String id, RedirectAttributes redirect) {
+        final App app = appService.getByIdentification(id);
 
-			final User sessionUser = userService.getUser(utils.getUserId());
-			if (((null != app.getUser()) && app.getUser().getUserId().equals(sessionUser.getUserId()))
-					|| Role.Type.ROLE_ADMINISTRATOR.toString().equals(sessionUser.getRole().getId())) {
+        if (app != null) {
 
-				appHelper.populateAppShow(model, app);
+            final User sessionUser = userService.getUser(utils.getUserId());
+            if (((null != app.getUser()) && app.getUser().getUserId().equals(
+                    sessionUser.getUserId())) || Role.Type.ROLE_ADMINISTRATOR.toString().equals(
+                    sessionUser.getRole().getId())) {
 
-				return "apps/show";
-			} else {
-				return REDIRECT_APPS_LIST;
-			}
-		} else {
-			return REDIRECT_APPS_LIST;
-		}
+                appHelper.populateAppShow(model, app);
 
-	}
+                return "apps/show";
+            } else {
+                return REDIRECT_APPS_LIST;
+            }
+        } else {
+            return REDIRECT_APPS_LIST;
+        }
 
-	@DeleteMapping("/{id}")
-	public @ResponseBody String delete(Model model, @PathVariable("id") String id, RedirectAttributes redirect) {
+    }
 
-		try {
-			final App app = appService.getByIdentification(id);
-			if (app != null) {
-				final User sessionUser = userService.getUser(utils.getUserId());
-				if (((null != app.getUser()) && app.getUser().getUserId().equals(sessionUser.getUserId()))
-						|| Role.Type.ROLE_ADMINISTRATOR.toString().equals(sessionUser.getRole().getId())) {
-					appService.deleteApp(id);
-				} else {
-					return REDIRECT_APPS_LIST;
-				}
-			} else {
-				return REDIRECT_APPS_LIST;
-			}
+    @DeleteMapping("/{id}")
+    public @ResponseBody
+    String delete(Model model, @PathVariable("id") String id, RedirectAttributes redirect) {
 
-		} catch (final Exception e) {
-			utils.addRedirectMessage("app.delete.error", redirect);
-			return "/controlpanel/apps/list";
-		}
+        try {
+            final App app = appService.getByIdentification(id);
+            if (app != null) {
+                final User sessionUser = userService.getUser(utils.getUserId());
+                if (((null != app.getUser()) && app.getUser().getUserId().equals(
+                        sessionUser.getUserId())) || Role.Type.ROLE_ADMINISTRATOR.toString().equals(
+                        sessionUser.getRole().getId())) {
+                    appService.deleteApp(id);
+                } else {
+                    return REDIRECT_APPS_LIST;
+                }
+            } else {
+                return REDIRECT_APPS_LIST;
+            }
 
-		return "/controlpanel/apps/list";
-	}
+        } catch (final Exception e) {
+            utils.addRedirectMessage("app.delete.error", redirect);
+            return "/controlpanel/apps/list";
+        }
 
-	@PostMapping(value = "/authorization", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<UserAppCreateDTO> createAuthorization(@RequestParam String roleId, @RequestParam String appId,
-			@RequestParam String userId) {
-		try {
+        return "/controlpanel/apps/list";
+    }
 
-			final Long appUserId = appService.createUserAccess(appId, userId, roleId);
-			final UserAppCreateDTO appUserDTO = new UserAppCreateDTO();
-			appUserDTO.setId(String.valueOf(appUserId));
-			appUserDTO.setRoleName(appRoleRepository.findOne(Long.valueOf(roleId)).getName());
-			appUserDTO.setUser(userId);
-			appUserDTO.setRoleId(roleId);
+    @PostMapping(value = "/authorization", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<UserAppCreateDTO> createAuthorization(@RequestParam String roleId, @RequestParam String appId,
+            @RequestParam String userId) {
+        try {
 
-			return new ResponseEntity<>(appUserDTO, HttpStatus.CREATED);
+            final Long appUserId = appService.createUserAccess(appId, userId, roleId);
+            final UserAppCreateDTO appUserDTO = new UserAppCreateDTO();
+            appUserDTO.setId(String.valueOf(appUserId));
+            appUserDTO.setRoleName(appRoleRepository.findOne(Long.valueOf(roleId)).getName());
+            appUserDTO.setUser(userId);
+            appUserDTO.setRoleId(roleId);
 
-		} catch (final RuntimeException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
+            return new ResponseEntity<>(appUserDTO, HttpStatus.CREATED);
 
-	@PostMapping(value = "/authorization/ldap", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<UserAppCreateDTO> createAuthorizationLdap(@RequestParam String roleId,
-			@RequestParam String appId, @RequestParam String userId, @RequestParam String dn)
-			throws GenericOPException {
-		try {
-			if (userService.getUser(userId) == null)
-				ldapUserService.createUser(userId, dn);
-			final Long appUserId = appService.createUserAccess(appId, userId, roleId);
-			final UserAppCreateDTO appUserDTO = new UserAppCreateDTO();
-			appUserDTO.setId(String.valueOf(appUserId));
-			appUserDTO.setRoleName(appRoleRepository.findOne(Long.valueOf(roleId)).getName());
-			appUserDTO.setUser(userId);
-			appUserDTO.setRoleId(roleId);
+        } catch (final RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 
-			return new ResponseEntity<>(appUserDTO, HttpStatus.CREATED);
+    @PostMapping(value = "/authorization/ldap", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<UserAppCreateDTO> createAuthorizationLdap(@RequestParam String roleId,
+            @RequestParam String appId, @RequestParam String userId,
+            @RequestParam String dn) throws GenericOPException {
+        try {
+            if (userService.getUser(userId) == null)
+                ldapUserService.createUser(userId, dn);
+            final Long appUserId = appService.createUserAccess(appId, userId, roleId);
+            final UserAppCreateDTO appUserDTO = new UserAppCreateDTO();
+            appUserDTO.setId(String.valueOf(appUserId));
+            appUserDTO.setRoleName(appRoleRepository.findOne(Long.valueOf(roleId)).getName());
+            appUserDTO.setUser(userId);
+            appUserDTO.setRoleId(roleId);
 
-		} catch (final RuntimeException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
+            return new ResponseEntity<>(appUserDTO, HttpStatus.CREATED);
 
-	@PostMapping(value = "/authorization/delete", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<String> deleteAuthorization(@RequestParam String id) {
+        } catch (final RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 
-		try {
-			appService.deleteUserAccess(Long.parseLong(id));
-			return new ResponseEntity<>("{\"status\" : \"ok\"}", HttpStatus.OK);
-		} catch (final RuntimeException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
+    @PostMapping(value = "/authorization/delete", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<String> deleteAuthorization(@RequestParam String id) {
 
-	@PostMapping(value = "/association", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<AppAssociatedCreateDTO> createAssociation(@RequestParam String fatherRoleId,
-			@RequestParam String childRoleId) {
-		try {
+        try {
+            appService.deleteUserAccess(Long.parseLong(id));
+            return new ResponseEntity<>("{\"status\" : \"ok\"}", HttpStatus.OK);
+        } catch (final RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 
-			final Map<String, String> result = appService.createAssociation(fatherRoleId, childRoleId);
-			final AppAssociatedCreateDTO appAssociatedDTO = new AppAssociatedCreateDTO();
-			appAssociatedDTO.setId(result.get("fatherRoleName") + ':' + result.get("childRoleName"));
-			appAssociatedDTO.setFatherAppId(result.get("fatherAppId"));
-			appAssociatedDTO.setFatherRoleName(result.get("fatherRoleName"));
-			appAssociatedDTO.setChildAppId(result.get("childAppId"));
-			appAssociatedDTO.setChildRoleName(result.get("childRoleName"));
+    @PostMapping(value = "/association", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<AppAssociatedCreateDTO> createAssociation(@RequestParam String fatherRoleId,
+            @RequestParam String childRoleId) {
+        try {
 
-			return new ResponseEntity<>(appAssociatedDTO, HttpStatus.CREATED);
+            final Map<String, String> result = appService.createAssociation(fatherRoleId, childRoleId);
+            final AppAssociatedCreateDTO appAssociatedDTO = new AppAssociatedCreateDTO();
+            appAssociatedDTO.setId(result.get("fatherRoleName") + ':' + result.get("childRoleName"));
+            appAssociatedDTO.setFatherAppId(result.get("fatherAppId"));
+            appAssociatedDTO.setFatherRoleName(result.get("fatherRoleName"));
+            appAssociatedDTO.setChildAppId(result.get("childAppId"));
+            appAssociatedDTO.setChildRoleName(result.get("childRoleName"));
 
-		} catch (final RuntimeException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
+            return new ResponseEntity<>(appAssociatedDTO, HttpStatus.CREATED);
 
-	@PostMapping(value = "/association/delete", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<String> deleteAssociation(@RequestParam String fatherRoleName,
-			@RequestParam String childRoleName, String fatherAppId, String childAppId) {
+        } catch (final RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 
-		try {
-			appService.deleteAssociation(fatherRoleName, childRoleName, fatherAppId, childAppId);
-			return new ResponseEntity<>("{\"status\" : \"ok\"}", HttpStatus.OK);
-		} catch (final RuntimeException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
+    @PostMapping(value = "/association/delete", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<String> deleteAssociation(@RequestParam String fatherRoleName,
+            @RequestParam String childRoleName, String fatherAppId, String childAppId) {
 
-	@GetMapping(value = "/getRoles", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<Map<Long, String>> getRolesByApp(@RequestParam String appId) {
-		final App app = appService.getByIdentification(appId);
-		final Map<Long, String> roles = new HashMap<>();
-		for (final AppRole role : app.getAppRoles()) {
-			roles.put(role.getId(), role.getName());
-		}
-		return new ResponseEntity<>(roles, HttpStatus.CREATED);
+        try {
+            appService.deleteAssociation(fatherRoleName, childRoleName, fatherAppId, childAppId);
+            return new ResponseEntity<>("{\"status\" : \"ok\"}", HttpStatus.OK);
+        } catch (final RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 
-	}
+    @GetMapping(value = "/getRoles", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Map<Long, String>> getRolesByApp(@RequestParam String appId) {
+        final App app = appService.getByIdentification(appId);
+        final Map<Long, String> roles = new HashMap<>();
+        for (final AppRole role : app.getAppRoles()) {
+            roles.put(role.getId(), role.getName());
+        }
+        return new ResponseEntity<>(roles, HttpStatus.CREATED);
 
-	@GetMapping(value = "/users", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<List<String>> getUsers(@RequestParam("dn") String dn) {
-		final List<User> users = ldapUserService.getAllUsers(dn);
-		return new ResponseEntity<>(users.stream().map(User::getUserId).collect(Collectors.toList()), HttpStatus.OK);
+    }
 
-	}
+    @GetMapping(value = "/users", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<String>> getUsers(@RequestParam("dn") String dn) {
+        final List<User> users = ldapUserService.getAllUsers(dn);
+        return new ResponseEntity<>(users.stream().map(User::getUserId).collect(Collectors.toList()), HttpStatus.OK);
 
-	@GetMapping(value = "/groups", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<List<String>> getGroups(@RequestParam("dn") String dn) {
-		final List<String> groups = ldapUserService.getAllGroups(dn);
-		return new ResponseEntity<>(groups, HttpStatus.OK);
+    }
 
-	}
+    @GetMapping(value = "/groups", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<String>> getGroups(@RequestParam("dn") String dn) {
+        final List<String> groups = ldapUserService.getAllGroups(dn);
+        return new ResponseEntity<>(groups, HttpStatus.OK);
 
-	@GetMapping(value = "/groups/{group}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<List<String>> getUsersInGroup(@RequestParam("dn") String dn,
-			@PathVariable("group") String group) {
-		final List<User> users = ldapUserService.getAllUsersFromGroup(dn, group);
-		return new ResponseEntity<>(users.stream().map(User::getUserId).collect(Collectors.toList()), HttpStatus.OK);
+    }
 
-	}
+    @GetMapping(value = "/groups/{group}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<String>> getUsersInGroup(@RequestParam("dn") String dn,
+            @PathVariable("group") String group) {
+        final List<User> users = ldapUserService.getAllUsersFromGroup(dn, group);
+        return new ResponseEntity<>(users.stream().map(User::getUserId).collect(Collectors.toList()), HttpStatus.OK);
 
-	@PostMapping("/project")
-	public String createProject(Model model, @Valid ProjectDTO project, @RequestParam("appId") String appId,
-			@RequestParam(value = "existingProject", required = false) String existingProject,
-			BindingResult bindingResult) {
-		if (bindingResult.hasErrors() && StringUtils.isEmpty(existingProject)) {
+    }
 
-			return REDIRECT_APPS_UPDATE + appId;
-		} else {
-			final App realm = appService.getByIdentification(appId);
-			if (!StringUtils.isEmpty(project.getName()) && !StringUtils.isEmpty(project.getDescription())) {
-				final Project p = projectService.createProject(project);
-				p.setApp(realm);
-				project.setUser(userService.getUser(utils.getUserId()));
-				realm.setProject(p);
+    @PostMapping("/project")
+    public String createProject(Model model, @Valid ProjectDTO project, @RequestParam("appId") String appId,
+            @RequestParam(value = "existingProject", required = false) String existingProject,
+            BindingResult bindingResult) {
+        if (bindingResult.hasErrors() && StringUtils.isEmpty(existingProject)) {
 
-			} else {
-				final Project projectDB = projectService.getById(existingProject);
-				realm.setProject(projectDB);
-				projectDB.setApp(realm);
-				projectService.updateProject(projectDB);
-			}
+            return REDIRECT_APPS_UPDATE + appId;
+        } else {
+            final App realm = appService.getByIdentification(appId);
+            if (!StringUtils.isEmpty(project.getName()) && !StringUtils.isEmpty(project.getDescription())) {
+                final Project p = projectService.createProject(project);
+                p.setApp(realm);
+                project.setUser(userService.getUser(utils.getUserId()));
+                realm.setProject(p);
 
-			appService.updateApp(realm);
-			return REDIRECT_APPS_UPDATE + appId;
-		}
+            } else {
+                final Project projectDB = projectService.getById(existingProject);
+                realm.setProject(projectDB);
+                projectDB.setApp(realm);
+                projectService.updateProject(projectDB);
+            }
 
-	}
+            appService.updateApp(realm);
+            return REDIRECT_APPS_UPDATE + appId;
+        }
 
-	private boolean ldapActive() {
-		return LDAP.equals(provider);
-	}
+    }
+
+    private boolean ldapActive() {
+        return LDAP.equals(provider);
+    }
 
 }

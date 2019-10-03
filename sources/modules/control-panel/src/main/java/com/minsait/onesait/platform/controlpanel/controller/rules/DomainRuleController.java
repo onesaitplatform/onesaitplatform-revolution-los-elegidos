@@ -1,12 +1,11 @@
-
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -53,195 +52,195 @@ import com.minsait.onesait.platform.controlpanel.utils.AppWebUtils;
 @RequestMapping("/rule-domains")
 public class DomainRuleController {
 
-	@Autowired
-	@Qualifier("topicChangedDomains")
-	private ITopic<String> topicDomains;
+    @Autowired
+    @Qualifier("topicChangedDomains")
+    private ITopic<String> topicDomains;
 
-	@Autowired
-	private DroolsRuleService droolsRuleService;
-	@Autowired
-	private AppWebUtils utils;
-	@Autowired
-	private ProjectService projectService;
-	@Autowired
-	private OntologyService ontologyService;
+    @Autowired
+    private DroolsRuleService droolsRuleService;
+    @Autowired
+    private AppWebUtils utils;
+    @Autowired
+    private ProjectService projectService;
+    @Autowired
+    private OntologyService ontologyService;
 
-	@Autowired
-	private BusinessRuleService businessRuleService;
-	
-	private static final String DOMANI_ID = "domainId";
-	private static final String ERROR_403 = "error/403";
-	private static final String REDIRECT_RULEDOMAINS = "redirect:/rule-domains/";
+    @Autowired
+    private BusinessRuleService businessRuleService;
 
-	@GetMapping("list")
-	public String list(Model model) {
-		DroolsRuleDomain domain = droolsRuleService.getUserDomain(utils.getUserId());
-		if (domain == null) {
-			domain = droolsRuleService.createDomain(utils.getUserId());
-			HazelcastRuleDomainObject.builder().id(domain.getId()).userId(domain.getUser().getUserId()).build().toJson()
-					.ifPresent(s -> topicDomains.publish(s));
-		}
-		model.addAttribute("domains", domains());
-		return "rules/list";
-	}
+    private static final String DOMANI_ID = "domainId";
+    private static final String ERROR_403 = "error/403";
+    private static final String REDIRECT_RULEDOMAINS = "redirect:/rule-domains/";
 
-	@GetMapping("data")
-	public @ResponseBody List<RuleDomainDTO> domains() {
-		return droolsRuleService.getAllDomains(utils.getUserId()).stream()
-				.map(drd -> RuleDomainDTO.builder().id(drd.getId()).name(drd.getIdentification())
-						.owner(drd.getUser().getUserId()).active(drd.isActive())
-						.rules(droolsRuleService.countRules(drd.getUser().getUserId())).build())
-				.collect(Collectors.toList());
-	}
+    @GetMapping("list")
+    public String list(Model model) {
+        DroolsRuleDomain domain = droolsRuleService.getUserDomain(utils.getUserId());
+        if (domain == null) {
+            domain = droolsRuleService.createDomain(utils.getUserId());
+            HazelcastRuleDomainObject.builder().id(domain.getId()).userId(
+                    domain.getUser().getUserId()).build().toJson().ifPresent(s -> topicDomains.publish(s));
+        }
+        model.addAttribute("domains", domains());
+        return "rules/list";
+    }
 
-	@GetMapping("{id}/rule")
-	public String create(Model model, @PathVariable("id") String id) {
-		final Set<Ontology> ontologies = new LinkedHashSet<>(ontologyService.getAllOntologies(utils.getUserId()));
-		ontologies.addAll(projectService.getResourcesForUserOfType(utils.getUserId(), Ontology.class));
-		model.addAttribute("ontologies", ontologies);
-		model.addAttribute("types", DroolsRule.Type.values());
-		DroolsRule rule = new DroolsRule();
-		if (null != model.asMap().get("rule"))
-			rule = (DroolsRule) model.asMap().get("rule");
-		model.addAttribute("rule", rule);
-		model.addAttribute(DOMANI_ID, id);
+    @GetMapping("data")
+    public @ResponseBody
+    List<RuleDomainDTO> domains() {
+        return droolsRuleService.getAllDomains(utils.getUserId()).stream().map(
+                drd -> RuleDomainDTO.builder().id(drd.getId()).name(drd.getIdentification()).owner(
+                        drd.getUser().getUserId()).active(drd.isActive()).rules(
+                        droolsRuleService.countRules(drd.getUser().getUserId())).build()).collect(Collectors.toList());
+    }
 
-		return "rules/create";
-	}
+    @GetMapping("{id}/rule")
+    public String create(Model model, @PathVariable("id") String id) {
+        final Set<Ontology> ontologies = new LinkedHashSet<>(ontologyService.getAllOntologies(utils.getUserId()));
+        ontologies.addAll(projectService.getResourcesForUserOfType(utils.getUserId(), Ontology.class));
+        model.addAttribute("ontologies", ontologies);
+        model.addAttribute("types", DroolsRule.Type.values());
+        DroolsRule rule = new DroolsRule();
+        if (null != model.asMap().get("rule"))
+            rule = (DroolsRule) model.asMap().get("rule");
+        model.addAttribute("rule", rule);
+        model.addAttribute(DOMANI_ID, id);
 
-	@PostMapping("{domainId}/rule")
-	public String save(Model model, @PathVariable("domainId") String domainId, DroolsRule rule, RedirectAttributes ra) {
-		try {
-			businessRuleService.save(rule, utils.getUserId());
-		} catch (final Exception e) {
-			utils.addRedirectException(e, ra);
-			rule.setId(null);
-			ra.addFlashAttribute("rule", rule);
-			return REDIRECT_RULEDOMAINS + domainId + "/rule";
-		}
-		return REDIRECT_RULEDOMAINS + domainId + "/rules";
-	}
+        return "rules/create";
+    }
 
-	@PutMapping("{id}/rule/{rule}")
-	public String update(Model model, @PathVariable("id") String id, @PathVariable("rule") String identification,
-			DroolsRule rule, RedirectAttributes ra) {
-		try {
-			if (!droolsRuleService.hasUserEditPermission(identification, utils.getUserId()))
-				return ERROR_403;
-			businessRuleService.update(rule, utils.getUserId(), identification);
-		} catch (final Exception e) {
-			utils.addRedirectException(e, ra);
-			ra.addFlashAttribute("rule", rule);
-			return REDIRECT_RULEDOMAINS + id + "/rule/" + identification;
+    @PostMapping("{domainId}/rule")
+    public String save(Model model, @PathVariable("domainId") String domainId, DroolsRule rule, RedirectAttributes ra) {
+        try {
+            businessRuleService.save(rule, utils.getUserId());
+        } catch (final Exception e) {
+            utils.addRedirectException(e, ra);
+            rule.setId(null);
+            ra.addFlashAttribute("rule", rule);
+            return REDIRECT_RULEDOMAINS + domainId + "/rule";
+        }
+        return REDIRECT_RULEDOMAINS + domainId + "/rules";
+    }
 
-		}
-		return REDIRECT_RULEDOMAINS + id + "/rules";
-	}
+    @PutMapping("{id}/rule/{rule}")
+    public String update(Model model, @PathVariable("id") String id, @PathVariable("rule") String identification,
+            DroolsRule rule, RedirectAttributes ra) {
+        try {
+            if (!droolsRuleService.hasUserEditPermission(identification, utils.getUserId()))
+                return ERROR_403;
+            businessRuleService.update(rule, utils.getUserId(), identification);
+        } catch (final Exception e) {
+            utils.addRedirectException(e, ra);
+            ra.addFlashAttribute("rule", rule);
+            return REDIRECT_RULEDOMAINS + id + "/rule/" + identification;
 
-	@GetMapping("{id}/rule/{rule}")
-	public String create(Model model, @PathVariable("id") String id, @PathVariable("rule") String identification) {
-		if (!droolsRuleService.hasUserEditPermission(identification, utils.getUserId()))
-			return ERROR_403;
-		final Set<Ontology> ontologies = new LinkedHashSet<>(ontologyService.getAllOntologies(utils.getUserId()));
-		ontologies.addAll(projectService.getResourcesForUserOfType(utils.getUserId(), Ontology.class));
-		model.addAttribute("ontologies", ontologies);
-		DroolsRule rule = droolsRuleService.getRule(identification);
-		if (null != model.asMap().get("rule"))
-			rule = (DroolsRule) model.asMap().get("rule");
-		model.addAttribute("rule", rule);
-		model.addAttribute(DOMANI_ID, id);
+        }
+        return REDIRECT_RULEDOMAINS + id + "/rules";
+    }
 
-		return "rules/create";
+    @GetMapping("{id}/rule/{rule}")
+    public String create(Model model, @PathVariable("id") String id, @PathVariable("rule") String identification) {
+        if (!droolsRuleService.hasUserEditPermission(identification, utils.getUserId()))
+            return ERROR_403;
+        final Set<Ontology> ontologies = new LinkedHashSet<>(ontologyService.getAllOntologies(utils.getUserId()));
+        ontologies.addAll(projectService.getResourcesForUserOfType(utils.getUserId(), Ontology.class));
+        model.addAttribute("ontologies", ontologies);
+        DroolsRule rule = droolsRuleService.getRule(identification);
+        if (null != model.asMap().get("rule"))
+            rule = (DroolsRule) model.asMap().get("rule");
+        model.addAttribute("rule", rule);
+        model.addAttribute(DOMANI_ID, id);
 
-	}
+        return "rules/create";
 
-	@GetMapping("{id}/rules")
-	public String rules(Model model, @PathVariable("id") String id) {
-		final DroolsRuleDomain domain = droolsRuleService.getDomain(id);
-		if (domain == null || !domain.isActive())
-			return "redirect:/rule-domains/list";
-		if (!droolsRuleService.hasUserPermissionOnDomain(id, utils.getUserId()))
-			return ERROR_403;
-		final List<DroolsRule> rules = droolsRuleService.getAllRules(domain.getUser());
-		model.addAttribute("rules",
-				rules.stream().map(r -> RuleDTO.builder().id(r.getId()).drl(r.getDRL()).type(r.getType().name())
-						.inputOntology(r.getSourceOntology() != null ? r.getSourceOntology().getIdentification() : null)
-						.identification(r.getIdentification()).active(r.isActive()).build())
-						.collect(Collectors.toList()));
-		model.addAttribute(DOMANI_ID, id);
-		return "rules/rules";
-	}
+    }
 
-	@PostMapping("{id}/start-stop")
-	public ResponseEntity<String> startStop(@PathVariable("id") String id) {
-		if (droolsRuleService.hasUserPermissionOnDomain(id, utils.getUserId())) {
-			final DroolsRuleDomain domain = droolsRuleService.changeDomainState(id);
-			if (domain != null)
-				HazelcastRuleDomainObject.builder().id(domain.getId()).userId(domain.getUser().getUserId()).build()
-						.toJson().ifPresent(s -> topicDomains.publish(s));
+    @GetMapping("{id}/rules")
+    public String rules(Model model, @PathVariable("id") String id) {
+        final DroolsRuleDomain domain = droolsRuleService.getDomain(id);
+        if (domain == null || !domain.isActive())
+            return "redirect:/rule-domains/list";
+        if (!droolsRuleService.hasUserPermissionOnDomain(id, utils.getUserId()))
+            return ERROR_403;
+        final List<DroolsRule> rules = droolsRuleService.getAllRules(domain.getUser());
+        model.addAttribute("rules", rules.stream().map(
+                r -> RuleDTO.builder().id(r.getId()).drl(r.getDRL()).type(r.getType().name()).inputOntology(
+                        r.getSourceOntology() != null ? r.getSourceOntology().getIdentification()
+                                : null).identification(r.getIdentification()).active(r.isActive()).build()).collect(
+                Collectors.toList()));
+        model.addAttribute(DOMANI_ID, id);
+        return "rules/rules";
+    }
 
-			return new ResponseEntity<>(HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
-	}
+    @PostMapping("{id}/start-stop")
+    public ResponseEntity<String> startStop(@PathVariable("id") String id) {
+        if (droolsRuleService.hasUserPermissionOnDomain(id, utils.getUserId())) {
+            final DroolsRuleDomain domain = droolsRuleService.changeDomainState(id);
+            if (domain != null)
+                HazelcastRuleDomainObject.builder().id(domain.getId()).userId(
+                        domain.getUser().getUserId()).build().toJson().ifPresent(s -> topicDomains.publish(s));
 
-	@PutMapping("rule/{identification}/drl")
-	public ResponseEntity<String> updateRuleDRL(@PathVariable("identification") String identification,
-			@RequestBody String newDRL) {
-		if (droolsRuleService.hasUserEditPermission(identification, utils.getUserId())) {
-			try {
-				businessRuleService.updateDRL(identification, newDRL);
-				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-			} catch (final Exception e) {
-				return new ResponseEntity<>("Could not update DRL " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-		} else {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
-	}
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
 
-	@PutMapping("rule/{identification}/active")
-	public ResponseEntity<String> updateRule(@PathVariable("identification") String identification,
-			@RequestBody String active) {
-		if (droolsRuleService.hasUserEditPermission(identification, utils.getUserId())) {
-			try {
-				businessRuleService.updateActive(identification);
-				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-			} catch (final Exception e) {
-				return new ResponseEntity<>("Could not update Rule", HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-		} else {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
-	}
+    @PutMapping("rule/{identification}/drl")
+    public ResponseEntity<String> updateRuleDRL(@PathVariable("identification") String identification,
+            @RequestBody String newDRL) {
+        if (droolsRuleService.hasUserEditPermission(identification, utils.getUserId())) {
+            try {
+                businessRuleService.updateDRL(identification, newDRL);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } catch (final Exception e) {
+                return new ResponseEntity<>("Could not update DRL " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
 
-	@DeleteMapping("rule/{identification}")
-	public ResponseEntity<String> deleteRule(@PathVariable("identification") String identification) {
-		if (droolsRuleService.hasUserEditPermission(identification, utils.getUserId())) {
-			try {
-				businessRuleService.delete(identification);
-				return new ResponseEntity<>(HttpStatus.OK);
-			} catch (final Exception e) {
-				return new ResponseEntity<>("Could not delete Rule", HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-		} else {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
-	}
+    @PutMapping("rule/{identification}/active")
+    public ResponseEntity<String> updateRule(@PathVariable("identification") String identification,
+            @RequestBody String active) {
+        if (droolsRuleService.hasUserEditPermission(identification, utils.getUserId())) {
+            try {
+                businessRuleService.updateActive(identification);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } catch (final Exception e) {
+                return new ResponseEntity<>("Could not update Rule", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
 
-	@PostMapping("rule/{identification}/test")
-	public ResponseEntity<String> test(@PathVariable("identification") String identification,
-			@RequestBody String input) {
-		try {
-			final String response = businessRuleService.test(identification, input);
-			return new ResponseEntity<>(response, HttpStatus.OK);
-		} catch (final HttpClientErrorException | HttpServerErrorException e) {
-			return new ResponseEntity<>(e.getResponseBodyAsString(), e.getStatusCode());
-		} catch (final Exception e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+    @DeleteMapping("rule/{identification}")
+    public ResponseEntity<String> deleteRule(@PathVariable("identification") String identification) {
+        if (droolsRuleService.hasUserEditPermission(identification, utils.getUserId())) {
+            try {
+                businessRuleService.delete(identification);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } catch (final Exception e) {
+                return new ResponseEntity<>("Could not delete Rule", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
 
-	}
+    @PostMapping("rule/{identification}/test")
+    public ResponseEntity<String> test(@PathVariable("identification") String identification,
+            @RequestBody String input) {
+        try {
+            final String response = businessRuleService.test(identification, input);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (final HttpClientErrorException | HttpServerErrorException e) {
+            return new ResponseEntity<>(e.getResponseBodyAsString(), e.getStatusCode());
+        } catch (final Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 
 }

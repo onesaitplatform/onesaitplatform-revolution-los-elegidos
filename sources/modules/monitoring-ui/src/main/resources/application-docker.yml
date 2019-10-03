@@ -1,6 +1,6 @@
 onesaitplatform: #Config onesait Platform specific
-   environment.name: ${ENVIRONMENTNAME}
-   
+  environment.name: ${ENVIRONMENTNAME}
+
 spring: ## General Config  
   datasource: ## JPA Config
     url: ${JDBCPROTOCOL}//${CONFIGDBSERVERS}/onesaitplatform_config?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&autoReconnect=true${DBADDPROPS}
@@ -16,4 +16,4 @@ security:
 
 ## LOGGING CONF
 logging:
-   path: /var/log/platform-logs 
+  path: /var/log/platform-logs

@@ -16,22 +16,22 @@
 
 // Controller for Start Event Configuration.
 angular
-  .module('dataCollectorApp.home')
-  .controller('StartEventConfigurationController', ["$scope", function ($scope) {
-    var initialize = function() {
-      $scope.detailPaneConfig = $scope.startEventStageConfig;
-      $scope.detailPaneServices = [];
-      angular.forEach($scope.detailPaneConfig.services, function(serviceConfig) {
-        $scope.detailPaneServices.push({
-          definition: pipelineService.getServiceDefinition(serviceConfig.service),
-          config: serviceConfig
+    .module('dataCollectorApp.home')
+    .controller('StartEventConfigurationController', ["$scope", function ($scope) {
+        var initialize = function () {
+            $scope.detailPaneConfig = $scope.startEventStageConfig;
+            $scope.detailPaneServices = [];
+            angular.forEach($scope.detailPaneConfig.services, function (serviceConfig) {
+                $scope.detailPaneServices.push({
+                    definition: pipelineService.getServiceDefinition(serviceConfig.service),
+                    config: serviceConfig
+                });
+            });
+        };
+
+        $scope.$watch('startEventStageConfig', function () {
+            initialize();
         });
-      });
-    };
 
-    $scope.$watch('startEventStageConfig', function() {
-      initialize();
-    });
-
-    initialize();
-  }]);
+        initialize();
+    }]);

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,75 +46,75 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 @EnableAuthorizationServer
 public class OAuth2AuthorizationServerConfigJwt extends AuthorizationServerConfigurerAdapter {
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-	@Autowired
-	@Qualifier("configDBAuthenticationProvider")
-	private AuthenticationProvider authProvider;
+    @Autowired
+    @Qualifier("configDBAuthenticationProvider")
+    private AuthenticationProvider authProvider;
 
-	@Autowired
-	private UserDetailsService userDetailsService;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
-	@Autowired
-	private TokenStore tokenStore;
+    @Autowired
+    private TokenStore tokenStore;
 
-	@Autowired
-	private JwtAccessTokenConverter jwtAccessTokenConverter;
+    @Autowired
+    private JwtAccessTokenConverter jwtAccessTokenConverter;
 
-	@Override
-	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-		security.tokenKeyAccess("permitAll()").checkTokenAccess("permitAll()").allowFormAuthenticationForClients();
-	}
+    @Override
+    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+        security.tokenKeyAccess("permitAll()").checkTokenAccess("permitAll()").allowFormAuthenticationForClients();
+    }
 
-	@Override
-	public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-		final TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
-		tokenEnhancerChain.setTokenEnhancers(Arrays.asList(tokenEnhancer(), jwtAccessTokenConverter));
+    @Override
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        final TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
+        tokenEnhancerChain.setTokenEnhancers(Arrays.asList(tokenEnhancer(), jwtAccessTokenConverter));
 
-		endpoints.tokenEnhancer(tokenEnhancerChain);
-		endpoints.authenticationManager(new ProviderManager(Arrays.asList(authProvider)));
-		endpoints.userDetailsService(userDetailsService);
-		endpoints.tokenStore(tokenStore);
-		endpoints.accessTokenConverter(jwtAccessTokenConverter);
-		endpoints.exceptionTranslator(webResponseExceptionTranslator());
+        endpoints.tokenEnhancer(tokenEnhancerChain);
+        endpoints.authenticationManager(new ProviderManager(Arrays.asList(authProvider)));
+        endpoints.userDetailsService(userDetailsService);
+        endpoints.tokenStore(tokenStore);
+        endpoints.accessTokenConverter(jwtAccessTokenConverter);
+        endpoints.exceptionTranslator(webResponseExceptionTranslator());
 
-		endpoints.reuseRefreshTokens(false);
+        endpoints.reuseRefreshTokens(false);
 
-	}
+    }
 
-	@Override
-	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-		clients.withClientDetails(clientDetailsService());
-	}
+    @Override
+    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        clients.withClientDetails(clientDetailsService());
+    }
 
-	@Bean
-	public TokenEnhancer tokenEnhancer() {
-		return new ExtendedTokenEnhancer();
-	}
+    @Bean
+    public TokenEnhancer tokenEnhancer() {
+        return new ExtendedTokenEnhancer();
+    }
 
-	@Bean
-	public ClientDetailsService clientDetailsService() {
-		return new CustomClientDetailsService();
-	}
+    @Bean
+    public ClientDetailsService clientDetailsService() {
+        return new CustomClientDetailsService();
+    }
 
-	@Bean
-	public WebResponseExceptionTranslator webResponseExceptionTranslator() {
-		return new DefaultWebResponseExceptionTranslator() {
+    @Bean
+    public WebResponseExceptionTranslator webResponseExceptionTranslator() {
+        return new DefaultWebResponseExceptionTranslator() {
 
-			@Override
-			public ResponseEntity<OAuth2Exception> translate(Exception e) throws Exception {
-				final ResponseEntity<OAuth2Exception> responseEntity = super.translate(e);
-				final OAuth2Exception body = responseEntity.getBody();
-				final HttpHeaders headers = new HttpHeaders();
-				headers.setAll(responseEntity.getHeaders().toSingleValueMap());
+            @Override
+            public ResponseEntity<OAuth2Exception> translate(Exception e) throws Exception {
+                final ResponseEntity<OAuth2Exception> responseEntity = super.translate(e);
+                final OAuth2Exception body = responseEntity.getBody();
+                final HttpHeaders headers = new HttpHeaders();
+                headers.setAll(responseEntity.getHeaders().toSingleValueMap());
 
-				HttpStatus responseCode = responseEntity.getStatusCode();
-				if (e instanceof InvalidGrantException)
-					responseCode = HttpStatus.UNAUTHORIZED;
-				return new ResponseEntity<>(body, headers, responseCode);
-			}
-		};
-	}
+                HttpStatus responseCode = responseEntity.getStatusCode();
+                if (e instanceof InvalidGrantException)
+                    responseCode = HttpStatus.UNAUTHORIZED;
+                return new ResponseEntity<>(body, headers, responseCode);
+            }
+        };
+    }
 
 }

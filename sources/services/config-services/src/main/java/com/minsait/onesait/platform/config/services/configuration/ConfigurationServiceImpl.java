@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,247 +46,249 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class ConfigurationServiceImpl implements ConfigurationService {
-	
-	@Autowired
-	private ConfigurationRepository configurationRepository;
 
-	private static final String DEFAULT = "default";
-	
-	@Override
-	public List<Configuration> getAllConfigurations() {
-		return configurationRepository.findAll();
-	}
+    @Autowired
+    private ConfigurationRepository configurationRepository;
 
-	@Override
-	public List<Configuration> getAllConfigurations(User user) {
-		return configurationRepository.findByUser(user);
-	}
+    private static final String DEFAULT = "default";
 
-	@Override
-	@Transactional
-	public void deleteConfiguration(String id) {
-		configurationRepository.deleteById(id);
-	}
+    @Override
+    public List<Configuration> getAllConfigurations() {
+        return configurationRepository.findAll();
+    }
 
-	@Override
-	public List<Type> getAllConfigurationTypes() {
-		return Arrays.asList(Configuration.Type.values());
-	}
+    @Override
+    public List<Configuration> getAllConfigurations(User user) {
+        return configurationRepository.findByUser(user);
+    }
 
-	@Override
-	public Configuration getConfiguration(String id) {
-		return configurationRepository.findById(id);
-	}
+    @Override
+    @Transactional
+    public void deleteConfiguration(String id) {
+        configurationRepository.deleteById(id);
+    }
 
-	@Override
-	public Configuration createConfiguration(Configuration configuration) {
-		Configuration oldConfiguration = configurationRepository.findById(configuration.getId());
-		if (oldConfiguration != null)
-			throw new ConfigServiceException(
-					"You cann´t create a Configuration that exists:" + configuration.toString());
-		oldConfiguration = configurationRepository.findByTypeAndEnvironmentAndSuffix(configuration.getType(),
-				configuration.getEnvironment(), configuration.getSuffix());
-		if (oldConfiguration != null)
-			throw new ConfigServiceException(
-					"Exist a configuration of this type for the environment and suffix:" + configuration.toString());
+    @Override
+    public List<Type> getAllConfigurationTypes() {
+        return Arrays.asList(Configuration.Type.values());
+    }
 
-		oldConfiguration = new Configuration();
-		oldConfiguration.setUser(configuration.getUser());
-		oldConfiguration.setType(configuration.getType());
-		oldConfiguration.setYmlConfig(configuration.getYmlConfig());
-		oldConfiguration.setDescription(configuration.getDescription());
-		oldConfiguration.setSuffix(configuration.getSuffix());
-		oldConfiguration.setEnvironment(configuration.getEnvironment());
-		return configurationRepository.save(oldConfiguration);
+    @Override
+    public Configuration getConfiguration(String id) {
+        return configurationRepository.findById(id);
+    }
 
-	}
+    @Override
+    public Configuration createConfiguration(Configuration configuration) {
+        Configuration oldConfiguration = configurationRepository.findById(configuration.getId());
+        if (oldConfiguration != null)
+            throw new ConfigServiceException(
+                    "You cann´t create a Configuration that exists:" + configuration.toString());
+        oldConfiguration = configurationRepository.findByTypeAndEnvironmentAndSuffix(configuration.getType(),
+                                                                                     configuration.getEnvironment(),
+                                                                                     configuration.getSuffix());
+        if (oldConfiguration != null)
+            throw new ConfigServiceException(
+                    "Exist a configuration of this type for the environment and suffix:" + configuration.toString());
 
-	@Override
-	public void updateConfiguration(Configuration configuration) {
-		final Configuration oldConfiguration = configurationRepository.findById(configuration.getId());
-		if (oldConfiguration != null) {
-			oldConfiguration.setYmlConfig(configuration.getYmlConfig());
-			oldConfiguration.setDescription(configuration.getDescription());
-			oldConfiguration.setSuffix(configuration.getSuffix());
-			oldConfiguration.setEnvironment(configuration.getEnvironment());
-			configurationRepository.save(oldConfiguration);
+        oldConfiguration = new Configuration();
+        oldConfiguration.setUser(configuration.getUser());
+        oldConfiguration.setType(configuration.getType());
+        oldConfiguration.setYmlConfig(configuration.getYmlConfig());
+        oldConfiguration.setDescription(configuration.getDescription());
+        oldConfiguration.setSuffix(configuration.getSuffix());
+        oldConfiguration.setEnvironment(configuration.getEnvironment());
+        return configurationRepository.save(oldConfiguration);
 
-		} else {
-			throw new ConfigServiceException("You cann´t update a Configuration:" + configuration.toString());
-		}
-	}
+    }
 
-	@Override
-	public TwitterConfiguration getTwitterConfiguration(String environment, String suffix) {
-		try {
-			final Configuration config = this.getConfiguration(Configuration.Type.TWITTER, environment, suffix);
-			AllConfiguration conf = getAllConfigurationFromDBConfig(config);
-			if (conf==null) return null;
-			return conf.getTwitter();
-		} catch (final Exception e) {
-			log.error("Error getting TwitterConfiguration", e);
-			throw new ConfigServiceException("Error getting TwitterConfiguration", e);
-		}
-	}
+    @Override
+    public void updateConfiguration(Configuration configuration) {
+        final Configuration oldConfiguration = configurationRepository.findById(configuration.getId());
+        if (oldConfiguration != null) {
+            oldConfiguration.setYmlConfig(configuration.getYmlConfig());
+            oldConfiguration.setDescription(configuration.getDescription());
+            oldConfiguration.setSuffix(configuration.getSuffix());
+            oldConfiguration.setEnvironment(configuration.getEnvironment());
+            configurationRepository.save(oldConfiguration);
 
-	@Override
-	public boolean existsConfiguration(Configuration configuration) {
-		return (configurationRepository.findById(configuration.getId()) != null);
-	}
+        } else {
+            throw new ConfigServiceException("You cann´t update a Configuration:" + configuration.toString());
+        }
+    }
 
-	@Override
-	public Map fromYaml(String yaml) {
-		final Yaml yamlParser = new Yaml();
-		return (Map) yamlParser.load(yaml);
-	}
+    @Override
+    public TwitterConfiguration getTwitterConfiguration(String environment, String suffix) {
+        try {
+            final Configuration config = this.getConfiguration(Configuration.Type.TWITTER, environment, suffix);
+            AllConfiguration conf = getAllConfigurationFromDBConfig(config);
+            if (conf == null)
+                return null;
+            return conf.getTwitter();
+        } catch (final Exception e) {
+            log.error("Error getting TwitterConfiguration", e);
+            throw new ConfigServiceException("Error getting TwitterConfiguration", e);
+        }
+    }
 
-	@Override
-	public boolean isValidYaml(final String yml) {
-		try {
-			final Yaml yamlParser = new Yaml();
-			yamlParser.load(yml);
-			return true;
-		} catch (final Exception e) {
-			log.error("Error parsing file:" + e.getMessage());
-			return false;
-		}
-	}
+    @Override
+    public boolean existsConfiguration(Configuration configuration) {
+        return (configurationRepository.findById(configuration.getId()) != null);
+    }
 
-	@Override
-	public List<Configuration> getConfigurations(Configuration.Type type) {
-		return configurationRepository.findByType(type);
-	}
+    @Override
+    public Map fromYaml(String yaml) {
+        final Yaml yamlParser = new Yaml();
+        return (Map) yamlParser.load(yaml);
+    }
 
-	@Override
-	public List<Configuration> getConfigurations(Configuration.Type type, User user) {
-		return configurationRepository.findByTypeAndUser(type, user);
-	}
+    @Override
+    public boolean isValidYaml(final String yml) {
+        try {
+            final Yaml yamlParser = new Yaml();
+            yamlParser.load(yml);
+            return true;
+        } catch (final Exception e) {
+            log.error("Error parsing file:" + e.getMessage());
+            return false;
+        }
+    }
 
-	@Override
-	public Configuration getConfiguration(Configuration.Type type, String environment, String suffix) {
-		if (suffix == null)
-			return configurationRepository.findByTypeAndEnvironment(type, environment);
-		else
-			return configurationRepository.findByTypeAndEnvironmentAndSuffix(type, environment, suffix);
-	}
+    @Override
+    public List<Configuration> getConfigurations(Configuration.Type type) {
+        return configurationRepository.findByType(type);
+    }
 
-	@Override
-	public Configuration getConfigurationByDescription(String description) {
-		return configurationRepository.findByDescription(description);
-	}
+    @Override
+    public List<Configuration> getConfigurations(Configuration.Type type, User user) {
+        return configurationRepository.findByTypeAndUser(type, user);
+    }
 
-	@Override
-	public Urls getEndpointsUrls(String environment) {
-		final Configuration config = configurationRepository
-				.findByTypeAndEnvironment(Configuration.Type.ENDPOINT_MODULES, environment);
-		final Constructor constructor = new Constructor(ModulesUrls.class);
-		final Yaml yamlUrls = new Yaml(constructor);
-		return yamlUrls.loadAs(config.getYmlConfig(), ModulesUrls.class).getOnesaitplatform().get("urls");
+    @Override
+    public Configuration getConfiguration(Configuration.Type type, String environment, String suffix) {
+        if (suffix == null)
+            return configurationRepository.findByTypeAndEnvironment(type, environment);
+        else
+            return configurationRepository.findByTypeAndEnvironmentAndSuffix(type, environment, suffix);
+    }
 
-	}
+    @Override
+    public Configuration getConfigurationByDescription(String description) {
+        return configurationRepository.findByDescription(description);
+    }
 
-	@Override
-	public GitlabConfiguration getGitlabConfiguration(String id) {
-		final Configuration config = configurationRepository.findById(id);
-		if (config == null)
-			return null;
-		return getAllConfigurationFromDBConfig(config).getGitlab();
-	}
+    @Override
+    public Urls getEndpointsUrls(String environment) {
+        final Configuration config = configurationRepository.findByTypeAndEnvironment(
+                Configuration.Type.ENDPOINT_MODULES, environment);
+        final Constructor constructor = new Constructor(ModulesUrls.class);
+        final Yaml yamlUrls = new Yaml(constructor);
+        return yamlUrls.loadAs(config.getYmlConfig(), ModulesUrls.class).getOnesaitplatform().get("urls");
 
-	@Override
-	public GitlabConfiguration getGitlabConfiguration(String suffix, String environment) {
-		final Configuration config = configurationRepository.findByTypeAndEnvironmentAndSuffix(Type.GITLAB, environment,
-				suffix);
-		if (config == null)
-			return null;
-		return getAllConfigurationFromDBConfig(config).getGitlab();
-	}
+    }
 
-	@Override
-	public GitlabConfiguration getDefautlGitlabConfiguration() {
-		return getGitlabConfiguration("", DEFAULT);
-	}
+    @Override
+    public GitlabConfiguration getGitlabConfiguration(String id) {
+        final Configuration config = configurationRepository.findById(id);
+        if (config == null)
+            return null;
+        return getAllConfigurationFromDBConfig(config).getGitlab();
+    }
 
-	@Override
-	public RancherConfiguration getRancherConfiguration(String id) {
-		final Configuration config = configurationRepository.findById(id);
-		if (config == null)
-			return null;
-		return getAllConfigurationFromDBConfig(config).getRancher();
-	}
+    @Override
+    public GitlabConfiguration getGitlabConfiguration(String suffix, String environment) {
+        final Configuration config = configurationRepository.findByTypeAndEnvironmentAndSuffix(Type.GITLAB, environment,
+                                                                                               suffix);
+        if (config == null)
+            return null;
+        return getAllConfigurationFromDBConfig(config).getGitlab();
+    }
 
-	@Override
-	public OpenshiftConfiguration getOpenshiftConfiguration(String id) {
-		final Configuration config = configurationRepository.findById(id);
-		if (config == null)
-			return null;
-		return getAllConfigurationFromDBConfig(config).getOpenshift();
-	}
+    @Override
+    public GitlabConfiguration getDefautlGitlabConfiguration() {
+        return getGitlabConfiguration("", DEFAULT);
+    }
 
-	@Override
-	public Configuration getConfiguration(Type configurationType, String suffix) {
-		return configurationRepository.findByTypeAndSuffixIgnoreCase(configurationType, suffix);
-	}
+    @Override
+    public RancherConfiguration getRancherConfiguration(String id) {
+        final Configuration config = configurationRepository.findById(id);
+        if (config == null)
+            return null;
+        return getAllConfigurationFromDBConfig(config).getRancher();
+    }
 
-	@Override
-	public MailConfiguration getMailConfiguration(String environment) {
-		final Configuration configuration = configurationRepository.findByTypeAndEnvironment(Type.MAIL, environment);
-		if (configuration == null)
-			return null;
-		return getAllConfigurationFromDBConfig(configuration).getMail();
-	}
+    @Override
+    public OpenshiftConfiguration getOpenshiftConfiguration(String id) {
+        final Configuration config = configurationRepository.findById(id);
+        if (config == null)
+            return null;
+        return getAllConfigurationFromDBConfig(config).getOpenshift();
+    }
 
-	@Override
-	public RancherConfiguration getRancherConfiguration(String suffix, String environment) {
-		final Configuration config = configurationRepository
-				.findByTypeAndEnvironmentAndSuffix(Configuration.Type.RANCHER, environment, suffix);
-		if (config == null)
-			return null;
-		else
-			return getAllConfigurationFromDBConfig(config).getRancher();
-	}
+    @Override
+    public Configuration getConfiguration(Type configurationType, String suffix) {
+        return configurationRepository.findByTypeAndSuffixIgnoreCase(configurationType, suffix);
+    }
 
-	@Override
-	public RancherConfiguration getDefaultRancherConfiguration() {
-		return getRancherConfiguration("", DEFAULT);
-	}
+    @Override
+    public MailConfiguration getMailConfiguration(String environment) {
+        final Configuration configuration = configurationRepository.findByTypeAndEnvironment(Type.MAIL, environment);
+        if (configuration == null)
+            return null;
+        return getAllConfigurationFromDBConfig(configuration).getMail();
+    }
 
-	@Override
-	public GlobalConfiguration getGlobalConfiguration(String environment) {
-		final Configuration config = configurationRepository.findByTypeAndEnvironment(Type.OPEN_PLATFORM, environment);
-		if (config == null)
-			return null;
-		return getAllConfigurationFromDBConfig(config).getOnesaitplatform();
-	}
+    @Override
+    public RancherConfiguration getRancherConfiguration(String suffix, String environment) {
+        final Configuration config = configurationRepository.findByTypeAndEnvironmentAndSuffix(
+                Configuration.Type.RANCHER, environment, suffix);
+        if (config == null)
+            return null;
+        else
+            return getAllConfigurationFromDBConfig(config).getRancher();
+    }
 
-	@Override
-	public JenkinsConfiguration getJenkinsConfiguration(String environment) {
-		final Configuration config = configurationRepository.findByTypeAndEnvironmentAndSuffix(Type.JENKINS,
-				environment, "jenkins");
-		if (config == null)
-			return null;
-		return getAllConfigurationFromDBConfig(config).getJenkins();
-	}
+    @Override
+    public RancherConfiguration getDefaultRancherConfiguration() {
+        return getRancherConfiguration("", DEFAULT);
+    }
 
-	@Override
-	public JenkinsConfiguration getDefaultJenkinsConfiguration() {
-		return getJenkinsConfiguration(DEFAULT);
-	}
+    @Override
+    public GlobalConfiguration getGlobalConfiguration(String environment) {
+        final Configuration config = configurationRepository.findByTypeAndEnvironment(Type.OPEN_PLATFORM, environment);
+        if (config == null)
+            return null;
+        return getAllConfigurationFromDBConfig(config).getOnesaitplatform();
+    }
 
-	private AllConfiguration getAllConfigurationFromDBConfig(Configuration config) {
-		if (config == null)
-			return null;
-		final Constructor constructor = new Constructor(AllConfiguration.class);
-		final Yaml yaml = new Yaml(constructor);
-		return yaml.loadAs(config.getYmlConfig(), AllConfiguration.class);
-	}
+    @Override
+    public JenkinsConfiguration getJenkinsConfiguration(String environment) {
+        final Configuration config = configurationRepository.findByTypeAndEnvironmentAndSuffix(Type.JENKINS,
+                                                                                               environment, "jenkins");
+        if (config == null)
+            return null;
+        return getAllConfigurationFromDBConfig(config).getJenkins();
+    }
 
-	@Override
-	public String getDefaultJenkinsXML(String suffix) {
-		final Configuration configuration = this.getConfiguration(Type.JENKINS, DEFAULT, suffix);
-		if (configuration == null)
-			return "";
-		return configuration.getYmlConfig();
-	}
+    @Override
+    public JenkinsConfiguration getDefaultJenkinsConfiguration() {
+        return getJenkinsConfiguration(DEFAULT);
+    }
+
+    private AllConfiguration getAllConfigurationFromDBConfig(Configuration config) {
+        if (config == null)
+            return null;
+        final Constructor constructor = new Constructor(AllConfiguration.class);
+        final Yaml yaml = new Yaml(constructor);
+        return yaml.loadAs(config.getYmlConfig(), AllConfiguration.class);
+    }
+
+    @Override
+    public String getDefaultJenkinsXML(String suffix) {
+        final Configuration configuration = this.getConfiguration(Type.JENKINS, DEFAULT, suffix);
+        if (configuration == null)
+            return "";
+        return configuration.getYmlConfig();
+    }
 
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,23 +21,23 @@ import lombok.Setter;
 
 public class TimeSeriesResult extends DBResult {
 
-	private static final String WINDOW_TYPE_PROPERTY = "windowType";
-	private static final String FIELD_NAME_PROPERTY = "fieldName";
+    private static final String WINDOW_TYPE_PROPERTY = "windowType";
+    private static final String FIELD_NAME_PROPERTY = "fieldName";
 
-	@Getter
-	@Setter
-	private String windowType;
-	@Getter
-	@Setter
-	private String fieldName;
+    @Getter
+    @Setter
+    private String windowType;
+    @Getter
+    @Setter
+    private String fieldName;
 
-	public JSONObject toJSONObject() {
-		JSONObject obj = new JSONObject();
-		obj.put(OK_PROPERTY, ok);
-		obj.put(ERROR_MESSAGE_PROPERTY, errorMessage);
-		obj.put(WINDOW_TYPE_PROPERTY, windowType);
-		obj.put(FIELD_NAME_PROPERTY, fieldName);
+    public JSONObject toJSONObject() {
+        JSONObject obj = new JSONObject();
+        obj.put(OK_PROPERTY, ok);
+        obj.put(ERROR_MESSAGE_PROPERTY, errorMessage);
+        obj.put(WINDOW_TYPE_PROPERTY, windowType);
+        obj.put(FIELD_NAME_PROPERTY, fieldName);
 
-		return obj;
-	}
+        return obj;
+    }
 }

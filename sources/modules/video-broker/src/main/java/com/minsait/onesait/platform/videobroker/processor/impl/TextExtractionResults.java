@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,34 +30,34 @@ import lombok.Setter;
  */
 public class TextExtractionResults extends VideoProcessorResults {
 
-	@Getter
-	@Setter
-	private String textExtracted = ""; // string with text extraction
+    @Getter
+    @Setter
+    private String textExtracted = ""; // string with text extraction
 
-	public TextExtractionResults() {
+    public TextExtractionResults() {
 
-		super();
+        super();
 
-	}
+    }
 
-	/**
-	 *
-	 */
-	public TextExtractionResults(Mat frame, String textExtracted) {
-		super();
-		setFrame(frame);
-		setTextExtracted(textExtracted);
-		setCurrentTime();
+    /**
+     *
+     */
+    public TextExtractionResults(Mat frame, String textExtracted) {
+        super();
+        setFrame(frame);
+        setTextExtracted(textExtracted);
+        setCurrentTime();
 
-	}
+    }
 
-	@Override
-	public void generateResult() {
-		setThereResults(!getTextExtracted().equals(""));
+    @Override
+    public void generateResult() {
+        setThereResults(!getTextExtracted().equals(""));
 
-		final String res = getTextExtracted();
+        final String res = getTextExtracted();
 
-		setResult(res);
-	}
+        setResult(res);
+    }
 
 }

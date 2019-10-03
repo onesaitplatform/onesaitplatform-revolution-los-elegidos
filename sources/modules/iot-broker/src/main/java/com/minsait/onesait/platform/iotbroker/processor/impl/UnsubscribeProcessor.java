@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,82 +48,83 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UnsubscribeProcessor implements MessageTypeProcessor {
 
-	@Autowired
-	private RouterSuscriptionService routerService;
-	@Autowired
-	SecurityPluginManager securityPluginManager;
-	@Autowired
-	ObjectMapper objectMapper;
+    @Autowired
+    private RouterSuscriptionService routerService;
+    @Autowired
+    SecurityPluginManager securityPluginManager;
+    @Autowired
+    ObjectMapper objectMapper;
 
-	@Override
-	public SSAPMessage<SSAPBodyReturnMessage> process(SSAPMessage<? extends SSAPBodyMessage> message) {
-		final SSAPMessage<SSAPBodyUnsubscribeMessage> unsubscribeMessage = (SSAPMessage<SSAPBodyUnsubscribeMessage>) message;
-		SSAPMessage<SSAPBodyReturnMessage> response = new SSAPMessage<>();
-		response.setBody(new SSAPBodyReturnMessage());
+    @Override
+    public SSAPMessage<SSAPBodyReturnMessage> process(SSAPMessage<? extends SSAPBodyMessage> message) {
+        final SSAPMessage<SSAPBodyUnsubscribeMessage> unsubscribeMessage =
+                (SSAPMessage<SSAPBodyUnsubscribeMessage>) message;
+        SSAPMessage<SSAPBodyReturnMessage> response = new SSAPMessage<>();
+        response.setBody(new SSAPBodyReturnMessage());
 
-		final Optional<IoTSession> session = securityPluginManager.getSession(unsubscribeMessage.getSessionKey());
+        final Optional<IoTSession> session = securityPluginManager.getSession(unsubscribeMessage.getSessionKey());
 
-		final SuscriptionModel model = new SuscriptionModel();
-		model.setSuscriptionId(unsubscribeMessage.getBody().getSubscriptionId());
-		model.setOperationType(SuscriptionModel.OperationType.UNSUSCRIBE);
-		model.setSessionKey(unsubscribeMessage.getSessionKey());
-		session.ifPresent(s -> model.setUser(s.getUserID()));
+        final SuscriptionModel model = new SuscriptionModel();
+        model.setSuscriptionId(unsubscribeMessage.getBody().getSubscriptionId());
+        model.setOperationType(SuscriptionModel.OperationType.UNSUSCRIBE);
+        model.setSessionKey(unsubscribeMessage.getSessionKey());
+        session.ifPresent(s -> model.setUser(s.getUserID()));
 
-		OperationResultModel routerResponse = null;
-		try {
-			routerResponse = routerService.unSuscribe(model);
-		} catch (final Exception e1) {
-			log.error("Error in process:" + e1.getMessage());
-			response = SSAPUtils.generateErrorMessage(unsubscribeMessage, SSAPErrorCode.PROCESSOR, e1.getMessage());
-			return response;
-		}
-		final String errorCode = routerResponse.getErrorCode();
-		final String messageResponse = routerResponse.getMessage();
-		final String operation = routerResponse.getOperation();
-		final String result = routerResponse.getResult();
-		log.error(errorCode + " " + messageResponse + " " + operation + " " + result);
+        OperationResultModel routerResponse = null;
+        try {
+            routerResponse = routerService.unSuscribe(model);
+        } catch (final Exception e1) {
+            log.error("Error in process:" + e1.getMessage());
+            response = SSAPUtils.generateErrorMessage(unsubscribeMessage, SSAPErrorCode.PROCESSOR, e1.getMessage());
+            return response;
+        }
+        final String errorCode = routerResponse.getErrorCode();
+        final String messageResponse = routerResponse.getMessage();
+        final String operation = routerResponse.getOperation();
+        final String result = routerResponse.getResult();
+        log.error(errorCode + " " + messageResponse + " " + operation + " " + result);
 
-		if (!StringUtils.isEmpty(routerResponse.getErrorCode())) {
-			response = SSAPUtils.generateErrorMessage(unsubscribeMessage, SSAPErrorCode.PROCESSOR,
-					routerResponse.getErrorCode());
-			return response;
+        if (!StringUtils.isEmpty(routerResponse.getErrorCode())) {
+            response = SSAPUtils.generateErrorMessage(unsubscribeMessage, SSAPErrorCode.PROCESSOR,
+                                                      routerResponse.getErrorCode());
+            return response;
 
-		}
-		response.setDirection(SSAPMessageDirection.RESPONSE);
-		response.setMessageType(SSAPMessageTypes.UNSUBSCRIBE);
-		response.setSessionKey(unsubscribeMessage.getSessionKey());
-		response.getBody().setOk(true);
-		response.getBody().setError(routerResponse.getErrorCode());
-		final String dataStr = "{\"message\": \"" + routerResponse.getMessage() + "\"}";
-		JsonNode data;
-		try {
-			data = objectMapper.readTree(dataStr);
-			response.getBody().setData(data);
-		} catch (final IOException e) {
-			log.error("Error in process:" + e.getMessage());
-			response = SSAPUtils.generateErrorMessage(unsubscribeMessage, SSAPErrorCode.PROCESSOR, e.getMessage());
-			return response;
-		}
+        }
+        response.setDirection(SSAPMessageDirection.RESPONSE);
+        response.setMessageType(SSAPMessageTypes.UNSUBSCRIBE);
+        response.setSessionKey(unsubscribeMessage.getSessionKey());
+        response.getBody().setOk(true);
+        response.getBody().setError(routerResponse.getErrorCode());
+        final String dataStr = "{\"message\": \"" + routerResponse.getMessage() + "\"}";
+        JsonNode data;
+        try {
+            data = objectMapper.readTree(dataStr);
+            response.getBody().setData(data);
+        } catch (final IOException e) {
+            log.error("Error in process:" + e.getMessage());
+            response = SSAPUtils.generateErrorMessage(unsubscribeMessage, SSAPErrorCode.PROCESSOR, e.getMessage());
+            return response;
+        }
 
-		return response;
+        return response;
 
-	}
+    }
 
-	@Override
-	public List<SSAPMessageTypes> getMessageTypes() {
-		return Collections.singletonList(SSAPMessageTypes.UNSUBSCRIBE);
-	}
+    @Override
+    public List<SSAPMessageTypes> getMessageTypes() {
+        return Collections.singletonList(SSAPMessageTypes.UNSUBSCRIBE);
+    }
 
-	@Override
-	public boolean validateMessage(SSAPMessage<? extends SSAPBodyMessage> message) {
-		final SSAPMessage<SSAPBodyUnsubscribeMessage> unsubscribeMessage = (SSAPMessage<SSAPBodyUnsubscribeMessage>) message;
+    @Override
+    public boolean validateMessage(SSAPMessage<? extends SSAPBodyMessage> message) {
+        final SSAPMessage<SSAPBodyUnsubscribeMessage> unsubscribeMessage = (SSAPMessage<SSAPBodyUnsubscribeMessage>) message;
 
-		if (StringUtils.isEmpty(unsubscribeMessage.getBody().getSubscriptionId())) {
-			throw new SSAPProcessorException(String.format(MessageException.ERR_FIELD_IS_MANDATORY, "subscriptionId",
-					message.getMessageType().name()));
-		}
+        if (StringUtils.isEmpty(unsubscribeMessage.getBody().getSubscriptionId())) {
+            throw new SSAPProcessorException(String.format(MessageException.ERR_FIELD_IS_MANDATORY, "subscriptionId",
+                                                           message.getMessageType().name()));
+        }
 
-		return true;
-	}
+        return true;
+    }
 
 }

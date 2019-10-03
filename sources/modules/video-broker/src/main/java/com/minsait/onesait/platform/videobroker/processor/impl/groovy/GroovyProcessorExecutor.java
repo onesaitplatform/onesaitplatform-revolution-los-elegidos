@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,104 +42,104 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GroovyProcessorExecutor extends FrameProcessor {
 
-	@Getter
-	@Setter
-	private String groovyScript;
-	@Getter
-	@Setter
-	private File groovyFile;
-	@Getter
-	@Setter
-	private ProcessType processingType = ProcessType.STATS;
-	@Getter
-	@Setter
-	private Binding binding;
-	@Getter
-	@Setter
-	private GroovyShell groovyShell;
-	@Getter
-	@Setter
-	private Class<?> groovyClass;
-	@Getter
-	@Setter
-	private Object groovyInstance;
+    @Getter
+    @Setter
+    private String groovyScript;
+    @Getter
+    @Setter
+    private File groovyFile;
+    @Getter
+    @Setter
+    private ProcessType processingType = ProcessType.STATS;
+    @Getter
+    @Setter
+    private Binding binding;
+    @Getter
+    @Setter
+    private GroovyShell groovyShell;
+    @Getter
+    @Setter
+    private Class<?> groovyClass;
+    @Getter
+    @Setter
+    private Object groovyInstance;
 
-	private Method groovyProcess;
-	@Getter
-	@Setter
-	private boolean isSetupped = false;
-	@Getter
-	private static final Map<String, String> groovyScripts;
-	static {
-		final Map<String, String> aMap = new HashMap<>();
-		aMap.put("stats",
-				"src/main/java/com/minsait/onesait/platform/videobroker/processor/impl/groovy/BasicStatsProcessor.groovy");
-		groovyScripts = Collections.unmodifiableMap(aMap);
-	}
+    private Method groovyProcess;
+    @Getter
+    @Setter
+    private boolean isSetupped = false;
+    @Getter
+    private static final Map<String, String> groovyScripts;
 
-	public GroovyProcessorExecutor(String groovyScriptOption) {
-		setGroovyScript(groovyScripts.get(groovyScriptOption));
-		setGroovyScript(getGroovyScript());
-		setGroovyFile(new File(getGroovyScript()));
-		setUp();
-	}
+    static {
+        final Map<String, String> aMap = new HashMap<>();
+        aMap.put("stats",
+                 "src/main/java/com/minsait/onesait/platform/videobroker/processor/impl/groovy/BasicStatsProcessor" +
+                         ".groovy");
+        groovyScripts = Collections.unmodifiableMap(aMap);
+    }
 
-	public void setUp() {
-		try {
-			binding = new Binding();
-			groovyShell = new GroovyShell(getBinding());
-			groovyClass = new GroovyClassLoader().parseClass(getGroovyFile());
-			groovyInstance = groovyClass.newInstance();
-			groovyProcess = groovyClass.getDeclaredMethod("process", Object.class);
-			setSetupped(true);
-			log.info("Started {} processor", getProcessingType().toString());
+    public GroovyProcessorExecutor(String groovyScriptOption) {
+        setGroovyScript(groovyScripts.get(groovyScriptOption));
+        setGroovyScript(getGroovyScript());
+        setGroovyFile(new File(getGroovyScript()));
+        setUp();
+    }
 
-		} catch (CompilationFailedException | IOException | InstantiationException | IllegalAccessException
-				| SecurityException | NoSuchMethodException e) {
-			log.error("Not possible to setup GroovyProcessorExecutor {}", e.toString());
-		}
+    public void setUp() {
+        try {
+            binding = new Binding();
+            groovyShell = new GroovyShell(getBinding());
+            groovyClass = new GroovyClassLoader().parseClass(getGroovyFile());
+            groovyInstance = groovyClass.newInstance();
+            groovyProcess = groovyClass.getDeclaredMethod("process", Object.class);
+            setSetupped(true);
+            log.info("Started {} processor", getProcessingType().toString());
 
-	}
+        } catch (CompilationFailedException | IOException | InstantiationException | IllegalAccessException | SecurityException | NoSuchMethodException e) {
+            log.error("Not possible to setup GroovyProcessorExecutor {}", e.toString());
+        }
 
-	@Override
-	public VideoProcessorResults process(Mat frame) {
-		String result = "";
+    }
 
-		if (isSetupped()) {
+    @Override
+    public VideoProcessorResults process(Mat frame) {
+        String result = "";
 
-			try {
+        if (isSetupped()) {
 
-				final double[][][] frameMatrix3D = VideoUtils.matToDouble3D(frame);
-				result = (String) groovyProcess.invoke(groovyInstance, frameMatrix3D);
+            try {
 
-			} catch (CompilationFailedException | IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException | SecurityException e) {
-				log.error("Not possible to process frame in Groovy{}", e.toString());
-			}
+                final double[][][] frameMatrix3D = VideoUtils.matToDouble3D(frame);
+                result = (String) groovyProcess.invoke(groovyInstance, frameMatrix3D);
 
-		}
+            } catch (CompilationFailedException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SecurityException e) {
+                log.error("Not possible to process frame in Groovy{}", e.toString());
+            }
 
-		final GroovyProcessorResults dr = new GroovyProcessorResults(frame, result);
-		dr.setProcessingType(getProcessingType().toString());
-		dr.generateResult();
+        }
 
-		setLastProcessedFrame(frame);
-		setLastProcessedResults(dr);
-		return dr;
-	}
+        final GroovyProcessorResults dr = new GroovyProcessorResults(frame, result);
+        dr.setProcessingType(getProcessingType().toString());
+        dr.generateResult();
 
-	@Override
-	public ProcessType getProcessType() {
-		return ProcessType.STATS;
-	}
+        setLastProcessedFrame(frame);
+        setLastProcessedResults(dr);
+        return dr;
+    }
 
-	public static void main(String[] args) {
+    @Override
+    public ProcessType getProcessType() {
+        return ProcessType.STATS;
+    }
 
-		OpenCvLoader.loadOpenCV();
-		final Mat mat = Mat.eye(3, 3, CvType.CV_8UC1);
-		final GroovyProcessorExecutor gpe = new GroovyProcessorExecutor("stats");
-		gpe.process(mat);
+    public static void main(String[] args) {
 
-	}
+        OpenCvLoader.loadOpenCV();
+        final Mat mat = Mat.eye(3, 3, CvType.CV_8UC1);
+        final GroovyProcessorExecutor gpe = new GroovyProcessorExecutor("stats");
+        gpe.process(mat);
+
+    }
 
 }

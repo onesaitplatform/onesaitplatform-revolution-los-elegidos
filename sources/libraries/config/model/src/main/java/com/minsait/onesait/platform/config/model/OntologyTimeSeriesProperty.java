@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,44 +38,44 @@ import lombok.Setter;
 @Table(name = "ONTOLOGY_TIMESERIES_PROPERTY")
 public class OntologyTimeSeriesProperty extends AuditableEntityWithUUID {
 
-	public enum PropertyType {
-		TAG, SERIE_FIELD
-	}
+    public enum PropertyType {
+        TAG, SERIE_FIELD
+    }
 
-	public enum PropertyDataType {
-		STRING, INTEGER, NUMBER, OBJECT
-	}
+    public enum PropertyDataType {
+        STRING, INTEGER, NUMBER, OBJECT
+    }
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	@ManyToOne
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "ONTOLOGY_TIMESERIES_ID", referencedColumnName = "ID", nullable = false)
-	@JsonBackReference
-	@Getter
-	@Setter
-	private OntologyTimeSeries ontologyTimeSeries;
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "ONTOLOGY_TIMESERIES_ID", referencedColumnName = "ID", nullable = false)
+    @JsonBackReference
+    @Getter
+    @Setter
+    private OntologyTimeSeries ontologyTimeSeries;
 
-	@Column(name = "PROPERTY_TYPE", length = 20)
-	@Getter
-	@Setter
-	@NotNull
-	@Enumerated(EnumType.STRING)
-	private PropertyType propertyType;
+    @Column(name = "PROPERTY_TYPE", length = 20)
+    @Getter
+    @Setter
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private PropertyType propertyType;
 
-	@Column(name = "PROPERTY_NAME", length = 200)
-	@Getter
-	@Setter
-	@NotNull
-	private String propertyName;
+    @Column(name = "PROPERTY_NAME", length = 200)
+    @Getter
+    @Setter
+    @NotNull
+    private String propertyName;
 
-	@Column(name = "PROPERTY_DATA_TYPE", length = 20)
-	@Getter
-	@Setter
-	@NotNull
-	@Enumerated(EnumType.STRING)
-	private PropertyDataType propertyDataType;
+    @Column(name = "PROPERTY_DATA_TYPE", length = 20)
+    @Getter
+    @Setter
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private PropertyDataType propertyDataType;
 }

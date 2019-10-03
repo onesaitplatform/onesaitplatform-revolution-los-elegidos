@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -53,249 +53,249 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TokenController {
 
-	@Value("${security.jwt.client-id}")
-	private String clientId;
+    @Value("${security.jwt.client-id}")
+    private String clientId;
 
-	@Autowired
-	private AuthorizationServerEndpointsConfiguration configuration;
+    @Autowired
+    private AuthorizationServerEndpointsConfiguration configuration;
 
-	@Autowired
-	private ClientDetailsService clientDetailsService;
+    @Autowired
+    private ClientDetailsService clientDetailsService;
 
-	@Autowired
-	private TokenUtil sofia2TokenUtil;
+    @Autowired
+    private TokenUtil sofia2TokenUtil;
 
-	private static final String LEAVING_INFO_ERROR = "Leaving Info Token with with Error response = {} ";
-	private static final String REVOKE_ERROR_RESPONSE = "Revoke with with Error response = {} ";
+    private static final String LEAVING_INFO_ERROR = "Leaving Info Token with with Error response = {} ";
+    private static final String REVOKE_ERROR_RESPONSE = "Revoke with with Error response = {} ";
 
-	@Resource(name = "tokenStore")
-	TokenStore tokenStore;
+    @Resource(name = "tokenStore")
+    TokenStore tokenStore;
 
-	@Autowired
-	CustomTokenService customTokenService;
+    @Autowired
+    CustomTokenService customTokenService;
 
-	@RequestMapping(method = RequestMethod.GET, value = "/openplatform-oauth/token-values")
-	@ResponseBody
-	public List<String> getTokens() {
+    @RequestMapping(method = RequestMethod.GET, value = "/openplatform-oauth/token-values")
+    @ResponseBody
+    public List<String> getTokens() {
 
-		final List<String> tokenValues = new ArrayList<>();
-		final Collection<OAuth2AccessToken> tokens = tokenStore.findTokensByClientId(clientId);
+        final List<String> tokenValues = new ArrayList<>();
+        final Collection<OAuth2AccessToken> tokens = tokenStore.findTokensByClientId(clientId);
 
-		if (tokens != null) {
-			for (final OAuth2AccessToken token : tokens) {
-				tokenValues.add(token.getValue());
-			}
-		}
-		return tokenValues;
-	}
+        if (tokens != null) {
+            for (final OAuth2AccessToken token : tokens) {
+                tokenValues.add(token.getValue());
+            }
+        }
+        return tokenValues;
+    }
 
-	@RequestMapping(method = RequestMethod.GET, value = "/openplatform-oauth/tokens")
-	@ResponseBody
-	public Collection<OAuth2AccessToken> getTokenLists() {
+    @RequestMapping(method = RequestMethod.GET, value = "/openplatform-oauth/tokens")
+    @ResponseBody
+    public Collection<OAuth2AccessToken> getTokenLists() {
 
-		return tokenStore.findTokensByClientId(clientId);
+        return tokenStore.findTokensByClientId(clientId);
 
-	}
+    }
 
-	@RequestMapping(method = RequestMethod.POST, value = "/openplatform-oauth/tokens/revokeRefreshToken/{tokenId:.*}")
-	@ResponseBody
-	public String revokeRefreshToken(@PathVariable String tokenId) {
-		if (tokenStore instanceof JdbcTokenStore) {
-			((JdbcTokenStore) tokenStore).removeRefreshToken(tokenId);
-		}
-		return tokenId;
-	}
+    @RequestMapping(method = RequestMethod.POST, value = "/openplatform-oauth/tokens/revokeRefreshToken/{tokenId:.*}")
+    @ResponseBody
+    public String revokeRefreshToken(@PathVariable String tokenId) {
+        if (tokenStore instanceof JdbcTokenStore) {
+            ((JdbcTokenStore) tokenStore).removeRefreshToken(tokenId);
+        }
+        return tokenId;
+    }
 
-	@RequestMapping(method = RequestMethod.POST, value = "/openplatform-oauth/renewToken")
-	@ResponseBody
+    @RequestMapping(method = RequestMethod.POST, value = "/openplatform-oauth/renewToken")
+    @ResponseBody
 
-	/**
-	 *
-	 * @deperecated (since 2019-08, it generates non compliant token , refactor to
-	 *              resfresh validn token)
-	 */
-	@Deprecated
-	public ResponseToken renewToken(@RequestBody String id) {
-		try {
+    /**
+     *
+     * @deperecated (since 2019 - 08, it generates non compliant token, refactor to
+     *resfresh validn token)
+     */
+    @Deprecated
+    public ResponseToken renewToken(@RequestBody String id) {
+        try {
 
-			log.info("Entering Renew Token with id = {}", id);
+            log.info("Entering Renew Token with id = {}", id);
 
-			final OAuth2Authentication authentication = customTokenService.loadAuthentication(id);
-			final OAuth2AccessToken token = customTokenService.getAccessToken(authentication);
+            final OAuth2Authentication authentication = customTokenService.loadAuthentication(id);
+            final OAuth2AccessToken token = customTokenService.getAccessToken(authentication);
 
-			final OAuth2RefreshToken refreshToken = token.getRefreshToken();
+            final OAuth2RefreshToken refreshToken = token.getRefreshToken();
 
-			final String clientId = authentication.getOAuth2Request().getClientId();
-			final Collection<String> scope = authentication.getOAuth2Request().getScope();
-			final Map<String, String> parameters = authentication.getOAuth2Request().getRequestParameters();
+            final String clientId = authentication.getOAuth2Request().getClientId();
+            final Collection<String> scope = authentication.getOAuth2Request().getScope();
+            final Map<String, String> parameters = authentication.getOAuth2Request().getRequestParameters();
 
-			final TokenRequest tokenRequest = new TokenRequest(parameters, clientId, scope, "password");
+            final TokenRequest tokenRequest = new TokenRequest(parameters, clientId, scope, "password");
 
-			final OAuth2AccessToken tokenRefreshed = customTokenService.refreshAccessToken(refreshToken.getValue(),
-					tokenRequest);
+            final OAuth2AccessToken tokenRefreshed = customTokenService.refreshAccessToken(refreshToken.getValue(),
+                                                                                           tokenRequest);
 
-			final Date expiration = tokenRefreshed.getExpiration();
+            final Date expiration = tokenRefreshed.getExpiration();
 
-			final ResponseToken r = new ResponseToken();
-			r.setOauthInfo(tokenRefreshed);
-			r.setExpirationTimestamp(expiration);
+            final ResponseToken r = new ResponseToken();
+            r.setOauthInfo(tokenRefreshed);
+            r.setExpirationTimestamp(expiration);
 
-			final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+            final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
-			r.setExpirationFormatted(dateFormat.format(expiration));
-			r.setToken(tokenRefreshed.getValue());
+            r.setExpirationFormatted(dateFormat.format(expiration));
+            r.setToken(tokenRefreshed.getValue());
 
-			log.info("Leaving Renew Token with with response = {}", r);
+            log.info("Leaving Renew Token with with response = {}", r);
 
-			return r;
+            return r;
 
-		} catch (final Exception e) {
-			final ResponseToken r = new ResponseToken();
-			r.setToken("-1");
-			log.info(LEAVING_INFO_ERROR, e.getLocalizedMessage());
-			return r;
-		}
-	}
+        } catch (final Exception e) {
+            final ResponseToken r = new ResponseToken();
+            r.setToken("-1");
+            log.info(LEAVING_INFO_ERROR, e.getLocalizedMessage());
+            return r;
+        }
+    }
 
-	@RequestMapping(method = RequestMethod.POST, value = "/openplatform-oauth/tokenInfo")
-	@ResponseBody
-	public ResponseToken info(@RequestBody String tokenId) {
-		try {
+    @RequestMapping(method = RequestMethod.POST, value = "/openplatform-oauth/tokenInfo")
+    @ResponseBody
+    public ResponseToken info(@RequestBody String tokenId) {
+        try {
 
-			log.info("Entering Info Token with id = {}", tokenId);
+            log.info("Entering Info Token with id = {}", tokenId);
 
-			final OAuth2Authentication authentication = customTokenService.loadAuthentication(tokenId);
+            final OAuth2Authentication authentication = customTokenService.loadAuthentication(tokenId);
 
-			final OAuth2AccessToken token = customTokenService.getAccessToken(authentication);
+            final OAuth2AccessToken token = customTokenService.getAccessToken(authentication);
 
-			final ResponseToken r = new ResponseToken();
-			r.setOauthInfo(token);
-			r.setExpirationTimestamp(token.getExpiration());
+            final ResponseToken r = new ResponseToken();
+            r.setOauthInfo(token);
+            r.setExpirationTimestamp(token.getExpiration());
 
-			final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+            final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
-			r.setExpirationFormatted(dateFormat.format(token.getExpiration()));
-			r.setToken(token.getValue());
+            r.setExpirationFormatted(dateFormat.format(token.getExpiration()));
+            r.setToken(token.getValue());
 
-			log.info("Leaving Info Token with response = {}", r);
+            log.info("Leaving Info Token with response = {}", r);
 
-			return r;
-		} catch (final Exception e) {
-			final ResponseToken r = new ResponseToken();
-			r.setToken("-1");
-			log.info(LEAVING_INFO_ERROR, e.getLocalizedMessage());
-			return r;
-		}
-	}
+            return r;
+        } catch (final Exception e) {
+            final ResponseToken r = new ResponseToken();
+            r.setToken("-1");
+            log.info(LEAVING_INFO_ERROR, e.getLocalizedMessage());
+            return r;
+        }
+    }
 
-	@RequestMapping(method = RequestMethod.POST, value = "/openplatform-oauth/revoke_token")
-	@ResponseBody
+    @RequestMapping(method = RequestMethod.POST, value = "/openplatform-oauth/revoke_token")
+    @ResponseBody
 
-	public Map<String, ?> revokeAccesToken(@RequestHeader(value = "Authorization") String authorization,
-			@RequestParam("token") String value) {
-		final Map<String, Object> response = new HashMap<>();
+    public Map<String, ?> revokeAccesToken(@RequestHeader(value = "Authorization") String authorization,
+            @RequestParam("token") String value) {
+        final Map<String, Object> response = new HashMap<>();
 
-		String appId = "";
-		String appSecret = "";
+        String appId = "";
+        String appSecret = "";
 
-		try {
-			// createNewToken ();
-			final String[] tokens = sofia2TokenUtil.extractAndDecodeHeader(authorization);
+        try {
+            // createNewToken ();
+            final String[] tokens = sofia2TokenUtil.extractAndDecodeHeader(authorization);
 
-			assert tokens.length == 2;
+            assert tokens.length == 2;
 
-			appId = tokens[0];
-			appSecret = tokens[1];
+            appId = tokens[0];
+            appSecret = tokens[1];
 
-			final ClientDetails clientId = clientDetailsService.loadClientByClientId(appId);
+            final ClientDetails clientId = clientDetailsService.loadClientByClientId(appId);
 
-			log.info("Entering Access Info Token with Tokenid = {} ", value);
+            log.info("Entering Access Info Token with Tokenid = {} ", value);
 
-			if (!clientId.getClientSecret().equals(appSecret)) {
-				response.put(OAuth2Exception.ERROR, OAuth2Exception.ACCESS_DENIED);
-				response.put(OAuth2Exception.DESCRIPTION, value);
+            if (!clientId.getClientSecret().equals(appSecret)) {
+                response.put(OAuth2Exception.ERROR, OAuth2Exception.ACCESS_DENIED);
+                response.put(OAuth2Exception.DESCRIPTION, value);
 
-				log.info(REVOKE_ERROR_RESPONSE,OAuth2Exception.ACCESS_DENIED);
+                log.info(REVOKE_ERROR_RESPONSE, OAuth2Exception.ACCESS_DENIED);
 
-				return response;
-			}
+                return response;
+            }
 
-			final OAuth2Authentication authentication = customTokenService.loadAuthentication(value);
-			final OAuth2AccessToken token = customTokenService.getAccessToken(authentication);
+            final OAuth2Authentication authentication = customTokenService.loadAuthentication(value);
+            final OAuth2AccessToken token = customTokenService.getAccessToken(authentication);
 
-			final String appTokenId = (String) token.getAdditionalInformation().get("clientId");
+            final String appTokenId = (String) token.getAdditionalInformation().get("clientId");
 
-			if (appId.equals(appTokenId)) {
-				tokenStore.removeAccessToken(token);
-			} else {
-				throw new OAuth2Exception(OAuth2Exception.ACCESS_DENIED);
-			}
+            if (appId.equals(appTokenId)) {
+                tokenStore.removeAccessToken(token);
+            } else {
+                throw new OAuth2Exception(OAuth2Exception.ACCESS_DENIED);
+            }
 
-			response.put(OAuth2AccessToken.ACCESS_TOKEN, value);
-			response.put(OAuth2Utils.STATE, OAuth2Exception.INVALID_TOKEN);
+            response.put(OAuth2AccessToken.ACCESS_TOKEN, value);
+            response.put(OAuth2Utils.STATE, OAuth2Exception.INVALID_TOKEN);
 
-			log.info("Leaving Revoke Access Token with response = {} ", response);
+            log.info("Leaving Revoke Access Token with response = {} ", response);
 
-			return response;
-		} catch (final Exception e) {
+            return response;
+        } catch (final Exception e) {
 
-			response.put(OAuth2Exception.ERROR, OAuth2Exception.INVALID_TOKEN);
-			response.put(OAuth2Exception.DESCRIPTION, value);
+            response.put(OAuth2Exception.ERROR, OAuth2Exception.INVALID_TOKEN);
+            response.put(OAuth2Exception.DESCRIPTION, value);
 
-			log.info(REVOKE_ERROR_RESPONSE, e.getLocalizedMessage());
+            log.info(REVOKE_ERROR_RESPONSE, e.getLocalizedMessage());
 
-			return response;
-		}
-	}
+            return response;
+        }
+    }
 
-	@RequestMapping(method = RequestMethod.POST, value = "/openplatform-oauth/check_token")
-	@ResponseBody
+    @RequestMapping(method = RequestMethod.POST, value = "/openplatform-oauth/check_token")
+    @ResponseBody
 
-	public Map<String, Object> accessInfo(@RequestHeader(value = "Authorization") String authorization,
-			@RequestParam("token") String value) {
-		final Map<String, Object> response = new HashMap<>();
+    public Map<String, Object> accessInfo(@RequestHeader(value = "Authorization") String authorization,
+            @RequestParam("token") String value) {
+        final Map<String, Object> response = new HashMap<>();
 
-		String appId = "";
-		String appSecret = "";
+        String appId = "";
+        String appSecret = "";
 
-		try {
-			final String[] tokens = sofia2TokenUtil.extractAndDecodeHeader(authorization);
+        try {
+            final String[] tokens = sofia2TokenUtil.extractAndDecodeHeader(authorization);
 
-			assert tokens.length == 2;
+            assert tokens.length == 2;
 
-			appId = tokens[0];
-			appSecret = tokens[1];
+            appId = tokens[0];
+            appSecret = tokens[1];
 
-			if (!clientDetailsService.loadClientByClientId(appId).getClientSecret().equals(appSecret)) {
-				response.put(OAuth2Exception.ERROR, OAuth2Exception.ACCESS_DENIED);
-				response.put(OAuth2Exception.DESCRIPTION, value);
+            if (!clientDetailsService.loadClientByClientId(appId).getClientSecret().equals(appSecret)) {
+                response.put(OAuth2Exception.ERROR, OAuth2Exception.ACCESS_DENIED);
+                response.put(OAuth2Exception.DESCRIPTION, value);
 
-				log.info(REVOKE_ERROR_RESPONSE,OAuth2Exception.ACCESS_DENIED);
+                log.info(REVOKE_ERROR_RESPONSE, OAuth2Exception.ACCESS_DENIED);
 
-				return response;
-			}
+                return response;
+            }
 
-			log.info("Entering Access Info Token with Tokenid = {}", value);
+            log.info("Entering Access Info Token with Tokenid = {}", value);
 
-			final OAuth2Authentication authentication = customTokenService.loadAuthentication(value);
-			final OAuth2AccessToken token = customTokenService.getAccessToken(authentication);
+            final OAuth2Authentication authentication = customTokenService.loadAuthentication(value);
+            final OAuth2AccessToken token = customTokenService.getAccessToken(authentication);
 
-			final String appTokenId = (String) token.getAdditionalInformation().get("clientId");
+            final String appTokenId = (String) token.getAdditionalInformation().get("clientId");
 
-			// Build response
-			response.putAll(sofia2TokenUtil.convertAccessToken(authentication, token, appTokenId, appId));
+            // Build response
+            response.putAll(sofia2TokenUtil.convertAccessToken(authentication, token, appTokenId, appId));
 
-			log.info("Leaving Access Info Token with response = {}", response);
-			return response;
-		} catch (final Exception e) {
+            log.info("Leaving Access Info Token with response = {}", response);
+            return response;
+        } catch (final Exception e) {
 
-			response.put(OAuth2Exception.ERROR, OAuth2Exception.INVALID_TOKEN);
-			response.put(OAuth2Exception.DESCRIPTION, e.getLocalizedMessage());
+            response.put(OAuth2Exception.ERROR, OAuth2Exception.INVALID_TOKEN);
+            response.put(OAuth2Exception.DESCRIPTION, e.getLocalizedMessage());
 
-			log.info(LEAVING_INFO_ERROR, e.getLocalizedMessage());
+            log.info(LEAVING_INFO_ERROR, e.getLocalizedMessage());
 
-			return response;
-		}
-	}
+            return response;
+        }
+    }
 
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,44 +34,41 @@ import lombok.extern.slf4j.Slf4j;
 @Conditional(HadoopEnabledCondition.class)
 public class KuduClientConfiguration {
 
-	//Master kudu address only for 1 master server
-	@Value("${onesaitplatform.database.kudu.address:localhost:7051}")
-	private String kuduURLs;
-	
-	@Value("${onesaitplatform.database.kudu.client.bossThreadPool:1}")
-	private int bossThreadPoolSize;
+    //Master kudu address only for 1 master server
+    @Value("${onesaitplatform.database.kudu.address:localhost:7051}")
+    private String kuduURLs;
 
-	@Value("${onesaitplatform.database.kudu.client.workerThreadPool:4}")
-	private int workerThreadPoolSize;
-	
-	@Value("${onesaitplatform.database.kudu.client.operationTimeout:30000}")
-	private int operationTimeout;
-	
-	@Value("${onesaitplatform.database.kudu.client.adminOperationTimeout:30000}")
-	private int adminOperationTimeout;
-	
-	@Value("${onesaitplatform.database.kudu.client.socketReadTimeout:10000}")
-	private int socketReadTimeout;
-	
-	public KuduClient createKuduClient() {
+    @Value("${onesaitplatform.database.kudu.client.bossThreadPool:1}")
+    private int bossThreadPoolSize;
 
-		List<String> urls = Arrays.asList(kuduURLs.split(","));
-		
-		KuduClientBuilder builder = new KuduClient.KuduClientBuilder(urls)
-			      .defaultOperationTimeoutMs(operationTimeout)
-			      .defaultAdminOperationTimeoutMs(adminOperationTimeout)
-			      .defaultSocketReadTimeoutMs(socketReadTimeout)
-			      .bossCount(bossThreadPoolSize)
-			      .workerCount(workerThreadPoolSize);
+    @Value("${onesaitplatform.database.kudu.client.workerThreadPool:4}")
+    private int workerThreadPoolSize;
 
-		log.info("Initialized kudu connector for " + kuduURLs);
+    @Value("${onesaitplatform.database.kudu.client.operationTimeout:30000}")
+    private int operationTimeout;
 
-		return builder.build();
-	}
+    @Value("${onesaitplatform.database.kudu.client.adminOperationTimeout:30000}")
+    private int adminOperationTimeout;
 
-	@Bean(name = NameBeanConst.KUDU_CLIENT)
-	public KuduClient kuduClientBean() {
-		return createKuduClient();
-	}
+    @Value("${onesaitplatform.database.kudu.client.socketReadTimeout:10000}")
+    private int socketReadTimeout;
+
+    public KuduClient createKuduClient() {
+
+        List<String> urls = Arrays.asList(kuduURLs.split(","));
+
+        KuduClientBuilder builder = new KuduClient.KuduClientBuilder(urls).defaultOperationTimeoutMs(
+                operationTimeout).defaultAdminOperationTimeoutMs(adminOperationTimeout).defaultSocketReadTimeoutMs(
+                socketReadTimeout).bossCount(bossThreadPoolSize).workerCount(workerThreadPoolSize);
+
+        log.info("Initialized kudu connector for " + kuduURLs);
+
+        return builder.build();
+    }
+
+    @Bean(name = NameBeanConst.KUDU_CLIENT)
+    public KuduClient kuduClientBean() {
+        return createKuduClient();
+    }
 
 }

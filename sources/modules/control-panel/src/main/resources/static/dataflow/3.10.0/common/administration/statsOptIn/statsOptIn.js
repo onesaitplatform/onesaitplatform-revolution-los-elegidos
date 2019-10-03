@@ -16,30 +16,30 @@
 
 // Controller for Usage Statistics Modal Dialog.
 angular
-  .module('dataCollectorApp')
-  .controller('StatsOptInController', ["$scope", "$modalInstance", "api", function ($scope, $modalInstance,  api) {
-    angular.extend($scope, {
-      isLoading: true,
-      currentStatus: undefined,
+    .module('dataCollectorApp')
+    .controller('StatsOptInController', ["$scope", "$modalInstance", "api", function ($scope, $modalInstance, api) {
+        angular.extend($scope, {
+            isLoading: true,
+            currentStatus: undefined,
 
-      cancel: function() {
-        $modalInstance.close();
-      },
+            cancel: function () {
+                $modalInstance.close();
+            },
 
-      save: function() {
-        api.system.setOptInStatus($scope.currentStatus.active)
-          .then(function() {
-            $modalInstance.close();
-          });
-      }
-    });
+            save: function () {
+                api.system.setOptInStatus($scope.currentStatus.active)
+                    .then(function () {
+                        $modalInstance.close();
+                    });
+            }
+        });
 
-    api.system.getStats()
-      .then(function(res) {
-        $scope.currentStatus = res.data;
-        if (!res.data.opted) {
-          $scope.currentStatus.active = true;
-        }
-        $scope.isLoading = false;
-      });
-  }]);
+        api.system.getStats()
+            .then(function (res) {
+                $scope.currentStatus = res.data;
+                if (!res.data.opted) {
+                    $scope.currentStatus.active = true;
+                }
+                $scope.isLoading = false;
+            });
+    }]);

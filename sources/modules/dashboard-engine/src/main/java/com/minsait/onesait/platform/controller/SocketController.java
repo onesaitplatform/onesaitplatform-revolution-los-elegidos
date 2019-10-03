@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,32 +35,31 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SocketController {
 
-	@Autowired
-	private SimpMessagingTemplate simpMessagingTemplate;
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
-	@Autowired
-	private SolverService solverService;
+    @Autowired
+    private SolverService solverService;
 
-	@CrossOrigin
-	@MessageMapping("/dsengine/solver/{id}")
-	public void response(@DestinationVariable("id") Long id, SimpMessageHeaderAccessor headerAccessor,
-			InputMessage msg) {
+    @CrossOrigin
+    @MessageMapping("/dsengine/solver/{id}")
+    public void response(@DestinationVariable("id") Long id, SimpMessageHeaderAccessor headerAccessor,
+            InputMessage msg) {
 
-		long startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
 
-		log.info("Query for: " + msg.getDs() + ",  params: filter: " + msg.getFilter() + ", project: "
-				+ msg.getProject() + ", group: " + msg.getGroup());
+        log.info(
+                "Query for: " + msg.getDs() + ",  params: filter: " + msg.getFilter() + ", project: " + msg.getProject() + ", group: " + msg.getGroup());
 
-		String dataSolved = solverService.solveDatasource(msg);
+        String dataSolved = solverService.solveDatasource(msg);
 
-		log.info("Query for: " + msg.getDs() + ",  params: filter: " + msg.getFilter() + ", project: "
-				+ msg.getProject() + ", group: " + msg.getGroup() + " executed in "
-				+ (System.currentTimeMillis() - startTime) / 1000f + "(s)");
+        log.info(
+                "Query for: " + msg.getDs() + ",  params: filter: " + msg.getFilter() + ", project: " + msg.getProject() + ", group: " + msg.getGroup() + " executed in " + (System.currentTimeMillis() - startTime) / 1000f + "(s)");
 
-		OutputMessage out = new OutputMessage(dataSolved,
-				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()));
+        OutputMessage out = new OutputMessage(dataSolved,
+                                              new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()));
 
-		simpMessagingTemplate.convertAndSend("/dsengine/broker/" + id, out);
-	}
+        simpMessagingTemplate.convertAndSend("/dsengine/broker/" + id, out);
+    }
 
 }

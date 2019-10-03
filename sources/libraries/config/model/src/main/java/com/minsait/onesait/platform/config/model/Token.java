@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,54 +40,54 @@ import lombok.Setter;
 @Configurable
 public class Token extends AuditableEntityWithUUID {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@ManyToOne
-	@JoinColumn(name = "CLIENT_PLATFORM_ID", referencedColumnName = "ID")
-	@OnDelete(action = OnDeleteAction.NO_ACTION)
-	@Getter
-	@Setter
-	private ClientPlatform clientPlatform;
+    @ManyToOne
+    @JoinColumn(name = "CLIENT_PLATFORM_ID", referencedColumnName = "ID")
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @Getter
+    @Setter
+    private ClientPlatform clientPlatform;
 
-	@Column(name = "TOKEN", length = 50, unique = true, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String tokenName;
+    @Column(name = "TOKEN", length = 50, unique = true, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String tokenName;
 
-	@Column(name = "LAST_CONNECTION")
-	@Temporal(TemporalType.TIMESTAMP)
-	@DateTimeFormat(style = "MM")
-	@Getter
-	@Setter
-	private Calendar lastConnection;
+    @Column(name = "LAST_CONNECTION")
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(style = "MM")
+    @Getter
+    @Setter
+    private Calendar lastConnection;
 
-	@Column(name = "ACTIVE", nullable = false, columnDefinition = "BIT")
-	@NotNull
-	@Getter
-	@Setter
-	private boolean active;
+    @Column(name = "ACTIVE", nullable = false, columnDefinition = "BIT")
+    @NotNull
+    @Getter
+    @Setter
+    private boolean active;
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof Token))
-			return false;
-		Token that = (Token) o;
-		return getClientPlatform() != null
-				&& getClientPlatform().getIdentification().equals(that.getClientPlatform().getIdentification())
-				&& getTokenName() != null && getTokenName().equals(that.getTokenName());
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Token))
+            return false;
+        Token that = (Token) o;
+        return getClientPlatform() != null && getClientPlatform().getIdentification().equals(
+                that.getClientPlatform().getIdentification()) && getTokenName() != null && getTokenName().equals(
+                that.getTokenName());
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((getClientPlatform() == null) ? 0 : getClientPlatform().getIdentification().hashCode());
-		result = prime * result + ((getTokenName() == null) ? 0 : getTokenName().hashCode());
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((getClientPlatform() == null) ? 0
+                : getClientPlatform().getIdentification().hashCode());
+        result = prime * result + ((getTokenName() == null) ? 0 : getTokenName().hashCode());
+        return result;
+    }
 
 }

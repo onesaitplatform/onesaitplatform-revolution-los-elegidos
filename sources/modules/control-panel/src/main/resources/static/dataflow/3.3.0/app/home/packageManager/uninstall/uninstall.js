@@ -18,39 +18,39 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('UninstallModalInstanceController', function ($scope, $modalInstance, libraryList, api) {
-    angular.extend($scope, {
-      common: {
-        errors: []
-      },
-      libraryList: libraryList,
-      operationInProgress: false,
-      libraryUninstalled: false,
-      isRestartInProgress: false,
-
-      install: function() {
-        $scope.operationInProgress = true;
-        api.pipelineAgent.uninstallLibraries(_.pluck(libraryList, 'id'))
-          .then(
-            function (res) {
-              $scope.libraryUninstalled = true;
-              $scope.operationInProgress = false;
+    .module('dataCollectorApp.home')
+    .controller('UninstallModalInstanceController', function ($scope, $modalInstance, libraryList, api) {
+        angular.extend($scope, {
+            common: {
+                errors: []
             },
-            function (res) {
-              $scope.operationInProgress = false;
-              $scope.common.errors = [res];
+            libraryList: libraryList,
+            operationInProgress: false,
+            libraryUninstalled: false,
+            isRestartInProgress: false,
+
+            install: function () {
+                $scope.operationInProgress = true;
+                api.pipelineAgent.uninstallLibraries(_.pluck(libraryList, 'id'))
+                    .then(
+                        function (res) {
+                            $scope.libraryUninstalled = true;
+                            $scope.operationInProgress = false;
+                        },
+                        function (res) {
+                            $scope.operationInProgress = false;
+                            $scope.common.errors = [res];
+                        }
+                    );
+            },
+
+            restart: function () {
+                $scope.isRestartInProgress = true;
+                api.admin.restartDataCollector();
+            },
+
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
             }
-          );
-      },
-
-      restart: function() {
-        $scope.isRestartInProgress = true;
-        api.admin.restartDataCollector();
-      },
-
-      cancel: function() {
-        $modalInstance.dismiss('cancel');
-      }
+        });
     });
-  });

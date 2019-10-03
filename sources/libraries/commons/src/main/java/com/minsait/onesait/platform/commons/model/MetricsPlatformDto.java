@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,21 +21,20 @@ import lombok.Data;
 @Data
 public class MetricsPlatformDto {
 
-	private long timestamp;
+    private long timestamp;
 
-	private List<MetricsOperationDto> lMetricsOperations;
+    private List<MetricsOperationDto> lMetricsOperations;
 
-	private List<MetricsOntologyDto> lMetricsOntology;
+    private List<MetricsOntologyDto> lMetricsOntology;
 
-	private List<MetricsApiDto> lMetricsApi;
+    private List<MetricsApiDto> lMetricsApi;
 
-	private List<MetricsControlPanelDto> lMetricsControlPanel;
+    private List<MetricsControlPanelDto> lMetricsControlPanel;
 
-	private List<MetricsOntologyDto> lMetricsQueryControlPanel;
+    private List<MetricsOntologyDto> lMetricsQueryControlPanel;
 
-	public boolean containsMetrics() {
-		return !this.lMetricsOperations.isEmpty() || !this.lMetricsOntology.isEmpty() || !this.lMetricsApi.isEmpty()
-				|| !this.lMetricsControlPanel.isEmpty() || !this.lMetricsQueryControlPanel.isEmpty();
-	}
+    public boolean containsMetrics() {
+        return !this.lMetricsOperations.isEmpty() || !this.lMetricsOntology.isEmpty() || !this.lMetricsApi.isEmpty() || !this.lMetricsControlPanel.isEmpty() || !this.lMetricsQueryControlPanel.isEmpty();
+    }
 
 }

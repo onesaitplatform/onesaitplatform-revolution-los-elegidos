@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,47 +39,47 @@ import com.minsait.onesait.platform.config.model.BinaryFileAccess.Type;
 
 public class BinaryFileRepositoryIntegrationTest {
 
-	@Autowired
-	private UserRepository userRepo;
-	@Autowired
-	private BinaryFileRepository binaryRepo;
-	@Autowired
-	private BinaryFileAccessRepository binaryAccessRepo;
+    @Autowired
+    private UserRepository userRepo;
+    @Autowired
+    private BinaryFileRepository binaryRepo;
+    @Autowired
+    private BinaryFileAccessRepository binaryAccessRepo;
 
-	private BinaryFile file;
-	private BinaryFileAccess access;
+    private BinaryFile file;
+    private BinaryFileAccess access;
 
-	@Before
-	public void setUp() {
-		file = new BinaryFile();
-		file.setFileId("1");
-		file.setMime("application/pdf");
-		file.setFileName("example.pdf");
-		file.setPublic(false);
-		file.setOwner(userRepo.findByUserId("developer"));
+    @Before
+    public void setUp() {
+        file = new BinaryFile();
+        file.setFileId("1");
+        file.setMime("application/pdf");
+        file.setFileName("example.pdf");
+        file.setPublic(false);
+        file.setOwner(userRepo.findByUserId("developer"));
 
-		file.setFileExtension("pdf");
+        file.setFileExtension("pdf");
 
-		// file.getFileAccesses().add(access);
-		file = binaryRepo.save(file);
+        // file.getFileAccesses().add(access);
+        file = binaryRepo.save(file);
 
-		access = new BinaryFileAccess();
-		access.setAccessType(Type.WRITE);
-		access.setBinaryFile(file);
-		access.setUser(userRepo.findByUserId("user"));
-		access = binaryAccessRepo.save(access);
+        access = new BinaryFileAccess();
+        access.setAccessType(Type.WRITE);
+        access.setBinaryFile(file);
+        access.setUser(userRepo.findByUserId("user"));
+        access = binaryAccessRepo.save(access);
 
-	}
+    }
 
-	@Test
-	@Transactional
-	public void getFile_ByAllowedUser() {
-		Assert.assertTrue(binaryRepo.findByUser(userRepo.findByUserId("developer")).size() > 0);
-	}
+    @Test
+    @Transactional
+    public void getFile_ByAllowedUser() {
+        Assert.assertTrue(binaryRepo.findByUser(userRepo.findByUserId("developer")).size() > 0);
+    }
 
-	@After
-	public void tearOff() {
-		binaryAccessRepo.delete(access);
-		binaryRepo.delete(file);
-	}
+    @After
+    public void tearOff() {
+        binaryAccessRepo.delete(access);
+        binaryRepo.delete(file);
+    }
 }

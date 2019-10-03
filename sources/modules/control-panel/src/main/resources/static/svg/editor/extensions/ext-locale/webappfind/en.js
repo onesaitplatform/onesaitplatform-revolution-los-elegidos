@@ -1,8 +1,8 @@
 export default {
-  name: 'WebAppFind',
-  buttons: [
-    {
-      title: 'Save Image back to Disk'
-    }
-  ]
+    name: 'WebAppFind',
+    buttons: [
+        {
+            title: 'Save Image back to Disk'
+        }
+    ]
 };

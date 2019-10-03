@@ -18,29 +18,29 @@
  */
 
 angular.module('commonUI.filters')
-  .filter('objLimitTo', function() {
-    return function(obj, limit){
-      if(obj === null) {
-        return [];
-      }
+    .filter('objLimitTo', function () {
+        return function (obj, limit) {
+            if (obj === null) {
+                return [];
+            }
 
-      var keys = Object.keys(obj);
-      if(keys.length < 1){
-        return [];
-      }
-      var ret = {},
-        count = 0;
+            var keys = Object.keys(obj);
+            if (keys.length < 1) {
+                return [];
+            }
+            var ret = {},
+                count = 0;
 
-      keys.sort();
+            keys.sort();
 
-      angular.forEach(keys, function(key){
-        if(count >= limit){
-          return false;
-        }
-        ret[key] = obj[key];
-        count++;
-      });
+            angular.forEach(keys, function (key) {
+                if (count >= limit) {
+                    return false;
+                }
+                ret[key] = obj[key];
+                count++;
+            });
 
-      return ret;
-    };
-  });
+            return ret;
+        };
+    });

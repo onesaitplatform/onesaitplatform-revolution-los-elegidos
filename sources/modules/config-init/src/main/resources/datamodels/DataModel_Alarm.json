@@ -1,58 +1,58 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "DataModel Alarm Schema",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DataModel Alarm Schema",
+  "type": "object",
+  "required": [
+    "Alarm"
+  ],
+  "properties": {
+    "Alarm": {
+      "type": "string",
+      "$ref": "#/datos"
+    }
+  },
+  "datos": {
+    "description": "Properties for DataModel Alarm",
     "type": "object",
     "required": [
-        "Alarm"
+      "timestamp",
+      "assetId",
+      "severity"
     ],
     "properties": {
-        "Alarm": {
-            "type": "string",
-            "$ref": "#/datos"
-        }
-    },
-    "datos": {
-        "description": "Properties for DataModel Alarm",
+      "timestamp": {
         "type": "object",
         "required": [
-            "timestamp",
-            "assetId",
-            "severity"
+          "$date"
         ],
         "properties": {
-            "timestamp": {
-                "type": "object",
-                "required": [
-                    "$date"
-                ],
-                "properties": {
-                    "$date": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "additionalProperties": false
-            },
-            "assetId": {
-                "type": "string"
-            },
-            "severity": {
-                "type": "string",
-                "enum": [
-                    "LOW",
-                    "MEDIUM",
-                    "CRITICAL"
-                ]
-            },
-            "alarmSource": {
-                "type": "string"
-            },
-            "details": {
-                "type": "string"
-            },
-            "status": {
-                "type": "string"
-            }
-        }
+          "$date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "assetId": {
+        "type": "string"
+      },
+      "severity": {
+        "type": "string",
+        "enum": [
+          "LOW",
+          "MEDIUM",
+          "CRITICAL"
+        ]
+      },
+      "alarmSource": {
+        "type": "string"
+      },
+      "details": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string"
+      }
     }
+  }
 }

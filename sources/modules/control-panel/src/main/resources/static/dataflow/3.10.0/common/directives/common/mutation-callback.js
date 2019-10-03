@@ -18,19 +18,19 @@
  * including the element's subtree.
  */
 angular.module('commonUI.commonDirectives')
-    .directive('mutationCallback', function() {
-      return {
-        link: function(scope, element, attr) {
+    .directive('mutationCallback', function () {
+        return {
+            link: function (scope, element, attr) {
 
-          var mo = new MutationObserver(function() {
-            scope.$emit(attr.mutationCallback);
-          });
+                var mo = new MutationObserver(function () {
+                    scope.$emit(attr.mutationCallback);
+                });
 
-          mo.observe(element[0], {
-            characterData: true,
-            subtree: true
-          });
+                mo.observe(element[0], {
+                    characterData: true,
+                    subtree: true
+                });
 
-        }
-      };
+            }
+        };
     });

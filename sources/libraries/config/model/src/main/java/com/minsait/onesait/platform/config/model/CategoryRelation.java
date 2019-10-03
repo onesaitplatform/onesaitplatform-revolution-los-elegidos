@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,36 +33,36 @@ import lombok.Setter;
 @Table(name = "CATEGORY_RELATION")
 public class CategoryRelation extends AuditableEntityWithUUID {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public enum Type {
+    public enum Type {
 
-		DASHBOARD, MODEL, REPORT
-	}
+        DASHBOARD, MODEL, REPORT
+    }
 
-	@Column(name = "TYPE_ID", length = 50, unique = false, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String typeId;
+    @Column(name = "TYPE_ID", length = 50, unique = false, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String typeId;
 
-	@Column(name = "TYPE", length = 255)
-	@Getter
-	@Setter
-	@NotNull
-	@Enumerated(EnumType.STRING)
-	private Type type;
+    @Column(name = "TYPE", length = 255)
+    @Getter
+    @Setter
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Type type;
 
-	@Column(name = "CATEGORY", length = 50, unique = false, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String category;
+    @Column(name = "CATEGORY", length = 50, unique = false, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String category;
 
-	@Column(name = "SUBCATEGORY", length = 50, unique = false, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String subcategory;
+    @Column(name = "SUBCATEGORY", length = 50, unique = false, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String subcategory;
 
 }

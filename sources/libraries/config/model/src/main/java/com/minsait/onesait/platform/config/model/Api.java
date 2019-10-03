@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,137 +43,137 @@ import lombok.Setter;
 
 @Configurable
 @Entity
-@Table(name = "API", uniqueConstraints = @UniqueConstraint(columnNames = { "IDENTIFICATION", "NUM_VERSION" }))
+@Table(name = "API", uniqueConstraints = @UniqueConstraint(columnNames = {"IDENTIFICATION", "NUM_VERSION"}))
 public class Api extends OPResource {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public enum ApiStates {
-		CREATED, PUBLISHED, DELETED, DEPRECATED, DEVELOPMENT;
-	}
+    public enum ApiStates {
+        CREATED, PUBLISHED, DELETED, DEPRECATED, DEVELOPMENT;
+    }
 
-	public enum ApiCategories {
-		ALL, ADVERTISING, BUSINESS, COMMUNICATION, EDUCATION, ENTERTAINMENT, MEDIA, MEDICAL, OTHER, SOCIAL, SPORTS,
-		TOOLS, TRAVEL;
-	}
+    public enum ApiCategories {
+        ALL, ADVERTISING, BUSINESS, COMMUNICATION, EDUCATION, ENTERTAINMENT, MEDIA, MEDICAL, OTHER, SOCIAL, SPORTS,
+        TOOLS, TRAVEL;
+    }
 
-	public enum ApiType {
-		IOT, EXTERNAL, INTERNAL_ONTOLOGY, EXTERNAL_FROM_JSON, NODE_RED
-	}
+    public enum ApiType {
+        IOT, EXTERNAL, INTERNAL_ONTOLOGY, EXTERNAL_FROM_JSON, NODE_RED
+    }
 
-	@ManyToOne
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "ONTOLOGY_ID", referencedColumnName = "ID")
-	@Getter
-	@Setter
-	private Ontology ontology;
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "ONTOLOGY_ID", referencedColumnName = "ID")
+    @Getter
+    @Setter
+    private Ontology ontology;
 
-	@Basic(fetch = FetchType.EAGER)
-	@Column(name = "IMAGE", length = 100000)
-	@Lob
-	@Type(type = "org.hibernate.type.BinaryType")
-	@Getter
-	@Setter
-	private byte[] image;
+    @Basic(fetch = FetchType.EAGER)
+    @Column(name = "IMAGE", length = 100000)
+    @Lob
+    @Type(type = "org.hibernate.type.BinaryType")
+    @Getter
+    @Setter
+    private byte[] image;
 
-	@Column(name = "SSL_CERTIFICATE", columnDefinition = "BIT")
-	@NotNull
-	@Getter
-	@Setter
-	private boolean ssl_certificate;
+    @Column(name = "SSL_CERTIFICATE", columnDefinition = "BIT")
+    @NotNull
+    @Getter
+    @Setter
+    private boolean ssl_certificate;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "api", cascade = CascadeType.ALL)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@Getter
-	@Setter
-	private Set<ApiComment> comments;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "api", cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Getter
+    @Setter
+    private Set<ApiComment> comments;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "api", cascade = CascadeType.ALL)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@Getter
-	@Setter
-	private Set<ApiUserAssessment> userAssessments;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "api", cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Getter
+    @Setter
+    private Set<ApiUserAssessment> userAssessments;
 
-	@OneToMany(mappedBy = "api", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-	@Getter
-	@Setter
-	private Set<UserApi> userApiAccesses;
+    @OneToMany(mappedBy = "api", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Getter
+    @Setter
+    private Set<UserApi> userApiAccesses;
 
-	@Column(name = "NUM_VERSION")
-	@Getter
-	@Setter
-	private Integer numversion;
+    @Column(name = "NUM_VERSION")
+    @Getter
+    @Setter
+    private Integer numversion;
 
-	@Column(name = "DESCRIPTION", length = 512, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String description;
+    @Column(name = "DESCRIPTION", length = 512, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String description;
 
-	@Column(name = "CATEGORY", length = 255)
-	@Getter
-	@Setter
-	@Enumerated(EnumType.STRING)
-	private ApiCategories category;
+    @Column(name = "CATEGORY", length = 255)
+    @Getter
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private ApiCategories category;
 
-	@Column(name = "ENDPOINT", length = 512)
-	@Getter
-	@Setter
-	private String endpoint;
+    @Column(name = "ENDPOINT", length = 512)
+    @Getter
+    @Setter
+    private String endpoint;
 
-	@Column(name = "ENDPOINT_EXT", length = 512)
-	@Getter
-	@Setter
-	private String endpointExt;
+    @Column(name = "ENDPOINT_EXT", length = 512)
+    @Getter
+    @Setter
+    private String endpointExt;
 
-	@Column(name = "STATE", length = 20, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	@Enumerated(EnumType.STRING)
-	private ApiStates state;
+    @Column(name = "STATE", length = 20, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private ApiStates state;
 
-	@Column(name = "META_INF", length = 512)
-	@Getter
-	@Setter
-	private String metaInf;
+    @Column(name = "META_INF", length = 512)
+    @Getter
+    @Setter
+    private String metaInf;
 
-	@Column(name = "IMAGE_TYPE", length = 20)
-	@Getter
-	@Setter
-	private String imageType;
+    @Column(name = "IMAGE_TYPE", length = 20)
+    @Getter
+    @Setter
+    private String imageType;
 
-	@Column(name = "IS_PUBLIC", nullable = false, columnDefinition = "BIT default 0")
-	@NotNull
-	@Getter
-	@Setter
-	private boolean isPublic;
+    @Column(name = "IS_PUBLIC", nullable = false, columnDefinition = "BIT default 0")
+    @NotNull
+    @Getter
+    @Setter
+    private boolean isPublic;
 
-	@Column(name = "CACHE_TIMEOUT")
-	@Getter
-	@Setter
-	private Integer cachetimeout;
+    @Column(name = "CACHE_TIMEOUT")
+    @Getter
+    @Setter
+    private Integer cachetimeout;
 
-	@Column(name = "API_LIMIT")
-	@Getter
-	@Setter
-	private Integer apilimit;
+    @Column(name = "API_LIMIT")
+    @Getter
+    @Setter
+    private Integer apilimit;
 
-	@Column(name = "API_TYPE", length = 50)
-	@Getter
-	@Setter
-	@Enumerated(EnumType.STRING)
-	private ApiType apiType;
+    @Column(name = "API_TYPE", length = 50)
+    @Getter
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private ApiType apiType;
 
-	@Column(name = "ASSESSMENT", precision = 10)
-	@Getter
-	@Setter
-	private Double assessment;
+    @Column(name = "ASSESSMENT", precision = 10)
+    @Getter
+    @Setter
+    private Double assessment;
 
-	@Column(name = "SWAGGER_JSON")
-	@Lob
-	@Getter
-	@Setter
-	private String swaggerJson;
+    @Column(name = "SWAGGER_JSON")
+    @Lob
+    @Getter
+    @Setter
+    private String swaggerJson;
 
 }

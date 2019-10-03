@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,31 +35,31 @@ import lombok.Setter;
 @Table(name = "FLOW")
 public class Flow extends AuditableEntityWithUUID {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@ManyToOne
-	@OnDelete(action = OnDeleteAction.NO_ACTION)
-	@JoinColumn(name = "FLOW_DOMAIN_ID", referencedColumnName = "ID", nullable = false)
-	@Getter
-	@Setter
-	private FlowDomain flowDomain;
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @JoinColumn(name = "FLOW_DOMAIN_ID", referencedColumnName = "ID", nullable = false)
+    @Getter
+    @Setter
+    private FlowDomain flowDomain;
 
-	@NotNull
-	@Getter
-	@Setter
-	@Column(name = "IDENTIFICATION", length = 200, nullable = false)
-	private String identification;
+    @NotNull
+    @Getter
+    @Setter
+    @Column(name = "IDENTIFICATION", length = 200, nullable = false)
+    private String identification;
 
-	@NotNull
-	@Getter
-	@Setter
-	@Column(name = "NODE_RED_FLOW_ID", length = 50, nullable = false)
-	private String nodeRedFlowId;
+    @NotNull
+    @Getter
+    @Setter
+    @Column(name = "NODE_RED_FLOW_ID", length = 50, nullable = false)
+    private String nodeRedFlowId;
 
-	@NotNull
-	@Getter
-	@Setter
-	@Column(name = "ACTIVE", nullable = false, columnDefinition = "BIT")
-	private Boolean active;
+    @NotNull
+    @Getter
+    @Setter
+    @Column(name = "ACTIVE", nullable = false, columnDefinition = "BIT")
+    private Boolean active;
 
 }

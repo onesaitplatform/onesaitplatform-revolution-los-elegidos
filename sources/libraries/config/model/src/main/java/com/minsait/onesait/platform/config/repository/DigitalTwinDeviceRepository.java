@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,40 +28,40 @@ import com.minsait.onesait.platform.config.model.User;
 
 public interface DigitalTwinDeviceRepository extends JpaRepository<DigitalTwinDevice, String> {
 
-	List<DigitalTwinDevice> findByIdentificationIgnoreCase(String DigitalTwinDevice);
+    List<DigitalTwinDevice> findByIdentificationIgnoreCase(String DigitalTwinDevice);
 
-	List<DigitalTwinDevice> findByUrl(String description);
+    List<DigitalTwinDevice> findByUrl(String description);
 
-	DigitalTwinDevice findByIdentification(String identification);
+    DigitalTwinDevice findByIdentification(String identification);
 
-	DigitalTwinDevice findByLongitudeAndLatitude(String longitude, String latitude);
+    DigitalTwinDevice findByLongitudeAndLatitude(String longitude, String latitude);
 
-	List<DigitalTwinDevice> findAllByOrderByIdentificationAsc();
+    List<DigitalTwinDevice> findAllByOrderByIdentificationAsc();
 
-	List<DigitalTwinDevice> findByIdentificationContaining(String identification);
+    List<DigitalTwinDevice> findByIdentificationContaining(String identification);
 
-	DigitalTwinDevice findById(String id);
+    DigitalTwinDevice findById(String id);
 
-	@Transactional
-	void deleteById(String id);
+    @Transactional
+    void deleteById(String id);
 
-	List<DigitalTwinDevice> findByUser(User user);
+    List<DigitalTwinDevice> findByUser(User user);
 
-	List<DigitalTwinDevice> findByTypeId(DigitalTwinType typeId);
+    List<DigitalTwinDevice> findByTypeId(DigitalTwinType typeId);
 
-	@Query("SELECT o.identification FROM DigitalTwinDevice AS o where o.typeId = :typeId")
-	List<String> findNamesByTypeId(@Param("typeId") DigitalTwinType typeId);
+    @Query("SELECT o.identification FROM DigitalTwinDevice AS o where o.typeId = :typeId")
+    List<String> findNamesByTypeId(@Param("typeId") DigitalTwinType typeId);
 
-	@Query("SELECT o.id FROM DigitalTwinDevice AS o where o.typeId = :typeId")
-	List<String> findIdsByTypeId(@Param("typeId") DigitalTwinType typeId);
+    @Query("SELECT o.id FROM DigitalTwinDevice AS o where o.typeId = :typeId")
+    List<String> findIdsByTypeId(@Param("typeId") DigitalTwinType typeId);
 
-	@Query("SELECT o.id FROM DigitalTwinDevice AS o where o.user = :user")
-	List<String> findIdsByUser(@Param("user") User user);
+    @Query("SELECT o.id FROM DigitalTwinDevice AS o where o.user = :user")
+    List<String> findIdsByUser(@Param("user") User user);
 
-	@Query("SELECT o.id FROM DigitalTwinDevice AS o")
-	List<String> findAllIds();
+    @Query("SELECT o.id FROM DigitalTwinDevice AS o")
+    List<String> findAllIds();
 
-	@Query("SELECT o.id FROM DigitalTwinDevice AS o where o.user = :user AND o.typeId = :typeId")
-	List<String> findIdsByUserAndTypeId(@Param("user") User user, @Param("typeId") DigitalTwinType typeId);
+    @Query("SELECT o.id FROM DigitalTwinDevice AS o where o.user = :user AND o.typeId = :typeId")
+    List<String> findIdsByUserAndTypeId(@Param("user") User user, @Param("typeId") DigitalTwinType typeId);
 
 }

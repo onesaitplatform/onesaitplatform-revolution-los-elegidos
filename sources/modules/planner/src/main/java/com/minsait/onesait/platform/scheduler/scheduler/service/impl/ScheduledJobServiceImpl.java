@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,35 +29,35 @@ import com.minsait.onesait.platform.scheduler.scheduler.service.ScheduledJobServ
 @Service
 public class ScheduledJobServiceImpl implements ScheduledJobService {
 
-	@Autowired
-	private ScheduledJobRepository scheduledJobRepository;
+    @Autowired
+    private ScheduledJobRepository scheduledJobRepository;
 
-	@Override
-	public List<ScheduledJob> getAllScheduledJobs() {
-		return scheduledJobRepository.findAll();
-	}
+    @Override
+    public List<ScheduledJob> getAllScheduledJobs() {
+        return scheduledJobRepository.findAll();
+    }
 
-	@Override
-	public List<ScheduledJob> getScheduledJobsByUsername(String username) {
-		return scheduledJobRepository.findAllByUserId(username);
-	}
+    @Override
+    public List<ScheduledJob> getScheduledJobsByUsername(String username) {
+        return scheduledJobRepository.findAllByUserId(username);
+    }
 
-	@Override
-	public void createScheduledJob(ScheduledJob job) {
-		scheduledJobRepository.save(job);
-	}
+    @Override
+    public void createScheduledJob(ScheduledJob job) {
+        scheduledJobRepository.save(job);
+    }
 
-	@Override
-	public ScheduledJob findByJobName(String jobName) {
-		return scheduledJobRepository.findByJobName(jobName);
-	}
+    @Override
+    public ScheduledJob findByJobName(String jobName) {
+        return scheduledJobRepository.findByJobName(jobName);
+    }
 
-	@Override
-	@Transactional
-	@Modifying
+    @Override
+    @Transactional
+    @Modifying
 
-	public void deleteById(Long id) {
-		scheduledJobRepository.delete(id);
-	}
+    public void deleteById(Long id) {
+        scheduledJobRepository.delete(id);
+    }
 
 }

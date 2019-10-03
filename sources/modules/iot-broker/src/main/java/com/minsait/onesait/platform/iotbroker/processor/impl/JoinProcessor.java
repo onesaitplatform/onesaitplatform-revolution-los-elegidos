@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,70 +44,72 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JoinProcessor implements MessageTypeProcessor {
 
-	@Autowired
-	SecurityPluginManager securityManager;
+    @Autowired
+    SecurityPluginManager securityManager;
 
-	@Autowired
-	ObjectMapper mapper;
+    @Autowired
+    ObjectMapper mapper;
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public SSAPMessage<SSAPBodyReturnMessage> process(SSAPMessage<? extends SSAPBodyMessage> message) {
-		final SSAPMessage<SSAPBodyJoinMessage> join = (SSAPMessage<SSAPBodyJoinMessage>) message;
-		log.info("Client {}:{} ask for new session",join.getBody().getDeviceTemplate(),join.getBody().getDevice());
-		final SSAPMessage<SSAPBodyReturnMessage> response = new SSAPMessage<>();
-		response.setBody(new SSAPBodyReturnMessage());
-		response.getBody().setOk(true);
-		try {
-			response.getBody().setData(mapper.readTree("{}"));
-		} catch (final IOException e) {
-			log.error(e.getMessage(), e);
-		}
+    @SuppressWarnings("unchecked")
+    @Override
+    public SSAPMessage<SSAPBodyReturnMessage> process(SSAPMessage<? extends SSAPBodyMessage> message) {
+        final SSAPMessage<SSAPBodyJoinMessage> join = (SSAPMessage<SSAPBodyJoinMessage>) message;
+        log.info("Client {}:{} ask for new session", join.getBody().getDeviceTemplate(), join.getBody().getDevice());
+        final SSAPMessage<SSAPBodyReturnMessage> response = new SSAPMessage<>();
+        response.setBody(new SSAPBodyReturnMessage());
+        response.getBody().setOk(true);
+        try {
+            response.getBody().setData(mapper.readTree("{}"));
+        } catch (final IOException e) {
+            log.error(e.getMessage(), e);
+        }
 
-		if (StringUtils.isEmpty(join.getBody().getToken())) {
-			throw new SSAPComplianceException(
-					String.format(MessageException.ERR_FIELD_IS_MANDATORY, "token", message.getMessageType().name()));
-		}
+        if (StringUtils.isEmpty(join.getBody().getToken())) {
+            throw new SSAPComplianceException(
+                    String.format(MessageException.ERR_FIELD_IS_MANDATORY, "token", message.getMessageType().name()));
+        }
 
-		final Optional<IoTSession> session = securityManager.authenticate(join.getBody().getToken(),
-				join.getBody().getDeviceTemplate(), join.getBody().getDevice(), join.getSessionKey());
-		session.ifPresent(s -> {
-			response.setSessionKey(s.getSessionKey());
-			try {
-				response.getBody().setData(mapper.readTree("{\"sessionKey\":\"" + s.getSessionKey() + "\"}"));
-			} catch (final IOException e) {
-				log.error(e.getMessage());
-			}
+        final Optional<IoTSession> session = securityManager.authenticate(join.getBody().getToken(),
+                                                                          join.getBody().getDeviceTemplate(),
+                                                                          join.getBody().getDevice(),
+                                                                          join.getSessionKey());
+        session.ifPresent(s -> {
+            response.setSessionKey(s.getSessionKey());
+            try {
+                response.getBody().setData(mapper.readTree("{\"sessionKey\":\"" + s.getSessionKey() + "\"}"));
+            } catch (final IOException e) {
+                log.error(e.getMessage());
+            }
 
-		});
+        });
 
-		if (!StringUtils.isEmpty(response.getSessionKey())) {
-			response.setDirection(SSAPMessageDirection.RESPONSE);
-			response.setMessageId(join.getMessageId());
-			response.setMessageType(SSAPMessageTypes.JOIN);
-		} else {
-			throw new AuthenticationException(MessageException.ERR_SESSIONKEY_NOT_ASSINGED);
-		}
+        if (!StringUtils.isEmpty(response.getSessionKey())) {
+            response.setDirection(SSAPMessageDirection.RESPONSE);
+            response.setMessageId(join.getMessageId());
+            response.setMessageType(SSAPMessageTypes.JOIN);
+        } else {
+            throw new AuthenticationException(MessageException.ERR_SESSIONKEY_NOT_ASSINGED);
+        }
 
-		return response;
-	}
+        return response;
+    }
 
-	@Override
-	public List<SSAPMessageTypes> getMessageTypes() {
-		return Collections.singletonList(SSAPMessageTypes.JOIN);
-	}
+    @Override
+    public List<SSAPMessageTypes> getMessageTypes() {
+        return Collections.singletonList(SSAPMessageTypes.JOIN);
+    }
 
-	@Override
-	public boolean validateMessage(SSAPMessage<? extends SSAPBodyMessage> message) {
-		final SSAPMessage<SSAPBodyJoinMessage> join = (SSAPMessage<SSAPBodyJoinMessage>) message;
+    @Override
+    public boolean validateMessage(SSAPMessage<? extends SSAPBodyMessage> message) {
+        final SSAPMessage<SSAPBodyJoinMessage> join = (SSAPMessage<SSAPBodyJoinMessage>) message;
 
-		if (StringUtils.isEmpty(join.getBody().getDeviceTemplate())
-				|| StringUtils.isEmpty(join.getBody().getDevice())) {
-			throw new SSAPProcessorException(String.format(MessageException.ERR_FIELD_IS_MANDATORY, "ClientPlatform",
-					join.getMessageType().name()));
-		}
+        if (StringUtils.isEmpty(join.getBody().getDeviceTemplate()) || StringUtils.isEmpty(
+                join.getBody().getDevice())) {
+            throw new SSAPProcessorException(String.format(MessageException.ERR_FIELD_IS_MANDATORY, "ClientPlatform",
+                                                           join.getMessageType().name()));
+        }
 
-		return true;
-	}
+        return true;
+    }
 
 }

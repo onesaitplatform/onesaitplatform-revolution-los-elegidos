@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,36 +43,36 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ConditionalOnResource(resources = SCHEDULER_PROPERTIES_LOCATION)
 @EnableTransactionManagement
-@EnableJpaRepositories(entityManagerFactoryRef = SCHEDULER_ENTITY_MANAGER_FACTORY_NAME, transactionManagerRef = SCHEDULER_TRANSACTION_MANAGER_NAME, basePackages = {
-		SCHEDULER_BASE_PACKAGE })
+@EnableJpaRepositories(entityManagerFactoryRef = SCHEDULER_ENTITY_MANAGER_FACTORY_NAME, transactionManagerRef =
+        SCHEDULER_TRANSACTION_MANAGER_NAME, basePackages = {SCHEDULER_BASE_PACKAGE})
 public class SchedulerDbConfig {
 
-	@Bean
-	@ConfigurationProperties(SCHEDULER_JPA_PROPERTY)
-	public JpaProperties quartzJpaProperties() {
-		return new JpaProperties();
-	}
+    @Bean
+    @ConfigurationProperties(SCHEDULER_JPA_PROPERTY)
+    public JpaProperties quartzJpaProperties() {
+        return new JpaProperties();
+    }
 
-	@Bean(SCHEDULER_DATASOURCE_NAME)
-	@ConfigurationProperties(SCHEDULER_DATASOURCE_PROPERTY)
-	public DataSource quartzDatasource() {
-		return DataSourceBuilder.create().build();
-	}
+    @Bean(SCHEDULER_DATASOURCE_NAME)
+    @ConfigurationProperties(SCHEDULER_DATASOURCE_PROPERTY)
+    public DataSource quartzDatasource() {
+        return DataSourceBuilder.create().build();
+    }
 
-	@Bean(SCHEDULER_ENTITY_MANAGER_FACTORY_NAME)
-	@DependsOn(SCHEDULER_DATASOURCE_NAME)
-	public LocalContainerEntityManagerFactoryBean quartzEntityManagerFactory(EntityManagerFactoryBuilder builder,
-			@Qualifier(SCHEDULER_DATASOURCE_NAME) DataSource dataSource) {
+    @Bean(SCHEDULER_ENTITY_MANAGER_FACTORY_NAME)
+    @DependsOn(SCHEDULER_DATASOURCE_NAME)
+    public LocalContainerEntityManagerFactoryBean quartzEntityManagerFactory(EntityManagerFactoryBuilder builder,
+            @Qualifier(SCHEDULER_DATASOURCE_NAME) DataSource dataSource) {
 
-		return builder.dataSource(dataSource).packages(SCHEDULER_BASE_PACKAGE).persistenceUnit("quartz")
-				.properties(quartzJpaProperties().getProperties()).build();
-	}
+        return builder.dataSource(dataSource).packages(SCHEDULER_BASE_PACKAGE).persistenceUnit("quartz").properties(
+                quartzJpaProperties().getProperties()).build();
+    }
 
-	@Bean(SCHEDULER_TRANSACTION_MANAGER_NAME)
-	@DependsOn(SCHEDULER_ENTITY_MANAGER_FACTORY_NAME)
-	public PlatformTransactionManager quartzTransactionManager(
-			@Qualifier(SCHEDULER_ENTITY_MANAGER_FACTORY_NAME) EntityManagerFactory entityManagerFactory) {
-		return new JpaTransactionManager(entityManagerFactory);
-	}
+    @Bean(SCHEDULER_TRANSACTION_MANAGER_NAME)
+    @DependsOn(SCHEDULER_ENTITY_MANAGER_FACTORY_NAME)
+    public PlatformTransactionManager quartzTransactionManager(
+            @Qualifier(SCHEDULER_ENTITY_MANAGER_FACTORY_NAME) EntityManagerFactory entityManagerFactory) {
+        return new JpaTransactionManager(entityManagerFactory);
+    }
 
 }

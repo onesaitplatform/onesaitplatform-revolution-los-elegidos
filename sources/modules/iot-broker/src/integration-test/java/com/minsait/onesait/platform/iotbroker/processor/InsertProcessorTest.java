@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -63,141 +63,138 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class InsertProcessorTest {
 
-	@Autowired
-	MessageProcessorDelegate insertProcessor;
+    @Autowired
+    MessageProcessorDelegate insertProcessor;
 
-	@Autowired
-	MongoBasicOpsDBRepository repository;
+    @Autowired
+    MongoBasicOpsDBRepository repository;
 
-	@MockBean
-	SecurityPluginManager securityPluginManager;
+    @MockBean
+    SecurityPluginManager securityPluginManager;
 
-	@Autowired
-	MockMongoOntologies mockOntologies;
+    @Autowired
+    MockMongoOntologies mockOntologies;
 
-	Person subject = PojoGenerator.generatePerson();
-	SSAPMessage<SSAPBodyInsertMessage> ssapInsertOperation;
+    Person subject = PojoGenerator.generatePerson();
+    SSAPMessage<SSAPBodyInsertMessage> ssapInsertOperation;
 
-	@MockBean
-	DeviceManager deviceManager;
-	// @MockBean
-	// OntologyRepository ontologyRepository;
-	@MockBean
-	RouterService routerService;
-	@MockBean
-	RouterSuscriptionService routerSuscriptionService;
-	// @MockBean
-	// IotBrokerAuditableAspect iotBrokerAuditableAspect;
+    @MockBean
+    DeviceManager deviceManager;
+    // @MockBean
+    // OntologyRepository ontologyRepository;
+    @MockBean
+    RouterService routerService;
+    @MockBean
+    RouterSuscriptionService routerSuscriptionService;
+    // @MockBean
+    // IotBrokerAuditableAspect iotBrokerAuditableAspect;
 
-	private void auditMocks() {
+    private void auditMocks() {
 
-	}
+    }
 
-	@Before
-	public void setUp() throws IOException, Exception {
-		auditMocks();
-		// mockOntologies.createOntology(Person.class);
+    @Before
+    public void setUp() throws IOException, Exception {
+        auditMocks();
+        // mockOntologies.createOntology(Person.class);
 
-		when(deviceManager.registerActivity(any(), any(), any(), any())).thenReturn(true);
-		subject = PojoGenerator.generatePerson();
-		ssapInsertOperation = SSAPMessageGenerator.generateInsertMessage(Person.class.getSimpleName(), subject);
-	}
+        when(deviceManager.registerActivity(any(), any(), any(), any())).thenReturn(true);
+        subject = PojoGenerator.generatePerson();
+        ssapInsertOperation = SSAPMessageGenerator.generateInsertMessage(Person.class.getSimpleName(), subject);
+    }
 
-	@After
-	public void tearDown() {
-		// mockOntologies.deleteOntology(Person.class);
-	}
+    @After
+    public void tearDown() {
+        // mockOntologies.deleteOntology(Person.class);
+    }
 
-	@Test
-	public void given_OneInsertProcessor_When_InvalidClientPlatformOrSessionKeyIsNotPresent_Then_TheResponseIndicatesProcessorError() {
-		ssapInsertOperation.setSessionKey(UUID.randomUUID().toString());
-		// Scenario: SessionKey is an Empty String
-		{
-			ssapInsertOperation.setSessionKey("");
-			final SSAPMessage<SSAPBodyReturnMessage> responseMessage = insertProcessor.process(ssapInsertOperation,
-					PojoGenerator.generateGatewayInfo());
+    @Test
+    public void given_OneInsertProcessor_When_InvalidClientPlatformOrSessionKeyIsNotPresent_Then_TheResponseIndicatesProcessorError() {
+        ssapInsertOperation.setSessionKey(UUID.randomUUID().toString());
+        // Scenario: SessionKey is an Empty String
+        {
+            ssapInsertOperation.setSessionKey("");
+            final SSAPMessage<SSAPBodyReturnMessage> responseMessage = insertProcessor.process(ssapInsertOperation,
+                                                                                               PojoGenerator.generateGatewayInfo());
 
-			Assert.assertNotNull(responseMessage);
-			Assert.assertNotNull(responseMessage.getBody());
-			Assert.assertEquals(SSAPErrorCode.PROCESSOR, responseMessage.getBody().getErrorCode());
+            Assert.assertNotNull(responseMessage);
+            Assert.assertNotNull(responseMessage.getBody());
+            Assert.assertEquals(SSAPErrorCode.PROCESSOR, responseMessage.getBody().getErrorCode());
 
-		}
-		// Scenario: SessionKey is null
-		{
-			ssapInsertOperation.setSessionKey(null);
-			final SSAPMessage<SSAPBodyReturnMessage> responseMessage = insertProcessor.process(ssapInsertOperation,
-					PojoGenerator.generateGatewayInfo());
+        }
+        // Scenario: SessionKey is null
+        {
+            ssapInsertOperation.setSessionKey(null);
+            final SSAPMessage<SSAPBodyReturnMessage> responseMessage = insertProcessor.process(ssapInsertOperation,
+                                                                                               PojoGenerator.generateGatewayInfo());
 
-			Assert.assertNotNull(responseMessage);
-			Assert.assertNotNull(responseMessage.getBody());
-			Assert.assertEquals(SSAPErrorCode.PROCESSOR, responseMessage.getBody().getErrorCode());
-		}
+            Assert.assertNotNull(responseMessage);
+            Assert.assertNotNull(responseMessage.getBody());
+            Assert.assertEquals(SSAPErrorCode.PROCESSOR, responseMessage.getBody().getErrorCode());
+        }
 
-	}
+    }
 
-	@Test
-	public void given_OneInsertProcessor_When_AnInvalidSessionIsUsed_Then_TheResponseIndicatesAuthorizationError()
-			throws AuthorizationException {
-		ssapInsertOperation.setSessionKey(UUID.randomUUID().toString());
+    @Test
+    public void given_OneInsertProcessor_When_AnInvalidSessionIsUsed_Then_TheResponseIndicatesAuthorizationError() throws AuthorizationException {
+        ssapInsertOperation.setSessionKey(UUID.randomUUID().toString());
 
-		when(securityPluginManager.checkSessionKeyActive(any())).thenReturn(false);
+        when(securityPluginManager.checkSessionKeyActive(any())).thenReturn(false);
 
-		final SSAPMessage<SSAPBodyReturnMessage> responseMessage = insertProcessor.process(ssapInsertOperation,
-				PojoGenerator.generateGatewayInfo());
+        final SSAPMessage<SSAPBodyReturnMessage> responseMessage = insertProcessor.process(ssapInsertOperation,
+                                                                                           PojoGenerator.generateGatewayInfo());
 
-		Assert.assertNotNull(responseMessage);
-		Assert.assertNotNull(responseMessage.getBody());
-		Assert.assertEquals(SSAPErrorCode.AUTHORIZATION, responseMessage.getBody().getErrorCode());
+        Assert.assertNotNull(responseMessage);
+        Assert.assertNotNull(responseMessage.getBody());
+        Assert.assertEquals(SSAPErrorCode.AUTHORIZATION, responseMessage.getBody().getErrorCode());
 
-	}
+    }
 
-	@Test
-	public void given_OneInsertProcessor_When_AnUnauthorizedOperationIsPerformed_Then_TheResponseIndicatesAnAuthorizationError()
-			throws AuthorizationException {
-		ssapInsertOperation.setSessionKey(UUID.randomUUID().toString());
+    @Test
+    public void given_OneInsertProcessor_When_AnUnauthorizedOperationIsPerformed_Then_TheResponseIndicatesAnAuthorizationError() throws AuthorizationException {
+        ssapInsertOperation.setSessionKey(UUID.randomUUID().toString());
 
-		when(securityPluginManager.checkAuthorization(any(), anyString(), anyString())).thenReturn(false);
+        when(securityPluginManager.checkAuthorization(any(), anyString(), anyString())).thenReturn(false);
 
-		final SSAPMessage<SSAPBodyReturnMessage> responseMessage = insertProcessor.process(ssapInsertOperation,
-				PojoGenerator.generateGatewayInfo());
+        final SSAPMessage<SSAPBodyReturnMessage> responseMessage = insertProcessor.process(ssapInsertOperation,
+                                                                                           PojoGenerator.generateGatewayInfo());
 
-		Assert.assertNotNull(responseMessage);
-		Assert.assertNotNull(responseMessage.getBody());
-		Assert.assertEquals(SSAPErrorCode.AUTHORIZATION, responseMessage.getBody().getErrorCode());
+        Assert.assertNotNull(responseMessage);
+        Assert.assertNotNull(responseMessage.getBody());
+        Assert.assertEquals(SSAPErrorCode.AUTHORIZATION, responseMessage.getBody().getErrorCode());
 
-	}
+    }
 
-	@Test
-	public void given_OneInsertProcessor_When_AnAuthorizedOperationWithCorrectSessionIsPerformed_Then_TheResponseIndicatesTheDataIsInserted()
-			throws IOException, Exception {
+    @Test
+    public void given_OneInsertProcessor_When_AnAuthorizedOperationWithCorrectSessionIsPerformed_Then_TheResponseIndicatesTheDataIsInserted() throws IOException, Exception {
 
-		ssapInsertOperation.setSessionKey(UUID.randomUUID().toString());
-		final IoTSession session = PojoGenerator.generateSession();
+        ssapInsertOperation.setSessionKey(UUID.randomUUID().toString());
+        final IoTSession session = PojoGenerator.generateSession();
 
-		final Ontology ontology = new Ontology();
-		ontology.setJsonSchema(mockOntologies.getJSONSchema(Person.class));
+        final Ontology ontology = new Ontology();
+        ontology.setJsonSchema(mockOntologies.getJSONSchema(Person.class));
 
-		when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
-		when(securityPluginManager.checkAuthorization(any(), any(), any())).thenReturn(true);
-		// when(ontologyRepository.findByIdentification(anyString())).thenReturn(ontology);
+        when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
+        when(securityPluginManager.checkAuthorization(any(), any(), any())).thenReturn(true);
+        // when(ontologyRepository.findByIdentification(anyString())).thenReturn(ontology);
 
-		final String oid = UUID.randomUUID().toString();
-		final OperationResultModel value = RouterServiceGenerator.generateInserOk(oid);
-		when(routerService.insert(any())).thenReturn(value);
+        final String oid = UUID.randomUUID().toString();
+        final OperationResultModel value = RouterServiceGenerator.generateInserOk(oid);
+        when(routerService.insert(any())).thenReturn(value);
 
-		final SSAPMessage<SSAPBodyReturnMessage> responseMessage = insertProcessor.process(ssapInsertOperation,
-				PojoGenerator.generateGatewayInfo());
+        final SSAPMessage<SSAPBodyReturnMessage> responseMessage = insertProcessor.process(ssapInsertOperation,
+                                                                                           PojoGenerator.generateGatewayInfo());
 
-		Assert.assertNotNull(responseMessage);
-		Assert.assertNotNull(responseMessage.getBody());
-		final JsonNode data = responseMessage.getBody().getData();
-		final String strOid = data.at("/id").asText();
+        Assert.assertNotNull(responseMessage);
+        Assert.assertNotNull(responseMessage.getBody());
+        final JsonNode data = responseMessage.getBody().getData();
+        final String strOid = data.at("/id").asText();
 
-		// final String created = repository.findById(Person.class.getSimpleName(),
-		// strOid);
+        // final String created = repository.findById(Person.class.getSimpleName(),
+        // strOid);
 
-		Assert.assertEquals(oid, strOid);
+        Assert.assertEquals(oid, strOid);
 
-	}
+    }
 
 }

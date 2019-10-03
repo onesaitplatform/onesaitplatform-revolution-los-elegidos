@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,35 +30,35 @@ import com.minsait.onesait.platform.config.model.FlowNode.MessageType;
 
 public interface FlowNodeRepository extends JpaRepository<FlowNode, String> {
 
-	List<FlowNode> findByNodeRedNodeId(String nodeRedNodeId);
+    List<FlowNode> findByNodeRedNodeId(String nodeRedNodeId);
 
-	List<FlowNode> findByFlow_NodeRedFlowId(String nodeRedFlowId);
+    List<FlowNode> findByFlow_NodeRedFlowId(String nodeRedFlowId);
 
-	List<FlowNode> findByflowNodeType(String flowNodeType);
+    List<FlowNode> findByflowNodeType(String flowNodeType);
 
-	@Cacheable(cacheNames = "FlowNodeRepositoryByOntologyAndMessageType", unless = "#result==null or #result.size()==0")
-	@Query("SELECT N FROM FlowNode N "
-			+ "WHERE N.flowNodeType = 'HTTP_NOTIFIER' AND N.ontology.identification = :ontology AND N.messageType = :messageType")
-	List<FlowNode> findNotificationByOntologyAndMessageType(@Param("ontology") String ontology,
-			@Param("messageType") MessageType messageType);
+    @Cacheable(cacheNames = "FlowNodeRepositoryByOntologyAndMessageType", unless = "#result==null or #result.size()==0")
+    @Query("SELECT N FROM FlowNode N " + "WHERE N.flowNodeType = 'HTTP_NOTIFIER' AND N.ontology.identification = " +
+            ":ontology AND N.messageType = :messageType")
+    List<FlowNode> findNotificationByOntologyAndMessageType(@Param("ontology") String ontology,
+            @Param("messageType") MessageType messageType);
 
-	@Override
-	@CacheEvict(cacheNames = "FlowNodeRepositoryByOntologyAndMessageType", allEntries = true)
-	@Modifying
-	@Transactional
-	void delete(String id);
+    @Override
+    @CacheEvict(cacheNames = "FlowNodeRepositoryByOntologyAndMessageType", allEntries = true)
+    @Modifying
+    @Transactional
+    void delete(String id);
 
-	@Override
-	@CacheEvict(cacheNames = "FlowNodeRepositoryByOntologyAndMessageType", allEntries = true)
-	@Modifying
-	@Transactional
-	void delete(FlowNode entity);
+    @Override
+    @CacheEvict(cacheNames = "FlowNodeRepositoryByOntologyAndMessageType", allEntries = true)
+    @Modifying
+    @Transactional
+    void delete(FlowNode entity);
 
-	@Override
-	@CacheEvict(cacheNames = "FlowNodeRepositoryByOntologyAndMessageType", allEntries = true)
-	FlowNode save(FlowNode flow);
+    @Override
+    @CacheEvict(cacheNames = "FlowNodeRepositoryByOntologyAndMessageType", allEntries = true)
+    FlowNode save(FlowNode flow);
 
-	@Override
-	@CacheEvict(cacheNames = "FlowNodeRepositoryByOntologyAndMessageType", allEntries = true)
-	void flush();
+    @Override
+    @CacheEvict(cacheNames = "FlowNodeRepositoryByOntologyAndMessageType", allEntries = true)
+    void flush();
 }

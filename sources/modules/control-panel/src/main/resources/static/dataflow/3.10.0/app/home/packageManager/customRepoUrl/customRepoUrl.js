@@ -18,18 +18,18 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('CustomRepoUrlInstanceController',
-      ["$scope", "customRepoUrl", "$modalInstance", function ($scope, customRepoUrl, $modalInstance) {
-    angular.extend($scope, {
-      repoUrl: customRepoUrl,
+    .module('dataCollectorApp.home')
+    .controller('CustomRepoUrlInstanceController',
+        ["$scope", "customRepoUrl", "$modalInstance", function ($scope, customRepoUrl, $modalInstance) {
+            angular.extend($scope, {
+                repoUrl: customRepoUrl,
 
-      save: function() {
-        $modalInstance.close($scope.repoUrl);
-      },
+                save: function () {
+                    $modalInstance.close($scope.repoUrl);
+                },
 
-      cancel: function() {
-        $modalInstance.dismiss('cancel');
-      }
-    });
-  }]);
+                cancel: function () {
+                    $modalInstance.dismiss('cancel');
+                }
+            });
+        }]);

@@ -1,6 +1,6 @@
 #Integration Resources docker
 onesaitplatform:
-  urls: 
+  urls:
     domain:
       base: https://${SERVER_NAME}/
     digitalTwinBroker:

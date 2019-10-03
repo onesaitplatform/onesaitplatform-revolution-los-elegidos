@@ -17,10 +17,10 @@
  * Controller for Start Event Configuration.
  */
 angular
-  .module('dataCollectorApp.home')
-  .controller('StartEventConfigurationController', function ($scope) {
-    $scope.detailPaneConfig = $scope.startEventStageConfig;
-    $scope.$watch('startEventStageConfig', function() {
-      $scope.detailPaneConfig = $scope.startEventStageConfig;
+    .module('dataCollectorApp.home')
+    .controller('StartEventConfigurationController', function ($scope) {
+        $scope.detailPaneConfig = $scope.startEventStageConfig;
+        $scope.$watch('startEventStageConfig', function () {
+            $scope.detailPaneConfig = $scope.startEventStageConfig;
+        });
     });
-  });

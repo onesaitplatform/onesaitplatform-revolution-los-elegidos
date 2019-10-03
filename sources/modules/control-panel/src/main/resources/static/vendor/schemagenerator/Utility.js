@@ -85,14 +85,14 @@ function ProxyRequest(url, result) {
         dataType: 'json',
         global: false,
         async: false,
-        success: function(output) {
+        success: function (output) {
             result['value'] = output;
         }
     });
 }
 
 function RealTypeOf(v) {
-    if (typeof(v) == TypeEnum.OBJECT) {
+    if (typeof (v) == TypeEnum.OBJECT) {
 
         if (v === null) {
             return TypeEnum.NULL;
@@ -102,5 +102,5 @@ function RealTypeOf(v) {
         }
         return TypeEnum.OBJECT;
     }
-    return typeof(v);
+    return typeof (v);
 }

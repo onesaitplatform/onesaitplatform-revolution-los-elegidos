@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,42 +36,42 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HazelcastCacheLoaderConfig {
 
-	@Value("${onesaitplatform.hazelcast.service.discovery.strategy:service}")
-	private String hazelcastServiceDiscoveryStrategy;
+    @Value("${onesaitplatform.hazelcast.service.discovery.strategy:service}")
+    private String hazelcastServiceDiscoveryStrategy;
 
-	@Autowired
-	private Environment environment;
+    @Autowired
+    private Environment environment;
 
-	@Bean(name = "globalCache")
-	@Primary
-	@Profile("default")
-	public HazelcastInstance defaultHazelcastInstanceEmbedded() throws IOException {
-		String configFile = "hazelcast-client.xml";
-		ClientConfig config = new XmlClientConfigBuilder(configFile).build();
-		log.info("Configured Local Cache with data: Name : " + configFile + " Instance Name: "
-				+ config.getInstanceName() + " Group Name: " + config.getGroupConfig().getName());
-		return HazelcastClient.newHazelcastClient(config);
-	}
+    @Bean(name = "globalCache")
+    @Primary
+    @Profile("default")
+    public HazelcastInstance defaultHazelcastInstanceEmbedded() throws IOException {
+        String configFile = "hazelcast-client.xml";
+        ClientConfig config = new XmlClientConfigBuilder(configFile).build();
+        log.info(
+                "Configured Local Cache with data: Name : " + configFile + " Instance Name: " + config.getInstanceName() + " Group Name: " + config.getGroupConfig().getName());
+        return HazelcastClient.newHazelcastClient(config);
+    }
 
-	@Bean(name = "globalCache")
-	@Primary
-	@Profile("docker")
-	public HazelcastInstance dockerHazelcastInstanceEmbedded() throws IOException {
-		Properties props = new Properties();
-		if (hazelcastServiceDiscoveryStrategy.equals("zookeeper")) {
-			props.put("onesaitplatform.hazelcast.service.discovery.zookeeper.url",
-					environment.getProperty("onesaitplatform.hazelcast.service.discovery.zookeeper.url"));
-		}
+    @Bean(name = "globalCache")
+    @Primary
+    @Profile("docker")
+    public HazelcastInstance dockerHazelcastInstanceEmbedded() throws IOException {
+        Properties props = new Properties();
+        if (hazelcastServiceDiscoveryStrategy.equals("zookeeper")) {
+            props.put("onesaitplatform.hazelcast.service.discovery.zookeeper.url",
+                      environment.getProperty("onesaitplatform.hazelcast.service.discovery.zookeeper.url"));
+        }
 
-		String configFile = "hazelcast-client-" + hazelcastServiceDiscoveryStrategy + "-docker.xml";
+        String configFile = "hazelcast-client-" + hazelcastServiceDiscoveryStrategy + "-docker.xml";
 
-		XmlClientConfigBuilder xmlClientConfigBuilder = new XmlClientConfigBuilder(configFile);
-		xmlClientConfigBuilder.setProperties(props);
-		ClientConfig config = xmlClientConfigBuilder.build();
+        XmlClientConfigBuilder xmlClientConfigBuilder = new XmlClientConfigBuilder(configFile);
+        xmlClientConfigBuilder.setProperties(props);
+        ClientConfig config = xmlClientConfigBuilder.build();
 
-		log.info("Configured Local Cache with data: Name : " + configFile + " Instance Name: "
-				+ config.getInstanceName() + " Group Name: " + config.getGroupConfig().getName());
+        log.info(
+                "Configured Local Cache with data: Name : " + configFile + " Instance Name: " + config.getInstanceName() + " Group Name: " + config.getGroupConfig().getName());
 
-		return HazelcastClient.newHazelcastClient(config);
-	}
+        return HazelcastClient.newHazelcastClient(config);
+    }
 }

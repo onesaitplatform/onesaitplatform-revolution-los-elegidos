@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,29 +32,29 @@ import com.minsait.onesait.platform.config.repository.DigitalTwinTypeRepository;
 @Component
 public class SenseHatDevicesImpl implements SenseHatDevices {
 
-	@Autowired
-	private DigitalTwinDeviceRepository deviceRepo;
+    @Autowired
+    private DigitalTwinDeviceRepository deviceRepo;
 
-	@Autowired
-	private DigitalTwinTypeRepository typeRepo;
+    @Autowired
+    private DigitalTwinTypeRepository typeRepo;
 
-	@Override
-	public ResponseEntity<?> getSensehatDevices() {
-		try {
-			DigitalTwinType type = typeRepo.findByName("sensehat");
-			List<DigitalTwinDevice> devices = deviceRepo.findByTypeId(type);
-			JSONArray array = new JSONArray();
-			for (DigitalTwinDevice device : devices) {
-				JSONObject obj = new JSONObject();
-				obj.put("identification", device.getIdentification());
-				obj.put("digitalKey", device.getDigitalKey());
-				array.put(obj);
-			}
+    @Override
+    public ResponseEntity<?> getSensehatDevices() {
+        try {
+            DigitalTwinType type = typeRepo.findByName("sensehat");
+            List<DigitalTwinDevice> devices = deviceRepo.findByTypeId(type);
+            JSONArray array = new JSONArray();
+            for (DigitalTwinDevice device : devices) {
+                JSONObject obj = new JSONObject();
+                obj.put("identification", device.getIdentification());
+                obj.put("digitalKey", device.getDigitalKey());
+                array.put(obj);
+            }
 
-			return new ResponseEntity<>(array.toString(), HttpStatus.OK);
-		} catch (JSONException e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+            return new ResponseEntity<>(array.toString(), HttpStatus.OK);
+        } catch (JSONException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

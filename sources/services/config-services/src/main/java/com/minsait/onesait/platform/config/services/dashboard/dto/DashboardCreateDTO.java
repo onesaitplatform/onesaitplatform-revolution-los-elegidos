@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,98 +28,98 @@ import lombok.Setter;
 
 public class DashboardCreateDTO implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Getter
-	@Setter
-	private String id;
-	@Getter
-	@Setter
-	private String identification;
-	@Getter
-	@Setter
-	private String description;
+    @Getter
+    @Setter
+    private String id;
+    @Getter
+    @Setter
+    private String identification;
+    @Getter
+    @Setter
+    private String description;
 
-	@Getter
-	@Setter
-	private String dashboardConfId;
+    @Getter
+    @Setter
+    private String dashboardConfId;
 
-	@Getter
-	@Setter
-	private Boolean publicAccess;
-	@Getter
-	@Setter
-	private String authorizations;
+    @Getter
+    @Setter
+    private Boolean publicAccess;
+    @Getter
+    @Setter
+    private String authorizations;
 
-	@Getter
-	@Setter
-	private DashboardType type;
+    @Getter
+    @Setter
+    private DashboardType type;
 
-	@Getter
-	@Setter
-	private Boolean hasImage;
+    @Getter
+    @Setter
+    private Boolean hasImage;
 
-	@Getter
-	private transient MultipartFile image;
+    @Getter
+    private transient MultipartFile image;
 
-	@Getter
-	@Setter
-	private String category;
+    @Getter
+    @Setter
+    private String category;
 
-	@Getter
-	@Setter
-	private String headerlibs;
+    @Getter
+    @Setter
+    private String headerlibs;
 
-	@Getter
-	@Setter
-	private String subcategory;
+    @Getter
+    @Setter
+    private String subcategory;
 
-	public void setImage(MultipartFile image) {
-		this.image = image;
-	}
+    public void setImage(MultipartFile image) {
+        this.image = image;
+    }
 
-	public void setImage() {
-		this.image = new MultipartFile() {
-			@Override
-			public void transferTo(File dest) throws IOException {
-				// Do nothing because not necessary to implement
-			}
+    public void setImage() {
+        this.image = new MultipartFile() {
+            @Override
+            public void transferTo(File dest) throws IOException {
+                // Do nothing because not necessary to implement
+            }
 
-			@Override
-			public boolean isEmpty() {
-				return false;
-			}
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
 
-			@Override
-			public long getSize() {
-				return 0;
-			}
+            @Override
+            public long getSize() {
+                return 0;
+            }
 
-			@Override
-			public String getOriginalFilename() {
-				return null;
-			}
+            @Override
+            public String getOriginalFilename() {
+                return null;
+            }
 
-			@Override
-			public String getName() {
-				return null;
-			}
+            @Override
+            public String getName() {
+                return null;
+            }
 
-			@Override
-			public InputStream getInputStream() throws IOException {
-				return null;
-			}
+            @Override
+            public InputStream getInputStream() throws IOException {
+                return null;
+            }
 
-			@Override
-			public String getContentType() {
-				return null;
-			}
+            @Override
+            public String getContentType() {
+                return null;
+            }
 
-			@Override
-			public byte[] getBytes() throws IOException {
-				return new byte[0];
-			}
-		};
-	}
+            @Override
+            public byte[] getBytes() throws IOException {
+                return new byte[0];
+            }
+        };
+    }
 
 }

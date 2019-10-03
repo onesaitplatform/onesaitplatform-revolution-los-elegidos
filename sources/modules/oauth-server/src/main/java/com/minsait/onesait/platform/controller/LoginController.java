@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,26 +33,26 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LoginController {
 
-	@Value("${onesaitplatform.password.pattern}")
-	private String passwordPattern;
+    @Value("${onesaitplatform.password.pattern}")
+    private String passwordPattern;
 
-	@GetMapping("login")
-	public String login(Model model) {
-		model.addAttribute("users", new User());
-		model.addAttribute("passwordPattern", passwordPattern);
-		return "login";
-	}
+    @GetMapping("login")
+    public String login(Model model) {
+        model.addAttribute("users", new User());
+        model.addAttribute("passwordPattern", passwordPattern);
+        return "login";
+    }
 
 
-	@GetMapping("/logout")
-	public void exit(HttpServletRequest request, HttpServletResponse response) {
-		// token can be revoked here if needed
-		new SecurityContextLogoutHandler().logout(request, null, null);
-		try {
-			// sending back to client app
-			response.sendRedirect(request.getHeader("referer"));
-		} catch (final IOException e) {
-			log.error("exit",e);
-		}
-	}
+    @GetMapping("/logout")
+    public void exit(HttpServletRequest request, HttpServletResponse response) {
+        // token can be revoked here if needed
+        new SecurityContextLogoutHandler().logout(request, null, null);
+        try {
+            // sending back to client app
+            response.sendRedirect(request.getHeader("referer"));
+        } catch (final IOException e) {
+            log.error("exit", e);
+        }
+    }
 }

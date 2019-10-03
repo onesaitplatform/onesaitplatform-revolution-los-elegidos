@@ -1,8 +1,8 @@
 export default {
-  name: 'MathJax',
-  buttons: [
-    {
-      title: 'Add Mathematics'
-    }
-  ]
+    name: 'MathJax',
+    buttons: [
+        {
+            title: 'Add Mathematics'
+        }
+    ]
 };

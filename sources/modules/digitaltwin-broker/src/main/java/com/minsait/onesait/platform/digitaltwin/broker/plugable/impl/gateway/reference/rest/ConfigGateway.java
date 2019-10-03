@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,10 +30,10 @@ import io.swagger.annotations.ApiParam;
 @Api(value = "config", description = "Onesaitplatform config for digital twins")
 public interface ConfigGateway {
 
-	@ApiOperation(value = "Get WoT of the Digital Twin")
-	@RequestMapping(value = "/getWot", method = RequestMethod.POST)
-	public ResponseEntity<?> getWot(
-			@ApiParam(value = "Digital Twin Key provided from digital twin", required = true) String apiKey,
-			@ApiParam(value = "Json data need to execute the event", required = true) JsonNode data);
+    @ApiOperation(value = "Get WoT of the Digital Twin")
+    @RequestMapping(value = "/getWot", method = RequestMethod.POST)
+    public ResponseEntity<?> getWot(
+            @ApiParam(value = "Digital Twin Key provided from digital twin", required = true) String apiKey,
+            @ApiParam(value = "Json data need to execute the event", required = true) JsonNode data);
 
 }

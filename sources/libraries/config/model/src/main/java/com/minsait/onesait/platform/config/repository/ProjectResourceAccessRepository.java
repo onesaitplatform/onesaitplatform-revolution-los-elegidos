@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,15 +26,15 @@ import com.minsait.onesait.platform.config.model.base.OPResource;
 
 public interface ProjectResourceAccessRepository extends JpaRepository<ProjectResourceAccess, String> {
 
-	public ProjectResourceAccess findByResourceAndProjectAndUser(OPResource resource, Project project, User user);
+    public ProjectResourceAccess findByResourceAndProjectAndUser(OPResource resource, Project project, User user);
 
-	public ProjectResourceAccess findByResourceAndProjectAndAppRole(OPResource resource, Project project, AppRole role);
+    public ProjectResourceAccess findByResourceAndProjectAndAppRole(OPResource resource, Project project, AppRole role);
 
-	public int countByResource(OPResource resource);
+    public int countByResource(OPResource resource);
 
-	public List<ProjectResourceAccess> findByResource(OPResource resource);
+    public List<ProjectResourceAccess> findByResource(OPResource resource);
 
-	public List<ProjectResourceAccess> findByUser(User user);
+    public List<ProjectResourceAccess> findByUser(User user);
 
-	public List<ProjectResourceAccess> findByAppRole(AppRole role);
+    public List<ProjectResourceAccess> findByAppRole(AppRole role);
 }

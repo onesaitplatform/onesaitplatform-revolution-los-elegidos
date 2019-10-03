@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,80 +51,80 @@ import com.minsait.onesait.platform.config.services.user.UserService;
 @Category(IntegrationTest.class)
 public class FlowNodeServiceIntegrationTest {
 
-	@Autowired
-	private FlowDomainService domainService;
+    @Autowired
+    private FlowDomainService domainService;
 
-	@Autowired
-	private FlowService flowService;
+    @Autowired
+    private FlowService flowService;
 
-	@Autowired
-	private FlowNodeService nodeService;
+    @Autowired
+    private FlowNodeService nodeService;
 
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private UserService userService;
 
-	@Autowired
-	private OntologyService ontologyService;
+    @Autowired
+    private OntologyService ontologyService;
 
-	@Autowired
-	private OntologyRepository ontologyRepository;
+    @Autowired
+    private OntologyRepository ontologyRepository;
 
-	private String domainIdentification;
-	private String ontologyId;
+    private String domainIdentification;
+    private String ontologyId;
 
-	@Before
-	public void setUp() {
-		// Create one domain, flow and notificator node
-		String temp = UUID.randomUUID().toString().substring(0, 30);
-		ontologyId = "OntTest_" + temp;
-		domainIdentification = "DomainTest_" + temp;
-		User user = userService.getUser("developer");
+    @Before
+    public void setUp() {
+        // Create one domain, flow and notificator node
+        String temp = UUID.randomUUID().toString().substring(0, 30);
+        ontologyId = "OntTest_" + temp;
+        domainIdentification = "DomainTest_" + temp;
+        User user = userService.getUser("developer");
 
-		Ontology ontology = new Ontology();
-		ontology.setJsonSchema("{}");
-		ontology.setDescription("Ontology for testing purposes.");
-		ontology.setIdentification(ontologyId);
-		ontology.setActive(true);
-		ontology.setRtdbClean(false);
-		ontology.setRtdbToHdb(false);
-		ontology.setPublic(true);
-		ontology.setUser(user);
-		ontologyService.createOntology(ontology, null);
+        Ontology ontology = new Ontology();
+        ontology.setJsonSchema("{}");
+        ontology.setDescription("Ontology for testing purposes.");
+        ontology.setIdentification(ontologyId);
+        ontology.setActive(true);
+        ontology.setRtdbClean(false);
+        ontology.setRtdbToHdb(false);
+        ontology.setPublic(true);
+        ontology.setUser(user);
+        ontologyService.createOntology(ontology, null);
 
-		FlowDomain domain = domainService.createFlowDomain(domainIdentification, user);
+        FlowDomain domain = domainService.createFlowDomain(domainIdentification, user);
 
-		Flow flow = new Flow();
-		flow.setActive(true);
-		flow.setIdentification("Test Flow 1" + temp);
-		flow.setFlowDomain(domain);
-		flow.setNodeRedFlowId("nodeRedFlowId");
+        Flow flow = new Flow();
+        flow.setActive(true);
+        flow.setIdentification("Test Flow 1" + temp);
+        flow.setFlowDomain(domain);
+        flow.setNodeRedFlowId("nodeRedFlowId");
 
-		flowService.createFlow(flow);
+        flowService.createFlow(flow);
 
-		// Create Node with properties
+        // Create Node with properties
 
-		FlowNode node = new FlowNode();
-		node.setFlow(flow);
-		node.setNodeRedNodeId("nodeRedNodeId");
-		node.setIdentification("nodeIdentification" + temp);
-		node.setFlowNodeType(FlowNode.Type.HTTP_NOTIFIER);
-		node.setMessageType(MessageType.INSERT);
-		node.setOntology(ontologyService.getOntologyByIdentification(ontologyId, user.getUserId()));
-		node.setPartialUrl("/notificationPointTest");
-		nodeService.createFlowNode(node);
-	}
+        FlowNode node = new FlowNode();
+        node.setFlow(flow);
+        node.setNodeRedNodeId("nodeRedNodeId");
+        node.setIdentification("nodeIdentification" + temp);
+        node.setFlowNodeType(FlowNode.Type.HTTP_NOTIFIER);
+        node.setMessageType(MessageType.INSERT);
+        node.setOntology(ontologyService.getOntologyByIdentification(ontologyId, user.getUserId()));
+        node.setPartialUrl("/notificationPointTest");
+        nodeService.createFlowNode(node);
+    }
 
-	@Test
-	@Transactional
-	public void given_SomeNotificationEntities_When_ItIsSearchedByOntologyIdAndType_Then_TheCorrectNotificationEntitiesAreReturned() {
-		List<NotificationEntity> notificationEntities = nodeService.getNotificationsByOntologyAndMessageType(ontologyId,
-				"INSERT");
-		Assert.assertTrue(notificationEntities != null && !notificationEntities.isEmpty());
-	}
+    @Test
+    @Transactional
+    public void given_SomeNotificationEntities_When_ItIsSearchedByOntologyIdAndType_Then_TheCorrectNotificationEntitiesAreReturned() {
+        List<NotificationEntity> notificationEntities = nodeService.getNotificationsByOntologyAndMessageType(ontologyId,
+                                                                                                             "INSERT");
+        Assert.assertTrue(notificationEntities != null && !notificationEntities.isEmpty());
+    }
 
-	@After
-	public void cleanUp() {
-		domainService.deleteFlowdomain(this.domainIdentification);
-		ontologyRepository.delete(ontologyService.getOntologyByIdentification(ontologyId, "developer"));
-	}
+    @After
+    public void cleanUp() {
+        domainService.deleteFlowdomain(this.domainIdentification);
+        ontologyRepository.delete(ontologyService.getOntologyByIdentification(ontologyId, "developer"));
+    }
 }

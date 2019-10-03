@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,37 +45,37 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BearerExtractorFilter implements Filter {
 
-	private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
-	@Autowired
-	private RemoteTokenServices remoteTokenServices;
+    private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
+    @Autowired
+    private RemoteTokenServices remoteTokenServices;
 
-	private final TokenExtractor tokenExtractor = new BearerTokenExtractor();
+    private final TokenExtractor tokenExtractor = new BearerTokenExtractor();
 
-	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
-		if (((HttpServletRequest) request).getHeader(HttpHeaders.AUTHORIZATION) != null) {
-			final Authentication auth = tokenExtractor.extract((HttpServletRequest) request);
-			if (auth instanceof PreAuthenticatedAuthenticationToken) {
-				final OAuth2Authentication oauth = remoteTokenServices.loadAuthentication((String) auth.getPrincipal());
-				final SecurityContext securityContext = SecurityContextHolder.getContext();
-				securityContext.setAuthentication(oauth);
-				((HttpServletRequest) request).getSession(true).setAttribute(SPRING_SECURITY_CONTEXT, securityContext);
-				chain.doFilter(request, response);
-				((HttpServletRequest) request).getSession().removeAttribute(SPRING_SECURITY_CONTEXT);
-			}
-		}
-		chain.doFilter(request, response);
-	}
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response,
+            FilterChain chain) throws IOException, ServletException {
+        if (((HttpServletRequest) request).getHeader(HttpHeaders.AUTHORIZATION) != null) {
+            final Authentication auth = tokenExtractor.extract((HttpServletRequest) request);
+            if (auth instanceof PreAuthenticatedAuthenticationToken) {
+                final OAuth2Authentication oauth = remoteTokenServices.loadAuthentication((String) auth.getPrincipal());
+                final SecurityContext securityContext = SecurityContextHolder.getContext();
+                securityContext.setAuthentication(oauth);
+                ((HttpServletRequest) request).getSession(true).setAttribute(SPRING_SECURITY_CONTEXT, securityContext);
+                chain.doFilter(request, response);
+                ((HttpServletRequest) request).getSession().removeAttribute(SPRING_SECURITY_CONTEXT);
+            }
+        }
+        chain.doFilter(request, response);
+    }
 
-	@Override
-	public void init(FilterConfig filterConfig) throws ServletException {
-		log.debug("Initializing Bearer extractor filter");
-	}
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        log.debug("Initializing Bearer extractor filter");
+    }
 
-	@Override
-	public void destroy() {
-		log.debug("Destroying Bearer extractor filter");
-	}
+    @Override
+    public void destroy() {
+        log.debug("Destroying Bearer extractor filter");
+    }
 
 }

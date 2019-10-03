@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,44 +33,44 @@ import com.minsait.onesait.platform.comms.protocol.body.SSAPBodyReturnMessage;
 @Component
 public class GatewayNotifierDelegate implements GatewayNotifier {
 
-	ConcurrentHashMap<String, Consumer<SSAPMessage<SSAPBodyIndicationMessage>>> subscriptions = new ConcurrentHashMap<>(
-			10);
-	ConcurrentHashMap<String, Function<SSAPMessage<SSAPBodyCommandMessage>, SSAPMessage<SSAPBodyReturnMessage>>> commands = new ConcurrentHashMap<>(
-			10);
+    ConcurrentHashMap<String, Consumer<SSAPMessage<SSAPBodyIndicationMessage>>> subscriptions = new ConcurrentHashMap<>(
+            10);
+    ConcurrentHashMap<String, Function<SSAPMessage<SSAPBodyCommandMessage>, SSAPMessage<SSAPBodyReturnMessage>>> commands = new ConcurrentHashMap<>(
+            10);
 
-	private ExecutorService executor;
+    private ExecutorService executor;
 
-	@PostConstruct
-	private void init() {
-		executor = Executors.newFixedThreadPool(10);
+    @PostConstruct
+    private void init() {
+        executor = Executors.newFixedThreadPool(10);
 
-	}
+    }
 
-	@PreDestroy
-	public void destroy() {
-		this.executor.shutdown();
-	}
+    @PreDestroy
+    public void destroy() {
+        this.executor.shutdown();
+    }
 
-	@Override
-	public void addSubscriptionListener(String key, Consumer<SSAPMessage<SSAPBodyIndicationMessage>> consumer) {
-		subscriptions.put(key, consumer);
+    @Override
+    public void addSubscriptionListener(String key, Consumer<SSAPMessage<SSAPBodyIndicationMessage>> consumer) {
+        subscriptions.put(key, consumer);
 
-	}
+    }
 
-	@Override
-	public void addCommandListener(String key,
-			Function<SSAPMessage<SSAPBodyCommandMessage>, SSAPMessage<SSAPBodyReturnMessage>> command) {
-		commands.put(key, command);
+    @Override
+    public void addCommandListener(String key,
+            Function<SSAPMessage<SSAPBodyCommandMessage>, SSAPMessage<SSAPBodyReturnMessage>> command) {
+        commands.put(key, command);
 
-	}
+    }
 
-	@Override
-	public void notify(SSAPMessage<SSAPBodyIndicationMessage> indication) {
-		executor.submit(() -> subscriptions.values().stream().forEach(s -> s.accept(indication)));
-	}
+    @Override
+    public void notify(SSAPMessage<SSAPBodyIndicationMessage> indication) {
+        executor.submit(() -> subscriptions.values().stream().forEach(s -> s.accept(indication)));
+    }
 
-	@Override
-	public void sendCommandAsync(SSAPMessage<SSAPBodyCommandMessage> command) {
-		executor.submit(() -> commands.values().stream().forEach(s -> s.apply(command)));
-	}
+    @Override
+    public void sendCommandAsync(SSAPMessage<SSAPBodyCommandMessage> command) {
+        executor.submit(() -> commands.values().stream().forEach(s -> s.apply(command)));
+    }
 }

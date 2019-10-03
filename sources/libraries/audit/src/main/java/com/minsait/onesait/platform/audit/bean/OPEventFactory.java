@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,122 +29,121 @@ import lombok.Builder;
 @Builder
 public class OPEventFactory {
 
-	public OPAuditError createAuditEventError(String userId, String message, String remoteAddress, Module module,
-			Exception e) {
-		final OPAuditError event = createAuditEventError(userId, message, module, e);
-		event.setRemoteAddress(remoteAddress);
-		return event;
-	}
+    public OPAuditError createAuditEventError(String userId, String message, String remoteAddress, Module module,
+            Exception e) {
+        final OPAuditError event = createAuditEventError(userId, message, module, e);
+        event.setRemoteAddress(remoteAddress);
+        return event;
+    }
 
-	public OPAuditError createAuditEventError(String userId, String message, Module module, Exception e) {
+    public OPAuditError createAuditEventError(String userId, String message, Module module, Exception e) {
 
-		final OPAuditError event = createAuditEventError(message, module, e);
-		event.setUser(userId);
+        final OPAuditError event = createAuditEventError(message, module, e);
+        event.setUser(userId);
 
-		return event;
+        return event;
 
-	}
+    }
 
-	public OPAuditError createAuditEventError(String message, Module module, Exception e) {
+    public OPAuditError createAuditEventError(String message, Module module, Exception e) {
 
-		final OPAuditError event = createAuditEventError(message);
-		setErrorDetails(event, e);
-		event.setModule(module);
-		event.setErrorMessage(e.getMessage());
-		return createAuditEventError(event, message);
-	}
+        final OPAuditError event = createAuditEventError(message);
+        setErrorDetails(event, e);
+        event.setModule(module);
+        event.setErrorMessage(e.getMessage());
+        return createAuditEventError(event, message);
+    }
 
-	public OPAuditError createAuditEventError(String message) {
-		final OPAuditError event = new OPAuditError();
-		return createAuditEventError(event, message);
-	}
+    public OPAuditError createAuditEventError(String message) {
+        final OPAuditError event = new OPAuditError();
+        return createAuditEventError(event, message);
+    }
 
-	public OPAuditError createAuditEventError(OPAuditError event, String message) {
-		final Date today = new Date();
-		event.setId(UUID.randomUUID().toString());
-		event.setTimeStamp(today.getTime());
-		event.setFormatedTimeStamp(CalendarUtil.builder().build().convert(today));
-		event.setMessage(message);
-		event.setType(EventType.ERROR);
-		event.setOperationType("");
-		setSecurityData(event);
-		return event;
-	}
+    public OPAuditError createAuditEventError(OPAuditError event, String message) {
+        final Date today = new Date();
+        event.setId(UUID.randomUUID().toString());
+        event.setTimeStamp(today.getTime());
+        event.setFormatedTimeStamp(CalendarUtil.builder().build().convert(today));
+        event.setMessage(message);
+        event.setType(EventType.ERROR);
+        event.setOperationType("");
+        setSecurityData(event);
+        return event;
+    }
 
-	public OPAuditEvent createAuditEvent(AuditApplicationEvent actualAuditEvent, EventType type, String message) {
-		final OPAuditEvent event = new OPAuditEvent();
+    public OPAuditEvent createAuditEvent(AuditApplicationEvent actualAuditEvent, EventType type, String message) {
+        final OPAuditEvent event = new OPAuditEvent();
 
-		final AuditEvent audit = actualAuditEvent.getAuditEvent();
+        final AuditEvent audit = actualAuditEvent.getAuditEvent();
 
-		setSecurityData(event);
+        setSecurityData(event);
 
-		event.setUser(audit.getPrincipal());
-		event.setTimeStamp(audit.getTimestamp().getTime());
-		event.setFormatedTimeStamp(CalendarUtil.builder().build().convert(audit.getTimestamp()));
+        event.setUser(audit.getPrincipal());
+        event.setTimeStamp(audit.getTimestamp().getTime());
+        event.setFormatedTimeStamp(CalendarUtil.builder().build().convert(audit.getTimestamp()));
 
-		event.setMessage(message);
-		event.setOtherType(audit.getType());
-		event.setExtraData(audit.getData());
-		event.setType(type);
-		return event;
-	}
+        event.setMessage(message);
+        event.setOtherType(audit.getType());
+        event.setExtraData(audit.getData());
+        event.setType(type);
+        return event;
+    }
 
-	public OPAuditEvent createAuditEvent(EventType type, String message) {
-		final OPAuditEvent event = new OPAuditEvent();
-		return createAuditEvent(event, type, message);
-	}
+    public OPAuditEvent createAuditEvent(EventType type, String message) {
+        final OPAuditEvent event = new OPAuditEvent();
+        return createAuditEvent(event, type, message);
+    }
 
-	public OPAuthAuditEvent createAuditAuthEvent(EventType type, String message) {
-		final OPAuthAuditEvent event = new OPAuthAuditEvent();
-		return createAuditAuthEvent(event, type, message);
-	}
+    public OPAuthAuditEvent createAuditAuthEvent(EventType type, String message) {
+        final OPAuthAuditEvent event = new OPAuthAuditEvent();
+        return createAuditAuthEvent(event, type, message);
+    }
 
-	public OPAuthAuditEvent createAuditAuthEvent(OPAuthAuditEvent event, EventType type, String message) {
+    public OPAuthAuditEvent createAuditAuthEvent(OPAuthAuditEvent event, EventType type, String message) {
 
-		event.setType(type);
-		final Date today = new Date();
-		event.setTimeStamp(today.getTime());
-		event.setFormatedTimeStamp(CalendarUtil.builder().build().convert(today));
-		event.setMessage(message);
-		event.setId(UUID.randomUUID().toString());
-		setSecurityData(event);
-		return event;
-	}
+        event.setType(type);
+        final Date today = new Date();
+        event.setTimeStamp(today.getTime());
+        event.setFormatedTimeStamp(CalendarUtil.builder().build().convert(today));
+        event.setMessage(message);
+        event.setId(UUID.randomUUID().toString());
+        setSecurityData(event);
+        return event;
+    }
 
-	public OPAuditEvent createAuditEvent(OPAuditEvent event, EventType type, String message) {
-		event.setType(type);
+    public OPAuditEvent createAuditEvent(OPAuditEvent event, EventType type, String message) {
+        event.setType(type);
 
-		final Date today = new Date();
+        final Date today = new Date();
 
-		event.setTimeStamp(today.getTime());
-		event.setFormatedTimeStamp(CalendarUtil.builder().build().convert(today));
-		event.setMessage(message);
-		event.setId(UUID.randomUUID().toString());
-		setSecurityData(event);
-		return event;
-	}
+        event.setTimeStamp(today.getTime());
+        event.setFormatedTimeStamp(CalendarUtil.builder().build().convert(today));
+        event.setMessage(message);
+        event.setId(UUID.randomUUID().toString());
+        setSecurityData(event);
+        return event;
+    }
 
-	private void setSecurityData(OPAuditEvent event) {
+    private void setSecurityData(OPAuditEvent event) {
 
-		if (SecurityContextHolder.getContext() != null
-				&& SecurityContextHolder.getContext().getAuthentication() != null) {
+        if (SecurityContextHolder.getContext() != null && SecurityContextHolder.getContext().getAuthentication() != null) {
 
-			event.setUser(SecurityContextHolder.getContext().getAuthentication().getName());
+            event.setUser(SecurityContextHolder.getContext().getAuthentication().getName());
 
-		}
-	}
+        }
+    }
 
-	public void setErrorDetails(OPAuditError event, final Throwable cause) {
-		if (cause != null) {
-			Throwable rootCause = cause;
-			while (rootCause.getCause() != null && rootCause.getCause() != rootCause)
-				rootCause = rootCause.getCause();
+    public void setErrorDetails(OPAuditError event, final Throwable cause) {
+        if (cause != null) {
+            Throwable rootCause = cause;
+            while (rootCause.getCause() != null && rootCause.getCause() != rootCause)
+                rootCause = rootCause.getCause();
 
-			event.setClassName(rootCause.getStackTrace()[0].getClassName());
-			event.setMethodName(rootCause.getStackTrace()[0].getMethodName());
-			event.setType(EventType.ERROR);
-		}
+            event.setClassName(rootCause.getStackTrace()[0].getClassName());
+            event.setMethodName(rootCause.getStackTrace()[0].getMethodName());
+            event.setType(EventType.ERROR);
+        }
 
-	}
+    }
 
 }

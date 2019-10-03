@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,53 +26,53 @@ import org.springframework.ldap.core.support.LdapContextSource;
 @ConditionalOnProperty(value = "onesaitplatform.authentication.provider", havingValue = "ldap")
 public class LdapConfig {
 
-	@Value("${ldap.url}")
-	private String ldapUrl;
+    @Value("${ldap.url}")
+    private String ldapUrl;
 
-	@Value("${ldap.base}")
-	private String ldapBaseDn;
+    @Value("${ldap.base}")
+    private String ldapBaseDn;
 
-	@Value("${ldap.username}")
-	private String ldapSecurityPrincipal;
+    @Value("${ldap.username}")
+    private String ldapSecurityPrincipal;
 
-	@Value("${ldap.password}")
-	private String ldapPrincipalPassword;
+    @Value("${ldap.password}")
+    private String ldapPrincipalPassword;
 
-	public static final String LDAP_TEMPLATE_NO_BASE = "ldapTemplateNoBase";
-	public static final String LDAP_TEMPLATE_BASE = "ldapTemplate";
+    public static final String LDAP_TEMPLATE_NO_BASE = "ldapTemplateNoBase";
+    public static final String LDAP_TEMPLATE_BASE = "ldapTemplate";
 
-	@Bean
-	public LdapContextSource contextSource() {
-		final LdapContextSource contextSource = new LdapContextSource();
+    @Bean
+    public LdapContextSource contextSource() {
+        final LdapContextSource contextSource = new LdapContextSource();
 
-		contextSource.setUrl(ldapUrl);
-		contextSource.setBase(ldapBaseDn);
-		contextSource.setUserDn(ldapSecurityPrincipal);
-		contextSource.setPassword(ldapPrincipalPassword);
-		contextSource.afterPropertiesSet();
-		return contextSource;
-	}
+        contextSource.setUrl(ldapUrl);
+        contextSource.setBase(ldapBaseDn);
+        contextSource.setUserDn(ldapSecurityPrincipal);
+        contextSource.setPassword(ldapPrincipalPassword);
+        contextSource.afterPropertiesSet();
+        return contextSource;
+    }
 
-	@Bean
-	@Qualifier("ldapTemplate")
-	public LdapTemplate ldapTemplate() {
-		return new LdapTemplate(contextSource());
-	}
+    @Bean
+    @Qualifier("ldapTemplate")
+    public LdapTemplate ldapTemplate() {
+        return new LdapTemplate(contextSource());
+    }
 
-	@Bean
-	public LdapContextSource contextSourceNoBase() {
-		final LdapContextSource contextSource = new LdapContextSource();
+    @Bean
+    public LdapContextSource contextSourceNoBase() {
+        final LdapContextSource contextSource = new LdapContextSource();
 
-		contextSource.setUrl(ldapUrl);
-		contextSource.setUserDn(ldapSecurityPrincipal);
-		contextSource.setPassword(ldapPrincipalPassword);
-		contextSource.afterPropertiesSet();
-		return contextSource;
-	}
+        contextSource.setUrl(ldapUrl);
+        contextSource.setUserDn(ldapSecurityPrincipal);
+        contextSource.setPassword(ldapPrincipalPassword);
+        contextSource.afterPropertiesSet();
+        return contextSource;
+    }
 
-	@Bean
-	@Qualifier("ldapTemplateNoBase")
-	public LdapTemplate ldapTemplateNoBase() {
-		return new LdapTemplate(contextSourceNoBase());
-	}
+    @Bean
+    @Qualifier("ldapTemplateNoBase")
+    public LdapTemplate ldapTemplateNoBase() {
+        return new LdapTemplate(contextSourceNoBase());
+    }
 }

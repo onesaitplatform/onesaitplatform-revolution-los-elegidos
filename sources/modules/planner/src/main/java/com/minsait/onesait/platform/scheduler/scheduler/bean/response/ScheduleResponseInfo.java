@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,24 +15,24 @@
 package com.minsait.onesait.platform.scheduler.scheduler.bean.response;
 
 public class ScheduleResponseInfo extends ResponseInfo {
-	
-	private String jobName;
-	
-	public ScheduleResponseInfo() {
-		super();
-	}
 
-	public ScheduleResponseInfo(boolean success, String text, String jobName) {
-		super(success, text);
-		this.jobName = jobName;
-	}
+    private String jobName;
 
-	public String getJobName() {
-		return jobName;
-	}
+    public ScheduleResponseInfo() {
+        super();
+    }
 
-	public void setJobName(String jobName) {
-		this.jobName = jobName;
-	}
+    public ScheduleResponseInfo(boolean success, String text, String jobName) {
+        super(success, text);
+        this.jobName = jobName;
+    }
+
+    public String getJobName() {
+        return jobName;
+    }
+
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
 
 }

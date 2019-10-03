@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,22 +28,22 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-	@Override
-	protected void configure(HttpSecurity httpSecurity) throws Exception {
+    @Override
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
 
-		httpSecurity
-				// by default uses a Bean by the name of corsConfigurationSource
-				.cors().and()
-				// we don't need CSRF because our token is invulnerable
-				.csrf().disable().authorizeRequests()
-				// allow anonymous resource requests
-				.anyRequest().permitAll().antMatchers("/health/", "/info", "/metrics", "/trace", "/api").permitAll();
+        httpSecurity
+                // by default uses a Bean by the name of corsConfigurationSource
+                .cors().and()
+                // we don't need CSRF because our token is invulnerable
+                .csrf().disable().authorizeRequests()
+                // allow anonymous resource requests
+                .anyRequest().permitAll().antMatchers("/health/", "/info", "/metrics", "/trace", "/api").permitAll();
 
-		// Custom JWT based security filter
+        // Custom JWT based security filter
 
-		// disable page caching
-		httpSecurity.headers().cacheControl();
+        // disable page caching
+        httpSecurity.headers().cacheControl();
 
-		httpSecurity.headers().frameOptions().disable();
-	}
+        httpSecurity.headers().frameOptions().disable();
+    }
 }

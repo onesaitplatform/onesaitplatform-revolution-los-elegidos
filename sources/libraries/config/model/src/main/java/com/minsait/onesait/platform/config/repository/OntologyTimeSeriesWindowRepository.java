@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,26 +29,28 @@ import com.minsait.onesait.platform.config.model.OntologyTimeSeriesWindow;
 
 public interface OntologyTimeSeriesWindowRepository extends JpaRepository<OntologyTimeSeriesWindow, String> {
 
-	OntologyTimeSeriesWindow findById(String id);
+    OntologyTimeSeriesWindow findById(String id);
 
-	Set<OntologyTimeSeriesWindow> findByOntologyTimeSeries(OntologyTimeSeries ontology);
+    Set<OntologyTimeSeriesWindow> findByOntologyTimeSeries(OntologyTimeSeries ontology);
 
-	void deleteByOntologyTimeSeries(OntologyTimeSeries ontology);
+    void deleteByOntologyTimeSeries(OntologyTimeSeries ontology);
 
-	void deleteById(String id);
+    void deleteById(String id);
 
-	@SuppressWarnings("unchecked")
-	@Override
-	@CacheEvict(cacheNames = { "OntologyTimeSeriesWindowRepositoryByOntologyIdentification" }, allEntries = true)
-	OntologyTimeSeriesWindow save(OntologyTimeSeriesWindow entity);
+    @SuppressWarnings("unchecked")
+    @Override
+    @CacheEvict(cacheNames = {"OntologyTimeSeriesWindowRepositoryByOntologyIdentification"}, allEntries = true)
+    OntologyTimeSeriesWindow save(OntologyTimeSeriesWindow entity);
 
-	@Modifying
-	@Query("delete from OntologyTimeSeriesWindow o where o.id = :id")
-	@CacheEvict(cacheNames = { "OntologyTimeSeriesWindowRepositoryByOntologyIdentification" }, allEntries = true)
-	void deleteByMyId(@Param("id") String id);
+    @Modifying
+    @Query("delete from OntologyTimeSeriesWindow o where o.id = :id")
+    @CacheEvict(cacheNames = {"OntologyTimeSeriesWindowRepositoryByOntologyIdentification"}, allEntries = true)
+    void deleteByMyId(@Param("id") String id);
 
-	@Query("SELECT o FROM OntologyTimeSeriesWindow AS o WHERE o.ontologyTimeSeries.ontology.identification=:identification")
-	@Cacheable(cacheNames = "OntologyTimeSeriesWindowRepositoryByOntologyIdentification", unless = "#result==null or #result.size()==0")
-	List<OntologyTimeSeriesWindow> findByOntologyIdentificaton(@Param("identification") String identification);
+    @Query("SELECT o FROM OntologyTimeSeriesWindow AS o WHERE o.ontologyTimeSeries.ontology" +
+            ".identification=:identification")
+    @Cacheable(cacheNames = "OntologyTimeSeriesWindowRepositoryByOntologyIdentification", unless = "#result==null or " +
+            "#result.size()==0")
+    List<OntologyTimeSeriesWindow> findByOntologyIdentificaton(@Param("identification") String identification);
 
 }

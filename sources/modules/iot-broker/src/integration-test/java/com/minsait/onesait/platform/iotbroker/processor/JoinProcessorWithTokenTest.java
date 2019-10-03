@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -53,93 +53,91 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JoinProcessorWithTokenTest {
 
-	@Autowired
-	MessageProcessorDelegate processor;
+    @Autowired
+    MessageProcessorDelegate processor;
 
-	@MockBean
-	SecurityPluginManager securityPluginManager;
+    @MockBean
+    SecurityPluginManager securityPluginManager;
 
-	SSAPMessage<SSAPBodyJoinMessage> ssapJoin;
+    SSAPMessage<SSAPBodyJoinMessage> ssapJoin;
 
-	@MockBean
-	DeviceManager deviceManager;
+    @MockBean
+    DeviceManager deviceManager;
 
-	IoTSession session = new IoTSession();
+    IoTSession session = new IoTSession();
 
-	// @MockBean
-	// IotBrokerAuditableAspect iotBrokerAuditableAspect;
+    // @MockBean
+    // IotBrokerAuditableAspect iotBrokerAuditableAspect;
 
-	private void auditMocks() {
-	}
+    private void auditMocks() {
+    }
 
-	@Before
-	public void setup() throws SSAPProcessorException {
-		session = new IoTSession();
-		session.setClientPlatform("someDevice");
-		ssapJoin = SSAPMessageGenerator.generateJoinMessageWithToken();
-		when(deviceManager.registerActivity(any(), any(), any(), any())).thenReturn(true);
-		when(securityPluginManager.getSession(any())).thenReturn(Optional.of(session));
-		auditMocks();
-	}
+    @Before
+    public void setup() throws SSAPProcessorException {
+        session = new IoTSession();
+        session.setClientPlatform("someDevice");
+        ssapJoin = SSAPMessageGenerator.generateJoinMessageWithToken();
+        when(deviceManager.registerActivity(any(), any(), any(), any())).thenReturn(true);
+        when(securityPluginManager.getSession(any())).thenReturn(Optional.of(session));
+        auditMocks();
+    }
 
-	@Test
-	public void given_OneJoinProcessor_When_OneValidSessionIsUsed_Then_TheResponseIndicatesTheOperationWasPerformed()
-			throws AuthenticationException {
-		final String assignedSessionKey = UUID.randomUUID().toString();
-		session.setUserID("valid_user_id");
-		session.setSessionKey(assignedSessionKey);
-		when(securityPluginManager.authenticate(anyString(), anyString(), anyString(), anyString()))
-				.thenReturn(Optional.of(session));
-		ssapJoin.getBody().setToken(UUID.randomUUID().toString());
-		final SSAPMessage<SSAPBodyReturnMessage> responseMessage = processor.process(ssapJoin,
-				PojoGenerator.generateGatewayInfo());
+    @Test
+    public void given_OneJoinProcessor_When_OneValidSessionIsUsed_Then_TheResponseIndicatesTheOperationWasPerformed() throws AuthenticationException {
+        final String assignedSessionKey = UUID.randomUUID().toString();
+        session.setUserID("valid_user_id");
+        session.setSessionKey(assignedSessionKey);
+        when(securityPluginManager.authenticate(anyString(), anyString(), anyString(), anyString())).thenReturn(
+                Optional.of(session));
+        ssapJoin.getBody().setToken(UUID.randomUUID().toString());
+        final SSAPMessage<SSAPBodyReturnMessage> responseMessage = processor.process(ssapJoin,
+                                                                                     PojoGenerator.generateGatewayInfo());
 
-		Assert.assertNotNull(responseMessage);
-		Assert.assertNotNull(responseMessage.getBody());
-		Assert.assertEquals(assignedSessionKey, responseMessage.getSessionKey());
-	}
+        Assert.assertNotNull(responseMessage);
+        Assert.assertNotNull(responseMessage.getBody());
+        Assert.assertEquals(assignedSessionKey, responseMessage.getSessionKey());
+    }
 
-	@Test
-	public void given_OneJoinProcessor_When_ItUsesAnInvalidToken_Then_TheResponseIndicatesAuthenticationError()
-			throws AuthenticationException {
-		when(securityPluginManager.authenticate(anyString(), anyString(), anyString(), anyString()))
-				.thenReturn(Optional.empty());
-		ssapJoin.getBody().setToken(UUID.randomUUID().toString());
-		final SSAPMessage<SSAPBodyReturnMessage> responseMessage = processor.process(ssapJoin,
-				PojoGenerator.generateGatewayInfo());
+    @Test
+    public void given_OneJoinProcessor_When_ItUsesAnInvalidToken_Then_TheResponseIndicatesAuthenticationError() throws AuthenticationException {
+        when(securityPluginManager.authenticate(anyString(), anyString(), anyString(), anyString())).thenReturn(
+                Optional.empty());
+        ssapJoin.getBody().setToken(UUID.randomUUID().toString());
+        final SSAPMessage<SSAPBodyReturnMessage> responseMessage = processor.process(ssapJoin,
+                                                                                     PojoGenerator.generateGatewayInfo());
 
-		Assert.assertNotNull(responseMessage);
-		Assert.assertNotNull(responseMessage.getBody());
-		Assert.assertEquals(SSAPErrorCode.AUTENTICATION, responseMessage.getBody().getErrorCode());
-	}
+        Assert.assertNotNull(responseMessage);
+        Assert.assertNotNull(responseMessage.getBody());
+        Assert.assertEquals(SSAPErrorCode.AUTENTICATION, responseMessage.getBody().getErrorCode());
+    }
 
-	@Test
-	public void given_OneJoinProcessor_When_AnEmptyOrNullTokenIsUsed_Then_TheResponseIndicatesProcessorError() {
+    @Test
+    public void given_OneJoinProcessor_When_AnEmptyOrNullTokenIsUsed_Then_TheResponseIndicatesProcessorError() {
 
-		// Token is an Empty string
-		{
-			ssapJoin.getBody().setToken("");
-			final SSAPMessage<SSAPBodyReturnMessage> responseMessage = processor.process(ssapJoin,
-					PojoGenerator.generateGatewayInfo());
+        // Token is an Empty string
+        {
+            ssapJoin.getBody().setToken("");
+            final SSAPMessage<SSAPBodyReturnMessage> responseMessage = processor.process(ssapJoin,
+                                                                                         PojoGenerator.generateGatewayInfo());
 
-			Assert.assertNotNull(responseMessage);
-			Assert.assertNotNull(responseMessage.getBody());
-			Assert.assertEquals(SSAPErrorCode.PROCESSOR, responseMessage.getBody().getErrorCode());
+            Assert.assertNotNull(responseMessage);
+            Assert.assertNotNull(responseMessage.getBody());
+            Assert.assertEquals(SSAPErrorCode.PROCESSOR, responseMessage.getBody().getErrorCode());
 
-		}
+        }
 
-		// Token is NULL
-		{
-			ssapJoin.getBody().setToken(null);
-			final SSAPMessage<SSAPBodyReturnMessage> responseMessage = processor.process(ssapJoin,
-					PojoGenerator.generateGatewayInfo());
+        // Token is NULL
+        {
+            ssapJoin.getBody().setToken(null);
+            final SSAPMessage<SSAPBodyReturnMessage> responseMessage = processor.process(ssapJoin,
+                                                                                         PojoGenerator.generateGatewayInfo());
 
-			Assert.assertNotNull(responseMessage);
-			Assert.assertNotNull(responseMessage.getBody());
-			Assert.assertEquals(SSAPErrorCode.PROCESSOR, responseMessage.getBody().getErrorCode());
+            Assert.assertNotNull(responseMessage);
+            Assert.assertNotNull(responseMessage.getBody());
+            Assert.assertEquals(SSAPErrorCode.PROCESSOR, responseMessage.getBody().getErrorCode());
 
-		}
+        }
 
-	}
+    }
 
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,90 +36,88 @@ import com.mongodb.util.JSON;
 @Rule
 public class ValidBodyRule extends DefaultRuleBase {
 
-	@Priority
-	public int getPriority() {
-		return 2;
-	}
+    @Priority
+    public int getPriority() {
+        return 2;
+    }
 
-	@Condition
-	public boolean existsRequest(Facts facts) {
-		Map<String, Object> data = facts.get(RuleManager.FACTS);
-		Object body = data.get(Constants.BODY);
-		return body != null;
-	}
+    @Condition
+    public boolean existsRequest(Facts facts) {
+        Map<String, Object> data = facts.get(RuleManager.FACTS);
+        Object body = data.get(Constants.BODY);
+        return body != null;
+    }
 
-	@Action
-	public void setFirstDerivedData(Facts facts) {
-		Map<String, Object> data = facts.get(RuleManager.FACTS);
+    @Action
+    public void setFirstDerivedData(Facts facts) {
+        Map<String, Object> data = facts.get(RuleManager.FACTS);
 
-		String body = (String) data.get(Constants.BODY);
+        String body = (String) data.get(Constants.BODY);
 
-		if (!"".equals(body)) {
-			boolean valid = isValidJSON(body);
-			boolean validMongo = isValidJSONtoMongo(body);
+        if (!"".equals(body)) {
+            boolean valid = isValidJSON(body);
+            boolean validMongo = isValidJSONtoMongo(body);
 
-			if (valid && validMongo) {
+            if (valid && validMongo) {
 
-				String bodyDepured = depureJSON(body);
-				if (bodyDepured != null)
-					data.put(Constants.BODY, bodyDepured);
-			}
+                String bodyDepured = depureJSON(body);
+                if (bodyDepured != null)
+                    data.put(Constants.BODY, bodyDepured);
+            } else
+                stopAllNextRules(facts, "BODY IS NOT JSON PARSEABLE ", DefaultRuleBase.ReasonType.GENERAL);
+        }
 
-			else
-				stopAllNextRules(facts, "BODY IS NOT JSON PARSEABLE ", DefaultRuleBase.ReasonType.GENERAL);
-		}
+    }
 
-	}
+    public boolean isValidJSON(String toTestStr) {
+        JSONObject jsonObj = toJSONObject(toTestStr);
+        JSONArray jsonArray = toJSONArray(toTestStr);
 
-	public boolean isValidJSON(String toTestStr) {
-		JSONObject jsonObj = toJSONObject(toTestStr);
-		JSONArray jsonArray = toJSONArray(toTestStr);
-		
-		return (jsonObj != null || jsonArray != null);
-	}
+        return (jsonObj != null || jsonArray != null);
+    }
 
-	private JSONObject toJSONObject(String input) {
-		JSONObject jsonObj = null;
-		try {
-			jsonObj = new JSONObject(input);
-		} catch (JSONException e) {
-			return null;
-		}
-		return jsonObj;
-	}
+    private JSONObject toJSONObject(String input) {
+        JSONObject jsonObj = null;
+        try {
+            jsonObj = new JSONObject(input);
+        } catch (JSONException e) {
+            return null;
+        }
+        return jsonObj;
+    }
 
-	private JSONArray toJSONArray(String input) {
-		JSONArray jsonObj = null;
-		try {
-			jsonObj = new JSONArray(input);
-		} catch (JSONException e) {
-			return null;
-		}
-		return jsonObj;
-	}
+    private JSONArray toJSONArray(String input) {
+        JSONArray jsonObj = null;
+        try {
+            jsonObj = new JSONArray(input);
+        } catch (JSONException e) {
+            return null;
+        }
+        return jsonObj;
+    }
 
-	public boolean isValidJSONtoMongo(String body) {
-		try {
-			DBObject dbObject = (DBObject) JSON.parse(body);
-			
-			return dbObject != null;
-		} catch (Exception e) {
-			return false;
-		}
-	}
+    public boolean isValidJSONtoMongo(String body) {
+        try {
+            DBObject dbObject = (DBObject) JSON.parse(body);
 
-	public String depureJSON(String body) {
-		DBObject dbObject = null;
-		try {
-			dbObject = (DBObject) JSON.parse(body);
-			if (dbObject == null)
-				return null;
-			else {
-				return dbObject.toString();
-			}
-		} catch (Exception e) {
-			return null;
-		}
+            return dbObject != null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
-	}
+    public String depureJSON(String body) {
+        DBObject dbObject = null;
+        try {
+            dbObject = (DBObject) JSON.parse(body);
+            if (dbObject == null)
+                return null;
+            else {
+                return dbObject.toString();
+            }
+        } catch (Exception e) {
+            return null;
+        }
+
+    }
 }

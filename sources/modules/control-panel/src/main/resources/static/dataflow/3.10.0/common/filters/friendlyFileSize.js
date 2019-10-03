@@ -16,13 +16,13 @@
 angular
     .module('commonUI.filters')
     .filter('friendlyFileSize', function () {
-      return function (value) {
+        return function (value) {
 
-        var bytes = parseInt(value, 10);
-        var byteLabel = bytes > 1 ? 'Bytes' : 'Byte';
-        var sizes = [byteLabel, 'KB', 'MB', 'GB', 'TB'];
+            var bytes = parseInt(value, 10);
+            var byteLabel = bytes > 1 ? 'Bytes' : 'Byte';
+            var sizes = [byteLabel, 'KB', 'MB', 'GB', 'TB'];
 
-        var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-        return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
-      };
+            var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+            return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+        };
     });

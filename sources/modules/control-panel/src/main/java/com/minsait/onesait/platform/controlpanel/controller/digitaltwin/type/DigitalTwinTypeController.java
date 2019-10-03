@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -52,184 +52,192 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DigitalTwinTypeController {
 
-	@Autowired
-	private AppWebUtils utils;
+    @Autowired
+    private AppWebUtils utils;
 
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private UserService userService;
 
-	@Autowired
-	private DigitalTwinTypeService digitalTwinTypeService;
+    @Autowired
+    private DigitalTwinTypeService digitalTwinTypeService;
 
-	@Autowired
-	private DigitalTwinDeviceService digitalTwinDeviceService;
+    @Autowired
+    private DigitalTwinDeviceService digitalTwinDeviceService;
 
-	private static final String DIG_TWIN_TYPE_VAL_ERROR = "digitaltwintype.validation.error";
-	private static final String REDIRECT_DIG_TWIN_TYPE_CREATE = "redirect:/digitaltwintypes/create";
-	private static final String REDIRECT_DIG_TWIN_TYPE_LIST = "redirect:/digitaltwintypes/list";
-	private static final String ERROR_403 = "error/403";
+    private static final String DIG_TWIN_TYPE_VAL_ERROR = "digitaltwintype.validation.error";
+    private static final String REDIRECT_DIG_TWIN_TYPE_CREATE = "redirect:/digitaltwintypes/create";
+    private static final String REDIRECT_DIG_TWIN_TYPE_LIST = "redirect:/digitaltwintypes/list";
+    private static final String ERROR_403 = "error/403";
 
-	@Autowired
-	@Qualifier("MongoManageDBRepository")
-	private ManageDBRepository mongoManageRepo;
+    @Autowired
+    @Qualifier("MongoManageDBRepository")
+    private ManageDBRepository mongoManageRepo;
 
-	@PostMapping("/getNamesForAutocomplete")
-	public @ResponseBody List<String> getNamesForAutocomplete() {
-		return this.digitalTwinTypeService.getAllIdentifications();
-	}
+    @PostMapping("/getNamesForAutocomplete")
+    public @ResponseBody
+    List<String> getNamesForAutocomplete() {
+        return this.digitalTwinTypeService.getAllIdentifications();
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@GetMapping(value = "/create")
-	public String create(Model model) {
-		digitalTwinTypeService.populateCreateNewType(model, utils.getUserId());
-		return "digitaltwintypes/create";
-	}
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @GetMapping(value = "/create")
+    public String create(Model model) {
+        digitalTwinTypeService.populateCreateNewType(model, utils.getUserId());
+        return "digitaltwintypes/create";
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@GetMapping(value = "/update/{id}", produces = "text/html")
-	public String update(Model model, @PathVariable("id") String id) {
-		DigitalTwinType type = digitalTwinTypeService.getDigitalTwinTypeById(id);
-		
-		if (!utils.getRole().equals(Role.Type.ROLE_ADMINISTRATOR.name()) && !type.getUser().getUserId().equals(utils.getUserId())) {
-			return ERROR_403;
-		}
-		
-		digitalTwinTypeService.getDigitalTwinToUpdate(model, id, utils.getUserId());
-		return "digitaltwintypes/create";
-	}
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @GetMapping(value = "/update/{id}", produces = "text/html")
+    public String update(Model model, @PathVariable("id") String id) {
+        DigitalTwinType type = digitalTwinTypeService.getDigitalTwinTypeById(id);
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@PostMapping(value = "/create")
-	@Transactional
-	public String createDigitalTwinType(Model model, @Valid DigitalTwinType digitalTwinType,
-			BindingResult bindingResult, RedirectAttributes redirect, HttpServletRequest httpServletRequest) {
-		if (bindingResult.hasErrors()) {
-			log.debug("Some digital twin type properties missing");
-			utils.addRedirectMessage(DIG_TWIN_TYPE_VAL_ERROR, redirect);
-			return REDIRECT_DIG_TWIN_TYPE_CREATE;
-		}
+        if (!utils.getRole().equals(Role.Type.ROLE_ADMINISTRATOR.name()) && !type.getUser().getUserId().equals(
+                utils.getUserId())) {
+            return ERROR_403;
+        }
 
-		if (!digitalTwinTypeService.isIdValid(digitalTwinType.getName())) {
-			log.debug("The digital twin type name is not valid");
-			utils.addRedirectMessage(DIG_TWIN_TYPE_VAL_ERROR, redirect);
-			return REDIRECT_DIG_TWIN_TYPE_CREATE;
-		}
-		try {
-			User user = userService.getUser(utils.getUserId());
-			digitalTwinType.setUser(user);
-			log.info("DigitalTwin is going to be created.");
-			digitalTwinTypeService.createDigitalTwinType(digitalTwinType, httpServletRequest);
+        digitalTwinTypeService.getDigitalTwinToUpdate(model, id, utils.getUserId());
+        return "digitaltwintypes/create";
+    }
 
-			// Create ontology for shadow
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @PostMapping(value = "/create")
+    @Transactional
+    public String createDigitalTwinType(Model model, @Valid DigitalTwinType digitalTwinType,
+            BindingResult bindingResult, RedirectAttributes redirect, HttpServletRequest httpServletRequest) {
+        if (bindingResult.hasErrors()) {
+            log.debug("Some digital twin type properties missing");
+            utils.addRedirectMessage(DIG_TWIN_TYPE_VAL_ERROR, redirect);
+            return REDIRECT_DIG_TWIN_TYPE_CREATE;
+        }
 
-			digitalTwinTypeService.createOntologyForShadow(digitalTwinType, httpServletRequest);
+        if (!digitalTwinTypeService.isIdValid(digitalTwinType.getName())) {
+            log.debug("The digital twin type name is not valid");
+            utils.addRedirectMessage(DIG_TWIN_TYPE_VAL_ERROR, redirect);
+            return REDIRECT_DIG_TWIN_TYPE_CREATE;
+        }
+        try {
+            User user = userService.getUser(utils.getUserId());
+            digitalTwinType.setUser(user);
+            log.info("DigitalTwin is going to be created.");
+            digitalTwinTypeService.createDigitalTwinType(digitalTwinType, httpServletRequest);
 
-			// Create collections on mongo for actions
+            // Create ontology for shadow
 
-			List<String> tables = mongoManageRepo.getListOfTables();
-			tables.replaceAll(String::toUpperCase);
+            digitalTwinTypeService.createOntologyForShadow(digitalTwinType, httpServletRequest);
 
-			if (!tables.contains(("TwinActions" + digitalTwinType.getName().substring(0, 1).toUpperCase()
-					+ digitalTwinType.getName().substring(1)).toUpperCase())) {
-				mongoManageRepo
-						.createTable4Ontology("TwinActions" + digitalTwinType.getName().substring(0, 1).toUpperCase()
-								+ digitalTwinType.getName().substring(1), "{}", null);
-			}
-		} catch (DigitalTwinServiceException e) {
-			log.error("Cannot create digital twin type because of:" + e.getMessage());
-			utils.addRedirectException(e, redirect);
-			return REDIRECT_DIG_TWIN_TYPE_CREATE;
-		}
-		return REDIRECT_DIG_TWIN_TYPE_LIST;
-	}
+            // Create collections on mongo for actions
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@GetMapping(value = "/list")
-	public String list(Model model) {
-		model.addAttribute("digitalTwinTypes", digitalTwinTypeService.getDigitalTwinTypesByUserId(utils.getUserId()));
-		return "digitaltwintypes/list";
-	}
+            List<String> tables = mongoManageRepo.getListOfTables();
+            tables.replaceAll(String::toUpperCase);
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@GetMapping(value = "/show/{id}", produces = "text/html")
-	public String show(Model model, @PathVariable("id") String id, RedirectAttributes redirect) {
-		DigitalTwinType type = digitalTwinTypeService.getDigitalTwinTypeById(id);
-		
-		if (!utils.getRole().equals(Role.Type.ROLE_ADMINISTRATOR.name()) && !type.getUser().getUserId().equals(utils.getUserId())) {
-			return ERROR_403;
-		}
-		
-		if (type != null) {
-			model.addAttribute("digitaltwintype", type);
-			model.addAttribute("dproperties", digitalTwinTypeService.getPropertiesByDigitalId(id));
-			model.addAttribute("actions", digitalTwinTypeService.getActionsByDigitalId(id));
-			model.addAttribute("events", digitalTwinTypeService.getEventsByDigitalId(id));
-			model.addAttribute("logic", digitalTwinTypeService.getLogicByDigitalId(id));
+            if (!tables.contains(("TwinActions" + digitalTwinType.getName().substring(0,
+                                                                                      1).toUpperCase() + digitalTwinType.getName().substring(
+                    1)).toUpperCase())) {
+                mongoManageRepo.createTable4Ontology("TwinActions" + digitalTwinType.getName().substring(0,
+                                                                                                         1).toUpperCase() + digitalTwinType.getName().substring(
+                        1), "{}", null);
+            }
+        } catch (DigitalTwinServiceException e) {
+            log.error("Cannot create digital twin type because of:" + e.getMessage());
+            utils.addRedirectException(e, redirect);
+            return REDIRECT_DIG_TWIN_TYPE_CREATE;
+        }
+        return REDIRECT_DIG_TWIN_TYPE_LIST;
+    }
 
-			return "digitaltwintypes/show";
-		} else {
-			utils.addRedirectMessage("digitaltwintype.notfound.error", redirect);
-			return REDIRECT_DIG_TWIN_TYPE_LIST;
-		}
-	}
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @GetMapping(value = "/list")
+    public String list(Model model) {
+        model.addAttribute("digitalTwinTypes", digitalTwinTypeService.getDigitalTwinTypesByUserId(utils.getUserId()));
+        return "digitaltwintypes/list";
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@PutMapping(value = "/update/{id}", produces = "text/html")
-	public String updateDigitalTwinType(Model model, @PathVariable("id") String id,
-			@Valid DigitalTwinType digitalTwinType, BindingResult bindingResult, RedirectAttributes redirect,
-			HttpServletRequest httpServletRequest) {
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @GetMapping(value = "/show/{id}", produces = "text/html")
+    public String show(Model model, @PathVariable("id") String id, RedirectAttributes redirect) {
+        DigitalTwinType type = digitalTwinTypeService.getDigitalTwinTypeById(id);
 
-		if (bindingResult.hasErrors()) {
-			log.debug("Some digital twin type properties missing");
-			utils.addRedirectMessage(DIG_TWIN_TYPE_VAL_ERROR, redirect);
-			return "redirect:/digitaltwintypes/update/" + id;
-		}
-		
-		DigitalTwinType type = digitalTwinTypeService.getDigitalTwinTypeById(id);
-		
-		if (!utils.getRole().equals(Role.Type.ROLE_ADMINISTRATOR.name()) && !type.getUser().getUserId().equals(utils.getUserId())) {
-			return ERROR_403;
-		}
+        if (!utils.getRole().equals(Role.Type.ROLE_ADMINISTRATOR.name()) && !type.getUser().getUserId().equals(
+                utils.getUserId())) {
+            return ERROR_403;
+        }
 
-		try {
-			User user = userService.getUser(utils.getUserId());
-			digitalTwinType.setUser(user);
-			this.digitalTwinTypeService.updateDigitalTwinType(digitalTwinType, httpServletRequest);
-		} catch (DigitalTwinServiceException e) {
-			log.debug("Cannot update Digital Twin Type");
-			utils.addRedirectMessage("digitaltwintype.update.error", redirect);
-			return REDIRECT_DIG_TWIN_TYPE_CREATE;
-		}
-		return REDIRECT_DIG_TWIN_TYPE_LIST;
+        if (type != null) {
+            model.addAttribute("digitaltwintype", type);
+            model.addAttribute("dproperties", digitalTwinTypeService.getPropertiesByDigitalId(id));
+            model.addAttribute("actions", digitalTwinTypeService.getActionsByDigitalId(id));
+            model.addAttribute("events", digitalTwinTypeService.getEventsByDigitalId(id));
+            model.addAttribute("logic", digitalTwinTypeService.getLogicByDigitalId(id));
 
-	}
+            return "digitaltwintypes/show";
+        } else {
+            utils.addRedirectMessage("digitaltwintype.notfound.error", redirect);
+            return REDIRECT_DIG_TWIN_TYPE_LIST;
+        }
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@DeleteMapping("/{id}")
-	public String delete(Model model, @PathVariable("id") String id, RedirectAttributes redirect) {
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @PutMapping(value = "/update/{id}", produces = "text/html")
+    public String updateDigitalTwinType(Model model, @PathVariable("id") String id,
+            @Valid DigitalTwinType digitalTwinType, BindingResult bindingResult, RedirectAttributes redirect,
+            HttpServletRequest httpServletRequest) {
 
-		DigitalTwinType digitalTwinType = digitalTwinTypeService.getDigitalTwinTypeById(id);
-		
-		if (!utils.getRole().equals(Role.Type.ROLE_ADMINISTRATOR.name()) && !digitalTwinType.getUser().getUserId().equals(utils.getUserId())) {
-			return ERROR_403;
-		}
-		
-		if (digitalTwinType != null) {
-			try {
-				this.digitalTwinTypeService.deleteDigitalTwinType(digitalTwinType);
-			} catch (DigitalTwinServiceException e) {
-				utils.addRedirectMessage("digitaltwintype.delete.error", redirect);
-				return REDIRECT_DIG_TWIN_TYPE_LIST;
-			}
-			return REDIRECT_DIG_TWIN_TYPE_LIST;
-		} else {
-			return REDIRECT_DIG_TWIN_TYPE_LIST;
-		}
-	}
+        if (bindingResult.hasErrors()) {
+            log.debug("Some digital twin type properties missing");
+            utils.addRedirectMessage(DIG_TWIN_TYPE_VAL_ERROR, redirect);
+            return "redirect:/digitaltwintypes/update/" + id;
+        }
 
-	@GetMapping("/getNumOfDevices/{type}")
-	public @ResponseBody Integer getNumOfDevices(@PathVariable("type") String type) {
-		return this.digitalTwinDeviceService.getNumOfDevicesByTypeId(type);
-	}
+        DigitalTwinType type = digitalTwinTypeService.getDigitalTwinTypeById(id);
+
+        if (!utils.getRole().equals(Role.Type.ROLE_ADMINISTRATOR.name()) && !type.getUser().getUserId().equals(
+                utils.getUserId())) {
+            return ERROR_403;
+        }
+
+        try {
+            User user = userService.getUser(utils.getUserId());
+            digitalTwinType.setUser(user);
+            this.digitalTwinTypeService.updateDigitalTwinType(digitalTwinType, httpServletRequest);
+        } catch (DigitalTwinServiceException e) {
+            log.debug("Cannot update Digital Twin Type");
+            utils.addRedirectMessage("digitaltwintype.update.error", redirect);
+            return REDIRECT_DIG_TWIN_TYPE_CREATE;
+        }
+        return REDIRECT_DIG_TWIN_TYPE_LIST;
+
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @DeleteMapping("/{id}")
+    public String delete(Model model, @PathVariable("id") String id, RedirectAttributes redirect) {
+
+        DigitalTwinType digitalTwinType = digitalTwinTypeService.getDigitalTwinTypeById(id);
+
+        if (!utils.getRole().equals(
+                Role.Type.ROLE_ADMINISTRATOR.name()) && !digitalTwinType.getUser().getUserId().equals(
+                utils.getUserId())) {
+            return ERROR_403;
+        }
+
+        if (digitalTwinType != null) {
+            try {
+                this.digitalTwinTypeService.deleteDigitalTwinType(digitalTwinType);
+            } catch (DigitalTwinServiceException e) {
+                utils.addRedirectMessage("digitaltwintype.delete.error", redirect);
+                return REDIRECT_DIG_TWIN_TYPE_LIST;
+            }
+            return REDIRECT_DIG_TWIN_TYPE_LIST;
+        } else {
+            return REDIRECT_DIG_TWIN_TYPE_LIST;
+        }
+    }
+
+    @GetMapping("/getNumOfDevices/{type}")
+    public @ResponseBody
+    Integer getNumOfDevices(@PathVariable("type") String type) {
+        return this.digitalTwinDeviceService.getNumOfDevicesByTypeId(type);
+    }
 
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,45 +42,46 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OPLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
 
-	@Autowired
-	EventRouter eventRouter;
+    @Autowired
+    EventRouter eventRouter;
 
-	@Override
-	public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
-			throws IOException, ServletException {
+    @Override
+    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
+            Authentication authentication) throws IOException, ServletException {
 
-		super.onLogoutSuccess(request, response, authentication);
-		new CookieClearingLogoutHandler(AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY)
-				.logout(request, response, authentication);
+        super.onLogoutSuccess(request, response, authentication);
+        new CookieClearingLogoutHandler(AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY).logout(
+                request, response, authentication);
 
-		if (authentication == null)
-			return;
-		String user;
-		if (authentication.getPrincipal() instanceof UserDetails)
-			user = ((UserDetails) authentication.getPrincipal()).getUsername();
-		else
-			user = (String) authentication.getPrincipal();
+        if (authentication == null)
+            return;
+        String user;
+        if (authentication.getPrincipal() instanceof UserDetails)
+            user = ((UserDetails) authentication.getPrincipal()).getUsername();
+        else
+            user = (String) authentication.getPrincipal();
 
-		if (user != null) {
-			final OPAuditEvent s2event = OPEventFactory.builder().build().createAuditEvent(EventType.SECURITY,
-					"Logout Success for user: " + user);
+        if (user != null) {
+            final OPAuditEvent s2event = OPEventFactory.builder().build().createAuditEvent(EventType.SECURITY,
+                                                                                           "Logout Success for user: "
+                                                                                                   + user);
 
-			s2event.setUser(user);
-			s2event.setOperationType(OperationType.LOGOUT.name());
-			s2event.setOtherType("LogoutEventSuccess");
-			s2event.setResultOperation(ResultOperationType.SUCCESS);
-			// if (authentication.getDetails() != null) {
-			// WebAuthenticationDetails details2 = (WebAuthenticationDetails)
-			// authentication.getDetails();
-			// s2event.setRemoteAddress(details2.getRemoteAddress());
-			// s2event.setSessionId(details2.getSessionId());
-			// }
-			s2event.setModule(Module.CONTROLPANEL);
-			eventRouter.notify(s2event.toJson());
+            s2event.setUser(user);
+            s2event.setOperationType(OperationType.LOGOUT.name());
+            s2event.setOtherType("LogoutEventSuccess");
+            s2event.setResultOperation(ResultOperationType.SUCCESS);
+            // if (authentication.getDetails() != null) {
+            // WebAuthenticationDetails details2 = (WebAuthenticationDetails)
+            // authentication.getDetails();
+            // s2event.setRemoteAddress(details2.getRemoteAddress());
+            // s2event.setSessionId(details2.getSessionId());
+            // }
+            s2event.setModule(Module.CONTROLPANEL);
+            eventRouter.notify(s2event.toJson());
 
-		} else {
-			log.info("No User recovered to process audit event");
-		}
+        } else {
+            log.info("No User recovered to process audit event");
+        }
 
-	}
+    }
 }

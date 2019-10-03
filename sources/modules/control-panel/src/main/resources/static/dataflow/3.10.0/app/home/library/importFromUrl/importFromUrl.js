@@ -16,42 +16,42 @@
 
 // Controller for Import from HTTP URL Modal Dialog.
 angular
-  .module('dataCollectorApp.home')
-  .controller('ImportFromURLModalInstanceController', ["$scope", "$modalInstance", "api", "pipelineTitle", "pipelineHttpUrl", function (
-    $scope, $modalInstance, api, pipelineTitle, pipelineHttpUrl
-  ) {
+    .module('dataCollectorApp.home')
+    .controller('ImportFromURLModalInstanceController', ["$scope", "$modalInstance", "api", "pipelineTitle", "pipelineHttpUrl", function (
+        $scope, $modalInstance, api, pipelineTitle, pipelineHttpUrl
+    ) {
 
-    angular.extend($scope, {
-      common: {
-        errors: []
-      },
-      showLoading: true,
-      newConfig : {
-        title: pipelineTitle || '',
-        description: '',
-        pipelineHttpUrl: pipelineHttpUrl || ''
-      },
-      operationDone: false,
-      operationInProgress: false,
+        angular.extend($scope, {
+            common: {
+                errors: []
+            },
+            showLoading: true,
+            newConfig: {
+                title: pipelineTitle || '',
+                description: '',
+                pipelineHttpUrl: pipelineHttpUrl || ''
+            },
+            operationDone: false,
+            operationInProgress: false,
 
-      import: function () {
-        $scope.operationInProgress = true;
-        api.pipelineAgent.importPipelineFromUrl($scope.newConfig.title, $scope.newConfig.pipelineHttpUrl)
-          .then(function(response) {
-            $scope.operationDone = true;
-            $scope.operationInProgress = false;
-            $modalInstance.close(response.data);
-          })
-          .catch(function(res) {
-            $scope.common.errors = [res.data];
-            $scope.operationDone = true;
-            $scope.operationInProgress = false;
-          });
-      },
+            import: function () {
+                $scope.operationInProgress = true;
+                api.pipelineAgent.importPipelineFromUrl($scope.newConfig.title, $scope.newConfig.pipelineHttpUrl)
+                    .then(function (response) {
+                        $scope.operationDone = true;
+                        $scope.operationInProgress = false;
+                        $modalInstance.close(response.data);
+                    })
+                    .catch(function (res) {
+                        $scope.common.errors = [res.data];
+                        $scope.operationDone = true;
+                        $scope.operationInProgress = false;
+                    });
+            },
 
-      cancel: function () {
-        $modalInstance.dismiss('cancel');
-      }
-    });
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
+            }
+        });
 
-  }]);
+    }]);

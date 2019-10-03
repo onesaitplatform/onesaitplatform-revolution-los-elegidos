@@ -39,27 +39,68 @@
 
 // MENU JSON
 var menuJson = {
-	menu:"OnesaitPlatform",
-	rol:"ROLE_DEVELOPER",
-	home: true,
-	noSession:"login.html",
-	navigation:[
-		{title:{EN:"menu1",ES:"menu1"},icon:"flaticon-cart",url:"",
-		 submenu:[
-			{title:{EN:"submenu1",ES:"submenu1"},icon:"flaticon-alert2",url:"index.html", dashboard:{}},
-			{title:{EN:"submenu2",ES:"submenu2"},icon:"flaticon-comment",url:"index.html", dashboard:{}},
-			{title:{EN:"Dashboard 1",ES:"Dashboard"},icon:"flaticon-calendar-1",url:"", dashboard:{src:"https://development.onesaitplatform.com/controlpanel/dashboards/view/MASTER-Dashboard-2/",title:"Dashboard Example", background: '', height: '850px', mode: 'INSERT'}}
-		 ]
-		},
-		{title:{EN:"Management",ES:"Configuración"},icon:"",url:"",submenu:[], dashboard:{}},//separator url, src ''
-		{title:{EN:"Dashboard 2",ES:"Dashboard2"},icon:"flaticon-laptop",url:"",submenu:[], dashboard:{src:"https://development.onesaitplatform.com/controlpanel/dashboards/view/MASTER-Dashboard-2/",title:"Dashboard Example 2", background: '', height: '850px', mode: 'INSERT'}},
-		{title:{EN:"menu3",ES:"menu3"},icon:"flaticon-layers",url:"",submenu:[], dashboard:{src:"https://development.onesaitplatform.com/controlpanel/dashboards/view/MASTER-Dashboard-2/",title:"Dashboard Example 3", background: '', height: '850px', mode: 'INSERT'}},
-		{title:{EN:"Dashboard 3",ES:"Dashboard3"},icon:"flaticon-clipboard",url:"index.html",submenu:[], dashboard:{}}
-	]	
+    menu: "OnesaitPlatform",
+    rol: "ROLE_DEVELOPER",
+    home: true,
+    noSession: "login.html",
+    navigation: [
+        {
+            title: {EN: "menu1", ES: "menu1"}, icon: "flaticon-cart", url: "",
+            submenu: [
+                {title: {EN: "submenu1", ES: "submenu1"}, icon: "flaticon-alert2", url: "index.html", dashboard: {}},
+                {title: {EN: "submenu2", ES: "submenu2"}, icon: "flaticon-comment", url: "index.html", dashboard: {}},
+                {
+                    title: {EN: "Dashboard 1", ES: "Dashboard"},
+                    icon: "flaticon-calendar-1",
+                    url: "",
+                    dashboard: {
+                        src: "https://development.onesaitplatform.com/controlpanel/dashboards/view/MASTER-Dashboard-2/",
+                        title: "Dashboard Example",
+                        background: '',
+                        height: '850px',
+                        mode: 'INSERT'
+                    }
+                }
+            ]
+        },
+        {title: {EN: "Management", ES: "Configuración"}, icon: "", url: "", submenu: [], dashboard: {}},//separator url, src ''
+        {
+            title: {EN: "Dashboard 2", ES: "Dashboard2"},
+            icon: "flaticon-laptop",
+            url: "",
+            submenu: [],
+            dashboard: {
+                src: "https://development.onesaitplatform.com/controlpanel/dashboards/view/MASTER-Dashboard-2/",
+                title: "Dashboard Example 2",
+                background: '',
+                height: '850px',
+                mode: 'INSERT'
+            }
+        },
+        {
+            title: {EN: "menu3", ES: "menu3"},
+            icon: "flaticon-layers",
+            url: "",
+            submenu: [],
+            dashboard: {
+                src: "https://development.onesaitplatform.com/controlpanel/dashboards/view/MASTER-Dashboard-2/",
+                title: "Dashboard Example 3",
+                background: '',
+                height: '850px',
+                mode: 'INSERT'
+            }
+        },
+        {
+            title: {EN: "Dashboard 3", ES: "Dashboard3"},
+            icon: "flaticon-clipboard",
+            url: "index.html",
+            submenu: [],
+            dashboard: {}
+        }
+    ]
 };
 
 /*  ############ END MENU CONFIGURATION ############################################################################ */
-
 
 
 /*  ############ PAGE CONFIGURATION ###############################################################################
@@ -186,91 +227,91 @@ var menuJson = {
 	skin					String					skin for the App [skin-light, skin-dark] not enabled in V.1.0
 	contentBackground		String					if defined, backgroundColor of the content zone.
 	
-*/	
+*/
 
 // FRONTEND MAIN CONFIGURATION
 var mainJson = {
-	title: "onesait Platform | Dashboard",
-	description: "onesait Platform PoC",
-	currentSkin: 'skin-light',
-	access:{
-		urlBasePath: "",
-		imgBasePath: "assets/app/media/img/",
-		entry: "PUBLIC",
-		urlBase:"https://development.onesaitplatform.northeurope.cloudapp.azure.com",
-		urlApi: "https://development.onesaitplatform.northeurope.cloudapp.azure.com/api-manager/server/api"
-	},
-	app: {
-		appLogo: 'assets/app/media/img/logos/arkanoid.png',
-		appLogoCss: 'width: auto; max-height: 20px;',
-		appLogoBackground: 'background-color: bisque !important',
-		appHome: 'onesait Arkanoid',
-		appLoading: '',
-		appFooter: true,
-		appStickymenu: false,
-		appWelcome: true,
-	},
-	login:{
-			loginLogo: '',
-			loginLogoStyle: '',
-			loginBackground: '',
-			loginDescription:'',
-			signInTitle: 'onesait Platform, please sign In:',
-			signUp: false,
-			forgotPassword: false,
-			rememberMe: false
-	},
-	user:{
-			showAvatar: true,
-			avatar: 'assets/app/media/img/users/imperial.png',			
-			profile:  {link:"profile.html",text:"ROL",visible: true},
-			support:  {link:"support.html",text:"Support",visible: true},
-			activity: {link:"activity.html",text:"Activity",visible: true},
-			messages: {link:"messages.html",text:"Messages",visible: true},
-			faq:	  {link:"faq.html",text:"FAQ",visible: true},			
-			logout:   {link:"login.html",text:"Exit",visible: true}
-	},
-	header: {
-		headerDashboads: true,
-		headerReports: true,
-		headerSearch: true,
-		headerNotifications: true,
-		headerQuickactions: true,
-		headerUser: true,
-		headerSidebarToggle: true
-	},
-	content: {
-		contentHead: true,
-		contentTitle: 'onesait Dashboard',
-		contentHeadCss: '',
-		contentTitle: '',
-		contentTitleCss: '',									   
-		contentTools: true,
-		contentDashboard: {
-			enabled: true,
-			dashboardName: 'OpenFlights Data dashboard',
-			changeTitle: true,
-			notification: true,
-			src: "https://development.onesaitplatform.com/controlpanel/dashboards/view/MASTER-Dashboard-2/",
-			background: '#FFF',
-			height: '850px',
-			mode: 'INSERT'
-		}		
-	},
-	footer: {
-		footerCopyright: "2019 &copy; IndraCompany PoC by Minsait",
-		footerLinks: true,
-		footerLinkAbout:  {link:"about.html",text:"About",visible: true},
-		footerLinkPrivacy:{link:"privacy.html",text:"Privacy",visible: true},
-		footerLinkTerms:  {link:"terms.html",text:"Terms",visible: true},
-		footerLinkCompany:{link:"company.html",text:"Mindsait",visible: true},
-		footerLinkSupport:{link:"support.html",text:"onesait Support Center",visible: true}		
-	},
-	themes:{
-		availableSkin: ['skin-light','skin-dark'],
-		changeSkin: 'skin-dark',
-		contentBackground : 'ghostwhite',
-		contentPadding: '0px 0px', // 30px 30px; 
-		menu: ''
-	}
+    title: "onesait Platform | Dashboard",
+    description: "onesait Platform PoC",
+    currentSkin: 'skin-light',
+    access: {
+        urlBasePath: "",
+        imgBasePath: "assets/app/media/img/",
+        entry: "PUBLIC",
+        urlBase: "https://development.onesaitplatform.northeurope.cloudapp.azure.com",
+        urlApi: "https://development.onesaitplatform.northeurope.cloudapp.azure.com/api-manager/server/api"
+    },
+    app: {
+        appLogo: 'assets/app/media/img/logos/arkanoid.png',
+        appLogoCss: 'width: auto; max-height: 20px;',
+        appLogoBackground: 'background-color: bisque !important',
+        appHome: 'onesait Arkanoid',
+        appLoading: '',
+        appFooter: true,
+        appStickymenu: false,
+        appWelcome: true,
+    },
+    login: {
+        loginLogo: '',
+        loginLogoStyle: '',
+        loginBackground: '',
+        loginDescription: '',
+        signInTitle: 'onesait Platform, please sign In:',
+        signUp: false,
+        forgotPassword: false,
+        rememberMe: false
+    },
+    user: {
+        showAvatar: true,
+        avatar: 'assets/app/media/img/users/imperial.png',
+        profile: {link: "profile.html", text: "ROL", visible: true},
+        support: {link: "support.html", text: "Support", visible: true},
+        activity: {link: "activity.html", text: "Activity", visible: true},
+        messages: {link: "messages.html", text: "Messages", visible: true},
+        faq: {link: "faq.html", text: "FAQ", visible: true},
+        logout: {link: "login.html", text: "Exit", visible: true}
+    },
+    header: {
+        headerDashboads: true,
+        headerReports: true,
+        headerSearch: true,
+        headerNotifications: true,
+        headerQuickactions: true,
+        headerUser: true,
+        headerSidebarToggle: true
+    },
+    content: {
+        contentHead: true,
+        contentTitle: 'onesait Dashboard',
+        contentHeadCss: '',
+        contentTitle: '',
+        contentTitleCss: '',
+        contentTools: true,
+        contentDashboard: {
+            enabled: true,
+            dashboardName: 'OpenFlights Data dashboard',
+            changeTitle: true,
+            notification: true,
+            src: "https://development.onesaitplatform.com/controlpanel/dashboards/view/MASTER-Dashboard-2/",
+            background: '#FFF',
+            height: '850px',
+            mode: 'INSERT'
+        }
+    },
+    footer: {
+        footerCopyright: "2019 &copy; IndraCompany PoC by Minsait",
+        footerLinks: true,
+        footerLinkAbout: {link: "about.html", text: "About", visible: true},
+        footerLinkPrivacy: {link: "privacy.html", text: "Privacy", visible: true},
+        footerLinkTerms: {link: "terms.html", text: "Terms", visible: true},
+        footerLinkCompany: {link: "company.html", text: "Mindsait", visible: true},
+        footerLinkSupport: {link: "support.html", text: "onesait Support Center", visible: true}
+    },
+    themes: {
+        availableSkin: ['skin-light', 'skin-dark'],
+        changeSkin: 'skin-dark',
+        contentBackground: 'ghostwhite',
+        contentPadding: '0px 0px', // 30px 30px; 
+        menu: ''
+    }
 };

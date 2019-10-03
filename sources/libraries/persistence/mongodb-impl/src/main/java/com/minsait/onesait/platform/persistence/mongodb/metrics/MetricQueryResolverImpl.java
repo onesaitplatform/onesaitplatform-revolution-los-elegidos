@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,513 +51,525 @@ import net.sf.jsqlparser.statement.select.SelectItem;
 @Slf4j
 public class MetricQueryResolverImpl implements MetricQueryResolver {
 
-	@Value("${onesaitplatform.database.timeseries.timezone:UTC}")
-	private String timeZone;
+    @Value("${onesaitplatform.database.timeseries.timezone:UTC}")
+    private String timeZone;
 
-	public static final String FORMAT_MINUTES_MILLIS = "yyyy-MM-dd'T'HH:mm:00.000'Z'";
-	public static final String FORMAT_HOURS = "yyyy-MM-dd'T'HH:00:00'Z'";
-	public static final String FORMAT_HOURS_MILLIS = "yyyy-MM-dd'T'HH:00:00.000'Z'";
-	public static final String FORMAT_DAYS = "yyyy-MM-dd'T'00:00:00'Z'";
-	public static final String FORMAT_DAYS_MILLIS = "yyyy-MM-dd'T'00:00:00.000'Z'";
-	public static final String FORMAT_MONTHS = "yyyy-MM-01'T'00:00:00'Z'";
-	public static final String FORMAT_MONTHS_MILLIS = "yyyy-MM-01'T'00:00:00.000'Z'";
+    public static final String FORMAT_MINUTES_MILLIS = "yyyy-MM-dd'T'HH:mm:00.000'Z'";
+    public static final String FORMAT_HOURS = "yyyy-MM-dd'T'HH:00:00'Z'";
+    public static final String FORMAT_HOURS_MILLIS = "yyyy-MM-dd'T'HH:00:00.000'Z'";
+    public static final String FORMAT_DAYS = "yyyy-MM-dd'T'00:00:00'Z'";
+    public static final String FORMAT_DAYS_MILLIS = "yyyy-MM-dd'T'00:00:00.000'Z'";
+    public static final String FORMAT_MONTHS = "yyyy-MM-01'T'00:00:00'Z'";
+    public static final String FORMAT_MONTHS_MILLIS = "yyyy-MM-01'T'00:00:00.000'Z'";
 
-	private static final int MINUTES_IN_HOUR = 60;
-	private static final int HOURS_IN_DAY = 24;
-	
+    private static final int MINUTES_IN_HOUR = 60;
+    private static final int HOURS_IN_DAY = 24;
+
     private static final String VALUE_STR = "value";
     private static final String VALUES_STR = "values";
     private static final String TIMESERIE_STR = "TimeSerie";
     private static final String TIMESTAMP_STR = "timestamp";
-	private static final String TIMESERIE_DATE_STR = "$.TimeSerie.timestamp.$date";
-	private static final String WINDOW_TYPE_STR = "windowType";
-	private static final String DATE_STR = "$date";
-
-	private long lastCerosHourlyInserted = 0;
-	private long lastCerosDailyInserted = 0;
-	private long lastCerosMonthlyInserted = 0;
-
-	@Override
-	public Map<String, String> buildMongoDBQueryStatement(String query) throws Exception {
-		final CCJSqlParserManager parserManager = new CCJSqlParserManager();
-
-		final PlainSelect statement = (PlainSelect) ((Select) parserManager.parse(new StringReader(query)))
-				.getSelectBody();
-
-		List<SelectItem> lSelectItems = statement.getSelectItems();
-		if (lSelectItems.size() > 1) {
-			throw new DBPersistenceException(
-					"In Metrics Ontologies only one of \"*\" or \"count(*)\" clausules are allowed");
-		}
-
-		final String ontology = ((Table) statement.getFromItem()).getName();
-		StringBuilder sbMongoDbWhere = new StringBuilder();
-		StringBuilder sbMongoDbWhereCerosCompletion = new StringBuilder();
-
-		final Expression where = statement.getWhere();
-		if (null != where) {
-			where.accept(new WhereExpressionVisitorAdapter(sbMongoDbWhere, false, 0, false, 0));
-			where.accept(new WhereCerosCompletionExpressionVisitorAdapter(sbMongoDbWhereCerosCompletion, false, 0,
-					false, 0));
-		}
-		String mongoDbWhere = sbMongoDbWhere.toString();
-		if (sbMongoDbWhere.toString().endsWith(",")) {
-			mongoDbWhere = mongoDbWhere.substring(0, mongoDbWhere.length() - 1);
-		}
-
-		String mongoDbWhereCerosCompletion = sbMongoDbWhereCerosCompletion.toString();
-		if (sbMongoDbWhereCerosCompletion.toString().endsWith(",")) {
-			mongoDbWhereCerosCompletion = mongoDbWhereCerosCompletion.substring(0,
-					mongoDbWhereCerosCompletion.length() - 1);
-		}
-
-		Map<String, String> result = new HashMap<>();
-		result.put(ONTOLOGY_NAME, ontology);
-		result.put(STATEMENT, mongoDbWhere);
-		result.put(STATEMENT_CEROS_COMPLETION, mongoDbWhereCerosCompletion);
-		result.put(SELECT_ITEMS, lSelectItems.get(0).toString());
-
-		return result;
-
-	}
+    private static final String TIMESERIE_DATE_STR = "$.TimeSerie.timestamp.$date";
+    private static final String WINDOW_TYPE_STR = "windowType";
+    private static final String DATE_STR = "$date";
+
+    private long lastCerosHourlyInserted = 0;
+    private long lastCerosDailyInserted = 0;
+    private long lastCerosMonthlyInserted = 0;
+
+    @Override
+    public Map<String, String> buildMongoDBQueryStatement(String query) throws Exception {
+        final CCJSqlParserManager parserManager = new CCJSqlParserManager();
+
+        final PlainSelect statement = (PlainSelect) ((Select) parserManager.parse(
+                new StringReader(query))).getSelectBody();
+
+        List<SelectItem> lSelectItems = statement.getSelectItems();
+        if (lSelectItems.size() > 1) {
+            throw new DBPersistenceException(
+                    "In Metrics Ontologies only one of \"*\" or \"count(*)\" clausules are allowed");
+        }
+
+        final String ontology = ((Table) statement.getFromItem()).getName();
+        StringBuilder sbMongoDbWhere = new StringBuilder();
+        StringBuilder sbMongoDbWhereCerosCompletion = new StringBuilder();
+
+        final Expression where = statement.getWhere();
+        if (null != where) {
+            where.accept(new WhereExpressionVisitorAdapter(sbMongoDbWhere, false, 0, false, 0));
+            where.accept(
+                    new WhereCerosCompletionExpressionVisitorAdapter(sbMongoDbWhereCerosCompletion, false, 0, false,
+                                                                     0));
+        }
+        String mongoDbWhere = sbMongoDbWhere.toString();
+        if (sbMongoDbWhere.toString().endsWith(",")) {
+            mongoDbWhere = mongoDbWhere.substring(0, mongoDbWhere.length() - 1);
+        }
+
+        String mongoDbWhereCerosCompletion = sbMongoDbWhereCerosCompletion.toString();
+        if (sbMongoDbWhereCerosCompletion.toString().endsWith(",")) {
+            mongoDbWhereCerosCompletion = mongoDbWhereCerosCompletion.substring(0,
+                                                                                mongoDbWhereCerosCompletion.length() - 1);
+        }
+
+        Map<String, String> result = new HashMap<>();
+        result.put(ONTOLOGY_NAME, ontology);
+        result.put(STATEMENT, mongoDbWhere);
+        result.put(STATEMENT_CEROS_COMPLETION, mongoDbWhereCerosCompletion);
+        result.put(SELECT_ITEMS, lSelectItems.get(0).toString());
+
+        return result;
+
+    }
+
+    @Override
+    public String buildUnifiedResponse(List<String> data, List<String> cerosInInterval,
+            String selectItem) throws Exception {
+
+        List<MetricsObject> lMetrics = extractMetrics(data);
+        List<MetricsObject> lCeros = extractCeros(cerosInInterval);
+
+        Map<Long, JSONArray> mDateGroups = new HashMap<>();
+        lMetrics.forEach(metric -> {
+            long timestamp = metric.getTimestamp();
+
+            JSONArray grouped = mDateGroups.get(timestamp);
+            if (null == grouped) {
+                mDateGroups.put(timestamp, metric.getMetrics());
+            } else {
+                int length = grouped.length();
+                JSONArray arrMetrics = metric.getMetrics();
+                for (int i = 0; i < length; i++) {
+                    int currentValue = ((JSONObject) grouped.get(i)).getInt(VALUE_STR);
+                    int addValue = ((JSONObject) arrMetrics.get(i)).getInt(VALUE_STR);
+
+                    ((JSONObject) grouped.get(i)).put(VALUE_STR, currentValue + addValue);
+                }
+
+            }
+        });
+
+        // Add ceros if not value detected
+        lCeros.forEach(cero -> {
+            long timestamp = cero.getTimestamp();
+
+            if (!mDateGroups.containsKey(timestamp)) {
+                mDateGroups.put(timestamp, cero.getMetrics());
+            }
+
+        });
+
+        // LinkedHashMap preserve the ordering of elements in which they are inserted
+        List<Long> sortedKeys = new LinkedList<>();
+
+        mDateGroups.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEachOrdered(
+                x -> sortedKeys.add(x.getKey()));
+
+        JSONArray result = new JSONArray();
+
+        sortedKeys.forEach(date -> {
+            JSONArray current = mDateGroups.get(date);
+            for (int i = 0; i < current.length(); i++) {
+                result.put(current.get(i));
+            }
 
-	@Override
-	public String buildUnifiedResponse(List<String> data, List<String> cerosInInterval, String selectItem)
-			throws Exception {
+        });
+
+        if (selectItem.trim().equals("*")) {
+            return result.toString();
+        } else if (selectItem.trim().equals("count(*)")) {
+            int count = 0;
+            for (int i = 0; i < result.length(); i++) {
+                count += ((JSONObject) result.get(i)).getInt(VALUE_STR);
+            }
+            return "{\"count\": " + count + "}";
 
-		List<MetricsObject> lMetrics = extractMetrics(data);
-		List<MetricsObject> lCeros = extractCeros(cerosInInterval);
-
-		Map<Long, JSONArray> mDateGroups = new HashMap<>();
-		lMetrics.forEach(metric -> {
-			long timestamp = metric.getTimestamp();
-
-			JSONArray grouped = mDateGroups.get(timestamp);
-			if (null == grouped) {
-				mDateGroups.put(timestamp, metric.getMetrics());
-			} else {
-				int length = grouped.length();
-				JSONArray arrMetrics = metric.getMetrics();
-				for (int i = 0; i < length; i++) {
-					int currentValue = ((JSONObject) grouped.get(i)).getInt(VALUE_STR);
-					int addValue = ((JSONObject) arrMetrics.get(i)).getInt(VALUE_STR);
+        } else {
+            throw new DBPersistenceException(
+                    "In Metrics Ontologies only one of \"*\" or \"count(*)\" clausules are allowed");
+        }
+    }
 
-					((JSONObject) grouped.get(i)).put(VALUE_STR, currentValue + addValue);
-				}
+    @Override
+    public void loadMetricsBase(MongoBasicOpsDBRepository mongodbRepository) {
+        this.loadMetricsBaseHours(mongodbRepository);
+        this.loadMetricsBaseDays(mongodbRepository);
+        this.loadMetricsBaseMonths(mongodbRepository);
+    }
 
-			}
-		});
+    private void loadMetricsBaseHours(MongoBasicOpsDBRepository mongodbRepository) {
+        try {
 
-		// Add ceros if not value detected
-		lCeros.forEach(cero -> {
-			long timestamp = cero.getTimestamp();
-
-			if (!mDateGroups.containsKey(timestamp)) {
-				mDateGroups.put(timestamp, cero.getMetrics());
-			}
-
-		});
+            SimpleDateFormat sdfHours = new SimpleDateFormat(MetricQueryResolverImpl.FORMAT_HOURS_MILLIS);
 
-		// LinkedHashMap preserve the ordering of elements in which they are inserted
-		List<Long> sortedKeys = new LinkedList<>();
-
-		mDateGroups.entrySet().stream().sorted(Map.Entry.comparingByKey())
-				.forEachOrdered(x -> sortedKeys.add(x.getKey()));
-
-		JSONArray result = new JSONArray();
-
-		sortedKeys.forEach(date -> {
-			JSONArray current = mDateGroups.get(date);
-			for (int i = 0; i < current.length(); i++) {
-				result.put(current.get(i));
-			}
+            Date nowHour = sdfHours.parse(sdfHours.format(new Date()));
 
-		});
+            if (nowHour.getTime() > this.lastCerosHourlyInserted) {
 
-		if (selectItem.trim().equals("*")) {
-			return result.toString();
-		} else if (selectItem.trim().equals("count(*)")) {
-			int count = 0;
-			for (int i = 0; i < result.length(); i++) {
-				count += ((JSONObject) result.get(i)).getInt(VALUE_STR);
-			}
-			return "{\"count\": " + count + "}";
+                this.lastCerosHourlyInserted = nowHour.getTime();
 
-		} else {
-			throw new DBPersistenceException(
-					"In Metrics Ontologies only one of \"*\" or \"count(*)\" clausules are allowed");
-		}
-	}
+                SimpleDateFormat sdfMinutes = new SimpleDateFormat(MetricQueryResolverImpl.FORMAT_MINUTES_MILLIS);
 
-	@Override
-	public void loadMetricsBase(MongoBasicOpsDBRepository mongodbRepository) {
-		this.loadMetricsBaseHours(mongodbRepository);
-		this.loadMetricsBaseDays(mongodbRepository);
-		this.loadMetricsBaseMonths(mongodbRepository);
-	}
+                SimpleDateFormat dateFormatGmt = new SimpleDateFormat(MetricQueryResolverImpl.FORMAT_HOURS_MILLIS);
+                dateFormatGmt.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-	private void loadMetricsBaseHours(MongoBasicOpsDBRepository mongodbRepository) {
-		try {
+                Calendar nowCalendar = Calendar.getInstance();
+                nowCalendar.setTime(nowHour);
 
-			SimpleDateFormat sdfHours = new SimpleDateFormat(MetricQueryResolverImpl.FORMAT_HOURS_MILLIS);
+                Calendar lastDateCalendar = Calendar.getInstance();
 
-			Date nowHour = sdfHours.parse(sdfHours.format(new Date()));
+                List<String> dataHours = mongodbRepository.queryNative(MongoBasicOpsDBRepository.METRICS_BASE,
+                                                                       "db.getCollection('MetricsBase').find" +
+                                                                               "({'TimeSerie.windowType':'HOURS'}, " +
+                                                                               "{'TimeSerie.timestamp': 1 }).sort" +
+                                                                               "({'TimeSerie.timestamp': -1}).limit" +
+                                                                               "(1)");
 
-			if (nowHour.getTime() > this.lastCerosHourlyInserted) {
+                if (!dataHours.isEmpty()) {
+                    long lastDate = JsonPath.read(dataHours.get(0), TIMESERIE_DATE_STR);
+                    lastDateCalendar.setTime(sdfHours.parse(dateFormatGmt.format(new Date(lastDate))));
 
-				this.lastCerosHourlyInserted = nowHour.getTime();
+                } else {
+                    lastDateCalendar.setTime(sdfHours.parse("2018-12-31T23:00:00.000Z"));
+                }
 
-				SimpleDateFormat sdfMinutes = new SimpleDateFormat(MetricQueryResolverImpl.FORMAT_MINUTES_MILLIS);
+                // Create Hourly empty windows
+                JSONObject dataHourly = new JSONObject();
+                JSONObject rootHourly = new JSONObject();
 
-				SimpleDateFormat dateFormatGmt = new SimpleDateFormat(MetricQueryResolverImpl.FORMAT_HOURS_MILLIS);
-				dateFormatGmt.setTimeZone(TimeZone.getTimeZone("UTC"));
+                rootHourly.put(WINDOW_TYPE_STR, "HOURS");
+                dataHourly.put(TIMESERIE_STR, rootHourly);
 
-				Calendar nowCalendar = Calendar.getInstance();
-				nowCalendar.setTime(nowHour);
+                long currentIntancetime = lastDateCalendar.getTime().getTime();
+                if (currentIntancetime < nowCalendar.getTime().getTime()) {
+                    lastDateCalendar.add(Calendar.HOUR, 1);
+                    while (currentIntancetime <= nowCalendar.getTime().getTime()) {
 
-				Calendar lastDateCalendar = Calendar.getInstance();
+                        JSONObject date = new JSONObject();
+                        date.put(DATE_STR, sdfHours.format(lastDateCalendar.getTime()));
+                        rootHourly.put(TIMESTAMP_STR, date);
 
-				List<String> dataHours = mongodbRepository.queryNative(MongoBasicOpsDBRepository.METRICS_BASE,
-						"db.getCollection('MetricsBase').find({'TimeSerie.windowType':'HOURS'}, {'TimeSerie.timestamp': 1 }).sort({'TimeSerie.timestamp': -1}).limit(1)");
+                        JSONArray metrics = new JSONArray();
+                        rootHourly.put(VALUES_STR, metrics);
 
-				if (!dataHours.isEmpty()) {
-					long lastDate = JsonPath.read(dataHours.get(0), TIMESERIE_DATE_STR);
-					lastDateCalendar.setTime(sdfHours.parse(dateFormatGmt.format(new Date(lastDate))));
+                        for (int secondIndex = 0; secondIndex < 60; secondIndex++) {
+                            JSONObject metric = new JSONObject();
+                            metric.put(VALUE_STR, 0);
+                            metric.put(TIMESTAMP_STR, sdfMinutes.format(lastDateCalendar.getTime()));
+                            lastDateCalendar.add(Calendar.MINUTE, 1);
+                            metrics.put(metric);
+                        }
 
-				} else {
-					lastDateCalendar.setTime(sdfHours.parse("2018-12-31T23:00:00.000Z"));
-				}
+                        mongodbRepository.insert(MongoBasicOpsDBRepository.METRICS_BASE, "", dataHourly.toString());
 
-				// Create Hourly empty windows
-				JSONObject dataHourly = new JSONObject();
-				JSONObject rootHourly = new JSONObject();
+                        currentIntancetime = sdfHours.parse(sdfHours.format(lastDateCalendar.getTime())).getTime();
+                    }
+                }
+            }
 
-				rootHourly.put(WINDOW_TYPE_STR, "HOURS");
-				dataHourly.put(TIMESERIE_STR, rootHourly);
+        } catch (Exception e) {
+            log.error("Error setting content on MetricsBase collection", e);
+        }
+    }
 
-				long currentIntancetime = lastDateCalendar.getTime().getTime();
-				if (currentIntancetime < nowCalendar.getTime().getTime()) {
-					lastDateCalendar.add(Calendar.HOUR, 1);
-					while (currentIntancetime <= nowCalendar.getTime().getTime()) {
+    private void loadMetricsBaseDays(MongoBasicOpsDBRepository mongodbRepository) {
+        try {
 
-						JSONObject date = new JSONObject();
-						date.put(DATE_STR, sdfHours.format(lastDateCalendar.getTime()));
-						rootHourly.put(TIMESTAMP_STR, date);
+            SimpleDateFormat sdfDays = new SimpleDateFormat(MetricQueryResolverImpl.FORMAT_DAYS_MILLIS);
 
-						JSONArray metrics = new JSONArray();
-						rootHourly.put(VALUES_STR, metrics);
+            Date nowDay = sdfDays.parse(sdfDays.format(new Date()));
 
-						for (int secondIndex = 0; secondIndex < 60; secondIndex++) {
-							JSONObject metric = new JSONObject();
-							metric.put(VALUE_STR, 0);
-							metric.put(TIMESTAMP_STR, sdfMinutes.format(lastDateCalendar.getTime()));
-							lastDateCalendar.add(Calendar.MINUTE, 1);
-							metrics.put(metric);
-						}
+            if (nowDay.getTime() > this.lastCerosDailyInserted) {
 
-						mongodbRepository.insert(MongoBasicOpsDBRepository.METRICS_BASE, "", dataHourly.toString());
+                this.lastCerosDailyInserted = nowDay.getTime();
 
-						currentIntancetime = sdfHours.parse(sdfHours.format(lastDateCalendar.getTime())).getTime();
-					}
-				}
-			}
+                SimpleDateFormat sdfHours = new SimpleDateFormat(MetricQueryResolverImpl.FORMAT_HOURS_MILLIS);
 
-		} catch (Exception e) {
-			log.error("Error setting content on MetricsBase collection", e);
-		}
-	}
+                SimpleDateFormat dateFormatGmt = new SimpleDateFormat(MetricQueryResolverImpl.FORMAT_DAYS_MILLIS);
+                dateFormatGmt.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-	private void loadMetricsBaseDays(MongoBasicOpsDBRepository mongodbRepository) {
-		try {
+                Calendar nowCalendar = Calendar.getInstance();
+                nowCalendar.setTime(nowDay);
 
-			SimpleDateFormat sdfDays = new SimpleDateFormat(MetricQueryResolverImpl.FORMAT_DAYS_MILLIS);
+                Calendar lastDateCalendar = Calendar.getInstance();
 
-			Date nowDay = sdfDays.parse(sdfDays.format(new Date()));
+                List<String> dataDays = mongodbRepository.queryNative(MongoBasicOpsDBRepository.METRICS_BASE,
+                                                                      "db.getCollection('MetricsBase').find" +
+                                                                              "({'TimeSerie.windowType':'DAYS'}, " +
+                                                                              "{'TimeSerie.timestamp': 1 }).sort" +
+                                                                              "({'TimeSerie.timestamp': -1}).limit(1)");
 
-			if (nowDay.getTime() > this.lastCerosDailyInserted) {
+                if (!dataDays.isEmpty()) {
+                    long lastDate = JsonPath.read(dataDays.get(0), TIMESERIE_DATE_STR);
+                    lastDateCalendar.setTime(sdfDays.parse(dateFormatGmt.format(new Date(lastDate))));
 
-				this.lastCerosDailyInserted = nowDay.getTime();
+                } else {
+                    lastDateCalendar.setTime(sdfDays.parse("2018-12-31T00:00:00.000Z"));
+                }
 
-				SimpleDateFormat sdfHours = new SimpleDateFormat(MetricQueryResolverImpl.FORMAT_HOURS_MILLIS);
+                // Create Hourly empty windows
+                JSONObject dataDaily = new JSONObject();
+                JSONObject rootDaily = new JSONObject();
 
-				SimpleDateFormat dateFormatGmt = new SimpleDateFormat(MetricQueryResolverImpl.FORMAT_DAYS_MILLIS);
-				dateFormatGmt.setTimeZone(TimeZone.getTimeZone("UTC"));
+                rootDaily.put(WINDOW_TYPE_STR, "DAYS");
+                dataDaily.put(TIMESERIE_STR, rootDaily);
 
-				Calendar nowCalendar = Calendar.getInstance();
-				nowCalendar.setTime(nowDay);
+                long currentIntancetime = lastDateCalendar.getTime().getTime();
+                if (currentIntancetime < nowCalendar.getTime().getTime()) {
+                    lastDateCalendar.add(Calendar.DATE, 1);
 
-				Calendar lastDateCalendar = Calendar.getInstance();
+                    while (currentIntancetime <= nowCalendar.getTime().getTime()) {
 
-				List<String> dataDays = mongodbRepository.queryNative(MongoBasicOpsDBRepository.METRICS_BASE,
-						"db.getCollection('MetricsBase').find({'TimeSerie.windowType':'DAYS'}, {'TimeSerie.timestamp': 1 }).sort({'TimeSerie.timestamp': -1}).limit(1)");
+                        JSONObject date = new JSONObject();
+                        date.put(DATE_STR, sdfDays.format(lastDateCalendar.getTime()));
 
-				if (!dataDays.isEmpty()) {
-					long lastDate = JsonPath.read(dataDays.get(0), TIMESERIE_DATE_STR);
-					lastDateCalendar.setTime(sdfDays.parse(dateFormatGmt.format(new Date(lastDate))));
+                        rootDaily.put(TIMESTAMP_STR, date);
 
-				} else {
-					lastDateCalendar.setTime(sdfDays.parse("2018-12-31T00:00:00.000Z"));
-				}
+                        JSONArray metrics = new JSONArray();
+                        rootDaily.put(VALUES_STR, metrics);
 
-				// Create Hourly empty windows
-				JSONObject dataDaily = new JSONObject();
-				JSONObject rootDaily = new JSONObject();
+                        for (int hourIndex = 0; hourIndex < 24; hourIndex++) {
+                            JSONObject metric = new JSONObject();
+                            metric.put(VALUE_STR, 0);
+                            metric.put(TIMESTAMP_STR, sdfHours.format(lastDateCalendar.getTime()));
+                            lastDateCalendar.add(Calendar.HOUR, 1);
+                            metrics.put(metric);
+                        }
 
-				rootDaily.put(WINDOW_TYPE_STR, "DAYS");
-				dataDaily.put(TIMESERIE_STR, rootDaily);
+                        mongodbRepository.insert(MongoBasicOpsDBRepository.METRICS_BASE, "", dataDaily.toString());
 
-				long currentIntancetime = lastDateCalendar.getTime().getTime();
-				if (currentIntancetime < nowCalendar.getTime().getTime()) {
-					lastDateCalendar.add(Calendar.DATE, 1);
+                        currentIntancetime = sdfDays.parse(sdfDays.format(lastDateCalendar.getTime())).getTime();
+                    }
+                }
+            }
 
-					while (currentIntancetime <= nowCalendar.getTime().getTime()) {
+        } catch (Exception e) {
+            log.error("loadMetricsBaseDays: Error setting content on MetricsBase collection", e);
+        }
 
-						JSONObject date = new JSONObject();
-						date.put(DATE_STR, sdfDays.format(lastDateCalendar.getTime()));
+    }
 
-						rootDaily.put(TIMESTAMP_STR, date);
+    private void loadMetricsBaseMonths(MongoBasicOpsDBRepository mongodbRepository) {
+        try {
 
-						JSONArray metrics = new JSONArray();
-						rootDaily.put(VALUES_STR, metrics);
+            SimpleDateFormat sdfMonths = new SimpleDateFormat(MetricQueryResolverImpl.FORMAT_MONTHS_MILLIS);
 
-						for (int hourIndex = 0; hourIndex < 24; hourIndex++) {
-							JSONObject metric = new JSONObject();
-							metric.put(VALUE_STR, 0);
-							metric.put(TIMESTAMP_STR, sdfHours.format(lastDateCalendar.getTime()));
-							lastDateCalendar.add(Calendar.HOUR, 1);
-							metrics.put(metric);
-						}
+            Date nowMonth = sdfMonths.parse(sdfMonths.format(new Date()));
 
-						mongodbRepository.insert(MongoBasicOpsDBRepository.METRICS_BASE, "", dataDaily.toString());
+            if (nowMonth.getTime() > this.lastCerosMonthlyInserted) {
 
-						currentIntancetime = sdfDays.parse(sdfDays.format(lastDateCalendar.getTime())).getTime();
-					}
-				}
-			}
+                this.lastCerosMonthlyInserted = nowMonth.getTime();
 
-		} catch (Exception e) {
-			log.error("loadMetricsBaseDays: Error setting content on MetricsBase collection", e);
-		}
+                SimpleDateFormat sdfDays = new SimpleDateFormat(MetricQueryResolverImpl.FORMAT_DAYS_MILLIS);
 
-	}
+                SimpleDateFormat dateFormatGmt = new SimpleDateFormat(MetricQueryResolverImpl.FORMAT_MONTHS_MILLIS);
+                dateFormatGmt.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-	private void loadMetricsBaseMonths(MongoBasicOpsDBRepository mongodbRepository) {
-		try {
+                Calendar nowCalendar = Calendar.getInstance();
+                nowCalendar.setTime(nowMonth);
 
-			SimpleDateFormat sdfMonths = new SimpleDateFormat(MetricQueryResolverImpl.FORMAT_MONTHS_MILLIS);
+                Calendar lastDateCalendar = Calendar.getInstance();
 
-			Date nowMonth = sdfMonths.parse(sdfMonths.format(new Date()));
+                List<String> dataMonths = mongodbRepository.queryNative(MongoBasicOpsDBRepository.METRICS_BASE,
+                                                                        "db.getCollection('MetricsBase').find" +
+                                                                                "({'TimeSerie.windowType':'MONTHS'}, " +
+                                                                                "{'TimeSerie.timestamp': 1 }).sort" +
+                                                                                "({'TimeSerie.timestamp': -1}).limit" +
+                                                                                "(1)");
 
-			if (nowMonth.getTime() > this.lastCerosMonthlyInserted) {
+                if (!dataMonths.isEmpty()) {
+                    long lastDate = JsonPath.read(dataMonths.get(0), TIMESERIE_DATE_STR);
+                    lastDateCalendar.setTime(sdfMonths.parse(dateFormatGmt.format(new Date(lastDate))));
 
-				this.lastCerosMonthlyInserted = nowMonth.getTime();
+                } else {
+                    lastDateCalendar.setTime(sdfMonths.parse("2018-12-01T00:00:00.000Z"));
+                }
 
-				SimpleDateFormat sdfDays = new SimpleDateFormat(MetricQueryResolverImpl.FORMAT_DAYS_MILLIS);
+                // Create Hourly empty windows
+                JSONObject dataMonthly = new JSONObject();
+                JSONObject rootMonthly = new JSONObject();
 
-				SimpleDateFormat dateFormatGmt = new SimpleDateFormat(MetricQueryResolverImpl.FORMAT_MONTHS_MILLIS);
-				dateFormatGmt.setTimeZone(TimeZone.getTimeZone("UTC"));
+                rootMonthly.put(WINDOW_TYPE_STR, "MONTHS");
+                dataMonthly.put(TIMESERIE_STR, rootMonthly);
 
-				Calendar nowCalendar = Calendar.getInstance();
-				nowCalendar.setTime(nowMonth);
+                long currentIntancetime = lastDateCalendar.getTime().getTime();
+                if (currentIntancetime < nowCalendar.getTime().getTime()) {
+                    lastDateCalendar.add(Calendar.MONTH, 1);
+                    while (currentIntancetime <= nowCalendar.getTime().getTime()) {
 
-				Calendar lastDateCalendar = Calendar.getInstance();
+                        JSONObject date = new JSONObject();
+                        date.put(DATE_STR, sdfMonths.format(lastDateCalendar.getTime()));
 
-				List<String> dataMonths = mongodbRepository.queryNative(MongoBasicOpsDBRepository.METRICS_BASE,
-						"db.getCollection('MetricsBase').find({'TimeSerie.windowType':'MONTHS'}, {'TimeSerie.timestamp': 1 }).sort({'TimeSerie.timestamp': -1}).limit(1)");
+                        rootMonthly.put(TIMESTAMP_STR, date);
 
-				if (!dataMonths.isEmpty()) {
-					long lastDate = JsonPath.read(dataMonths.get(0), TIMESERIE_DATE_STR);
-					lastDateCalendar.setTime(sdfMonths.parse(dateFormatGmt.format(new Date(lastDate))));
+                        JSONArray metrics = new JSONArray();
+                        rootMonthly.put(VALUES_STR, metrics);
 
-				} else {
-					lastDateCalendar.setTime(sdfMonths.parse("2018-12-01T00:00:00.000Z"));
-				}
+                        int daysInMonth = lastDateCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+                        for (int dayIndex = 0; dayIndex < daysInMonth; dayIndex++) {
+                            JSONObject metric = new JSONObject();
+                            metric.put(VALUE_STR, 0);
+                            metric.put(TIMESTAMP_STR, sdfDays.format(lastDateCalendar.getTime()));
+                            lastDateCalendar.add(Calendar.DATE, 1);
 
-				// Create Hourly empty windows
-				JSONObject dataMonthly = new JSONObject();
-				JSONObject rootMonthly = new JSONObject();
+                            metrics.put(metric);
+                        }
 
-				rootMonthly.put(WINDOW_TYPE_STR, "MONTHS");
-				dataMonthly.put(TIMESERIE_STR, rootMonthly);
+                        mongodbRepository.insert(MongoBasicOpsDBRepository.METRICS_BASE, "", dataMonthly.toString());
 
-				long currentIntancetime = lastDateCalendar.getTime().getTime();
-				if (currentIntancetime < nowCalendar.getTime().getTime()) {
-					lastDateCalendar.add(Calendar.MONTH, 1);
-					while (currentIntancetime <= nowCalendar.getTime().getTime()) {
+                        currentIntancetime = sdfMonths.parse(sdfMonths.format(lastDateCalendar.getTime())).getTime();
+                    }
+                }
+            }
 
-						JSONObject date = new JSONObject();
-						date.put(DATE_STR, sdfMonths.format(lastDateCalendar.getTime()));
+        } catch (Exception e) {
+            log.error("loadMetricsBaseMonths: Error setting content on MetricsBase collection", e);
+        }
+    }
 
-						rootMonthly.put(TIMESTAMP_STR, date);
+    @Data
+    @AllArgsConstructor
+    class MetricsObject {
+        private long timestamp;
+        private JSONArray metrics;
 
-						JSONArray metrics = new JSONArray();
-						rootMonthly.put(VALUES_STR, metrics);
+    }
 
-						int daysInMonth = lastDateCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-						for (int dayIndex = 0; dayIndex < daysInMonth; dayIndex++) {
-							JSONObject metric = new JSONObject();
-							metric.put(VALUE_STR, 0);
-							metric.put(TIMESTAMP_STR, sdfDays.format(lastDateCalendar.getTime()));
-							lastDateCalendar.add(Calendar.DATE, 1);
+    private List<MetricsObject> extractMetrics(List<String> data) {
+        List<MetricsObject> lMetrics = new ArrayList<>();
 
-							metrics.put(metric);
-						}
+        data.forEach(dataUnit -> {
+            try {
+                // La unidad de tiempo la tengo en la instancia
+                Map<String, Integer> values = JsonPath.read(dataUnit, "$.TimeSerie.values.v");
+                String windowType = JsonPath.read(dataUnit, "$.TimeSerie.windowType"); // Puede ser:
+                // HOURS --> 1 por minuto
+                // DAYS --> 1 por hora
+                // MONTHS --> 1 por dia
 
-						mongodbRepository.insert(MongoBasicOpsDBRepository.METRICS_BASE, "", dataMonthly.toString());
+                long date = JsonPath.read(dataUnit, TIMESERIE_DATE_STR);
 
-						currentIntancetime = sdfMonths.parse(sdfMonths.format(lastDateCalendar.getTime())).getTime();
-					}
-				}
-			}
 
-		} catch (Exception e) {
-			log.error("loadMetricsBaseMonths: Error setting content on MetricsBase collection", e);
-		}
-	}
+                JSONArray metrics = null;
+                if (windowType.equals("HOURS")) {
+                    metrics = buildMetricsHours(date, values);
 
-	@Data
-	@AllArgsConstructor
-	class MetricsObject {
-		private long timestamp;
-		private JSONArray metrics;
+                } else if (windowType.equals("DAYS")) {
+                    metrics = buildMetricsDays(date, values);
 
-	}
+                } else if (windowType.equals("MONTHS")) {
+                    metrics = buildMetricsMonths(date, values);
+                }
 
-	private List<MetricsObject> extractMetrics(List<String> data) {
-		List<MetricsObject> lMetrics = new ArrayList<>();
+                lMetrics.add(new MetricsObject(date, metrics));
 
-		data.forEach(dataUnit -> {
-			try {
-				// La unidad de tiempo la tengo en la instancia
-				Map<String, Integer> values = JsonPath.read(dataUnit, "$.TimeSerie.values.v");
-				String windowType = JsonPath.read(dataUnit, "$.TimeSerie.windowType"); // Puede ser:
-																						// HOURS --> 1 por minuto
-																						// DAYS --> 1 por hora
-																						// MONTHS --> 1 por dia
+            } catch (Exception e) {
+                Log.error("Error processing metrics from date", e);
+            }
+        });
+        return lMetrics;
+    }
 
-				long date = JsonPath.read(dataUnit, TIMESERIE_DATE_STR);
+    private List<MetricsObject> extractCeros(List<String> data) {
+        List<MetricsObject> lMetrics = new ArrayList<>();
 
+        data.forEach(dataUnit -> {
+            try {
+                String ceros = JsonPath.read(dataUnit, "$.TimeSerie.values").toString();
 
-				JSONArray metrics = null;
-				if (windowType.equals("HOURS")) {
-					metrics = buildMetricsHours(date, values);
+                long date = JsonPath.read(dataUnit, TIMESERIE_DATE_STR);
 
-				} else if (windowType.equals("DAYS")) {
-					metrics = buildMetricsDays(date, values);
+                MetricsObject cero = new MetricsObject(date, new JSONArray(ceros));
+                lMetrics.add(cero);
 
-				} else if (windowType.equals("MONTHS")) {
-					metrics = buildMetricsMonths(date, values);
-				}
+            } catch (Exception e) {
+                Log.error("Error processing metrics from date", e);
+            }
+        });
+        return lMetrics;
+    }
 
-				lMetrics.add(new MetricsObject(date, metrics));
+    private JSONArray buildMetricsHours(long date, Map<String, Integer> values) throws Exception {
+        JSONArray metrics = new JSONArray();
 
-			} catch (Exception e) {
-				Log.error("Error processing metrics from date", e);
-			}
-		});
-		return lMetrics;
-	}
+        // Prepare Initial time
+        SimpleDateFormat sdfMinutes = new SimpleDateFormat(FORMAT_MINUTES_MILLIS);
+        SimpleDateFormat sdfHours = new SimpleDateFormat(FORMAT_HOURS);
 
-	private List<MetricsObject> extractCeros(List<String> data) {
-		List<MetricsObject> lMetrics = new ArrayList<>();
+        sdfMinutes.setTimeZone(TimeZone.getTimeZone(timeZone));
 
-		data.forEach(dataUnit -> {
-			try {
-				String ceros = JsonPath.read(dataUnit, "$.TimeSerie.values").toString();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(sdfHours.parse(sdfHours.format(new Date(date))));
 
-				long date = JsonPath.read(dataUnit, TIMESERIE_DATE_STR);
+        for (int i = 0; i < MINUTES_IN_HOUR; i++) {
+            String timestamp = sdfMinutes.format(cal.getTime());
 
-				MetricsObject cero = new MetricsObject(date, new JSONArray(ceros));
-				lMetrics.add(cero);
+            int value = values.get(Integer.toString(i));
 
-			} catch (Exception e) {
-				Log.error("Error processing metrics from date", e);
-			}
-		});
-		return lMetrics;
-	}
+            JSONObject metric = new JSONObject();
+            metric.put(TIMESTAMP_STR, timestamp);
+            metric.put(VALUE_STR, value);
 
-	private JSONArray buildMetricsHours(long date, Map<String, Integer> values) throws Exception {
-		JSONArray metrics = new JSONArray();
+            metrics.put(metric);
 
-		// Prepare Initial time
-		SimpleDateFormat sdfMinutes = new SimpleDateFormat(FORMAT_MINUTES_MILLIS);
-		SimpleDateFormat sdfHours = new SimpleDateFormat(FORMAT_HOURS);
+            cal.add(Calendar.MINUTE, 1);
+        }
 
-		sdfMinutes.setTimeZone(TimeZone.getTimeZone(timeZone));
+        return metrics;
 
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(sdfHours.parse(sdfHours.format(new Date(date))));
+    }
 
-		for (int i = 0; i < MINUTES_IN_HOUR; i++) {
-			String timestamp = sdfMinutes.format(cal.getTime());
+    private JSONArray buildMetricsDays(long date, Map<String, Integer> values) throws Exception {
+        JSONArray metrics = new JSONArray();
 
-			int value = values.get(Integer.toString(i));
+        // Prepare Initial time
+        SimpleDateFormat sdfHours = new SimpleDateFormat(FORMAT_HOURS_MILLIS);
+        SimpleDateFormat sdfDays = new SimpleDateFormat(FORMAT_DAYS);
 
-			JSONObject metric = new JSONObject();
-			metric.put(TIMESTAMP_STR, timestamp);
-			metric.put(VALUE_STR, value);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(sdfDays.parse(sdfDays.format(new Date(date))));
 
-			metrics.put(metric);
+        for (int i = 0; i < HOURS_IN_DAY; i++) {
+            String timestamp = sdfHours.format(cal.getTime());
 
-			cal.add(Calendar.MINUTE, 1);
-		}
+            int value = values.get(Integer.toString(i));
 
-		return metrics;
+            JSONObject metric = new JSONObject();
+            metric.put(TIMESTAMP_STR, timestamp);
+            metric.put(VALUE_STR, value);
 
-	}
+            metrics.put(metric);
 
-	private JSONArray buildMetricsDays(long date, Map<String, Integer> values) throws Exception {
-		JSONArray metrics = new JSONArray();
+            cal.add(Calendar.HOUR, 1);
+        }
 
-		// Prepare Initial time
-		SimpleDateFormat sdfHours = new SimpleDateFormat(FORMAT_HOURS_MILLIS);
-		SimpleDateFormat sdfDays = new SimpleDateFormat(FORMAT_DAYS);
+        return metrics;
+    }
 
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(sdfDays.parse(sdfDays.format(new Date(date))));
+    private JSONArray buildMetricsMonths(long date, Map<String, Integer> values) throws Exception {
+        JSONArray metrics = new JSONArray();
 
-		for (int i = 0; i < HOURS_IN_DAY; i++) {
-			String timestamp = sdfHours.format(cal.getTime());
+        // Prepare Initial time
+        SimpleDateFormat sdfDays = new SimpleDateFormat(FORMAT_DAYS_MILLIS);
+        SimpleDateFormat sdfMonths = new SimpleDateFormat(FORMAT_MONTHS);
 
-			int value = values.get(Integer.toString(i));
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(sdfMonths.parse(sdfMonths.format(new Date(date))));
 
-			JSONObject metric = new JSONObject();
-			metric.put(TIMESTAMP_STR, timestamp);
-			metric.put(VALUE_STR, value);
+        for (int i = 0; i < cal.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
+            String timestamp = sdfDays.format(cal.getTime());
 
-			metrics.put(metric);
+            int value = values.get(Integer.toString(i + 1));
 
-			cal.add(Calendar.HOUR, 1);
-		}
+            JSONObject metric = new JSONObject();
+            metric.put(TIMESTAMP_STR, timestamp);
+            metric.put(VALUE_STR, value);
 
-		return metrics;
-	}
+            metrics.put(metric);
+            cal.add(Calendar.DATE, 1);
+        }
 
-	private JSONArray buildMetricsMonths(long date, Map<String, Integer> values) throws Exception {
-		JSONArray metrics = new JSONArray();
-
-		// Prepare Initial time
-		SimpleDateFormat sdfDays = new SimpleDateFormat(FORMAT_DAYS_MILLIS);
-		SimpleDateFormat sdfMonths = new SimpleDateFormat(FORMAT_MONTHS);
-
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(sdfMonths.parse(sdfMonths.format(new Date(date))));
-
-		for (int i = 0; i < cal.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
-			String timestamp = sdfDays.format(cal.getTime());
-
-			int value = values.get(Integer.toString(i + 1));
-
-			JSONObject metric = new JSONObject();
-			metric.put(TIMESTAMP_STR, timestamp);
-			metric.put(VALUE_STR, value);
-
-			metrics.put(metric);
-			cal.add(Calendar.DATE, 1);
-		}
-
-		return metrics;
-	}
+        return metrics;
+    }
 
 }

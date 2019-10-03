@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -53,113 +53,113 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SingleKuduResultSetExtractor implements ResultSetExtractor<String> {
 
-	@Override
-	public String extractData(ResultSet rs) throws SQLException {
+    @Override
+    public String extractData(ResultSet rs) throws SQLException {
 
-		ObjectMapper mapper = new ObjectMapper();
-		JSONObject obj = new JSONObject();
+        ObjectMapper mapper = new ObjectMapper();
+        JSONObject obj = new JSONObject();
 
-		while (rs.next()) {
+        while (rs.next()) {
 
-			int total_rows = rs.getMetaData().getColumnCount();
+            int total_rows = rs.getMetaData().getColumnCount();
 
-			JSONObject contextData = new JSONObject();
+            JSONObject contextData = new JSONObject();
 
-			Geometry geometry = new Geometry();
-			geometry.setType(GeometryType.POINT);
+            Geometry geometry = new Geometry();
+            geometry.setType(GeometryType.POINT);
 
-			for (int i = 0; i < total_rows; i++) {
+            for (int i = 0; i < total_rows; i++) {
 
-				try {
+                try {
 
-					String columnName = rs.getMetaData().getColumnLabel(i + 1);
+                    String columnName = rs.getMetaData().getColumnLabel(i + 1);
 
-					if (isContexDataField(columnName)) {
-						addToContextData(columnName, rs.getObject(i + 1), contextData);
-					} else if (isTimeStamp(rs.getMetaData().getColumnType(i + 1))) {
+                    if (isContexDataField(columnName)) {
+                        addToContextData(columnName, rs.getObject(i + 1), contextData);
+                    } else if (isTimeStamp(rs.getMetaData().getColumnType(i + 1))) {
 
-						Timestamp val = rs.getTimestamp(i + 1);
-						String value = getDateTimeFormatted(val);
+                        Timestamp val = rs.getTimestamp(i + 1);
+                        String value = getDateTimeFormatted(val);
 
-						JSONObject date = new JSONObject().put("$date", value);
-						obj.put(rs.getMetaData().getColumnLabel(i + 1), date);
+                        JSONObject date = new JSONObject().put("$date", value);
+                        obj.put(rs.getMetaData().getColumnLabel(i + 1), date);
 
-					} else if (isGeometry(columnName)) {
-						try {
-							addToGeometry(columnName, rs.getDouble(i + 1), geometry);
-							obj.put(getGeometryColumnName(columnName),
-									new JSONObject(mapper.writeValueAsString(geometry)));
+                    } else if (isGeometry(columnName)) {
+                        try {
+                            addToGeometry(columnName, rs.getDouble(i + 1), geometry);
+                            obj.put(getGeometryColumnName(columnName),
+                                    new JSONObject(mapper.writeValueAsString(geometry)));
 
-						} catch (JSONException | JsonProcessingException e) {
-							log.error("", e);
-						}
+                        } catch (JSONException | JsonProcessingException e) {
+                            log.error("", e);
+                        }
 
-					} else {
-						obj.put(columnName, rs.getObject(i + 1));
-					}
-				} catch (JSONException e) {
-					log.error("error parsing json ", e);
-				}
-			}
+                    } else {
+                        obj.put(columnName, rs.getObject(i + 1));
+                    }
+                } catch (JSONException e) {
+                    log.error("error parsing json ", e);
+                }
+            }
 
-			obj.put("contextData", contextData);
+            obj.put("contextData", contextData);
 
-		}
-		return obj.toString();
-	}
+        }
+        return obj.toString();
+    }
 
-	public boolean isContexDataField(String columnName) {
-		return columnName.startsWith(CONTEXT_DATA_FIELD_PREFIX.toLowerCase());
-	}
+    public boolean isContexDataField(String columnName) {
+        return columnName.startsWith(CONTEXT_DATA_FIELD_PREFIX.toLowerCase());
+    }
 
-	public boolean isTimeStamp(int columnType) {
-		return java.sql.Types.TIMESTAMP == columnType;
-	}
+    public boolean isTimeStamp(int columnType) {
+        return java.sql.Types.TIMESTAMP == columnType;
+    }
 
-	public boolean isGeometry(String columnName) {
-		return columnName.toLowerCase().endsWith(HiveFieldType.LATITUDE_FIELD)
-				|| columnName.toLowerCase().endsWith(HiveFieldType.LONGITUDE_FIELD);
-	}
+    public boolean isGeometry(String columnName) {
+        return columnName.toLowerCase().endsWith(HiveFieldType.LATITUDE_FIELD) || columnName.toLowerCase().endsWith(
+                HiveFieldType.LONGITUDE_FIELD);
+    }
 
-	public void addToContextData(String columnName, Object value, JSONObject contextData) {
-		if (CONTEXT_DATA_FIELD_DEVICE_TEMPLATE.equalsIgnoreCase(columnName)) {
-			contextData.put(FIELD_DEVICE_TEMPLATE, value);
-		} else if (CONTEXT_DATA_FIELD_DEVICE.equalsIgnoreCase(columnName)) {
-			contextData.put(FIELD_DEVICE, value);
-		} else if (CONTEXT_DATA_FIELD_DEVICE_TEMPLATE_CONNECTION.equalsIgnoreCase(columnName)) {
-			contextData.put(FIELD_DEVICE_TEMPLATE_CONNECTION, value);
-		} else if (CONTEXT_DATA_FIELD_CLIENT_SESSION.equalsIgnoreCase(columnName)) {
-			contextData.put(FIELD_CLIENT_SESSION, value);
-		} else if (CONTEXT_DATA_FIELD_USER.equalsIgnoreCase(columnName)) {
-			contextData.put(FIELD_USER, value);
-		} else if (CONTEXT_DATA_FIELD_TIMEZONE_ID.equalsIgnoreCase(columnName)) {
-			contextData.put(FIELD_TIMEZONE_ID, value);
-		} else if (CONTEXT_DATA_FIELD_TIMESTAMP.equalsIgnoreCase(columnName)) {
-			contextData.put(FIELD_TIMESTAMP, value);
-		} else if (CONTEXT_DATA_FIELD_TIMESTAMP_MILLIS.equalsIgnoreCase(columnName)) {
-			contextData.put(FIELD_TIMESTAMP_MILLIS, value);
-		}
-	}
+    public void addToContextData(String columnName, Object value, JSONObject contextData) {
+        if (CONTEXT_DATA_FIELD_DEVICE_TEMPLATE.equalsIgnoreCase(columnName)) {
+            contextData.put(FIELD_DEVICE_TEMPLATE, value);
+        } else if (CONTEXT_DATA_FIELD_DEVICE.equalsIgnoreCase(columnName)) {
+            contextData.put(FIELD_DEVICE, value);
+        } else if (CONTEXT_DATA_FIELD_DEVICE_TEMPLATE_CONNECTION.equalsIgnoreCase(columnName)) {
+            contextData.put(FIELD_DEVICE_TEMPLATE_CONNECTION, value);
+        } else if (CONTEXT_DATA_FIELD_CLIENT_SESSION.equalsIgnoreCase(columnName)) {
+            contextData.put(FIELD_CLIENT_SESSION, value);
+        } else if (CONTEXT_DATA_FIELD_USER.equalsIgnoreCase(columnName)) {
+            contextData.put(FIELD_USER, value);
+        } else if (CONTEXT_DATA_FIELD_TIMEZONE_ID.equalsIgnoreCase(columnName)) {
+            contextData.put(FIELD_TIMEZONE_ID, value);
+        } else if (CONTEXT_DATA_FIELD_TIMESTAMP.equalsIgnoreCase(columnName)) {
+            contextData.put(FIELD_TIMESTAMP, value);
+        } else if (CONTEXT_DATA_FIELD_TIMESTAMP_MILLIS.equalsIgnoreCase(columnName)) {
+            contextData.put(FIELD_TIMESTAMP_MILLIS, value);
+        }
+    }
 
-	public String getDateTimeFormatted(Timestamp val) {
-		Date dateVal = new Date(val.getTime());
-		String value = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(dateVal);
-		return value;
-	}
+    public String getDateTimeFormatted(Timestamp val) {
+        Date dateVal = new Date(val.getTime());
+        String value = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(dateVal);
+        return value;
+    }
 
-	public void addToGeometry(String columnName, double value, Geometry geometry) {
-		if (columnName.toLowerCase().endsWith(HiveFieldType.LATITUDE_FIELD)) {
-			geometry.getCoordinates()[0] = value;
-		} else if (columnName.toLowerCase().endsWith(HiveFieldType.LONGITUDE_FIELD)) {
-			geometry.getCoordinates()[1] = value;
-		}
-	}
+    public void addToGeometry(String columnName, double value, Geometry geometry) {
+        if (columnName.toLowerCase().endsWith(HiveFieldType.LATITUDE_FIELD)) {
+            geometry.getCoordinates()[0] = value;
+        } else if (columnName.toLowerCase().endsWith(HiveFieldType.LONGITUDE_FIELD)) {
+            geometry.getCoordinates()[1] = value;
+        }
+    }
 
-	public String getGeometryColumnName(String columnName) {
-		String geometryColumnName = columnName;
-		geometryColumnName = geometryColumnName.replace(HiveFieldType.LATITUDE_FIELD, "");
-		geometryColumnName = geometryColumnName.replace(HiveFieldType.LONGITUDE_FIELD, "");
-		return geometryColumnName;
-	}
+    public String getGeometryColumnName(String columnName) {
+        String geometryColumnName = columnName;
+        geometryColumnName = geometryColumnName.replace(HiveFieldType.LATITUDE_FIELD, "");
+        geometryColumnName = geometryColumnName.replace(HiveFieldType.LONGITUDE_FIELD, "");
+        return geometryColumnName;
+    }
 
 }

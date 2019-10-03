@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
- // Controller for Test Origin Stage Configuration.
+// Controller for Test Origin Stage Configuration.
 angular
-  .module('dataCollectorApp.home')
-  .controller('TestOriginConfigurationController', ["$scope", "pipelineService", function ($scope, pipelineService) {
-    var initialize = function() {
-      $scope.detailPaneConfig = $scope.testOriginStageConfig;
-      $scope.detailPaneServices = [];
-      angular.forEach($scope.detailPaneConfig.services, function(serviceConfig) {
-        $scope.detailPaneServices.push({
-          definition: pipelineService.getServiceDefinition(serviceConfig.service),
-          config: serviceConfig
+    .module('dataCollectorApp.home')
+    .controller('TestOriginConfigurationController', ["$scope", "pipelineService", function ($scope, pipelineService) {
+        var initialize = function () {
+            $scope.detailPaneConfig = $scope.testOriginStageConfig;
+            $scope.detailPaneServices = [];
+            angular.forEach($scope.detailPaneConfig.services, function (serviceConfig) {
+                $scope.detailPaneServices.push({
+                    definition: pipelineService.getServiceDefinition(serviceConfig.service),
+                    config: serviceConfig
+                });
+            });
+        };
+
+        $scope.$watch('testOriginStageConfig', function () {
+            initialize();
         });
-      });
-    };
 
-    $scope.$watch('testOriginStageConfig', function() {
-      initialize();
-    });
-
-    initialize();
-  }]);
+        initialize();
+    }]);

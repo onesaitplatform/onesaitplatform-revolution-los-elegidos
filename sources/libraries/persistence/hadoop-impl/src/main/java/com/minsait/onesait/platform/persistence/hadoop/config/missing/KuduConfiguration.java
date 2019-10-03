@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,33 +37,33 @@ import lombok.extern.slf4j.Slf4j;
 @Conditional(HadoopEnabledCondition.class)
 public class KuduConfiguration {
 
-	@Autowired
-	@Qualifier("defaultQueryAsTextDBRepository")
-	private QueryAsTextDBRepository defaultQueryAsTextDBRepository;
+    @Autowired
+    @Qualifier("defaultQueryAsTextDBRepository")
+    private QueryAsTextDBRepository defaultQueryAsTextDBRepository;
 
-	@Autowired
-	@Qualifier("defaultManageDBRepository")
-	private ManageDBRepository defaultManageDBRepository;
+    @Autowired
+    @Qualifier("defaultManageDBRepository")
+    private ManageDBRepository defaultManageDBRepository;
 
-	@Autowired
-	@Qualifier("defaultBasicOpsDBRepository")
-	private BasicOpsDBRepository defaultBasicOpsDBRepository;
+    @Autowired
+    @Qualifier("defaultBasicOpsDBRepository")
+    private BasicOpsDBRepository defaultBasicOpsDBRepository;
 
-	@Bean(name = KUDU_QUERY_REPO_BEAN_NAME)
-	@Conditional(HadoopDisabledCondition.class)
-	public QueryAsTextDBRepository kuduDefaultQueryTextDBRepository() {
-		return defaultQueryAsTextDBRepository;
-	}
+    @Bean(name = KUDU_QUERY_REPO_BEAN_NAME)
+    @Conditional(HadoopDisabledCondition.class)
+    public QueryAsTextDBRepository kuduDefaultQueryTextDBRepository() {
+        return defaultQueryAsTextDBRepository;
+    }
 
-	@Bean(name = KUDU_MANAGE_DB_REPO_BEAN_NAME)
-	@Conditional(HadoopDisabledCondition.class)
-	public ManageDBRepository kuduDefaultManageDBRepository() {
-		return defaultManageDBRepository;
-	}
+    @Bean(name = KUDU_MANAGE_DB_REPO_BEAN_NAME)
+    @Conditional(HadoopDisabledCondition.class)
+    public ManageDBRepository kuduDefaultManageDBRepository() {
+        return defaultManageDBRepository;
+    }
 
-	@Bean(name = KUDU_BASIC_OPS_BEAN_NAME)
-	@Conditional(HadoopDisabledCondition.class)
-	public BasicOpsDBRepository kuduDefaultBasicOpsDBRepository() {
-		return defaultBasicOpsDBRepository;
-	}
+    @Bean(name = KUDU_BASIC_OPS_BEAN_NAME)
+    @Conditional(HadoopDisabledCondition.class)
+    public BasicOpsDBRepository kuduDefaultBasicOpsDBRepository() {
+        return defaultBasicOpsDBRepository;
+    }
 }

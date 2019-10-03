@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,26 +33,26 @@ import lombok.Setter;
 @Configurable
 @Entity
 @Table(name = "ACTIONS_DIGITAL_TWIN_TYPE")
-public class ActionsDigitalTwinType extends AuditableEntityWithUUID{
-	
-	private static final long serialVersionUID = 1L;
-	
-	@ManyToOne
-	@JoinColumn(name = "TYPE_ID", referencedColumnName = "ID", nullable = false)
-	@OnDelete(action = OnDeleteAction.NO_ACTION)
-	@Getter
-	@Setter
-	private DigitalTwinType typeId;
-	
-	@Column(name = "NAME", length = 50, unique = false, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String name;
-	
-	@Column(name = "DESCRIPTION", length = 512)
-	@Getter
-	@Setter
-	private String description;
-	
+public class ActionsDigitalTwinType extends AuditableEntityWithUUID {
+
+    private static final long serialVersionUID = 1L;
+
+    @ManyToOne
+    @JoinColumn(name = "TYPE_ID", referencedColumnName = "ID", nullable = false)
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @Getter
+    @Setter
+    private DigitalTwinType typeId;
+
+    @Column(name = "NAME", length = 50, unique = false, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String name;
+
+    @Column(name = "DESCRIPTION", length = 512)
+    @Getter
+    @Setter
+    private String description;
+
 }

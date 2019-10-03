@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,73 +30,73 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class OntologyLogicService {
 
-	@Autowired
-	private ManageDBPersistenceServiceFacade manageDBPersistenceServiceFacade;
+    @Autowired
+    private ManageDBPersistenceServiceFacade manageDBPersistenceServiceFacade;
 
-	public void createOntology(Ontology ontology, Map<String, String> config) {
+    public void createOntology(Ontology ontology, Map<String, String> config) {
 
-		try {
+        try {
 
-			log.debug("create ontology in db " + ontology.getRtdbDatasource());
-			manageDBPersistenceServiceFacade.createTable4Ontology(ontology.getIdentification(),
-					ontology.getJsonSchema(), config);
+            log.debug("create ontology in db " + ontology.getRtdbDatasource());
+            manageDBPersistenceServiceFacade.createTable4Ontology(ontology.getIdentification(),
+                                                                  ontology.getJsonSchema(), config);
 
-		} catch (final Exception e) {
+        } catch (final Exception e) {
 
-			throw new OntologyServiceException("Problems creating the ontology." + e.getMessage(), e);
-		}
+            throw new OntologyServiceException("Problems creating the ontology." + e.getMessage(), e);
+        }
 
-		log.debug("ontology created");
-	}
+        log.debug("ontology created");
+    }
 
-	public Map<String, String> getAdditionalDBConfig(Ontology ontology) {
-		log.debug("Get internal config in ontology " + ontology.getRtdbDatasource());
-		try {
-			return manageDBPersistenceServiceFacade.getAdditionalDBConfig(ontology.getIdentification());
-		} catch (final Exception e) {
-			throw new OntologyLogicServiceException(
-					"Problems getting internal DB config of the ontology." + e.getMessage(), e);
-		}
-	}
+    public Map<String, String> getAdditionalDBConfig(Ontology ontology) {
+        log.debug("Get internal config in ontology " + ontology.getRtdbDatasource());
+        try {
+            return manageDBPersistenceServiceFacade.getAdditionalDBConfig(ontology.getIdentification());
+        } catch (final Exception e) {
+            throw new OntologyLogicServiceException(
+                    "Problems getting internal DB config of the ontology." + e.getMessage(), e);
+        }
+    }
 
-	public void updateOntology(Ontology ontology, HashMap<String, String> config) {
-		try {
+    public void updateOntology(Ontology ontology, HashMap<String, String> config) {
+        try {
 
-			log.debug("update ontology in db " + ontology.getRtdbDatasource());
-			manageDBPersistenceServiceFacade.updateTable4Ontology(ontology.getIdentification(),
-					ontology.getJsonSchema(), config);
+            log.debug("update ontology in db " + ontology.getRtdbDatasource());
+            manageDBPersistenceServiceFacade.updateTable4Ontology(ontology.getIdentification(),
+                                                                  ontology.getJsonSchema(), config);
 
-		} catch (final Exception e) {
+        } catch (final Exception e) {
 
-			throw new OntologyLogicServiceException("Problems updating the ontology." + e.getMessage(), e);
-		}
+            throw new OntologyLogicServiceException("Problems updating the ontology." + e.getMessage(), e);
+        }
 
-		log.debug("ontology updated");
+        log.debug("ontology updated");
 
-	}
+    }
 
-	public void checkSameInternalDBConfig(Ontology ontology, HashMap<String, String> configToConfigMap) {
+    public void checkSameInternalDBConfig(Ontology ontology, HashMap<String, String> configToConfigMap) {
 
-		Map<String, String> prevConfig = getAdditionalDBConfig(ontology);
-		for (Map.Entry<String, String> entry : prevConfig.entrySet()) {
-			String configKey = entry.getKey();
-			String configValue = entry.getValue();
-			if (configValue == null) {
-				if (configToConfigMap.containsKey(configKey) && configToConfigMap.get(configKey) != null) {
-					throw new OntologyLogicServiceException("Incompatible internal config DB: " + configKey
-							+ ", previous value null, next value " + configToConfigMap.get(configKey));
-				}
-			} else {
-				if (!configToConfigMap.containsKey(configKey) || configToConfigMap.get(configKey) == null
-						|| !configToConfigMap.get(configKey).equals(configValue)) {
-					throw new OntologyLogicServiceException("Incompatible internal config DB: " + configKey
-							+ ", previous value " + configValue + ", next value "
-							+ (!configToConfigMap.containsKey(configKey) || configToConfigMap.get(configKey) == null
-									? "null"
-									: configToConfigMap.get(configKey)));
-				}
-			}
-		}
-	}
+        Map<String, String> prevConfig = getAdditionalDBConfig(ontology);
+        for (Map.Entry<String, String> entry : prevConfig.entrySet()) {
+            String configKey = entry.getKey();
+            String configValue = entry.getValue();
+            if (configValue == null) {
+                if (configToConfigMap.containsKey(configKey) && configToConfigMap.get(configKey) != null) {
+                    throw new OntologyLogicServiceException(
+                            "Incompatible internal config DB: " + configKey + ", previous value null, next value " + configToConfigMap.get(
+                                    configKey));
+                }
+            } else {
+                if (!configToConfigMap.containsKey(configKey) || configToConfigMap.get(
+                        configKey) == null || !configToConfigMap.get(configKey).equals(configValue)) {
+                    throw new OntologyLogicServiceException(
+                            "Incompatible internal config DB: " + configKey + ", previous value " + configValue + ", next value " + (
+                                    !configToConfigMap.containsKey(configKey) || configToConfigMap.get(
+                                            configKey) == null ? "null" : configToConfigMap.get(configKey)));
+                }
+            }
+        }
+    }
 
 }

@@ -1,15 +1,15 @@
 (function (root, factory) {
-  'use strict';
+    'use strict';
 
-  if (typeof define === 'function' && define.amd) {
-    define(['angular'], factory);
-  } else if (typeof exports === 'object') {
-    module.exports = factory(require('angular'));
-  } else {
-    // Browser globals (root is window), we don't register it.
-    factory(root.angular);
-  }
-}(this , function (angular) {
+    if (typeof define === 'function' && define.amd) {
+        define(['angular'], factory);
+    } else if (typeof exports === 'object') {
+        module.exports = factory(require('angular'));
+    } else {
+        // Browser globals (root is window), we don't register it.
+        factory(root.angular);
+    }
+}(this, function (angular) {
     'use strict';
 
     /**
@@ -26,16 +26,16 @@
      * @requires $window
      */
 
-    .factory('$localStorage', _storageFactory('localStorage'))
+        .factory('$localStorage', _storageFactory('localStorage'))
 
-    /**
-     * @ngdoc object
-     * @name ngStorage.$sessionStorage
-     * @requires $rootScope
-     * @requires $window
-     */
+        /**
+         * @ngdoc object
+         * @name ngStorage.$sessionStorage
+         * @requires $rootScope
+         * @requires $window
+         */
 
-    .factory('$sessionStorage', _storageFactory('sessionStorage'));
+        .factory('$sessionStorage', _storageFactory('sessionStorage'));
 
     function _storageFactory(storageType) {
         return [
@@ -44,12 +44,12 @@
             '$log',
             '$timeout',
 
-            function(
+            function (
                 $rootScope,
                 $window,
                 $log,
                 $timeout
-            ){
+            ) {
                 function isStorageSupported(storageType) {
 
                     // Some installations of IE, for an unknown reason, throw "SCRIPT5: Error: Access is denied"
@@ -61,8 +61,7 @@
                     var supported;
                     try {
                         supported = $window[storageType];
-                    }
-                    catch (err) {
+                    } catch (err) {
                         supported = false;
                     }
 
@@ -75,8 +74,7 @@
                         try {
                             localStorage.setItem(key, key);
                             localStorage.removeItem(key);
-                        }
-                        catch (err) {
+                        } catch (err) {
                             supported = false;
                         }
                     }
@@ -85,16 +83,20 @@
                 }
 
                 // #9: Assign a placeholder object if Web Storage is unavailable to prevent breaking the entire AngularJS app
-                var webStorage = isStorageSupported(storageType) || ($log.warn('This browser does not support Web Storage!'), {setItem: function() {}, getItem: function() {}}),
+                var webStorage = isStorageSupported(storageType) || ($log.warn('This browser does not support Web Storage!'), {
+                        setItem: function () {
+                        }, getItem: function () {
+                        }
+                    }),
                     $storage = {
-                        $default: function(items) {
+                        $default: function (items) {
                             for (var k in items) {
                                 angular.isDefined($storage[k]) || ($storage[k] = items[k]);
                             }
 
                             return $storage;
                         },
-                        $reset: function(items) {
+                        $reset: function (items) {
                             for (var k in $storage) {
                                 '$' === k[0] || (delete $storage[k] && webStorage.removeItem('ngStorage-' + k));
                             }
@@ -108,7 +110,7 @@
                 try {
                     webStorage = $window[storageType];
                     webStorage.length;
-                } catch(e) {
+                } catch (e) {
                     $log.warn('This browser does not support Web Storage!');
                     webStorage = {};
                 }
@@ -120,14 +122,14 @@
 
                 _last$storage = angular.copy($storage);
 
-                $rootScope.$watch(function() {
+                $rootScope.$watch(function () {
                     var temp$storage;
-                    _debounce || (_debounce = $timeout(function() {
+                    _debounce || (_debounce = $timeout(function () {
                         _debounce = null;
 
                         if (!angular.equals($storage, _last$storage)) {
                             temp$storage = angular.copy(_last$storage);
-                            angular.forEach($storage, function(v, k) {
+                            angular.forEach($storage, function (v, k) {
                                 angular.isDefined(v) && '$' !== k[0] && webStorage.setItem('ngStorage-' + k, angular.toJson(v));
 
                                 delete temp$storage[k];
@@ -143,7 +145,7 @@
                 });
 
                 // #6: Use `$window.addEventListener` instead of `angular.element` to avoid the jQuery-specific `event.originalEvent`
-                $window.addEventListener && $window.addEventListener('storage', function(event) {
+                $window.addEventListener && $window.addEventListener('storage', function (event) {
                     if ('ngStorage-' === event.key.slice(0, 10)) {
                         event.newValue ? $storage[event.key.slice(10)] = angular.fromJson(event.newValue) : delete $storage[event.key.slice(10)];
 

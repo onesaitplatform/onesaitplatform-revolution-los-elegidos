@@ -6,14 +6,14 @@
 * Version: 4.0.0-beta.19
 */
 
-!function(factory) {
-    "function" == typeof define && define.amd ? define([ "../inputmask" ], factory) : "object" == typeof exports ? module.exports = factory(require("../inputmask")) : factory(window.Inputmask);
-}(function(Inputmask) {
+!function (factory) {
+    "function" == typeof define && define.amd ? define(["../inputmask"], factory) : "object" == typeof exports ? module.exports = factory(require("../inputmask")) : factory(window.Inputmask);
+}(function (Inputmask) {
     return Inputmask.extendAliases({
         phonemx: {
             alias: "abstractphone",
             countrycode: "52",
-            phoneCodes: [ {
+            phoneCodes: [{
                 mask: "+52 (744) ###-####",
                 cc: "MX",
                 cd: "Mexico",
@@ -373,7 +373,7 @@
                 cc: "MX",
                 cd: "Mexico",
                 city: "Zapopan"
-            } ]
+            }]
         }
     }), Inputmask;
 });

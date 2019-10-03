@@ -18,38 +18,38 @@
  */
 
 angular
-  .module('dataCollectorApp')
-  .controller('DisableDPMModalInstanceController', function ($scope, $modalInstance, api, authService) {
-    angular.extend($scope, {
-      common: {
-        errors: []
-      },
-      isRemoteUserOrgAdmin: authService.isRemoteUserOrgAdmin(),
-      isDisableInProgress: false,
-      dpmDisabled: false,
-      isRestartInProgress: false,
+    .module('dataCollectorApp')
+    .controller('DisableDPMModalInstanceController', function ($scope, $modalInstance, api, authService) {
+        angular.extend($scope, {
+            common: {
+                errors: []
+            },
+            isRemoteUserOrgAdmin: authService.isRemoteUserOrgAdmin(),
+            isDisableInProgress: false,
+            dpmDisabled: false,
+            isRestartInProgress: false,
 
-      onDisableDPMSubmit: function() {
-        $scope.common.errors = [];
-        $scope.isDisableInProgress = true;
-        api.admin.disableDPM()
-          .then(function() {
-            $scope.isDisableInProgress = false;
-            $scope.dpmDisabled = true;
-          })
-          .catch(function(res) {
-            $scope.isDisableInProgress = false;
-            $scope.common.errors = [res.data];
-          });
-      },
+            onDisableDPMSubmit: function () {
+                $scope.common.errors = [];
+                $scope.isDisableInProgress = true;
+                api.admin.disableDPM()
+                    .then(function () {
+                        $scope.isDisableInProgress = false;
+                        $scope.dpmDisabled = true;
+                    })
+                    .catch(function (res) {
+                        $scope.isDisableInProgress = false;
+                        $scope.common.errors = [res.data];
+                    });
+            },
 
-      restart: function() {
-        $scope.isRestartInProgress = true;
-        api.admin.restartDataCollector();
-      },
+            restart: function () {
+                $scope.isRestartInProgress = true;
+                api.admin.restartDataCollector();
+            },
 
-      cancel: function() {
-        $modalInstance.dismiss('cancel');
-      }
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
+            }
+        });
     });
-  });

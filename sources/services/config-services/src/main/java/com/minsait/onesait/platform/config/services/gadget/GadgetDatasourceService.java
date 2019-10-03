@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,36 +20,36 @@ import com.minsait.onesait.platform.config.model.GadgetDatasource;
 
 public interface GadgetDatasourceService {
 
-	public List<GadgetDatasource> findAllDatasources();
+    public List<GadgetDatasource> findAllDatasources();
 
-	public List<GadgetDatasource> findGadgetDatasourceWithIdentificationAndDescription(String identification,
-			String description, String user);
+    public List<GadgetDatasource> findGadgetDatasourceWithIdentificationAndDescription(String identification,
+            String description, String user);
 
-	public List<String> getAllIdentifications();
+    public List<String> getAllIdentifications();
 
-	public GadgetDatasource getGadgetDatasourceById(String id);
+    public GadgetDatasource getGadgetDatasourceById(String id);
 
-	public GadgetDatasource createGadgetDatasource(GadgetDatasource gadgetDatasource);
+    public GadgetDatasource createGadgetDatasource(GadgetDatasource gadgetDatasource);
 
-	public boolean gadgetDatasourceExists(GadgetDatasource gadgetDatasource);
+    public boolean gadgetDatasourceExists(GadgetDatasource gadgetDatasource);
 
-	public void updateGadgetDatasource(GadgetDatasource gadgetDatasource);
+    public void updateGadgetDatasource(GadgetDatasource gadgetDatasource);
 
-	public void deleteGadgetDatasource(String gadgetDatasourceId, String userId);
+    public void deleteGadgetDatasource(String gadgetDatasourceId, String userId);
 
-	public boolean hasUserPermission(String id, String userId);
+    public boolean hasUserPermission(String id, String userId);
 
-	public boolean hasUserViewPermission(String id, String userId);
+    public boolean hasUserViewPermission(String id, String userId);
 
-	public boolean hasUserEditPermission(String id, String userId);
+    public boolean hasUserEditPermission(String id, String userId);
 
-	public List<GadgetDatasource> getUserGadgetDatasources(String userId);
+    public List<GadgetDatasource> getUserGadgetDatasources(String userId);
 
-	public String getSampleQueryGadgetDatasourceById(String datasourceId, String ontology, String user);
+    public String getSampleQueryGadgetDatasourceById(String datasourceId, String ontology, String user);
 
-	public GadgetDatasource getDatasourceByIdentification(String dsIdentification);
-	
-	public String getAccessType (String id, String userId);
-	
-	public String getElementsAssociated (String datasourceId);
+    public GadgetDatasource getDatasourceByIdentification(String dsIdentification);
+
+    public String getAccessType(String id, String userId);
+
+    public String getElementsAssociated(String datasourceId);
 }

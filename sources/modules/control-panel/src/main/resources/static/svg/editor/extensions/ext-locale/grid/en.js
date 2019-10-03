@@ -1,8 +1,8 @@
 export default {
-  name: 'View Grid',
-  buttons: [
-    {
-      title: 'Show/Hide Grid'
-    }
-  ]
+    name: 'View Grid',
+    buttons: [
+        {
+            title: 'Show/Hide Grid'
+        }
+    ]
 };

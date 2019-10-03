@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,35 +25,35 @@ import org.springframework.util.StringUtils;
 
 public class ParamToHeaderHttpRequestWrapper extends HttpServletRequestWrapper {
 
-	public ParamToHeaderHttpRequestWrapper(HttpServletRequest request) {
-		super(request);
-	}
+    public ParamToHeaderHttpRequestWrapper(HttpServletRequest request) {
+        super(request);
+    }
 
-	@Override
-	public String getHeader(String name) {
-		final String header = super.getHeader(name);
+    @Override
+    public String getHeader(String name) {
+        final String header = super.getHeader(name);
 
-		if (!StringUtils.isEmpty(header)) {
-			return header;
-		} else {
-			return super.getParameter(name);
-		}
-	}
+        if (!StringUtils.isEmpty(header)) {
+            return header;
+        } else {
+            return super.getParameter(name);
+        }
+    }
 
-	@Override
-	public Enumeration<String> getHeaderNames() {
-		final List<String> names = Collections.list(super.getHeaderNames());
-		names.addAll(Collections.list(super.getParameterNames()));
-		return Collections.enumeration(names);
-	}
+    @Override
+    public Enumeration<String> getHeaderNames() {
+        final List<String> names = Collections.list(super.getHeaderNames());
+        names.addAll(Collections.list(super.getParameterNames()));
+        return Collections.enumeration(names);
+    }
 
-	@Override
-	public Enumeration<String> getHeaders(String name) {
-		final List<String> values = Collections.list(super.getHeaders(name));
-		if (!values.contains(name) && Collections.list(super.getParameterNames()).contains(name)) {
-			values.add(super.getParameter(name));
-		}
-		return Collections.enumeration(values);
-	}
+    @Override
+    public Enumeration<String> getHeaders(String name) {
+        final List<String> values = Collections.list(super.getHeaders(name));
+        if (!values.contains(name) && Collections.list(super.getParameterNames()).contains(name)) {
+            values.add(super.getParameter(name));
+        }
+        return Collections.enumeration(values);
+    }
 
 }

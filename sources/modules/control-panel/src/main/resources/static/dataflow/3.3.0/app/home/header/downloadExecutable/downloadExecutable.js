@@ -15,36 +15,36 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('DownloadEdgeExecutableController', function ($scope, $modalInstance, pipelineConfig, api, pipelineConstant) {
-    angular.extend($scope, {
-      common: {
-        errors: []
-      },
-      pipelineConfig: pipelineConfig,
-      pipelineConstant: pipelineConstant,
-      downloadModel: {
-        selectedEdgeOs: pipelineConstant.DARWIN_OS,
-        selectedEdgeArch: pipelineConstant.AMD64_ARCH
-      },
-      downloaded: false,
+    .module('dataCollectorApp.home')
+    .controller('DownloadEdgeExecutableController', function ($scope, $modalInstance, pipelineConfig, api, pipelineConstant) {
+        angular.extend($scope, {
+            common: {
+                errors: []
+            },
+            pipelineConfig: pipelineConfig,
+            pipelineConstant: pipelineConstant,
+            downloadModel: {
+                selectedEdgeOs: pipelineConstant.DARWIN_OS,
+                selectedEdgeArch: pipelineConstant.AMD64_ARCH
+            },
+            downloaded: false,
 
-      download: function() {
-        api.pipelineAgent.downloadEdgeExecutable(
-          $scope.downloadModel.selectedEdgeOs,
-          $scope.downloadModel.selectedEdgeArch,
-          [pipelineConfig.pipelineId]
-        );
-        $scope.downloaded = true;
-      },
+            download: function () {
+                api.pipelineAgent.downloadEdgeExecutable(
+                    $scope.downloadModel.selectedEdgeOs,
+                    $scope.downloadModel.selectedEdgeArch,
+                    [pipelineConfig.pipelineId]
+                );
+                $scope.downloaded = true;
+            },
 
-      done: function () {
-        $modalInstance.close();
-      },
+            done: function () {
+                $modalInstance.close();
+            },
 
-      cancel: function() {
-        $modalInstance.dismiss('cancel');
-      }
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
+            }
+        });
+
     });
-
-  });

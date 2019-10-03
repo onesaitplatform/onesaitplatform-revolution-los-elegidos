@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,30 +31,30 @@ import de.codecentric.boot.admin.notify.RemindingNotifier;
 @EnableScheduling
 public class NotifierConfiguration {
 
-	@Autowired
-	private Notifier notifier;
+    @Autowired
+    private Notifier notifier;
 
-	@Value("${onesaitplatform.reminder.periodInMins:5}")
-	private long reminderPeriodinMins;
+    @Value("${onesaitplatform.reminder.periodInMins:5}")
+    private long reminderPeriodinMins;
 
-	@Value("${onesaitplatform.reminder.enabled:true}")
-	private Boolean enabled;
+    @Value("${onesaitplatform.reminder.enabled:true}")
+    private Boolean enabled;
 
-	@Value("${onesaitplatform.reminder.statuses:DOWN}")
-	private String statuses;
+    @Value("${onesaitplatform.reminder.statuses:DOWN}")
+    private String statuses;
 
-	@Primary
-	@Bean
-	public RemindingNotifier remindingNotifier() {
-		RemindingNotifier myNotifier = new RemindingNotifier(notifier);
-		myNotifier.setReminderPeriod(Duration.ofMinutes(reminderPeriodinMins).toMillis());
-		myNotifier.setEnabled(enabled);
-		myNotifier.setReminderStatuses(statuses.split(","));
-		return myNotifier;
-	}
+    @Primary
+    @Bean
+    public RemindingNotifier remindingNotifier() {
+        RemindingNotifier myNotifier = new RemindingNotifier(notifier);
+        myNotifier.setReminderPeriod(Duration.ofMinutes(reminderPeriodinMins).toMillis());
+        myNotifier.setEnabled(enabled);
+        myNotifier.setReminderStatuses(statuses.split(","));
+        return myNotifier;
+    }
 
-	@Scheduled(fixedRateString = "${onesaitplatform.reminder.eachInMs}")
-	public void remind() {
-		remindingNotifier().sendReminders();
-	}
+    @Scheduled(fixedRateString = "${onesaitplatform.reminder.eachInMs}")
+    public void remind() {
+        remindingNotifier().sendReminders();
+    }
 }

@@ -18,76 +18,76 @@
  */
 
 angular
-  .module('dataCollectorApp')
-  .controller('ConnectionLostModalInstanceController', function (
-    $scope,
-    $rootScope,
-    $modalInstance,
-    $modalStack,
-    $timeout,
-    api
-  ) {
-    angular.extend($scope, {
-      nextRetryInSeconds: 0,
-      retryCountDown: 0,
-      common: {
-        errors: []
-      },
-      isRetryingInProgress: false,
+    .module('dataCollectorApp')
+    .controller('ConnectionLostModalInstanceController', function (
+        $scope,
+        $rootScope,
+        $modalInstance,
+        $modalStack,
+        $timeout,
+        api
+    ) {
+        angular.extend($scope, {
+            nextRetryInSeconds: 0,
+            retryCountDown: 0,
+            common: {
+                errors: []
+            },
+            isRetryingInProgress: false,
 
-      retryNow: function() {
-        retryToConnect();
-      },
+            retryNow: function () {
+                retryToConnect();
+            },
 
-      refreshBrowser: function() {
-        window.location.reload();
-      }
-    });
-
-    var nextRetryInSeconds = 1;
-    var maxAttempts = 50;
-    var attempts = 0;
-    var retryCountDownTimer;
-    var updateRetryCountdown = function() {
-      $scope.retryCountDown = Math.min(nextRetryInSeconds, 16);
-
-      if(retryCountDownTimer) {
-        $timeout.cancel(retryCountDownTimer);
-      }
-
-      var retryCountDownCallback = function(){
-        $scope.retryCountDown--;
-        if($scope.retryCountDown > 0) {
-          retryCountDownTimer = $timeout(retryCountDownCallback,1000);
-        } else {
-          $scope.retryCountDown = 0;
-          retryToConnect();
-        }
-      };
-      retryCountDownTimer = $timeout(retryCountDownCallback, 1000);
-    };
-
-    var retryToConnect = function() {
-      if (attempts > maxAttempts) {
-        window.location.reload();
-      }
-      attempts++;
-      nextRetryInSeconds *= 2;
-
-      $scope.isRetryingInProgress = true;
-      api.admin.getUserInfo()
-        .then(function(res) {
-          window.location.reload();
-        })
-        .catch(function(res) {
-          if (res.status === 403 || res.status === 401) {
-            window.location.reload();
-          } else {
-            $scope.isRetryingInProgress = false;
-            updateRetryCountdown();
-          }
+            refreshBrowser: function () {
+                window.location.reload();
+            }
         });
-    };
 
-    retryToConnect();
-  });
+        var nextRetryInSeconds = 1;
+        var maxAttempts = 50;
+        var attempts = 0;
+        var retryCountDownTimer;
+        var updateRetryCountdown = function () {
+            $scope.retryCountDown = Math.min(nextRetryInSeconds, 16);
+
+            if (retryCountDownTimer) {
+                $timeout.cancel(retryCountDownTimer);
+            }
+
+            var retryCountDownCallback = function () {
+                $scope.retryCountDown--;
+                if ($scope.retryCountDown > 0) {
+                    retryCountDownTimer = $timeout(retryCountDownCallback, 1000);
+                } else {
+                    $scope.retryCountDown = 0;
+                    retryToConnect();
+                }
+            };
+            retryCountDownTimer = $timeout(retryCountDownCallback, 1000);
+        };
+
+        var retryToConnect = function () {
+            if (attempts > maxAttempts) {
+                window.location.reload();
+            }
+            attempts++;
+            nextRetryInSeconds *= 2;
+
+            $scope.isRetryingInProgress = true;
+            api.admin.getUserInfo()
+                .then(function (res) {
+                    window.location.reload();
+                })
+                .catch(function (res) {
+                    if (res.status === 403 || res.status === 401) {
+                        window.location.reload();
+                    } else {
+                        $scope.isRetryingInProgress = false;
+                        updateRetryCountdown();
+                    }
+                });
+        };
+
+        retryToConnect();
+    });

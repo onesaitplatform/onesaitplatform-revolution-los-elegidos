@@ -18,98 +18,98 @@
  */
 
 angular
-  .module('dataCollectorApp')
-  .controller('EnableDPMModalInstanceController', ["$rootScope", "$scope", "$modalInstance", "$modalStack", "$modal", "api", "authService", "configuration", "pipelineService", function (
-    $rootScope, $scope, $modalInstance, $modalStack, $modal, api, authService, configuration, pipelineService
-  ) {
-    angular.extend($scope, {
-      common: {
-        errors: []
-      },
-      isRemoteUserOrgAdmin: authService.isRemoteUserOrgAdmin(),
-      dpmInfoModel: {
-        baseURL: 'https://cloud.streamsets.com',
-        userID: '',
-        userPassword: '',
-        labels: ['label1', 'label2']
-      },
-      isEnableInProgress: false,
-      dpmEnabled: false,
-      isRestartInProgress: false,
-      isStatsLibraryInstalled: true,
-
-      onEnableDPMSubmit: function() {
-        $scope.common.errors = [];
-        $scope.isEnableInProgress = true;
-        $scope.dpmInfoModel.organization = $scope.dpmInfoModel.userID.split('@')[1];
-        api.admin.enableDPM($scope.dpmInfoModel)
-          .then(function() {
-            $scope.isEnableInProgress = false;
-            $scope.dpmEnabled = true;
-          })
-          .catch(function(res) {
-            $scope.isEnableInProgress = false;
-            $scope.common.errors = [res.data];
-          });
-      },
-
-      restart: function() {
-        $scope.isRestartInProgress = true;
-        api.admin.restartDataCollector();
-      },
-
-      cancel: function() {
-        $modalInstance.dismiss('cancel');
-      },
-
-      /**
-       * Callback function on clicking install Statistics library link
-       */
-      onInstallStatisticsLibraryClick: function() {
-        $modalStack.dismissAll();
-        $modal.open({
-          templateUrl: 'app/home/packageManager/install/install.tpl.html',
-          controller: 'InstallModalInstanceController',
-          size: '',
-          backdrop: 'static',
-          resolve: {
-            customRepoUrl: function () {
-              return $rootScope.$storage.customPackageManagerRepoUrl;
+    .module('dataCollectorApp')
+    .controller('EnableDPMModalInstanceController', ["$rootScope", "$scope", "$modalInstance", "$modalStack", "$modal", "api", "authService", "configuration", "pipelineService", function (
+        $rootScope, $scope, $modalInstance, $modalStack, $modal, api, authService, configuration, pipelineService
+    ) {
+        angular.extend($scope, {
+            common: {
+                errors: []
             },
-            libraryList: function () {
-              return [{
-                id: 'streamsets-datacollector-stats-lib',
-                label: 'Statistics'
-              }];
+            isRemoteUserOrgAdmin: authService.isRemoteUserOrgAdmin(),
+            dpmInfoModel: {
+                baseURL: 'https://cloud.streamsets.com',
+                userID: '',
+                userPassword: '',
+                labels: ['label1', 'label2']
             },
-            withStageLibVersion:function () {
-              return false;
+            isEnableInProgress: false,
+            dpmEnabled: false,
+            isRestartInProgress: false,
+            isStatsLibraryInstalled: true,
+
+            onEnableDPMSubmit: function () {
+                $scope.common.errors = [];
+                $scope.isEnableInProgress = true;
+                $scope.dpmInfoModel.organization = $scope.dpmInfoModel.userID.split('@')[1];
+                api.admin.enableDPM($scope.dpmInfoModel)
+                    .then(function () {
+                        $scope.isEnableInProgress = false;
+                        $scope.dpmEnabled = true;
+                    })
+                    .catch(function (res) {
+                        $scope.isEnableInProgress = false;
+                        $scope.common.errors = [res.data];
+                    });
+            },
+
+            restart: function () {
+                $scope.isRestartInProgress = true;
+                api.admin.restartDataCollector();
+            },
+
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
+            },
+
+            /**
+             * Callback function on clicking install Statistics library link
+             */
+            onInstallStatisticsLibraryClick: function () {
+                $modalStack.dismissAll();
+                $modal.open({
+                    templateUrl: 'app/home/packageManager/install/install.tpl.html',
+                    controller: 'InstallModalInstanceController',
+                    size: '',
+                    backdrop: 'static',
+                    resolve: {
+                        customRepoUrl: function () {
+                            return $rootScope.$storage.customPackageManagerRepoUrl;
+                        },
+                        libraryList: function () {
+                            return [{
+                                id: 'streamsets-datacollector-stats-lib',
+                                label: 'Statistics'
+                            }];
+                        },
+                        withStageLibVersion: function () {
+                            return false;
+                        }
+                    }
+                });
+            },
+
+            onCreateDPMUsersClick: function () {
+                $modalStack.dismissAll();
+                $modal.open({
+                    templateUrl: 'common/administration/createDPMUsers/createDPMUsers.tpl.html',
+                    controller: 'CreateDPMUsersModalInstanceController',
+                    size: 'lg',
+                    backdrop: 'static',
+                    resolve: {
+                        dpmInfoModel: function () {
+                            return $scope.dpmInfoModel;
+                        }
+                    }
+                });
             }
-          }
         });
-      },
 
-      onCreateDPMUsersClick: function () {
-        $modalStack.dismissAll();
-        $modal.open({
-          templateUrl: 'common/administration/createDPMUsers/createDPMUsers.tpl.html',
-          controller: 'CreateDPMUsersModalInstanceController',
-          size: 'lg',
-          backdrop: 'static',
-          resolve: {
-            dpmInfoModel: function () {
-              return $scope.dpmInfoModel;
-            }
-          }
-        });
-      }
-    });
+        var currentDPMLabels = configuration.getDPMLabels();
+        if (currentDPMLabels && currentDPMLabels.length) {
+            $scope.dpmInfoModel.labels = currentDPMLabels;
+        }
 
-    var currentDPMLabels = configuration.getDPMLabels();
-    if (currentDPMLabels && currentDPMLabels.length) {
-      $scope.dpmInfoModel.labels = currentDPMLabels;
-    }
+        $scope.isStatsLibraryInstalled = pipelineService.isDPMStatisticsLibraryInstalled();
 
-    $scope.isStatsLibraryInstalled = pipelineService.isDPMStatisticsLibraryInstalled();
-
-  }]);
+    }]);

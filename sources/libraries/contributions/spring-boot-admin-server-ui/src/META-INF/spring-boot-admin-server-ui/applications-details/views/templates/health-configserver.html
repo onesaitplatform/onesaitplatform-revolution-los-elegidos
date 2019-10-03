@@ -3,7 +3,8 @@
     <dd ng-if="repository.error">
         <table style="width:100%;">
             <tr class="error">
-            <td>Error</td><td ng-bind="repository.error"></td>
+                <td>Error</td>
+                <td ng-bind="repository.error"></td>
             </tr>
         </table>
     </dd>
@@ -13,13 +14,16 @@
             <dd>
                 <table style="width:100%;">
                     <tr>
-                        <td>Label</td><td ng-bind="repository.label"></td>
+                        <td>Label</td>
+                        <td ng-bind="repository.label"></td>
                     </tr>
                     <tr>
-                        <td>Sources</td><td>{{repository.sources | joinArray:', '}}</td>
+                        <td>Sources</td>
+                        <td>{{repository.sources | joinArray:', '}}</td>
                     </tr>
                     <tr>
-                        <td>Profiles</td><td>{{repository.profiles | joinArray:', '}}</td>
+                        <td>Profiles</td>
+                        <td>{{repository.profiles | joinArray:', '}}</td>
                     </tr>
                 </table>
             </dd>

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -63,237 +63,242 @@ import com.minsait.onesait.platform.iotbroker.plugable.interfaces.gateway.Gatewa
 @SpringBootTest
 public class IotBrokerAuditProcessorTest {
 
-	@InjectMocks
-	private IotBrokerAuditProcessor iotBrokerAuditProcessor;
+    @InjectMocks
+    private IotBrokerAuditProcessor iotBrokerAuditProcessor;
 
-	@Mock
-	private SecurityPluginManager securityPluginManager;
+    @Mock
+    private SecurityPluginManager securityPluginManager;
 
-	@Mock
-	private List<MessageAuditProcessor> processors;
+    @Mock
+    private List<MessageAuditProcessor> processors;
 
-	private final List<MessageAuditProcessor> auditProcessors = Arrays.asList(new DeleteAuditProcessor(),
-			new InsertAuditProcessor(), new JoinAuditProcessor(), new LeaveAuditProcessor(), new QueryAuditProcessor(),
-			new SubscribeAuditProcessor(), new UnsubscribeAuditProcessor(), new UpdateAuditProcessor());
+    private final List<MessageAuditProcessor> auditProcessors = Arrays.asList(new DeleteAuditProcessor(),
+                                                                              new InsertAuditProcessor(),
+                                                                              new JoinAuditProcessor(),
+                                                                              new LeaveAuditProcessor(),
+                                                                              new QueryAuditProcessor(),
+                                                                              new SubscribeAuditProcessor(),
+                                                                              new UnsubscribeAuditProcessor(),
+                                                                              new UpdateAuditProcessor());
 
-	@Before
-	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-	}
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
 
-	@Test(expected = SSAPAuditProcessorException.class)
-	public void given_getEvent_with_an_unexisting_audit_processor() throws SSAPAuditProcessorException {
+    @Test(expected = SSAPAuditProcessorException.class)
+    public void given_getEvent_with_an_unexisting_audit_processor() throws SSAPAuditProcessorException {
 
-		IoTSession session = PojoGenerator.generateSession();
-		GatewayInfo info = PojoGenerator.generateGatewayInfo();
+        IoTSession session = PojoGenerator.generateSession();
+        GatewayInfo info = PojoGenerator.generateGatewayInfo();
 
-		when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
-		when(processors.stream()).thenReturn(new ArrayList<MessageAuditProcessor>().stream());
+        when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
+        when(processors.stream()).thenReturn(new ArrayList<MessageAuditProcessor>().stream());
 
-		SSAPMessage<SSAPBodyInsertMessage> message = new SSAPMessage<SSAPBodyInsertMessage>();
-		message.setMessageType(SSAPMessageTypes.INSERT);
-		message.setSessionKey(session.getSessionKey());
+        SSAPMessage<SSAPBodyInsertMessage> message = new SSAPMessage<SSAPBodyInsertMessage>();
+        message.setMessageType(SSAPMessageTypes.INSERT);
+        message.setSessionKey(session.getSessionKey());
 
-		iotBrokerAuditProcessor.getEvent(message, info);
-	}
+        iotBrokerAuditProcessor.getEvent(message, info);
+    }
 
-	@Test(expected = SSAPAuditProcessorException.class)
-	public void given_getEvent_with_an_unexisting_audit_message_type() throws SSAPAuditProcessorException {
+    @Test(expected = SSAPAuditProcessorException.class)
+    public void given_getEvent_with_an_unexisting_audit_message_type() throws SSAPAuditProcessorException {
 
-		IoTSession session = PojoGenerator.generateSession();
-		GatewayInfo info = PojoGenerator.generateGatewayInfo();
+        IoTSession session = PojoGenerator.generateSession();
+        GatewayInfo info = PojoGenerator.generateGatewayInfo();
 
-		when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
-		when(processors.stream()).thenReturn(auditProcessors.stream());
+        when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
+        when(processors.stream()).thenReturn(auditProcessors.stream());
 
-		SSAPMessage<SSAPBodyInsertMessage> message = new SSAPMessage<SSAPBodyInsertMessage>();
-		message.setMessageType(null);
-		message.setSessionKey(session.getSessionKey());
+        SSAPMessage<SSAPBodyInsertMessage> message = new SSAPMessage<SSAPBodyInsertMessage>();
+        message.setMessageType(null);
+        message.setSessionKey(session.getSessionKey());
 
-		iotBrokerAuditProcessor.getEvent(message, info);
-	}
+        iotBrokerAuditProcessor.getEvent(message, info);
+    }
 
-	@Test(expected = SSAPAuditProcessorException.class)
-	public void given_getErrorEvent_with_an_unexisting_audit_processor() throws SSAPAuditProcessorException {
+    @Test(expected = SSAPAuditProcessorException.class)
+    public void given_getErrorEvent_with_an_unexisting_audit_processor() throws SSAPAuditProcessorException {
 
-		IoTSession session = PojoGenerator.generateSession();
-		GatewayInfo info = PojoGenerator.generateGatewayInfo();
+        IoTSession session = PojoGenerator.generateSession();
+        GatewayInfo info = PojoGenerator.generateGatewayInfo();
 
-		when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
-		when(this.processors.stream()).thenReturn(new ArrayList<MessageAuditProcessor>().stream());
+        when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
+        when(this.processors.stream()).thenReturn(new ArrayList<MessageAuditProcessor>().stream());
 
-		SSAPMessage<SSAPBodyInsertMessage> message = new SSAPMessage<SSAPBodyInsertMessage>();
-		message.setMessageType(SSAPMessageTypes.INSERT);
-		message.setSessionKey(session.getSessionKey());
+        SSAPMessage<SSAPBodyInsertMessage> message = new SSAPMessage<SSAPBodyInsertMessage>();
+        message.setMessageType(SSAPMessageTypes.INSERT);
+        message.setSessionKey(session.getSessionKey());
 
-		iotBrokerAuditProcessor.getErrorEvent(message, info, new Exception());
-	}
+        iotBrokerAuditProcessor.getErrorEvent(message, info, new Exception());
+    }
 
-	@Test(expected = SSAPAuditProcessorException.class)
-	public void given_getErrorEvent_with_an_unexisting_audit_message_type() throws SSAPAuditProcessorException {
+    @Test(expected = SSAPAuditProcessorException.class)
+    public void given_getErrorEvent_with_an_unexisting_audit_message_type() throws SSAPAuditProcessorException {
 
-		IoTSession session = PojoGenerator.generateSession();
-		GatewayInfo info = PojoGenerator.generateGatewayInfo();
+        IoTSession session = PojoGenerator.generateSession();
+        GatewayInfo info = PojoGenerator.generateGatewayInfo();
 
-		when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
-		when(processors.stream()).thenReturn(auditProcessors.stream());
+        when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
+        when(processors.stream()).thenReturn(auditProcessors.stream());
 
-		SSAPMessage<SSAPBodyInsertMessage> message = new SSAPMessage<SSAPBodyInsertMessage>();
-		message.setMessageType(null);
-		message.setSessionKey(session.getSessionKey());
+        SSAPMessage<SSAPBodyInsertMessage> message = new SSAPMessage<SSAPBodyInsertMessage>();
+        message.setMessageType(null);
+        message.setSessionKey(session.getSessionKey());
 
-		iotBrokerAuditProcessor.getErrorEvent(message, info, new Exception());
-	}
+        iotBrokerAuditProcessor.getErrorEvent(message, info, new Exception());
+    }
 
-	@Test(expected = SSAPAuditProcessorException.class)
-	public void given_getErrorEvent_with_session_null() throws SSAPAuditProcessorException {
+    @Test(expected = SSAPAuditProcessorException.class)
+    public void given_getErrorEvent_with_session_null() throws SSAPAuditProcessorException {
 
-		IoTSession session = PojoGenerator.generateSession();
-		GatewayInfo info = PojoGenerator.generateGatewayInfo();
-		Exception ex = new Exception();
+        IoTSession session = PojoGenerator.generateSession();
+        GatewayInfo info = PojoGenerator.generateGatewayInfo();
+        Exception ex = new Exception();
 
-		when(securityPluginManager.getSession(anyString())).thenReturn(Optional.empty());
-		when(processors.stream()).thenReturn(auditProcessors.stream());
+        when(securityPluginManager.getSession(anyString())).thenReturn(Optional.empty());
+        when(processors.stream()).thenReturn(auditProcessors.stream());
 
-		SSAPMessage<SSAPBodyInsertMessage> message = new SSAPMessage<SSAPBodyInsertMessage>();
-		message.setMessageType(null);
-		message.setSessionKey(session.getSessionKey());
+        SSAPMessage<SSAPBodyInsertMessage> message = new SSAPMessage<SSAPBodyInsertMessage>();
+        message.setMessageType(null);
+        message.setSessionKey(session.getSessionKey());
 
-		OPAuditError event = iotBrokerAuditProcessor.getErrorEvent(message, info, ex);
+        OPAuditError event = iotBrokerAuditProcessor.getErrorEvent(message, info, ex);
 
-		Assert.assertEquals(ResultOperationType.ERROR, event.getResultOperation());
-		Assert.assertNull(event.getUser());
-		Assert.assertEquals(ex.getMessage(), event.getErrorMessage());
-		Assert.assertEquals(Module.IOTBROKER, event.getModule());
-	}
+        Assert.assertEquals(ResultOperationType.ERROR, event.getResultOperation());
+        Assert.assertNull(event.getUser());
+        Assert.assertEquals(ex.getMessage(), event.getErrorMessage());
+        Assert.assertEquals(Module.IOTBROKER, event.getModule());
+    }
 
-	@Test
-	public void given_getErrorEvent_with_message_and_info_null() throws SSAPAuditProcessorException {
-		Exception ex = new Exception();
-		OPAuditError event = iotBrokerAuditProcessor.getErrorEvent(null, null, ex);
-		Assert.assertEquals(EventType.ERROR, event.getType());
-		Assert.assertNull(event.getUser());
-		Assert.assertEquals(ex.getMessage(), event.getErrorMessage());
-		Assert.assertEquals(Module.IOTBROKER, event.getModule());
-	}
+    @Test
+    public void given_getErrorEvent_with_message_and_info_null() throws SSAPAuditProcessorException {
+        Exception ex = new Exception();
+        OPAuditError event = iotBrokerAuditProcessor.getErrorEvent(null, null, ex);
+        Assert.assertEquals(EventType.ERROR, event.getType());
+        Assert.assertNull(event.getUser());
+        Assert.assertEquals(ex.getMessage(), event.getErrorMessage());
+        Assert.assertEquals(Module.IOTBROKER, event.getModule());
+    }
 
-	@Test
-	public void given_getErrorEvent_with_message_and_info() throws SSAPAuditProcessorException {
+    @Test
+    public void given_getErrorEvent_with_message_and_info() throws SSAPAuditProcessorException {
 
-		IoTSession session = PojoGenerator.generateSession();
-		GatewayInfo info = PojoGenerator.generateGatewayInfo();
-		Exception ex = new Exception();
+        IoTSession session = PojoGenerator.generateSession();
+        GatewayInfo info = PojoGenerator.generateGatewayInfo();
+        Exception ex = new Exception();
 
-		when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
-		when(processors.stream()).thenReturn(auditProcessors.stream());
+        when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
+        when(processors.stream()).thenReturn(auditProcessors.stream());
 
-		SSAPMessage<SSAPBodyInsertMessage> message = new SSAPMessage<SSAPBodyInsertMessage>();
-		message.setMessageType(SSAPMessageTypes.INSERT);
-		message.setBody(new SSAPBodyInsertMessage());
-		message.setSessionKey(session.getSessionKey());
+        SSAPMessage<SSAPBodyInsertMessage> message = new SSAPMessage<SSAPBodyInsertMessage>();
+        message.setMessageType(SSAPMessageTypes.INSERT);
+        message.setBody(new SSAPBodyInsertMessage());
+        message.setSessionKey(session.getSessionKey());
 
-		OPAuditError event = iotBrokerAuditProcessor.getErrorEvent(message, info, ex);
+        OPAuditError event = iotBrokerAuditProcessor.getErrorEvent(message, info, ex);
 
-		Assert.assertEquals(EventType.ERROR, event.getType());
-		Assert.assertNotNull(event.getUser());
-		Assert.assertEquals(ex.getMessage(), event.getErrorMessage());
-		Assert.assertEquals(Module.IOTBROKER, event.getModule());
-	}
+        Assert.assertEquals(EventType.ERROR, event.getType());
+        Assert.assertNotNull(event.getUser());
+        Assert.assertEquals(ex.getMessage(), event.getErrorMessage());
+        Assert.assertEquals(Module.IOTBROKER, event.getModule());
+    }
 
-	@Test
-	public void given_completeEvent_with_not_user_then_anonymous_user_is_set() {
+    @Test
+    public void given_completeEvent_with_not_user_then_anonymous_user_is_set() {
 
-		// anonymous
-		SSAPMessage<SSAPBodyInsertMessage> insertMessage = new SSAPMessage<SSAPBodyInsertMessage>();
-		String insertMessageText = "This is a Insert message test";
-		insertMessage.setMessageType(SSAPMessageTypes.INSERT);
-		insertMessage.setBody(new SSAPBodyInsertMessage());
+        // anonymous
+        SSAPMessage<SSAPBodyInsertMessage> insertMessage = new SSAPMessage<SSAPBodyInsertMessage>();
+        String insertMessageText = "This is a Insert message test";
+        insertMessage.setMessageType(SSAPMessageTypes.INSERT);
+        insertMessage.setBody(new SSAPBodyInsertMessage());
 
-		GatewayInfo info = PojoGenerator.generateGatewayInfo();
-		IoTSession session = PojoGenerator.generateSession();
+        GatewayInfo info = PojoGenerator.generateGatewayInfo();
+        IoTSession session = PojoGenerator.generateSession();
 
-		IotBrokerAuditEvent event = IotBrokerAuditEventFactory.builder().build()
-				.createIotBrokerAuditEvent(insertMessage.getBody(), insertMessageText, null, info);
+        IotBrokerAuditEvent event = IotBrokerAuditEventFactory.builder().build().createIotBrokerAuditEvent(
+                insertMessage.getBody(), insertMessageText, null, info);
 
-		SSAPMessage<SSAPBodyReturnMessage> message = new SSAPMessage<SSAPBodyReturnMessage>();
-		message.setDirection(SSAPMessageDirection.ERROR);
-		message.setSessionKey(session.getSessionKey());
-		message.setBody(new SSAPBodyReturnMessage());
+        SSAPMessage<SSAPBodyReturnMessage> message = new SSAPMessage<SSAPBodyReturnMessage>();
+        message.setDirection(SSAPMessageDirection.ERROR);
+        message.setSessionKey(session.getSessionKey());
+        message.setBody(new SSAPBodyReturnMessage());
 
-		event.setUser(null);
+        event.setUser(null);
 
-		when(securityPluginManager.getSession(anyString())).thenReturn(Optional.empty());
-		when(processors.stream()).thenReturn(auditProcessors.stream());
+        when(securityPluginManager.getSession(anyString())).thenReturn(Optional.empty());
+        when(processors.stream()).thenReturn(auditProcessors.stream());
 
-		IotBrokerAuditEvent e = iotBrokerAuditProcessor.completeEventWithResponseMessage(message, event);
+        IotBrokerAuditEvent e = iotBrokerAuditProcessor.completeEventWithResponseMessage(message, event);
 
-		Assert.assertEquals(AuditConst.ANONYMOUS_USER, e.getUser());
-		Assert.assertEquals(Module.IOTBROKER, event.getModule());
-	}
+        Assert.assertEquals(AuditConst.ANONYMOUS_USER, e.getUser());
+        Assert.assertEquals(Module.IOTBROKER, event.getModule());
+    }
 
-	@Test
-	public void given_completeEvent_with_response_error() {
+    @Test
+    public void given_completeEvent_with_response_error() {
 
-		SSAPMessage<SSAPBodyInsertMessage> insertMessage = new SSAPMessage<SSAPBodyInsertMessage>();
-		String insertMessageText = "This is a Insert message test";
-		insertMessage.setMessageType(SSAPMessageTypes.INSERT);
-		insertMessage.setBody(new SSAPBodyInsertMessage());
+        SSAPMessage<SSAPBodyInsertMessage> insertMessage = new SSAPMessage<SSAPBodyInsertMessage>();
+        String insertMessageText = "This is a Insert message test";
+        insertMessage.setMessageType(SSAPMessageTypes.INSERT);
+        insertMessage.setBody(new SSAPBodyInsertMessage());
 
-		GatewayInfo info = PojoGenerator.generateGatewayInfo();
-		IoTSession session = PojoGenerator.generateSession();
+        GatewayInfo info = PojoGenerator.generateGatewayInfo();
+        IoTSession session = PojoGenerator.generateSession();
 
-		IotBrokerAuditEvent event = IotBrokerAuditEventFactory.builder().build()
-				.createIotBrokerAuditEvent(insertMessage.getBody(), insertMessageText, null, info);
+        IotBrokerAuditEvent event = IotBrokerAuditEventFactory.builder().build().createIotBrokerAuditEvent(
+                insertMessage.getBody(), insertMessageText, null, info);
 
-		String errorMessage = "test error message";
+        String errorMessage = "test error message";
 
-		SSAPMessage<SSAPBodyReturnMessage> message = new SSAPMessage<SSAPBodyReturnMessage>();
-		message.setDirection(SSAPMessageDirection.ERROR);
-		message.setSessionKey(session.getSessionKey());
-		message.setBody(new SSAPBodyReturnMessage());
-		message.getBody().setError(errorMessage);
+        SSAPMessage<SSAPBodyReturnMessage> message = new SSAPMessage<SSAPBodyReturnMessage>();
+        message.setDirection(SSAPMessageDirection.ERROR);
+        message.setSessionKey(session.getSessionKey());
+        message.setBody(new SSAPBodyReturnMessage());
+        message.getBody().setError(errorMessage);
 
-		when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
-		when(processors.stream()).thenReturn(auditProcessors.stream());
+        when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
+        when(processors.stream()).thenReturn(auditProcessors.stream());
 
-		IotBrokerAuditEvent e = iotBrokerAuditProcessor.completeEventWithResponseMessage(message, event);
+        IotBrokerAuditEvent e = iotBrokerAuditProcessor.completeEventWithResponseMessage(message, event);
 
-		Assert.assertEquals(ResultOperationType.ERROR, e.getResultOperation());
-		Assert.assertEquals(errorMessage, e.getMessage());
-		Assert.assertEquals(Module.IOTBROKER, event.getModule());
-	}
+        Assert.assertEquals(ResultOperationType.ERROR, e.getResultOperation());
+        Assert.assertEquals(errorMessage, e.getMessage());
+        Assert.assertEquals(Module.IOTBROKER, event.getModule());
+    }
 
-	@Test
-	public void given_completeEvent_with_session_parameters() {
+    @Test
+    public void given_completeEvent_with_session_parameters() {
 
-		SSAPMessage<SSAPBodyInsertMessage> insertMessage = new SSAPMessage<SSAPBodyInsertMessage>();
-		String insertMessageText = "This is a Insert message test";
-		insertMessage.setMessageType(SSAPMessageTypes.INSERT);
-		insertMessage.setBody(new SSAPBodyInsertMessage());
+        SSAPMessage<SSAPBodyInsertMessage> insertMessage = new SSAPMessage<SSAPBodyInsertMessage>();
+        String insertMessageText = "This is a Insert message test";
+        insertMessage.setMessageType(SSAPMessageTypes.INSERT);
+        insertMessage.setBody(new SSAPBodyInsertMessage());
 
-		GatewayInfo info = PojoGenerator.generateGatewayInfo();
-		IoTSession session = PojoGenerator.generateSession();
+        GatewayInfo info = PojoGenerator.generateGatewayInfo();
+        IoTSession session = PojoGenerator.generateSession();
 
-		IotBrokerAuditEvent event = IotBrokerAuditEventFactory.builder().build()
-				.createIotBrokerAuditEvent(insertMessage.getBody(), insertMessageText, null, info);
+        IotBrokerAuditEvent event = IotBrokerAuditEventFactory.builder().build().createIotBrokerAuditEvent(
+                insertMessage.getBody(), insertMessageText, null, info);
 
-		SSAPMessage<SSAPBodyReturnMessage> message = new SSAPMessage<SSAPBodyReturnMessage>();
-		message.setDirection(SSAPMessageDirection.RESPONSE);
-		message.setSessionKey(session.getSessionKey());
-		message.setBody(new SSAPBodyReturnMessage());
+        SSAPMessage<SSAPBodyReturnMessage> message = new SSAPMessage<SSAPBodyReturnMessage>();
+        message.setDirection(SSAPMessageDirection.RESPONSE);
+        message.setSessionKey(session.getSessionKey());
+        message.setBody(new SSAPBodyReturnMessage());
 
-		when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
-		when(processors.stream()).thenReturn(auditProcessors.stream());
+        when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
+        when(processors.stream()).thenReturn(auditProcessors.stream());
 
-		IotBrokerAuditEvent e = iotBrokerAuditProcessor.completeEventWithResponseMessage(message, event);
+        IotBrokerAuditEvent e = iotBrokerAuditProcessor.completeEventWithResponseMessage(message, event);
 
-		Assert.assertEquals(ResultOperationType.SUCCESS, e.getResultOperation());
-		Assert.assertEquals(session.getUserID(), event.getUser());
-		Assert.assertEquals(session.getSessionKey(), event.getSessionKey());
-		Assert.assertEquals(session.getClientPlatform(), event.getClientPlatform());
-		Assert.assertEquals(session.getDevice(), event.getClientPlatformInstance());
-		Assert.assertEquals(Module.IOTBROKER, event.getModule());
+        Assert.assertEquals(ResultOperationType.SUCCESS, e.getResultOperation());
+        Assert.assertEquals(session.getUserID(), event.getUser());
+        Assert.assertEquals(session.getSessionKey(), event.getSessionKey());
+        Assert.assertEquals(session.getClientPlatform(), event.getClientPlatform());
+        Assert.assertEquals(session.getDevice(), event.getClientPlatformInstance());
+        Assert.assertEquals(Module.IOTBROKER, event.getModule());
 
-	}
+    }
 
 }

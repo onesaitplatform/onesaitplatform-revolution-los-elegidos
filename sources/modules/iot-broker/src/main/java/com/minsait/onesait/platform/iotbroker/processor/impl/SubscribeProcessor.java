@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -60,133 +60,133 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SubscribeProcessor implements MessageTypeProcessor {
 
-	@Autowired
-	private RouterSuscriptionService routerService;
-	@Autowired
-	SecurityPluginManager securityPluginManager;
-	@Autowired
-	ObjectMapper objectMapper;
-	@Autowired
-	SuscriptionModelRepository repository;
+    @Autowired
+    private RouterSuscriptionService routerService;
+    @Autowired
+    SecurityPluginManager securityPluginManager;
+    @Autowired
+    ObjectMapper objectMapper;
+    @Autowired
+    SuscriptionModelRepository repository;
 
-	@Autowired
-	HazelcastInstance hazelcastInstance;
-	private static final String SUBSCRIPTION_REPOSITORY = "SuscriptionModelRepository";
+    @Autowired
+    HazelcastInstance hazelcastInstance;
+    private static final String SUBSCRIPTION_REPOSITORY = "SuscriptionModelRepository";
 
-	@Override
-	public SSAPMessage<SSAPBodyReturnMessage> process(SSAPMessage<? extends SSAPBodyMessage> message) {
+    @Override
+    public SSAPMessage<SSAPBodyReturnMessage> process(SSAPMessage<? extends SSAPBodyMessage> message) {
 
-		@SuppressWarnings("unchecked")
-		final SSAPMessage<SSAPBodySubscribeMessage> subscribeMessage = (SSAPMessage<SSAPBodySubscribeMessage>) message;
-		SSAPMessage<SSAPBodyReturnMessage> response = new SSAPMessage<>();
-		final String subsId = UUID.randomUUID().toString();
-		response.setBody(new SSAPBodyReturnMessage());
+        @SuppressWarnings("unchecked") final SSAPMessage<SSAPBodySubscribeMessage> subscribeMessage =
+                (SSAPMessage<SSAPBodySubscribeMessage>) message;
+        SSAPMessage<SSAPBodyReturnMessage> response = new SSAPMessage<>();
+        final String subsId = UUID.randomUUID().toString();
+        response.setBody(new SSAPBodyReturnMessage());
 
-		final Optional<IoTSession> session = securityPluginManager.getSession(subscribeMessage.getSessionKey());
+        final Optional<IoTSession> session = securityPluginManager.getSession(subscribeMessage.getSessionKey());
 
-		final SuscriptionModel model = new SuscriptionModel();
-		model.setOntologyName(subscribeMessage.getBody().getOntology());
-		model.setOperationType(SuscriptionModel.OperationType.SUSCRIBE);
-		model.setQuery(subscribeMessage.getBody().getQuery());
+        final SuscriptionModel model = new SuscriptionModel();
+        model.setOntologyName(subscribeMessage.getBody().getOntology());
+        model.setOperationType(SuscriptionModel.OperationType.SUSCRIBE);
+        model.setQuery(subscribeMessage.getBody().getQuery());
 
-		SuscriptionModel.QueryType qType = SuscriptionModel.QueryType.NATIVE;
-		if (SSAPQueryType.SQL.equals(subscribeMessage.getBody().getQueryType())) {
-			qType = SuscriptionModel.QueryType.SQLLIKE;
-		}
-		model.setQueryType(qType);
-		model.setSessionKey(subscribeMessage.getSessionKey());
+        SuscriptionModel.QueryType qType = SuscriptionModel.QueryType.NATIVE;
+        if (SSAPQueryType.SQL.equals(subscribeMessage.getBody().getQueryType())) {
+            qType = SuscriptionModel.QueryType.SQLLIKE;
+        }
+        model.setQueryType(qType);
+        model.setSessionKey(subscribeMessage.getSessionKey());
 
-		model.setSuscriptionId(subsId);
-		session.ifPresent(s -> model.setUser(s.getUserID()));
+        model.setSuscriptionId(subsId);
+        session.ifPresent(s -> model.setUser(s.getUserID()));
 
-		OperationResultModel routerResponse = null;
-		try {
-			routerResponse = routerService.suscribe(model);
-		} catch (final Exception e1) {
-			log.error("Error in process:" + e1.getMessage());
-			response = SSAPUtils.generateErrorMessage(subscribeMessage, SSAPErrorCode.PROCESSOR, e1.getMessage());
-			return response;
-		}
+        OperationResultModel routerResponse = null;
+        try {
+            routerResponse = routerService.suscribe(model);
+        } catch (final Exception e1) {
+            log.error("Error in process:" + e1.getMessage());
+            response = SSAPUtils.generateErrorMessage(subscribeMessage, SSAPErrorCode.PROCESSOR, e1.getMessage());
+            return response;
+        }
 
-		final String errorCode = routerResponse.getErrorCode();
-		final String messageResponse = routerResponse.getMessage();
-		final String operation = routerResponse.getOperation();
-		final String result = routerResponse.getResult();
-		log.error(errorCode + " " + messageResponse + " " + operation + " " + result);
+        final String errorCode = routerResponse.getErrorCode();
+        final String messageResponse = routerResponse.getMessage();
+        final String operation = routerResponse.getOperation();
+        final String result = routerResponse.getResult();
+        log.error(errorCode + " " + messageResponse + " " + operation + " " + result);
 
-		if (!StringUtils.isEmpty(routerResponse.getErrorCode())) {
-			response = SSAPUtils.generateErrorMessage(subscribeMessage, SSAPErrorCode.PROCESSOR,
-					routerResponse.getErrorCode());
-			return response;
+        if (!StringUtils.isEmpty(routerResponse.getErrorCode())) {
+            response = SSAPUtils.generateErrorMessage(subscribeMessage, SSAPErrorCode.PROCESSOR,
+                                                      routerResponse.getErrorCode());
+            return response;
 
-		}
-		response.setDirection(SSAPMessageDirection.RESPONSE);
-		response.setMessageType(SSAPMessageTypes.SUBSCRIBE);
-		response.setSessionKey(subscribeMessage.getSessionKey());
-		response.getBody().setOk(true);
-		response.getBody().setError(routerResponse.getErrorCode());
-		final String dataStr = "{\"subscriptionId\": \"" + subsId + "\",\"message\": \"" + routerResponse.getMessage()
-				+ "\"}";
-		JsonNode data;
-		try {
-			data = objectMapper.readTree(dataStr);
-			response.getBody().setData(data);
-		} catch (final IOException e) {
-			log.error("Error in process:" + e.getMessage());
-			response = SSAPUtils.generateErrorMessage(subscribeMessage, SSAPErrorCode.PROCESSOR, e.getMessage());
-			return response;
-		}
+        }
+        response.setDirection(SSAPMessageDirection.RESPONSE);
+        response.setMessageType(SSAPMessageTypes.SUBSCRIBE);
+        response.setSessionKey(subscribeMessage.getSessionKey());
+        response.getBody().setOk(true);
+        response.getBody().setError(routerResponse.getErrorCode());
+        final String dataStr =
+                "{\"subscriptionId\": \"" + subsId + "\",\"message\": \"" + routerResponse.getMessage() + "\"}";
+        JsonNode data;
+        try {
+            data = objectMapper.readTree(dataStr);
+            response.getBody().setData(data);
+        } catch (final IOException e) {
+            log.error("Error in process:" + e.getMessage());
+            response = SSAPUtils.generateErrorMessage(subscribeMessage, SSAPErrorCode.PROCESSOR, e.getMessage());
+            return response;
+        }
 
-		return response;
-	}
+        return response;
+    }
 
-	@Override
-	public List<SSAPMessageTypes> getMessageTypes() {
-		return Collections.singletonList(SSAPMessageTypes.SUBSCRIBE);
-	}
+    @Override
+    public List<SSAPMessageTypes> getMessageTypes() {
+        return Collections.singletonList(SSAPMessageTypes.SUBSCRIBE);
+    }
 
-	@Override
-	public boolean validateMessage(SSAPMessage<? extends SSAPBodyMessage> message) {
-		@SuppressWarnings("unchecked")
-		final SSAPMessage<SSAPBodySubscribeMessage> subscribeMessage = (SSAPMessage<SSAPBodySubscribeMessage>) message;
+    @Override
+    public boolean validateMessage(SSAPMessage<? extends SSAPBodyMessage> message) {
+        @SuppressWarnings("unchecked") final SSAPMessage<SSAPBodySubscribeMessage> subscribeMessage =
+                (SSAPMessage<SSAPBodySubscribeMessage>) message;
 
-		if (StringUtils.isEmpty(subscribeMessage.getBody().getQuery())) {
-			throw new SSAPProcessorException(
-					String.format(MessageException.ERR_FIELD_IS_MANDATORY, "query", message.getMessageType().name()));
-		}
+        if (StringUtils.isEmpty(subscribeMessage.getBody().getQuery())) {
+            throw new SSAPProcessorException(
+                    String.format(MessageException.ERR_FIELD_IS_MANDATORY, "query", message.getMessageType().name()));
+        }
 
-		if (subscribeMessage.getBody().getQueryType() == null) {
-			throw new SSAPProcessorException(String.format(MessageException.ERR_FIELD_IS_MANDATORY, "queryType",
-					message.getMessageType().name()));
-		}
+        if (subscribeMessage.getBody().getQueryType() == null) {
+            throw new SSAPProcessorException(String.format(MessageException.ERR_FIELD_IS_MANDATORY, "queryType",
+                                                           message.getMessageType().name()));
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@PostConstruct
-	private void cleanSubscriptions() {
+    @PostConstruct
+    private void cleanSubscriptions() {
 
-		repository.deleteAll();
-	}
+        repository.deleteAll();
+    }
 
-	@Scheduled(fixedDelay = 300000)
-	public void deleteOldSubscriptions() {
-		final ArrayList<SuscriptionNotificationsModel> subscriptionsToRemove = new ArrayList<>();
-		final List<SuscriptionNotificationsModel> subscriptions = getSubscriptionsFromCache();
-		for (final SuscriptionNotificationsModel subscription : subscriptions) {
+    @Scheduled(fixedDelay = 300000)
+    public void deleteOldSubscriptions() {
+        final ArrayList<SuscriptionNotificationsModel> subscriptionsToRemove = new ArrayList<>();
+        final List<SuscriptionNotificationsModel> subscriptions = getSubscriptionsFromCache();
+        for (final SuscriptionNotificationsModel subscription : subscriptions) {
 
-			final Optional<IoTSession> session = securityPluginManager.getSession(subscription.getSessionKey());
+            final Optional<IoTSession> session = securityPluginManager.getSession(subscription.getSessionKey());
 
-			if (!session.isPresent())
-				subscriptionsToRemove.add(subscription);
+            if (!session.isPresent())
+                subscriptionsToRemove.add(subscription);
 
-		}
-		repository.delete(subscriptionsToRemove);
-	}
+        }
+        repository.delete(subscriptionsToRemove);
+    }
 
-	private List<SuscriptionNotificationsModel> getSubscriptionsFromCache() {
-		return hazelcastInstance.getMap(SUBSCRIPTION_REPOSITORY).entrySet().stream()
-				.map(e -> (SuscriptionNotificationsModel) e.getValue()).collect(Collectors.toList());
-	}
+    private List<SuscriptionNotificationsModel> getSubscriptionsFromCache() {
+        return hazelcastInstance.getMap(SUBSCRIPTION_REPOSITORY).entrySet().stream().map(
+                e -> (SuscriptionNotificationsModel) e.getValue()).collect(Collectors.toList());
+    }
 
 }

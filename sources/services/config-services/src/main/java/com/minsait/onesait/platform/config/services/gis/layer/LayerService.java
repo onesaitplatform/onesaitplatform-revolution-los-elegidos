@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,36 +24,36 @@ import com.minsait.onesait.platform.config.model.User;
 
 public interface LayerService {
 
-	List<Layer> findAllLayers(String userId);
+    List<Layer> findAllLayers(String userId);
 
-	List<String> getAllIdentificationsByUser(String userId);
+    List<String> getAllIdentificationsByUser(String userId);
 
-	Ontology getOntologyByIdentification(String identification, String sessionUserId);
+    Ontology getOntologyByIdentification(String identification, String sessionUserId);
 
-	void create(Layer layer);
+    void create(Layer layer);
 
-	Layer findById(String id, String userId);
+    Layer findById(String id, String userId);
 
-	void deleteLayer(Layer layer, String userId);
+    void deleteLayer(Layer layer, String userId);
 
-	Map<String, String> getOntologyGeometryFields(String identification, String sessionUserId) throws IOException;
+    Map<String, String> getOntologyGeometryFields(String identification, String sessionUserId) throws IOException;
 
-	Layer getLayerByIdentification(String identification, User user);
+    Layer getLayerByIdentification(String identification, User user);
 
-	Boolean isLayerInUse(String layer);
+    Boolean isLayerInUse(String layer);
 
-	Layer findByIdentification(String string);
+    Layer findByIdentification(String string);
 
-	Map<String, String> getLayersTypes(String userId);
+    Map<String, String> getLayersTypes(String userId);
 
-	String getLayerWms(String layer);
+    String getLayerWms(String layer);
 
-	String getLayerKml(String layerIdentification);
+    String getLayerKml(String layerIdentification);
 
-	String getLayerSvgImage(String layer);
+    String getLayerSvgImage(String layer);
 
-	List<String> getQueryFields(String query, String ontology, String userId);
+    List<String> getQueryFields(String query, String ontology, String userId);
 
-	String getQueryParamsAndRefresh(String layer);
+    String getQueryParamsAndRefresh(String layer);
 
 }

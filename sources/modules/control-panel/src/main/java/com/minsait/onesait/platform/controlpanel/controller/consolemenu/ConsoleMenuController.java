@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,230 +51,105 @@ import lombok.extern.slf4j.Slf4j;
 @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
 @Slf4j
 public class ConsoleMenuController {
-	
-	@Autowired
-	private ConsoleMenuRepository consoleMenuRepository;
-	@Autowired
-	private MenuServiceImpl menuService;
-	@Autowired
-	private RollbackController rollbackController;
-	@Autowired
-	private AppWebUtils utils;
-	
-	private static final String CONSTANT_RN ="\r\n";
-	private static final String CONSTANT_TYPE_STRING = "\"type\": \"string\",";
-	private static final String CONSTANT_DEFAULT = "\"default\": \"\",";
-	private static final String CONSTANT_PATTERN = "\"pattern\": \"^(.*)$\"";
-	private static final String CONSTANT = "},";
-	
-	@GetMapping(value = "/list", produces = "text/html")
-	@PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-	public String list (Model model) {
 
-		model.addAttribute("menus", consoleMenuRepository.findAll());
+    @Autowired
+    private ConsoleMenuRepository consoleMenuRepository;
+    @Autowired
+    private MenuServiceImpl menuService;
+    @Autowired
+    private RollbackController rollbackController;
+    @Autowired
+    private AppWebUtils utils;
 
-		return "consolemenu/list";
-	}
-	
-	@GetMapping(value = "/show/{id}", produces = "text/html")
-	public String show (Model model, @PathVariable("id") String id) {
-		
-		model.addAttribute("option", "show");
-		model.addAttribute("menu", consoleMenuRepository.findById(id).getJson());
-		
-		return "consolemenu/show";
-	}
-	
-	@GetMapping(value = "/edit/{id}", produces = "text/html")
-	public String edit (Model model, @PathVariable("id") String id) {
-		
-		model.addAttribute("option", "edit");
-		model.addAttribute("menu", consoleMenuRepository.findById(id).getJson());
-		model.addAttribute("idCm",id);
-		
-		return "consolemenu/show";
-	}
-	
-	@Transactional
-	@PostMapping(value = "/upload", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<ConsoleMenu> updateConsoleMenu(@RequestParam String menuId,
-			@RequestParam String menuJson, HttpServletRequest request) throws IOException, ProcessingException {
-		
-		try {
-			final JsonNode menuJsonNode = JsonLoader.fromString(menuJson);
-			final JsonNode jsonSchema = JsonLoader.fromString("{"+CONSTANT_RN + 
-					"  \"definitions\": {},"+CONSTANT_RN + 
-					"  \"type\": \"object\","+CONSTANT_RN + 
-					"  \"title\": \"The Root Schema\","+CONSTANT_RN + 
-					"  \"required\": ["+CONSTANT_RN + 
-					"    \"menu\","+CONSTANT_RN + 
-					"    \"rol\","+CONSTANT_RN + 
-					"    \"noSession\","+CONSTANT_RN + 
-					"    \"navigation\""+CONSTANT_RN + 
-					"  ],"+CONSTANT_RN + 
-					"  \"properties\": {"+CONSTANT_RN + 
-					"    \"menu\": {"+CONSTANT_RN + 
-					CONSTANT_TYPE_STRING+CONSTANT_RN + 
-					"      \"title\": \"The Menu Schema\","+CONSTANT_RN + 
-					CONSTANT_DEFAULT+CONSTANT_RN + 
-					CONSTANT_PATTERN+CONSTANT_RN + 
-					CONSTANT+CONSTANT_RN + 
-					"    \"rol\": {"+CONSTANT_RN + 
-					CONSTANT_TYPE_STRING+CONSTANT_RN + 
-					"      \"title\": \"The Rol Schema\","+CONSTANT_RN + 
-					CONSTANT_DEFAULT+CONSTANT_RN + 
-					CONSTANT_PATTERN+CONSTANT_RN + 
-					"    },"+CONSTANT_RN + 
-					"    \"noSession\": {"+CONSTANT_RN + 
-					CONSTANT_TYPE_STRING+CONSTANT_RN + 
-					"      \"title\": \"The Nosession Schema\","+CONSTANT_RN + 
-					CONSTANT_DEFAULT+CONSTANT_RN + 
-					CONSTANT_PATTERN+CONSTANT_RN + 
-					"    },"+CONSTANT_RN + 
-					"    \"navigation\": {"+CONSTANT_RN + 
-					"      \"type\": \"array\","+CONSTANT_RN + 
-					"      \"title\": \"The Navigation Schema\","+CONSTANT_RN + 
-					"      \"items\": {"+CONSTANT_RN + 
-					"        \"type\": \"object\","+CONSTANT_RN + 
-					"        \"title\": \"The Items Schema\","+CONSTANT_RN + 
-					"        \"required\": ["+CONSTANT_RN + 
-					"          \"title\","+CONSTANT_RN + 
-					"          \"icon\","+CONSTANT_RN + 
-					"          \"url\","+CONSTANT_RN + 
-					"          \"submenu\""+CONSTANT_RN + 
-					"        ],"+CONSTANT_RN + 
-					"        \"properties\": {"+CONSTANT_RN + 
-					"          \"title\": {"+CONSTANT_RN + 
-					"            \"type\": \"object\","+CONSTANT_RN + 
-					"            \"title\": \"The Title Schema\","+CONSTANT_RN + 
-					"            \"required\": ["+CONSTANT_RN + 
-					"              \"EN\","+CONSTANT_RN + 
-					"              \"ES\""+CONSTANT_RN + 
-					"            ],"+CONSTANT_RN + 
-					"            \"properties\": {"+CONSTANT_RN + 
-					"              \"EN\": {"+CONSTANT_RN + 
-					CONSTANT_TYPE_STRING+CONSTANT_RN + 
-					"                \"title\": \"The En Schema\","+CONSTANT_RN + 
-					CONSTANT_DEFAULT+CONSTANT_RN + 
-					CONSTANT_PATTERN+CONSTANT_RN + 
-					"              },"+CONSTANT_RN + 
-					"              \"ES\": {"+CONSTANT_RN + 
-					CONSTANT_TYPE_STRING+CONSTANT_RN + 
-					"                \"title\": \"The Es Schema\","+CONSTANT_RN + 
-					CONSTANT_DEFAULT+CONSTANT_RN + 
-					CONSTANT_PATTERN+CONSTANT_RN + 
-					"              }"+CONSTANT_RN + 
-					"            }"+CONSTANT_RN + 
-					CONSTANT+CONSTANT_RN + 
-					"          \"icon\": {"+CONSTANT_RN + 
-					CONSTANT_TYPE_STRING+CONSTANT_RN + 
-					"            \"title\": \"The Icon Schema\","+CONSTANT_RN + 
-					CONSTANT_DEFAULT+CONSTANT_RN + 
-					CONSTANT_PATTERN+CONSTANT_RN + 
-					"          },"+CONSTANT_RN + 
-					"          \"url\": {"+CONSTANT_RN + 
-					CONSTANT_TYPE_STRING+CONSTANT_RN + 
-					"            \"title\": \"The Url Schema\","+CONSTANT_RN + 
-					CONSTANT_PATTERN+CONSTANT_RN + 
-					"          },"+CONSTANT_RN + 
-					"          \"submenu\": {"+CONSTANT_RN + 
-					"            \"type\": \"array\","+CONSTANT_RN + 
-					"            \"title\": \"The Submenu Schema\","+CONSTANT_RN + 
-					"            \"items\": {"+CONSTANT_RN + 
-					"              \"type\": \"object\","+CONSTANT_RN + 
-					"              \"title\": \"The Items Schema\","+CONSTANT_RN + 
-					"              \"required\": ["+CONSTANT_RN + 
-					"                \"title\","+CONSTANT_RN + 
-					"                \"icon\","+CONSTANT_RN + 
-					"                \"url\""+CONSTANT_RN + 
-					"              ],"+CONSTANT_RN + 
-					"              \"properties\": {"+CONSTANT_RN + 
-					"                \"title\": {"+CONSTANT_RN + 
-					"                  \"type\": \"object\","+CONSTANT_RN + 
-					"                  \"title\": \"The Title Schema\","+CONSTANT_RN + 
-					"                  \"required\": ["+CONSTANT_RN + 
-					"                    \"EN\","+CONSTANT_RN + 
-					"                    \"ES\""+CONSTANT_RN + 
-					"                  ],"+CONSTANT_RN + 
-					"                  \"properties\": {"+CONSTANT_RN + 
-					"                    \"EN\": {"+CONSTANT_RN + 
-					CONSTANT_TYPE_STRING+CONSTANT_RN + 
-					"                      \"title\": \"The En Schema\","+CONSTANT_RN + 
-					CONSTANT_DEFAULT+CONSTANT_RN + 
-					CONSTANT_PATTERN+CONSTANT_RN + 
-					"                    },"+CONSTANT_RN + 
-					"                    \"ES\": {"+CONSTANT_RN + 
-					CONSTANT_TYPE_STRING+CONSTANT_RN + 
-					"                      \"title\": \"The Es Schema\","+CONSTANT_RN + 
-					CONSTANT_DEFAULT+CONSTANT_RN + 
-					CONSTANT_PATTERN+CONSTANT_RN + 
-					"                    }"+CONSTANT_RN + 
-					"                  }"+CONSTANT_RN + 
-					"                },"+CONSTANT_RN + 
-					"                \"icon\": {"+CONSTANT_RN + 
-					CONSTANT_TYPE_STRING+CONSTANT_RN + 
-					"                  \"title\": \"The Icon Schema\","+CONSTANT_RN + 
-					CONSTANT_DEFAULT+CONSTANT_RN + 
-					CONSTANT_PATTERN+CONSTANT_RN + 
-					"                },"+CONSTANT_RN + 
-					"                \"url\": {"+CONSTANT_RN + 
-					CONSTANT_TYPE_STRING+CONSTANT_RN + 
-					"                  \"title\": \"The Url Schema\","+CONSTANT_RN + 
-					CONSTANT_DEFAULT+CONSTANT_RN + 
-					CONSTANT_PATTERN+CONSTANT_RN + 
-					"                }"+CONSTANT_RN + 
-					"              }"+CONSTANT_RN + 
-					"            }"+CONSTANT_RN + 
-					"          }"+CONSTANT_RN + 
-					"        }"+CONSTANT_RN + 
-					"      }"+CONSTANT_RN + 
-					"    }"+CONSTANT_RN + 
-					"  }"+CONSTANT_RN + 
-					"}");
-			final JsonSchemaFactory factoryJson = JsonSchemaFactory.byDefault();
-			final JsonSchema schema = factoryJson.getJsonSchema(jsonSchema);
-			ProcessingReport report = schema.validate(menuJsonNode);
-			if (report != null && !report.isSuccess()) {
-				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-			}
-		}catch (final RuntimeException e) {
-			log.error("Error validating Json structure: ", e.getMessage());
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+    private static final String CONSTANT_RN = "\r\n";
+    private static final String CONSTANT_TYPE_STRING = "\"type\": \"string\",";
+    private static final String CONSTANT_DEFAULT = "\"default\": \"\",";
+    private static final String CONSTANT_PATTERN = "\"pattern\": \"^(.*)$\"";
+    private static final String CONSTANT = "},";
 
-		try {
-			menuService.updateMenu(menuId, menuJson);
+    @GetMapping(value = "/list", produces = "text/html")
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+    public String list(Model model) {
 
-			ConsoleMenu menu = consoleMenuRepository.findById(menuId);
+        model.addAttribute("menus", consoleMenuRepository.findAll());
 
-			if (menu.getRoleType().getId().equals(utils.getRole())) {
-				utils.setSessionAttribute(request, "menu", menu.getJson());}
-			
-			return new ResponseEntity<>(menu, HttpStatus.CREATED);
+        return "consolemenu/list";
+    }
 
-		} catch (final RuntimeException e) {
-			log.error("Error updating console menu: ", e.getMessage());
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+    @GetMapping(value = "/show/{id}", produces = "text/html")
+    public String show(Model model, @PathVariable("id") String id) {
 
-	}
+        model.addAttribute("option", "show");
+        model.addAttribute("menu", consoleMenuRepository.findById(id).getJson());
 
-	@Transactional
-	@PostMapping(value = "/rollback/")
-	public String rollbackMenu(@RequestParam String menuId, HttpServletRequest request){
-		
-		ConsoleMenu menu = consoleMenuRepository.findById(menuId);
-		
-		ConsoleMenu originalMenu = (ConsoleMenu) rollbackController.getRollback(menuId);
-		String originalMenuJson = originalMenu.getJson();
-		
-		menu.setJson(originalMenuJson);		
-		consoleMenuRepository.save(menu);
-		
-		if (menu.getRoleType().getId().equals(utils.getRole())) {
-			utils.setSessionAttribute(request, "menu", menu.getJson());}
-		
-		return "consolemenu/list";
-	}
-	
+        return "consolemenu/show";
+    }
+
+    @GetMapping(value = "/edit/{id}", produces = "text/html")
+    public String edit(Model model, @PathVariable("id") String id) {
+
+        model.addAttribute("option", "edit");
+        model.addAttribute("menu", consoleMenuRepository.findById(id).getJson());
+        model.addAttribute("idCm", id);
+
+        return "consolemenu/show";
+    }
+
+    @Transactional
+    @PostMapping(value = "/upload", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<ConsoleMenu> updateConsoleMenu(@RequestParam String menuId, @RequestParam String menuJson,
+            HttpServletRequest request) throws IOException, ProcessingException {
+
+        try {
+            final JsonNode menuJsonNode = JsonLoader.fromString(menuJson);
+            final JsonNode jsonSchema = JsonLoader.fromString(
+                    "{" + CONSTANT_RN + "  \"definitions\": {}," + CONSTANT_RN + "  \"type\": \"object\"," + CONSTANT_RN + "  \"title\": \"The Root Schema\"," + CONSTANT_RN + "  \"required\": [" + CONSTANT_RN + "    \"menu\"," + CONSTANT_RN + "    \"rol\"," + CONSTANT_RN + "    \"noSession\"," + CONSTANT_RN + "    \"navigation\"" + CONSTANT_RN + "  ]," + CONSTANT_RN + "  \"properties\": {" + CONSTANT_RN + "    \"menu\": {" + CONSTANT_RN + CONSTANT_TYPE_STRING + CONSTANT_RN + "      \"title\": \"The Menu Schema\"," + CONSTANT_RN + CONSTANT_DEFAULT + CONSTANT_RN + CONSTANT_PATTERN + CONSTANT_RN + CONSTANT + CONSTANT_RN + "    \"rol\": {" + CONSTANT_RN + CONSTANT_TYPE_STRING + CONSTANT_RN + "      \"title\": \"The Rol Schema\"," + CONSTANT_RN + CONSTANT_DEFAULT + CONSTANT_RN + CONSTANT_PATTERN + CONSTANT_RN + "    }," + CONSTANT_RN + "    \"noSession\": {" + CONSTANT_RN + CONSTANT_TYPE_STRING + CONSTANT_RN + "      \"title\": \"The Nosession Schema\"," + CONSTANT_RN + CONSTANT_DEFAULT + CONSTANT_RN + CONSTANT_PATTERN + CONSTANT_RN + "    }," + CONSTANT_RN + "    \"navigation\": {" + CONSTANT_RN + "      \"type\": \"array\"," + CONSTANT_RN + "      \"title\": \"The Navigation Schema\"," + CONSTANT_RN + "      \"items\": {" + CONSTANT_RN + "        \"type\": \"object\"," + CONSTANT_RN + "        \"title\": \"The Items Schema\"," + CONSTANT_RN + "        \"required\": [" + CONSTANT_RN + "          \"title\"," + CONSTANT_RN + "          \"icon\"," + CONSTANT_RN + "          \"url\"," + CONSTANT_RN + "          \"submenu\"" + CONSTANT_RN + "        ]," + CONSTANT_RN + "        \"properties\": {" + CONSTANT_RN + "          \"title\": {" + CONSTANT_RN + "            \"type\": \"object\"," + CONSTANT_RN + "            \"title\": \"The Title Schema\"," + CONSTANT_RN + "            \"required\": [" + CONSTANT_RN + "              \"EN\"," + CONSTANT_RN + "              \"ES\"" + CONSTANT_RN + "            ]," + CONSTANT_RN + "            \"properties\": {" + CONSTANT_RN + "              \"EN\": {" + CONSTANT_RN + CONSTANT_TYPE_STRING + CONSTANT_RN + "                \"title\": \"The En Schema\"," + CONSTANT_RN + CONSTANT_DEFAULT + CONSTANT_RN + CONSTANT_PATTERN + CONSTANT_RN + "              }," + CONSTANT_RN + "              \"ES\": {" + CONSTANT_RN + CONSTANT_TYPE_STRING + CONSTANT_RN + "                \"title\": \"The Es Schema\"," + CONSTANT_RN + CONSTANT_DEFAULT + CONSTANT_RN + CONSTANT_PATTERN + CONSTANT_RN + "              }" + CONSTANT_RN + "            }" + CONSTANT_RN + CONSTANT + CONSTANT_RN + "          \"icon\": {" + CONSTANT_RN + CONSTANT_TYPE_STRING + CONSTANT_RN + "            \"title\": \"The Icon Schema\"," + CONSTANT_RN + CONSTANT_DEFAULT + CONSTANT_RN + CONSTANT_PATTERN + CONSTANT_RN + "          }," + CONSTANT_RN + "          \"url\": {" + CONSTANT_RN + CONSTANT_TYPE_STRING + CONSTANT_RN + "            \"title\": \"The Url Schema\"," + CONSTANT_RN + CONSTANT_PATTERN + CONSTANT_RN + "          }," + CONSTANT_RN + "          \"submenu\": {" + CONSTANT_RN + "            \"type\": \"array\"," + CONSTANT_RN + "            \"title\": \"The Submenu Schema\"," + CONSTANT_RN + "            \"items\": {" + CONSTANT_RN + "              \"type\": \"object\"," + CONSTANT_RN + "              \"title\": \"The Items Schema\"," + CONSTANT_RN + "              \"required\": [" + CONSTANT_RN + "                \"title\"," + CONSTANT_RN + "                \"icon\"," + CONSTANT_RN + "                \"url\"" + CONSTANT_RN + "              ]," + CONSTANT_RN + "              \"properties\": {" + CONSTANT_RN + "                \"title\": {" + CONSTANT_RN + "                  \"type\": \"object\"," + CONSTANT_RN + "                  \"title\": \"The Title Schema\"," + CONSTANT_RN + "                  \"required\": [" + CONSTANT_RN + "                    \"EN\"," + CONSTANT_RN + "                    \"ES\"" + CONSTANT_RN + "                  ]," + CONSTANT_RN + "                  \"properties\": {" + CONSTANT_RN + "                    \"EN\": {" + CONSTANT_RN + CONSTANT_TYPE_STRING + CONSTANT_RN + "                      \"title\": \"The En Schema\"," + CONSTANT_RN + CONSTANT_DEFAULT + CONSTANT_RN + CONSTANT_PATTERN + CONSTANT_RN + "                    }," + CONSTANT_RN + "                    \"ES\": {" + CONSTANT_RN + CONSTANT_TYPE_STRING + CONSTANT_RN + "                      \"title\": \"The Es Schema\"," + CONSTANT_RN + CONSTANT_DEFAULT + CONSTANT_RN + CONSTANT_PATTERN + CONSTANT_RN + "                    }" + CONSTANT_RN + "                  }" + CONSTANT_RN + "                }," + CONSTANT_RN + "                \"icon\": {" + CONSTANT_RN + CONSTANT_TYPE_STRING + CONSTANT_RN + "                  \"title\": \"The Icon Schema\"," + CONSTANT_RN + CONSTANT_DEFAULT + CONSTANT_RN + CONSTANT_PATTERN + CONSTANT_RN + "                }," + CONSTANT_RN + "                \"url\": {" + CONSTANT_RN + CONSTANT_TYPE_STRING + CONSTANT_RN + "                  \"title\": \"The Url Schema\"," + CONSTANT_RN + CONSTANT_DEFAULT + CONSTANT_RN + CONSTANT_PATTERN + CONSTANT_RN + "                }" + CONSTANT_RN + "              }" + CONSTANT_RN + "            }" + CONSTANT_RN + "          }" + CONSTANT_RN + "        }" + CONSTANT_RN + "      }" + CONSTANT_RN + "    }" + CONSTANT_RN + "  }" + CONSTANT_RN + "}");
+            final JsonSchemaFactory factoryJson = JsonSchemaFactory.byDefault();
+            final JsonSchema schema = factoryJson.getJsonSchema(jsonSchema);
+            ProcessingReport report = schema.validate(menuJsonNode);
+            if (report != null && !report.isSuccess()) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } catch (final RuntimeException e) {
+            log.error("Error validating Json structure: ", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            menuService.updateMenu(menuId, menuJson);
+
+            ConsoleMenu menu = consoleMenuRepository.findById(menuId);
+
+            if (menu.getRoleType().getId().equals(utils.getRole())) {
+                utils.setSessionAttribute(request, "menu", menu.getJson());
+            }
+
+            return new ResponseEntity<>(menu, HttpStatus.CREATED);
+
+        } catch (final RuntimeException e) {
+            log.error("Error updating console menu: ", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    @Transactional
+    @PostMapping(value = "/rollback/")
+    public String rollbackMenu(@RequestParam String menuId, HttpServletRequest request) {
+
+        ConsoleMenu menu = consoleMenuRepository.findById(menuId);
+
+        ConsoleMenu originalMenu = (ConsoleMenu) rollbackController.getRollback(menuId);
+        String originalMenuJson = originalMenu.getJson();
+
+        menu.setJson(originalMenuJson);
+        consoleMenuRepository.save(menu);
+
+        if (menu.getRoleType().getId().equals(utils.getRole())) {
+            utils.setSessionAttribute(request, "menu", menu.getJson());
+        }
+
+        return "consolemenu/list";
+    }
+
 }

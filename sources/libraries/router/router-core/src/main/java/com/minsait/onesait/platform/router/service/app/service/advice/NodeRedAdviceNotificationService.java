@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,44 +36,49 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class NodeRedAdviceNotificationService implements AdviceNotificationService {
 
-	@Autowired
-	FlowNodeService flowNodeService;
+    @Autowired
+    FlowNodeService flowNodeService;
 
-	@Autowired
-	OntologyRepository ontologyRepository;
+    @Autowired
+    OntologyRepository ontologyRepository;
 
-	@Autowired
-	IntegrationResourcesService resourcesService;
+    @Autowired
+    IntegrationResourcesService resourcesService;
 
-	private static final String INSERT_STR = "INSERT";
+    private static final String INSERT_STR = "INSERT";
 
-	static final ImmutableMap<String, String> HTTP_METHOD_TO_NODE_METHOD = new ImmutableMap.Builder<String, String>()
-			.put("POST", INSERT_STR).put("PUT", "UPDATE").put("DELETE", "DELETE").put(INSERT_STR, INSERT_STR).build();
+    static final ImmutableMap<String, String> HTTP_METHOD_TO_NODE_METHOD =
+            new ImmutableMap.Builder<String, String>().put(
+            "POST", INSERT_STR).put("PUT", "UPDATE").put("DELETE", "DELETE").put(INSERT_STR, INSERT_STR).build();
 
-	@Override
-	public List<AdviceNotificationModel> getAdviceNotificationModel(String ontologyName, String messageType) {
+    @Override
+    public List<AdviceNotificationModel> getAdviceNotificationModel(String ontologyName, String messageType) {
 
-		List<NotificationEntity> listNotifications = null;
-		List<AdviceNotificationModel> model = null;
-		String baseUrl = resourcesService.getUrl(Module.FLOWENGINE, ServiceUrl.ADVICE);
+        List<NotificationEntity> listNotifications = null;
+        List<AdviceNotificationModel> model = null;
+        String baseUrl = resourcesService.getUrl(Module.FLOWENGINE, ServiceUrl.ADVICE);
 
-		try {
-			listNotifications = flowNodeService.getNotificationsByOntologyAndMessageType(ontologyName,
-					HTTP_METHOD_TO_NODE_METHOD.get(messageType) != null ? HTTP_METHOD_TO_NODE_METHOD.get(messageType)
-							: messageType);
-		} catch (Exception e) {
-		    log.error("" + e);
-		}
+        try {
+            listNotifications = flowNodeService.getNotificationsByOntologyAndMessageType(ontologyName,
+                                                                                         HTTP_METHOD_TO_NODE_METHOD.get(
+                                                                                                 messageType) != null
+                                                                                                 ?
+                                                                                                 HTTP_METHOD_TO_NODE_METHOD.get(
+                                                                                                 messageType)
+                                                                                                 : messageType);
+        } catch (Exception e) {
+            log.error("" + e);
+        }
 
-		if (listNotifications != null) {
-			model = new ArrayList<>();
-			for (NotificationEntity notificationEntity : listNotifications) {
-				AdviceNotificationModel advice = new AdviceNotificationModel();
-				advice.setEntityId(notificationEntity.getNotificationEntityId());
-				advice.setUrl(baseUrl + "/" + notificationEntity.getNotificationUrl());
-				model.add(advice);
-			}
-		}
-		return model;
-	}
+        if (listNotifications != null) {
+            model = new ArrayList<>();
+            for (NotificationEntity notificationEntity : listNotifications) {
+                AdviceNotificationModel advice = new AdviceNotificationModel();
+                advice.setEntityId(notificationEntity.getNotificationEntityId());
+                advice.setUrl(baseUrl + "/" + notificationEntity.getNotificationUrl());
+                model.add(advice);
+            }
+        }
+        return model;
+    }
 }

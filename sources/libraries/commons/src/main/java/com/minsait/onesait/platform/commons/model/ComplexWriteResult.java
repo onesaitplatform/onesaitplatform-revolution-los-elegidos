@@ -15,7 +15,7 @@
 /*******************************************************************************
  * © Indra Sistemas, S.A.
  * 2013 - 2018  SPAIN
- * 
+ *
  * All rights reserved
  ******************************************************************************/
 package com.minsait.onesait.platform.commons.model;
@@ -27,12 +27,12 @@ import lombok.Setter;
 
 public class ComplexWriteResult {
 
-	@Getter
-	@Setter
-	private ComplexWriteResultType type;
+    @Getter
+    @Setter
+    private ComplexWriteResultType type;
 
-	@Getter
-	@Setter
-	private List<? extends DBResult> data;
+    @Getter
+    @Setter
+    private List<? extends DBResult> data;
 
 }

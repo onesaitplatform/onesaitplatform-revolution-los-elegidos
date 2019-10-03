@@ -1,15 +1,15 @@
-ace.define("ace/snippets/vhdl",[], function(require, exports, module) {
-"use strict";
+ace.define("ace/snippets/vhdl", [], function (require, exports, module) {
+    "use strict";
 
-exports.snippetText = "";
-exports.scope = "vhdl";
+    exports.snippetText = "";
+    exports.scope = "vhdl";
 
 });
-                (function() {
-                    ace.require(["ace/snippets/vhdl"], function(m) {
-                        if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
-                        }
-                    });
-                })();
+(function () {
+    ace.require(["ace/snippets/vhdl"], function (m) {
+        if (typeof module == "object" && typeof exports == "object" && module) {
+            module.exports = m;
+        }
+    });
+})();
             

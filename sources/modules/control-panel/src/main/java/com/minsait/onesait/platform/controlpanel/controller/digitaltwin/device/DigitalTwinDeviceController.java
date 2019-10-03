@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,168 +59,172 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/digitaltwindevices")
 public class DigitalTwinDeviceController {
 
-	@Autowired
-	private AppWebUtils utils;
+    @Autowired
+    private AppWebUtils utils;
 
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private UserService userService;
 
-	@Autowired
-	private DigitalTwinDeviceService digitalTwinDeviceService;
+    @Autowired
+    private DigitalTwinDeviceService digitalTwinDeviceService;
 
-	@Autowired
-	private DigitalTwinDeviceHelper digitalTwinDeviceHelper;
+    @Autowired
+    private DigitalTwinDeviceHelper digitalTwinDeviceHelper;
 
-	@Autowired
-	private ConfigurationService configurationService;
+    @Autowired
+    private ConfigurationService configurationService;
 
-	private static final String REDIRECT_DIGITAL_TWIN_DEV_CREATE = "redirect:/digitaltwindevices/create";
-	private static final String REDIRECT_DIGITAL_TWIN_DEV_LIST = "redirect:/digitaltwindevices/list";
-	private static final String ERROR_403 = "error/403";
+    private static final String REDIRECT_DIGITAL_TWIN_DEV_CREATE = "redirect:/digitaltwindevices/create";
+    private static final String REDIRECT_DIGITAL_TWIN_DEV_LIST = "redirect:/digitaltwindevices/list";
+    private static final String ERROR_403 = "error/403";
 
-	@PostMapping("/getNamesForAutocomplete")
-	public @ResponseBody List<String> getNamesForAutocomplete() {
-		return digitalTwinDeviceService.getAllIdentifications();
-	}
+    @PostMapping("/getNamesForAutocomplete")
+    public @ResponseBody
+    List<String> getNamesForAutocomplete() {
+        return digitalTwinDeviceService.getAllIdentifications();
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@GetMapping(value = "/create")
-	public String create(Model model) {
-		model.addAttribute("digitaltwindevice", new DigitalTwinDevice());
-		model.addAttribute("logic", "");
-		model.addAttribute("typesDigitalTwin", digitalTwinDeviceService.getAllDigitalTwinTypeNames());
-		return "digitaltwindevices/create";
-	}
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @GetMapping(value = "/create")
+    public String create(Model model) {
+        model.addAttribute("digitaltwindevice", new DigitalTwinDevice());
+        model.addAttribute("logic", "");
+        model.addAttribute("typesDigitalTwin", digitalTwinDeviceService.getAllDigitalTwinTypeNames());
+        return "digitaltwindevices/create";
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@GetMapping(value = "/list")
-	public String list(Model model) {
-		model.addAttribute("digitalTwinDevices", digitalTwinDeviceService.getAllByUserId(utils.getUserId()));
-		return "digitaltwindevices/list";
-	}
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @GetMapping(value = "/list")
+    public String list(Model model) {
+        model.addAttribute("digitalTwinDevices", digitalTwinDeviceService.getAllByUserId(utils.getUserId()));
+        return "digitaltwindevices/list";
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@GetMapping(value = "/generateToken")
-	public @ResponseBody String generateToken() {
-		return digitalTwinDeviceService.generateToken();
-	}
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @GetMapping(value = "/generateToken")
+    public @ResponseBody
+    String generateToken() {
+        return digitalTwinDeviceService.generateToken();
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@GetMapping(value = "/getLogicFromType/{type}")
-	public @ResponseBody String getLogicFromType(@PathVariable("type") String type) {
-		return digitalTwinDeviceService.getLogicFromType(type);
-	}
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @GetMapping(value = "/getLogicFromType/{type}")
+    public @ResponseBody
+    String getLogicFromType(@PathVariable("type") String type) {
+        return digitalTwinDeviceService.getLogicFromType(type);
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@PostMapping(value = "/create")
-	@Transactional
-	public String createDigitalTwinDevice(Model model, @Valid DigitalTwinDevice digitalTwinDevice,
-			BindingResult bindingResult, RedirectAttributes redirect, HttpServletRequest httpServletRequest) {
-		if (bindingResult.hasErrors()) {
-			log.debug("Some digital twin device properties missing");
-			utils.addRedirectMessage("digitaltwindevice.create.error", redirect);
-			return REDIRECT_DIGITAL_TWIN_DEV_CREATE;
-		}
-		try {
-			final User user = userService.getUser(utils.getUserId());
-			digitalTwinDevice.setUser(user);
-			digitalTwinDeviceService.createDigitalTwinDevice(digitalTwinDevice, httpServletRequest);
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @PostMapping(value = "/create")
+    @Transactional
+    public String createDigitalTwinDevice(Model model, @Valid DigitalTwinDevice digitalTwinDevice,
+            BindingResult bindingResult, RedirectAttributes redirect, HttpServletRequest httpServletRequest) {
+        if (bindingResult.hasErrors()) {
+            log.debug("Some digital twin device properties missing");
+            utils.addRedirectMessage("digitaltwindevice.create.error", redirect);
+            return REDIRECT_DIGITAL_TWIN_DEV_CREATE;
+        }
+        try {
+            final User user = userService.getUser(utils.getUserId());
+            digitalTwinDevice.setUser(user);
+            digitalTwinDeviceService.createDigitalTwinDevice(digitalTwinDevice, httpServletRequest);
 
-		} catch (final DigitalTwinServiceException e) {
-			log.error("Cannot create digital twin device because of:" + e.getMessage());
-			utils.addRedirectException(e, redirect);
-			return REDIRECT_DIGITAL_TWIN_DEV_CREATE;
-		}
-		return REDIRECT_DIGITAL_TWIN_DEV_LIST;
-	}
+        } catch (final DigitalTwinServiceException e) {
+            log.error("Cannot create digital twin device because of:" + e.getMessage());
+            utils.addRedirectException(e, redirect);
+            return REDIRECT_DIGITAL_TWIN_DEV_CREATE;
+        }
+        return REDIRECT_DIGITAL_TWIN_DEV_LIST;
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@GetMapping(value = "/show/{id}")
-	public String show(Model model, @PathVariable("id") String id, RedirectAttributes redirect) {
-		final DigitalTwinDevice device = digitalTwinDeviceService.getDigitalTwinDeviceById(id);
-		if (device != null) {
-			if (!digitalTwinDeviceService.hasUserAccess(id, utils.getUserId()))
-				return ERROR_403;
-			model.addAttribute("digitaltwindevice", device);
-			model.addAttribute("logic", device.getTypeId().getLogic());
-			model.addAttribute("defaultGitlab", configurationService.getDefautlGitlabConfiguration() != null);
-			return "digitaltwindevices/show";
-		} else {
-			utils.addRedirectMessage("digitaltwindevice.notfound.error", redirect);
-			return REDIRECT_DIGITAL_TWIN_DEV_LIST;
-		}
-	}
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @GetMapping(value = "/show/{id}")
+    public String show(Model model, @PathVariable("id") String id, RedirectAttributes redirect) {
+        final DigitalTwinDevice device = digitalTwinDeviceService.getDigitalTwinDeviceById(id);
+        if (device != null) {
+            if (!digitalTwinDeviceService.hasUserAccess(id, utils.getUserId()))
+                return ERROR_403;
+            model.addAttribute("digitaltwindevice", device);
+            model.addAttribute("logic", device.getTypeId().getLogic());
+            model.addAttribute("defaultGitlab", configurationService.getDefautlGitlabConfiguration() != null);
+            return "digitaltwindevices/show";
+        } else {
+            utils.addRedirectMessage("digitaltwindevice.notfound.error", redirect);
+            return REDIRECT_DIGITAL_TWIN_DEV_LIST;
+        }
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@GetMapping(value = "/update/{id}", produces = "text/html")
-	public String update(Model model, @PathVariable("id") String id) {
-		if (!digitalTwinDeviceService.hasUserEditAccess(id, utils.getUserId()))
-			return ERROR_403;
-		digitalTwinDeviceService.getDigitalTwinToUpdate(model, id);
-		model.addAttribute("typesDigitalTwin", digitalTwinDeviceService.getAllDigitalTwinTypeNames());
-		return "digitaltwindevices/create";
-	}
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @GetMapping(value = "/update/{id}", produces = "text/html")
+    public String update(Model model, @PathVariable("id") String id) {
+        if (!digitalTwinDeviceService.hasUserEditAccess(id, utils.getUserId()))
+            return ERROR_403;
+        digitalTwinDeviceService.getDigitalTwinToUpdate(model, id);
+        model.addAttribute("typesDigitalTwin", digitalTwinDeviceService.getAllDigitalTwinTypeNames());
+        return "digitaltwindevices/create";
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@PutMapping(value = "/update/{id}", produces = "text/html")
-	public String updateDigitalTwinDevice(Model model, @PathVariable("id") String id,
-			@Valid DigitalTwinDevice digitalTwinDevice, BindingResult bindingResult, RedirectAttributes redirect,
-			HttpServletRequest httpServletRequest) {
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @PutMapping(value = "/update/{id}", produces = "text/html")
+    public String updateDigitalTwinDevice(Model model, @PathVariable("id") String id,
+            @Valid DigitalTwinDevice digitalTwinDevice, BindingResult bindingResult, RedirectAttributes redirect,
+            HttpServletRequest httpServletRequest) {
 
-		if (bindingResult.hasErrors()) {
-			log.debug("Some digital twin device properties missing");
-			utils.addRedirectMessage("digitaltwindevice.validation.error", redirect);
-			return "redirect:/digitaltwindevices/update/" + id;
-		}
+        if (bindingResult.hasErrors()) {
+            log.debug("Some digital twin device properties missing");
+            utils.addRedirectMessage("digitaltwindevice.validation.error", redirect);
+            return "redirect:/digitaltwindevices/update/" + id;
+        }
 
-		try {
-			if (!digitalTwinDeviceService.hasUserEditAccess(id, utils.getUserId()))
-				return ERROR_403;
+        try {
+            if (!digitalTwinDeviceService.hasUserEditAccess(id, utils.getUserId()))
+                return ERROR_403;
 
-			digitalTwinDeviceService.updateDigitalTwinDevice(digitalTwinDevice, httpServletRequest);
-		} catch (final DigitalTwinServiceException e) {
-			log.debug("Cannot update Digital Twin Device");
-			utils.addRedirectMessage("digitaltwindevice.update.error", redirect);
-			return REDIRECT_DIGITAL_TWIN_DEV_CREATE;
-		}
-		return REDIRECT_DIGITAL_TWIN_DEV_LIST;
+            digitalTwinDeviceService.updateDigitalTwinDevice(digitalTwinDevice, httpServletRequest);
+        } catch (final DigitalTwinServiceException e) {
+            log.debug("Cannot update Digital Twin Device");
+            utils.addRedirectMessage("digitaltwindevice.update.error", redirect);
+            return REDIRECT_DIGITAL_TWIN_DEV_CREATE;
+        }
+        return REDIRECT_DIGITAL_TWIN_DEV_LIST;
 
-	}
+    }
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	@DeleteMapping("/{id}")
-	@Transactional
-	public String delete(Model model, @PathVariable("id") String id, RedirectAttributes redirect) {
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    @DeleteMapping("/{id}")
+    @Transactional
+    public String delete(Model model, @PathVariable("id") String id, RedirectAttributes redirect) {
 
-		final DigitalTwinDevice digitalTwinDevice = digitalTwinDeviceService.getDigitalTwinDeviceById(id);
-		if (digitalTwinDevice != null) {
-			try {
-				digitalTwinDeviceService.deleteDigitalTwinDevice(digitalTwinDevice);
-			} catch (final RuntimeException e) {
-				utils.addRedirectException(e, redirect);
-			} catch (final Exception e) {
-				utils.addRedirectMessage("digitaltwindevice.delete.error", redirect);
-				return REDIRECT_DIGITAL_TWIN_DEV_LIST;
-			}
-			return REDIRECT_DIGITAL_TWIN_DEV_LIST;
-		} else {
-			return REDIRECT_DIGITAL_TWIN_DEV_LIST;
-		}
-	}
+        final DigitalTwinDevice digitalTwinDevice = digitalTwinDeviceService.getDigitalTwinDeviceById(id);
+        if (digitalTwinDevice != null) {
+            try {
+                digitalTwinDeviceService.deleteDigitalTwinDevice(digitalTwinDevice);
+            } catch (final RuntimeException e) {
+                utils.addRedirectException(e, redirect);
+            } catch (final Exception e) {
+                utils.addRedirectMessage("digitaltwindevice.delete.error", redirect);
+                return REDIRECT_DIGITAL_TWIN_DEV_LIST;
+            }
+            return REDIRECT_DIGITAL_TWIN_DEV_LIST;
+        } else {
+            return REDIRECT_DIGITAL_TWIN_DEV_LIST;
+        }
+    }
 
-	@GetMapping(value = "/generateProject/{identification}/{compile}/{sensehat}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public ResponseEntity<InputStreamResource> generateProject(@PathVariable("identification") String identification,
-			@PathVariable("compile") Boolean compile, @PathVariable("sensehat") Boolean sensehat)
-			throws FileNotFoundException {
+    @GetMapping(value = "/generateProject/{identification}/{compile}/{sensehat}", produces =
+            MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<InputStreamResource> generateProject(@PathVariable("identification") String identification,
+            @PathVariable("compile") Boolean compile,
+            @PathVariable("sensehat") Boolean sensehat) throws FileNotFoundException {
 
-		final File zipFile = digitalTwinDeviceHelper.generateProject(identification, compile, sensehat);
+        final File zipFile = digitalTwinDeviceHelper.generateProject(identification, compile, sensehat);
 
-		final HttpHeaders respHeaders = new HttpHeaders();
-		respHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-		respHeaders.setContentDispositionFormData("attachment", zipFile.getName());
-		respHeaders.setContentLength(zipFile.length());
-		final InputStreamResource isr = new InputStreamResource(new FileInputStream(zipFile));
-		return new ResponseEntity<>(isr, respHeaders, HttpStatus.OK);
-	}
+        final HttpHeaders respHeaders = new HttpHeaders();
+        respHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        respHeaders.setContentDispositionFormData("attachment", zipFile.getName());
+        respHeaders.setContentLength(zipFile.length());
+        final InputStreamResource isr = new InputStreamResource(new FileInputStream(zipFile));
+        return new ResponseEntity<>(isr, respHeaders, HttpStatus.OK);
+    }
 
 }

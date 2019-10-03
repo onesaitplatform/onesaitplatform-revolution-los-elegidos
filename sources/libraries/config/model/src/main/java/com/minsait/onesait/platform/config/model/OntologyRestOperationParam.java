@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,44 +37,44 @@ import lombok.Setter;
 @Table(name = "ONTOLOGY_REST_OPERATION_PARAM")
 public class OntologyRestOperationParam extends AuditableEntityWithUUID {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public enum ParamOperationType {
-		PATH, QUERY
-	}
+    public enum ParamOperationType {
+        PATH, QUERY
+    }
 
-	@ManyToOne
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "OPERATION_ID", referencedColumnName = "ID")
-	@Getter
-	@Setter
-	private OntologyRestOperation operationId;
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "OPERATION_ID", referencedColumnName = "ID")
+    @Getter
+    @Setter
+    private OntologyRestOperation operationId;
 
-	@Column(name = "INDEX_PARAM")
-	@Getter
-	@Setter
-	private Integer indexParam;
+    @Column(name = "INDEX_PARAM")
+    @Getter
+    @Setter
+    private Integer indexParam;
 
-	@Column(name = "NAME", length = 512, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String name;
+    @Column(name = "NAME", length = 512, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String name;
 
-	@Column(name = "FIELD", length = 512, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String field;
+    @Column(name = "FIELD", length = 512, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String field;
 
-	@Column(name = "TYPE", nullable = false)
-	@NotNull
-	@Enumerated(EnumType.STRING)
-	@Getter
-	@Setter
-	private ParamOperationType type;
+    @Column(name = "TYPE", nullable = false)
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Getter
+    @Setter
+    private ParamOperationType type;
 
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,31 +39,31 @@ import lombok.Setter;
 @Configurable
 public class ApiAuthentication extends AuditableEntityWithUUID {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@ManyToOne
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "API_ID", referencedColumnName = "ID", nullable = false)
-	@Getter
-	@Setter
-	private Api api;
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "API_ID", referencedColumnName = "ID", nullable = false)
+    @Getter
+    @Setter
+    private Api api;
 
-	@OneToMany(mappedBy = "apiAuthentication", cascade = CascadeType.ALL)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@Getter
-	@Setter
-	private Set<ApiAuthenticationParameter> apiAuthenticationParameters;
+    @OneToMany(mappedBy = "apiAuthentication", cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Getter
+    @Setter
+    private Set<ApiAuthenticationParameter> apiAuthenticationParameters;
 
-	@Column(name = "TYPE", length = 50, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String type;
+    @Column(name = "TYPE", length = 50, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String type;
 
-	@Column(name = "DESCRIPTION", length = 512, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String description;
+    @Column(name = "DESCRIPTION", length = 512, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String description;
 
 }

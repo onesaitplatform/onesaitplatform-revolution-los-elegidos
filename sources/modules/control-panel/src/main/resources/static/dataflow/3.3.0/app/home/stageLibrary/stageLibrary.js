@@ -18,136 +18,136 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('StageLibraryController', function ($scope, pipelineService, pipelineConstant) {
-    angular.extend($scope, {
-      filteredStageLibraries: [],
-      searchInput: '',
+    .module('dataCollectorApp.home')
+    .controller('StageLibraryController', function ($scope, pipelineService, pipelineConstant) {
+        angular.extend($scope, {
+            filteredStageLibraries: [],
+            searchInput: '',
 
-      allStage: {
-        group: 'All'
-      },
+            allStage: {
+                group: 'All'
+            },
 
-      /**
-       * Return Stage Icon URL
-       *
-       * @param stage
-       * @returns {*}
-       */
-      getStageIconURL: function(stage) {
-        return pipelineService.getStageIconURL(stage);
-      },
+            /**
+             * Return Stage Icon URL
+             *
+             * @param stage
+             * @returns {*}
+             */
+            getStageIconURL: function (stage) {
+                return pipelineService.getStageIconURL(stage);
+            },
 
 
-      /**
-       * Callback function when stageFilterGroup is updated.
-       *
-       */
-      onStageFilterGroupChange: function() {
-        var stageNameList = [];
-        var regex = new RegExp($scope.searchInput, 'i');
-        $scope.filteredStageLibraries = [];
-        angular.forEach($scope.stageLibraries, function(stageLibrary) {
-          if (libraryFilter(stageLibrary) && !_.contains(stageNameList, stageLibrary.name) &&
-            regex.test(stageLibrary.label) && !stageLibrary.errorStage && !stageLibrary.statsAggregatorStage &&
-            stageLibrary.library !== 'streamsets-datacollector-stats-lib' &&
-            stageLibrary.name.indexOf('_fragment_') === -1 &&
-            ($scope.executionMode !== 'EDGE' || stageLibrary.executionModes.indexOf($scope.executionMode) !== -1)
-          ) {
-            stageNameList.push(stageLibrary.name);
-            $scope.filteredStageLibraries.push(stageLibrary);
-          }
+            /**
+             * Callback function when stageFilterGroup is updated.
+             *
+             */
+            onStageFilterGroupChange: function () {
+                var stageNameList = [];
+                var regex = new RegExp($scope.searchInput, 'i');
+                $scope.filteredStageLibraries = [];
+                angular.forEach($scope.stageLibraries, function (stageLibrary) {
+                    if (libraryFilter(stageLibrary) && !_.contains(stageNameList, stageLibrary.name) &&
+                        regex.test(stageLibrary.label) && !stageLibrary.errorStage && !stageLibrary.statsAggregatorStage &&
+                        stageLibrary.library !== 'streamsets-datacollector-stats-lib' &&
+                        stageLibrary.name.indexOf('_fragment_') === -1 &&
+                        ($scope.executionMode !== 'EDGE' || stageLibrary.executionModes.indexOf($scope.executionMode) !== -1)
+                    ) {
+                        stageNameList.push(stageLibrary.name);
+                        $scope.filteredStageLibraries.push(stageLibrary);
+                    }
+                });
+            }
         });
-      }
-    });
 
-    var typeGroups = [{
-      group: 'Type',
-      name: pipelineConstant.SOURCE_STAGE_TYPE,
-      label: 'Origins'
-    },{
-      group: 'Type',
-      name: pipelineConstant.PROCESSOR_STAGE_TYPE,
-      label: 'Processors'
-    },{
-      group: 'Type',
-      name: pipelineConstant.TARGET_STAGE_TYPE,
-      label: 'Destinations'
-    },{
-      group: 'Type',
-      name: pipelineConstant.EXECUTOR_STAGE_TYPE,
-      label: 'Executors'
-    }];
+        var typeGroups = [{
+            group: 'Type',
+            name: pipelineConstant.SOURCE_STAGE_TYPE,
+            label: 'Origins'
+        }, {
+            group: 'Type',
+            name: pipelineConstant.PROCESSOR_STAGE_TYPE,
+            label: 'Processors'
+        }, {
+            group: 'Type',
+            name: pipelineConstant.TARGET_STAGE_TYPE,
+            label: 'Destinations'
+        }, {
+            group: 'Type',
+            name: pipelineConstant.EXECUTOR_STAGE_TYPE,
+            label: 'Executors'
+        }];
 
-    /**
-     * Filter callback function
-     *
-     * @param stage
-     * @returns {boolean}
-     */
-    var libraryFilter = function(stage) {
-      var filterGroup = $scope.$storage.stageFilterGroup;
+        /**
+         * Filter callback function
+         *
+         * @param stage
+         * @returns {boolean}
+         */
+        var libraryFilter = function (stage) {
+            var filterGroup = $scope.$storage.stageFilterGroup;
 
-      if (filterGroup === undefined) {
-        $scope.$storage.stageFilterGroup = '';
-      }
+            if (filterGroup === undefined) {
+                $scope.$storage.stageFilterGroup = '';
+            }
 
-      if (filterGroup) {
-        if (filterGroup.group === 'Type') {
-          return stage.type === filterGroup.name;
-        } else if (filterGroup.group === 'Library') {
-          return stage.library === filterGroup.name;
-        }
-      }
+            if (filterGroup) {
+                if (filterGroup.group === 'Type') {
+                    return stage.type === filterGroup.name;
+                } else if (filterGroup.group === 'Library') {
+                    return stage.library === filterGroup.name;
+                }
+            }
 
-      return true;
-    };
+            return true;
+        };
 
-    var updateStageGroups = function() {
-      var stageGroups = [];
-      var labels = {};
+        var updateStageGroups = function () {
+            var stageGroups = [];
+            var labels = {};
 
-      var libraryList = _.chain($scope.stageLibraries)
-        .filter(function (stageLibrary) {
-          return stageLibrary.library !== 'streamsets-datacollector-stats-lib';
-        })
-        .sortBy('libraryLabel')
-        .pluck("library")
-        .unique()
-        .value();
+            var libraryList = _.chain($scope.stageLibraries)
+                .filter(function (stageLibrary) {
+                    return stageLibrary.library !== 'streamsets-datacollector-stats-lib';
+                })
+                .sortBy('libraryLabel')
+                .pluck("library")
+                .unique()
+                .value();
 
-      angular.forEach($scope.stageLibraries, function(stageLibrary) {
-        labels[stageLibrary.library] = stageLibrary.libraryLabel;
-      });
+            angular.forEach($scope.stageLibraries, function (stageLibrary) {
+                labels[stageLibrary.library] = stageLibrary.libraryLabel;
+            });
 
-      stageGroups = stageGroups.concat(typeGroups);
+            stageGroups = stageGroups.concat(typeGroups);
 
-      angular.forEach(libraryList, function(library) {
-        stageGroups.push({
-          group: 'Library',
-          name: library,
-          label: labels[library]
+            angular.forEach(libraryList, function (library) {
+                stageGroups.push({
+                    group: 'Library',
+                    name: library,
+                    label: labels[library]
+                });
+            });
+
+            $scope.stageGroups = stageGroups;
+
+            $scope.onStageFilterGroupChange();
+        };
+
+        updateStageGroups();
+
+        $scope.$watch('stageLibraries', function () {
+            updateStageGroups();
         });
-      });
 
-      $scope.stageGroups = stageGroups;
-
-      $scope.onStageFilterGroupChange();
-    };
-
-    updateStageGroups();
-
-    $scope.$watch('stageLibraries', function() {
-      updateStageGroups();
-    });
-
-    $scope.$on('updateGraph', function(event, options) {
-      if (options && options.nodes && options.nodes.length === 0) {
-        $scope.$storage.stageFilterGroup = _.find($scope.stageGroups, function(group) {
-          return group.name === pipelineConstant.SOURCE_STAGE_TYPE;
+        $scope.$on('updateGraph', function (event, options) {
+            if (options && options.nodes && options.nodes.length === 0) {
+                $scope.$storage.stageFilterGroup = _.find($scope.stageGroups, function (group) {
+                    return group.name === pipelineConstant.SOURCE_STAGE_TYPE;
+                });
+                $scope.onStageFilterGroupChange();
+            }
         });
-        $scope.onStageFilterGroupChange();
-      }
-    });
 
-  });
+    });

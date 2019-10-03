@@ -1,13 +1,13 @@
 var svgEditorExtensionLocale_panning_en = (function () {
-  'use strict';
+    'use strict';
 
-  var en = {
-    name: 'Extension Panning',
-    buttons: [{
-      title: 'Panning'
-    }]
-  };
+    var en = {
+        name: 'Extension Panning',
+        buttons: [{
+            title: 'Panning'
+        }]
+    };
 
-  return en;
+    return en;
 
 }());

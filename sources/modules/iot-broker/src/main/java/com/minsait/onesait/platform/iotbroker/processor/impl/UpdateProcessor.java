@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,204 +51,205 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UpdateProcessor implements MessageTypeProcessor {
 
-	@Autowired
-	private RouterService routerService;
-	@Autowired
-	ObjectMapper objectMapper;
-	@Autowired
-	SecurityPluginManager securityPluginManager;
+    @Autowired
+    private RouterService routerService;
+    @Autowired
+    ObjectMapper objectMapper;
+    @Autowired
+    SecurityPluginManager securityPluginManager;
 
-	@Override
-	public SSAPMessage<SSAPBodyReturnMessage> process(SSAPMessage<? extends SSAPBodyMessage> message) {
+    @Override
+    public SSAPMessage<SSAPBodyReturnMessage> process(SSAPMessage<? extends SSAPBodyMessage> message) {
 
-		if (SSAPMessageTypes.UPDATE.equals(message.getMessageType())) {
-			final SSAPMessage<SSAPBodyUpdateMessage> processUpdate = (SSAPMessage<SSAPBodyUpdateMessage>) message;
-			return processUpdate(processUpdate);
-		}
+        if (SSAPMessageTypes.UPDATE.equals(message.getMessageType())) {
+            final SSAPMessage<SSAPBodyUpdateMessage> processUpdate = (SSAPMessage<SSAPBodyUpdateMessage>) message;
+            return processUpdate(processUpdate);
+        }
 
-		if (SSAPMessageTypes.UPDATE_BY_ID.equals(message.getMessageType())) {
-			final SSAPMessage<SSAPBodyUpdateByIdMessage> processUpdate = (SSAPMessage<SSAPBodyUpdateByIdMessage>) message;
-			return processUpdateById(processUpdate);
-		}
+        if (SSAPMessageTypes.UPDATE_BY_ID.equals(message.getMessageType())) {
+            final SSAPMessage<SSAPBodyUpdateByIdMessage> processUpdate =
+                    (SSAPMessage<SSAPBodyUpdateByIdMessage>) message;
+            return processUpdateById(processUpdate);
+        }
 
-		SSAPMessage<SSAPBodyReturnMessage> responseMessage;
-		responseMessage = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.PROCESSOR, "Mesage not supported");
+        SSAPMessage<SSAPBodyReturnMessage> responseMessage;
+        responseMessage = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.PROCESSOR, "Mesage not supported");
 
-		return responseMessage;
+        return responseMessage;
 
-	}
+    }
 
-	private SSAPMessage<SSAPBodyReturnMessage> processUpdate(SSAPMessage<SSAPBodyUpdateMessage> updateMessage) {
+    private SSAPMessage<SSAPBodyReturnMessage> processUpdate(SSAPMessage<SSAPBodyUpdateMessage> updateMessage) {
 
-		SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
-		responseMessage.setBody(new SSAPBodyReturnMessage());
-		responseMessage.getBody().setOk(true);
-		final Optional<IoTSession> session = securityPluginManager.getSession(updateMessage.getSessionKey());
+        SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
+        responseMessage.setBody(new SSAPBodyReturnMessage());
+        responseMessage.getBody().setOk(true);
+        final Optional<IoTSession> session = securityPluginManager.getSession(updateMessage.getSessionKey());
 
-		String user = null;
-		String deviceTemplate = null;
+        String user = null;
+        String deviceTemplate = null;
 
-		if (session.isPresent()) {
-			user = session.get().getUserID();
-			deviceTemplate = session.get().getClientPlatform();
-		}
+        if (session.isPresent()) {
+            user = session.get().getUserID();
+            deviceTemplate = session.get().getClientPlatform();
+        }
 
-		final OperationModel model = OperationModel
-				.builder(updateMessage.getBody().getOntology(), OperationType.PUT, user, Source.IOTBROKER,
-						updateMessage.includeIds())
-				.deviceTemplate(deviceTemplate).queryType(QueryType.NATIVE).body(updateMessage.getBody().getQuery())
-				.build();
+        final OperationModel model = OperationModel.builder(updateMessage.getBody().getOntology(), OperationType.PUT,
+                                                            user, Source.IOTBROKER,
+                                                            updateMessage.includeIds()).deviceTemplate(
+                deviceTemplate).queryType(QueryType.NATIVE).body(updateMessage.getBody().getQuery()).build();
 
-		final NotificationModel modelNotification = new NotificationModel();
-		modelNotification.setOperationModel(model);
+        final NotificationModel modelNotification = new NotificationModel();
+        modelNotification.setOperationModel(model);
 
-		OperationResultModel result;
-		String responseStr = null;
-		String messageStr = null;
-		try {
-			result = routerService.update(modelNotification);
-			messageStr = result.getMessage();
-			responseStr = result.getResult();
+        OperationResultModel result;
+        String responseStr = null;
+        String messageStr = null;
+        try {
+            result = routerService.update(modelNotification);
+            messageStr = result.getMessage();
+            responseStr = result.getResult();
 
-			final MultiDocumentOperationResult multidocument = MultiDocumentOperationResult.fromString(responseStr);
+            final MultiDocumentOperationResult multidocument = MultiDocumentOperationResult.fromString(responseStr);
 
-			final String response;
+            final String response;
 
-			if (updateMessage.includeIds()) {
-				response = String.format("{\"nModified\":%s, \"modified\":%s}", multidocument.getCount(),
-						multidocument.getStrIds());
-			} else {
-				response = String.format("{\"nModified\":%s}", multidocument.getCount());
-			}
+            if (updateMessage.includeIds()) {
+                response = String.format("{\"nModified\":%s, \"modified\":%s}", multidocument.getCount(),
+                                         multidocument.getStrIds());
+            } else {
+                response = String.format("{\"nModified\":%s}", multidocument.getCount());
+            }
 
-			responseMessage.getBody().setData(objectMapper.readTree(response));
+            responseMessage.getBody().setData(objectMapper.readTree(response));
 
-		} catch (final Exception e) {
-			log.error("Error in process:" + e.getMessage());
-			final String error = MessageException.ERR_DATABASE;
-			responseMessage = SSAPUtils.generateErrorMessage(updateMessage, SSAPErrorCode.PROCESSOR, error);
-			if (messageStr != null) {
-				responseMessage.getBody().setError(messageStr);
-			}
-		}
+        } catch (final Exception e) {
+            log.error("Error in process:" + e.getMessage());
+            final String error = MessageException.ERR_DATABASE;
+            responseMessage = SSAPUtils.generateErrorMessage(updateMessage, SSAPErrorCode.PROCESSOR, error);
+            if (messageStr != null) {
+                responseMessage.getBody().setError(messageStr);
+            }
+        }
 
-		return responseMessage;
-	}
+        return responseMessage;
+    }
 
-	private SSAPMessage<SSAPBodyReturnMessage> processUpdateById(SSAPMessage<SSAPBodyUpdateByIdMessage> updateMessage) {
+    private SSAPMessage<SSAPBodyReturnMessage> processUpdateById(SSAPMessage<SSAPBodyUpdateByIdMessage> updateMessage) {
 
-		SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
-		responseMessage.setBody(new SSAPBodyReturnMessage());
-		responseMessage.getBody().setOk(true);
-		final Optional<IoTSession> session = securityPluginManager.getSession(updateMessage.getSessionKey());
+        SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
+        responseMessage.setBody(new SSAPBodyReturnMessage());
+        responseMessage.getBody().setOk(true);
+        final Optional<IoTSession> session = securityPluginManager.getSession(updateMessage.getSessionKey());
 
-		String user = null;
-		String deviceTemplate = null;
+        String user = null;
+        String deviceTemplate = null;
 
-		if (session.isPresent()) {
-			user = session.get().getUserID();
-			deviceTemplate = session.get().getClientPlatform();
-		}
+        if (session.isPresent()) {
+            user = session.get().getUserID();
+            deviceTemplate = session.get().getClientPlatform();
+        }
 
-		final OperationModel model = OperationModel
-				.builder(updateMessage.getBody().getOntology(), OperationType.PUT, user, Source.IOTBROKER)
-				.objectId(updateMessage.getBody().getId()).queryType(QueryType.NATIVE)
-				.body(updateMessage.getBody().getData().toString()).deviceTemplate(deviceTemplate).build();
+        final OperationModel model = OperationModel.builder(updateMessage.getBody().getOntology(), OperationType.PUT,
+                                                            user, Source.IOTBROKER).objectId(
+                updateMessage.getBody().getId()).queryType(QueryType.NATIVE).body(
+                updateMessage.getBody().getData().toString()).deviceTemplate(deviceTemplate).build();
 
-		final NotificationModel modelNotification = new NotificationModel();
-		modelNotification.setOperationModel(model);
+        final NotificationModel modelNotification = new NotificationModel();
+        modelNotification.setOperationModel(model);
 
-		OperationResultModel result;
-		String responseStr = null;
-		String messageStr = null;
-		try {
-			result = routerService.update(modelNotification);
-			responseStr = result.getResult();
-			messageStr = result.getMessage();
+        OperationResultModel result;
+        String responseStr = null;
+        String messageStr = null;
+        try {
+            result = routerService.update(modelNotification);
+            responseStr = result.getResult();
+            messageStr = result.getMessage();
 
-			if (messageStr != null && messageStr.equals("OK")) {
-				if (updateMessage.includeIds()) {
-					int nUpdated;
-					if (responseStr != null) {
-						nUpdated = 1;
-					} else {
-						nUpdated = 0;
-					}
+            if (messageStr != null && messageStr.equals("OK")) {
+                if (updateMessage.includeIds()) {
+                    int nUpdated;
+                    if (responseStr != null) {
+                        nUpdated = 1;
+                    } else {
+                        nUpdated = 0;
+                    }
 
-					final String updated = nUpdated > 0 ? "[\"" + updateMessage.getBody().getId() + "\"]" : "[]";
+                    final String updated = nUpdated > 0 ? "[\"" + updateMessage.getBody().getId() + "\"]" : "[]";
 
-					final String response = String.format("{\"nModified\":%s, \"modified\":%s}", nUpdated, updated);
+                    final String response = String.format("{\"nModified\":%s, \"modified\":%s}", nUpdated, updated);
 
-					responseMessage.getBody().setData(objectMapper.readTree(response));
-				} else {
-					responseMessage.getBody().setData(objectMapper.readTree(responseStr));
-				}
-			} else {
-				final String error = MessageException.ERR_DATABASE;
-				responseMessage = SSAPUtils.generateErrorMessage(updateMessage, SSAPErrorCode.PROCESSOR, error);
-				if (messageStr != null) {
-					responseMessage.getBody().setError(messageStr);
-				}
-			}
+                    responseMessage.getBody().setData(objectMapper.readTree(response));
+                } else {
+                    responseMessage.getBody().setData(objectMapper.readTree(responseStr));
+                }
+            } else {
+                final String error = MessageException.ERR_DATABASE;
+                responseMessage = SSAPUtils.generateErrorMessage(updateMessage, SSAPErrorCode.PROCESSOR, error);
+                if (messageStr != null) {
+                    responseMessage.getBody().setError(messageStr);
+                }
+            }
 
-		} catch (final Exception e) {
-			log.error("Error in process:" + e.getMessage());
-			final String error = MessageException.ERR_DATABASE;
-			responseMessage = SSAPUtils.generateErrorMessage(updateMessage, SSAPErrorCode.PROCESSOR, error);
-			if (messageStr != null) {
-				responseMessage.getBody().setError(messageStr);
-			}
+        } catch (final Exception e) {
+            log.error("Error in process:" + e.getMessage());
+            final String error = MessageException.ERR_DATABASE;
+            responseMessage = SSAPUtils.generateErrorMessage(updateMessage, SSAPErrorCode.PROCESSOR, error);
+            if (messageStr != null) {
+                responseMessage.getBody().setError(messageStr);
+            }
 
-		}
+        }
 
-		return responseMessage;
-	}
+        return responseMessage;
+    }
 
-	@Override
-	public boolean validateMessage(SSAPMessage<? extends SSAPBodyMessage> message) {
+    @Override
+    public boolean validateMessage(SSAPMessage<? extends SSAPBodyMessage> message) {
 
-		if (SSAPMessageTypes.UPDATE.equals(message.getMessageType())) {
-			final SSAPMessage<SSAPBodyUpdateMessage> updateMessage = (SSAPMessage<SSAPBodyUpdateMessage>) message;
-			return validateMessageUpdate(updateMessage);
-		}
+        if (SSAPMessageTypes.UPDATE.equals(message.getMessageType())) {
+            final SSAPMessage<SSAPBodyUpdateMessage> updateMessage = (SSAPMessage<SSAPBodyUpdateMessage>) message;
+            return validateMessageUpdate(updateMessage);
+        }
 
-		if (SSAPMessageTypes.UPDATE_BY_ID.equals(message.getMessageType())) {
-			final SSAPMessage<SSAPBodyUpdateByIdMessage> updateMessage = (SSAPMessage<SSAPBodyUpdateByIdMessage>) message;
-			return validateMessageUpdateById(updateMessage);
-		}
+        if (SSAPMessageTypes.UPDATE_BY_ID.equals(message.getMessageType())) {
+            final SSAPMessage<SSAPBodyUpdateByIdMessage> updateMessage =
+                    (SSAPMessage<SSAPBodyUpdateByIdMessage>) message;
+            return validateMessageUpdateById(updateMessage);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	private boolean validateMessageUpdate(SSAPMessage<SSAPBodyUpdateMessage> updateMessage) {
-		if (StringUtils.isEmpty(updateMessage.getBody().getQuery())) {
-			log.error("Error quey field");
-			throw new SSAPProcessorException(String.format(MessageException.ERR_FIELD_IS_MANDATORY, "quey",
-					updateMessage.getMessageType().name()));
-		}
-		return true;
-	}
+    private boolean validateMessageUpdate(SSAPMessage<SSAPBodyUpdateMessage> updateMessage) {
+        if (StringUtils.isEmpty(updateMessage.getBody().getQuery())) {
+            log.error("Error quey field");
+            throw new SSAPProcessorException(String.format(MessageException.ERR_FIELD_IS_MANDATORY, "quey",
+                                                           updateMessage.getMessageType().name()));
+        }
+        return true;
+    }
 
-	private boolean validateMessageUpdateById(SSAPMessage<SSAPBodyUpdateByIdMessage> updateMessage) {
-		if (StringUtils.isEmpty(updateMessage.getBody().getId())) {
-			log.error("Error id field");
-			throw new SSAPProcessorException(String.format(MessageException.ERR_FIELD_IS_MANDATORY, "id",
-					updateMessage.getMessageType().name()));
-		}
-		if (updateMessage.getBody().getData() == null || updateMessage.getBody().getData().isNull()) {
-			log.error("Error data field");
-			throw new SSAPProcessorException(String.format(MessageException.ERR_FIELD_IS_MANDATORY, "data",
-					updateMessage.getMessageType().name()));
-		}
-		return true;
-	}
+    private boolean validateMessageUpdateById(SSAPMessage<SSAPBodyUpdateByIdMessage> updateMessage) {
+        if (StringUtils.isEmpty(updateMessage.getBody().getId())) {
+            log.error("Error id field");
+            throw new SSAPProcessorException(String.format(MessageException.ERR_FIELD_IS_MANDATORY, "id",
+                                                           updateMessage.getMessageType().name()));
+        }
+        if (updateMessage.getBody().getData() == null || updateMessage.getBody().getData().isNull()) {
+            log.error("Error data field");
+            throw new SSAPProcessorException(String.format(MessageException.ERR_FIELD_IS_MANDATORY, "data",
+                                                           updateMessage.getMessageType().name()));
+        }
+        return true;
+    }
 
-	@Override
-	public List<SSAPMessageTypes> getMessageTypes() {
-		final List<SSAPMessageTypes> types = new ArrayList<>();
-		types.add(SSAPMessageTypes.UPDATE);
-		types.add(SSAPMessageTypes.UPDATE_BY_ID);
-		return types;
-	}
+    @Override
+    public List<SSAPMessageTypes> getMessageTypes() {
+        final List<SSAPMessageTypes> types = new ArrayList<>();
+        types.add(SSAPMessageTypes.UPDATE);
+        types.add(SSAPMessageTypes.UPDATE_BY_ID);
+        return types;
+    }
 
 }

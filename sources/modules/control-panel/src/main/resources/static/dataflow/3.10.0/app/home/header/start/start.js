@@ -18,48 +18,48 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('StartModalInstanceController', ["$scope", "$modalInstance", "pipelineConfig", "api", function ($scope, $modalInstance, pipelineConfig, api) {
-    angular.extend($scope, {
-      common: {
-        errors: []
-      },
-      pipelineConfig: pipelineConfig,
-      parameters: {
-        runtimeParameters: {}
-      },
-      constantsConfig: undefined,
-      starting: false,
-
-      start: function() {
-        $scope.starting = true;
-        api.pipelineAgent.startPipeline(pipelineConfig.info.pipelineId, 0, $scope.parameters.runtimeParameters)
-          .then(
-            function(res) {
-              $modalInstance.close(res);
+    .module('dataCollectorApp.home')
+    .controller('StartModalInstanceController', ["$scope", "$modalInstance", "pipelineConfig", "api", function ($scope, $modalInstance, pipelineConfig, api) {
+        angular.extend($scope, {
+            common: {
+                errors: []
             },
-            function(res) {
-              $scope.starting = false;
-              $scope.common.errors = [res.data];
+            pipelineConfig: pipelineConfig,
+            parameters: {
+                runtimeParameters: {}
+            },
+            constantsConfig: undefined,
+            starting: false,
+
+            start: function () {
+                $scope.starting = true;
+                api.pipelineAgent.startPipeline(pipelineConfig.info.pipelineId, 0, $scope.parameters.runtimeParameters)
+                    .then(
+                        function (res) {
+                            $modalInstance.close(res);
+                        },
+                        function (res) {
+                            $scope.starting = false;
+                            $scope.common.errors = [res.data];
+                        }
+                    );
+            },
+
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
             }
-          );
-      },
+        });
 
-      cancel: function() {
-        $modalInstance.dismiss('cancel');
-      }
-    });
+        $scope.runtimeParameters = {};
+        var constantsConfig = _.find(pipelineConfig.configuration, function (config) {
+            return config.name === 'constants';
+        });
 
-    $scope.runtimeParameters = {};
-    var constantsConfig = _.find(pipelineConfig.configuration, function (config) {
-      return config.name === 'constants';
-    });
+        if (constantsConfig) {
+            $scope.constantsConfig = constantsConfig;
+            angular.forEach(constantsConfig.value, function (constant) {
+                $scope.parameters.runtimeParameters[constant.key] = constant.value;
+            });
+        }
 
-    if (constantsConfig) {
-      $scope.constantsConfig = constantsConfig;
-      angular.forEach(constantsConfig.value, function (constant) {
-        $scope.parameters.runtimeParameters[constant.key] = constant.value;
-      });
-    }
-
-  }]);
+    }]);

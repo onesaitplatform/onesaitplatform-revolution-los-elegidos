@@ -18,84 +18,84 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('CustomTimerController', function($scope, $rootScope, pipelineConstant) {
-    angular.extend($scope, {
-      chartOptions: {
-        chart: {
-          type: 'multiBarHorizontalChart',
-          stacked: true,
-          height: 220,
-          showLabels: true,
-          duration: 0,
-          x: function(d) {
-            return d[0];
-          },
-          y: function(d) {
-            return d[1];
-          },
-          showLegend: false,
-          staggerLabels: true,
-          showValues: false,
-          yAxis: {
-            tickValues: 0
-          },
-          margin: {
-            left: 55,
-            top: 20,
-            bottom: 20,
-            right: 20
-          },
-          reduceXTicks: false,
-          showControls: false,
-          tooltip: {
-            valueFormatter: function(d) {
-              return d.toFixed(4);
+    .module('dataCollectorApp.home')
+    .controller('CustomTimerController', function ($scope, $rootScope, pipelineConstant) {
+        angular.extend($scope, {
+            chartOptions: {
+                chart: {
+                    type: 'multiBarHorizontalChart',
+                    stacked: true,
+                    height: 220,
+                    showLabels: true,
+                    duration: 0,
+                    x: function (d) {
+                        return d[0];
+                    },
+                    y: function (d) {
+                        return d[1];
+                    },
+                    showLegend: false,
+                    staggerLabels: true,
+                    showValues: false,
+                    yAxis: {
+                        tickValues: 0
+                    },
+                    margin: {
+                        left: 55,
+                        top: 20,
+                        bottom: 20,
+                        right: 20
+                    },
+                    reduceXTicks: false,
+                    showControls: false,
+                    tooltip: {
+                        valueFormatter: function (d) {
+                            return d.toFixed(4);
+                        }
+                    }
+                }
+            },
+            chartData: [{
+                key: undefined,
+                values: []
+            }],
+            count: 0
+        });
+
+        function updateChartData() {
+            var customStageTimer = $scope.customStageTimer,
+                pipelineMetrics = $rootScope.common.pipelineMetrics;
+
+            if (pipelineMetrics && pipelineMetrics.timers) {
+                var timerData = pipelineMetrics.timers[customStageTimer.timerKey];
+
+                if (timerData) {
+                    $scope.count = timerData.count;
+
+                    $scope.chartData[0].key = customStageTimer.label;
+                    $scope.chartData[0].values = [
+                        ["Mean", timerData.mean],
+                        ["Std Dev", timerData.stddev],
+                        ["99.9%", timerData.p999],
+                        ["99%", timerData.p99],
+                        ["98%", timerData.p98],
+                        ["95%", timerData.p95],
+                        ["75%", timerData.p75],
+                        ["50%", timerData.p50]
+                    ];
+                }
+
             }
-          }
-        }
-      },
-      chartData: [{
-        key: undefined,
-        values: []
-      }],
-      count: 0
-    });
-
-    function updateChartData() {
-      var customStageTimer = $scope.customStageTimer,
-        pipelineMetrics = $rootScope.common.pipelineMetrics;
-
-      if(pipelineMetrics && pipelineMetrics.timers) {
-        var timerData = pipelineMetrics.timers[customStageTimer.timerKey];
-
-        if(timerData) {
-          $scope.count = timerData.count;
-
-          $scope.chartData[0].key = customStageTimer.label;
-          $scope.chartData[0].values = [
-            ["Mean" , timerData.mean ],
-            ["Std Dev" , timerData.stddev ],
-            ["99.9%" , timerData.p999 ],
-            ["99%" , timerData.p99 ],
-            ["98%" , timerData.p98 ],
-            ["95%" , timerData.p95 ],
-            ["75%" , timerData.p75 ],
-            ["50%" , timerData.p50 ]
-          ];
         }
 
-      }
-    }
+        $rootScope.$watch('common.pipelineMetrics', function () {
+            if ($scope.isPipelineRunning &&
+                $rootScope.common.pipelineMetrics &&
+                $scope.selectedType === pipelineConstant.STAGE_INSTANCE &&
+                !$scope.monitoringPaused) {
+                updateChartData();
+            }
+        });
 
-    $rootScope.$watch('common.pipelineMetrics', function() {
-      if($scope.isPipelineRunning &&
-        $rootScope.common.pipelineMetrics &&
-        $scope.selectedType === pipelineConstant.STAGE_INSTANCE &&
-        !$scope.monitoringPaused) {
         updateChartData();
-      }
     });
-
-    updateChartData();
-  });

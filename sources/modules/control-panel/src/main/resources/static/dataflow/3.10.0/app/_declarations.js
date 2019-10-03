@@ -18,20 +18,20 @@
  */
 
 angular.module('dataCollectorApp', [
-  'ngRoute',
-  'ngCookies',
-  'tmh.dynamicLocale',
-  'pascalprecht.translate',
-  'templates-app',
-  'templates-common',
-  'dataCollectorApp.common',
-  'dataCollectorApp.home',
-  'commonUI.sdcConfiguration',
-  'commonUI.jvmMetrics',
-  'commonUI.logs',
-  'dataCollectorApp.restapi',
-  'ngStorage',
-  'ngSanitize',
-  'angular-google-analytics',
-  'xeditable'
+    'ngRoute',
+    'ngCookies',
+    'tmh.dynamicLocale',
+    'pascalprecht.translate',
+    'templates-app',
+    'templates-common',
+    'dataCollectorApp.common',
+    'dataCollectorApp.home',
+    'commonUI.sdcConfiguration',
+    'commonUI.jvmMetrics',
+    'commonUI.logs',
+    'dataCollectorApp.restapi',
+    'ngStorage',
+    'ngSanitize',
+    'angular-google-analytics',
+    'xeditable'
 ]);

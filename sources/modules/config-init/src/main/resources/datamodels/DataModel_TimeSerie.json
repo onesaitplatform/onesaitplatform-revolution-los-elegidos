@@ -1,37 +1,37 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "TimeSerie",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TimeSerie",
+  "type": "object",
+  "required": [
+    "TimeSerie"
+  ],
+  "properties": {
+    "TimeSerie": {
+      "type": "string",
+      "$ref": "#/datos"
+    }
+  },
+  "datos": {
+    "description": "Properties for DataModel TimeSerie",
     "type": "object",
-    "required": [
-        "TimeSerie"
-    ],
     "properties": {
-        "TimeSerie": {
-            "type": "string",
-            "$ref": "#/datos"
-        }
-    },
-     "datos": {
-        "description": "Properties for DataModel TimeSerie",
+      "timestamp": {
         "type": "object",
-        "properties": {
-            "timestamp": {
-                "type": "object",
-                "required": [
-                    "$date"
-                ],
-                "properties": {
-                    "$date": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                }
-            }
-        },
         "required": [
-            "timestamp"
-        ]
+          "$date"
+        ],
+        "properties": {
+          "$date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
     },
-    "description": "Ontology for TimeSerie",
-    "additionalProperties": true
+    "required": [
+      "timestamp"
+    ]
+  },
+  "description": "Ontology for TimeSerie",
+  "additionalProperties": true
 }

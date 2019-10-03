@@ -15,28 +15,28 @@
  */
 
 (function (sbaModules, angular) {
-  'use strict';
-  var module = angular.module('sba-login', ['sba-core']);
-  sbaModules.push(module.name);
+    'use strict';
+    var module = angular.module('sba-login', ['sba-core']);
+    sbaModules.push(module.name);
 
-  module.controller('logoutCtrl', ['$scope', '$document', function () {
-    angular.element('#logout-form').submit();
-  }]);
+    module.controller('logoutCtrl', ['$scope', '$document', function () {
+        angular.element('#logout-form').submit();
+    }]);
 
-  module.config(['$stateProvider', function ($stateProvider) {
-    $stateProvider.state('logout', {
-      template: '<form id="logout-form" action="logout" method="post"></form>',
-      name: 'logout',
-      url: '/logout',
-      controller: 'logoutCtrl'
-    });
-  }]);
+    module.config(['$stateProvider', function ($stateProvider) {
+        $stateProvider.state('logout', {
+            template: '<form id="logout-form" action="logout" method="post"></form>',
+            name: 'logout',
+            url: '/logout',
+            controller: 'logoutCtrl'
+        });
+    }]);
 
-  module.run(['MainViews', '$sce', function (MainViews, $sce) {
-    MainViews.register({
-      title: $sce.trustAsHtml('<i class="fa fa-2x fa-sign-out" aria-hidden="true"></i>'),
-      state: 'logout',
-      order: 9999
-    });
-  }]);
+    module.run(['MainViews', '$sce', function (MainViews, $sce) {
+        MainViews.register({
+            title: $sce.trustAsHtml('<i class="fa fa-2x fa-sign-out" aria-hidden="true"></i>'),
+            state: 'logout',
+            order: 9999
+        });
+    }]);
 }(sbaModules, angular));

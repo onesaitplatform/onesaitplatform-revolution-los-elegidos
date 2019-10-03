@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -52,174 +52,176 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class WebProjectController {
 
-	@Autowired
-	private WebProjectService webProjectService;
+    @Autowired
+    private WebProjectService webProjectService;
 
-	@Autowired
-	private AppWebUtils utils;
+    @Autowired
+    private AppWebUtils utils;
 
-	@Value("${onesaitplatform.webproject.baseurl:https://localhost:18000/web/}")
-	private String rootWWW = "";
+    @Value("${onesaitplatform.webproject.baseurl:https://localhost:18000/web/}")
+    private String rootWWW = "";
 
-	private static final String WEBPROJ_CREATE = "webprojects/create";
-	private static final String REDIRECT_WEBPROJ_CREATE = "redirect:/webprojects/create";
-	private static final String REDIRECT_WEBPROJ_LIST = "redirect:/webprojects/list";
+    private static final String WEBPROJ_CREATE = "webprojects/create";
+    private static final String REDIRECT_WEBPROJ_CREATE = "redirect:/webprojects/create";
+    private static final String REDIRECT_WEBPROJ_LIST = "redirect:/webprojects/list";
 
-	@GetMapping(value = "/list", produces = "text/html")
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	public String list(Model model, HttpServletRequest request,
-			@RequestParam(required = false, name = "identification") String identification,
-			@RequestParam(required = false, name = "description") String description) {
+    @GetMapping(value = "/list", produces = "text/html")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    public String list(Model model, HttpServletRequest request,
+            @RequestParam(required = false, name = "identification") String identification,
+            @RequestParam(required = false, name = "description") String description) {
 
-		final List<WebProject> webprojects = webProjectService
-				.getWebProjectsWithDescriptionAndIdentification(utils.getUserId(), identification, description);
-		model.addAttribute("webprojects", webprojects);
-		model.addAttribute("rootWWW", rootWWW);
+        final List<WebProject> webprojects = webProjectService.getWebProjectsWithDescriptionAndIdentification(
+                utils.getUserId(), identification, description);
+        model.addAttribute("webprojects", webprojects);
+        model.addAttribute("rootWWW", rootWWW);
 
-		return "webprojects/list";
-	}
+        return "webprojects/list";
+    }
 
-	@PostMapping("/getNamesForAutocomplete")
-	public @ResponseBody List<String> getNamesForAutocomplete() {
-		return webProjectService.getWebProjectsIdentifications(utils.getUserId());
-	}
+    @PostMapping("/getNamesForAutocomplete")
+    public @ResponseBody
+    List<String> getNamesForAutocomplete() {
+        return webProjectService.getWebProjectsIdentifications(utils.getUserId());
+    }
 
-	@GetMapping(value = "/create", produces = "text/html")
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	public String create(Model model, @Valid WebProject webProject, BindingResult bindingResult) {
+    @GetMapping(value = "/create", produces = "text/html")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    public String create(Model model, @Valid WebProject webProject, BindingResult bindingResult) {
 
-		if (bindingResult.hasErrors())
-			model.addAttribute("webproject", new WebProject());
-		return WEBPROJ_CREATE;
-	}
+        if (bindingResult.hasErrors())
+            model.addAttribute("webproject", new WebProject());
+        return WEBPROJ_CREATE;
+    }
 
-	@PostMapping(value = "/create")
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	public String createWebProject(Model model, @Valid WebProject webProject, BindingResult bindingResult,
-			RedirectAttributes redirect) {
-		if (bindingResult.hasErrors()) {
-			log.debug("Some web project properties missing");
-			utils.addRedirectMessage("webproject.validation.error", redirect);
-			return REDIRECT_WEBPROJ_CREATE;
-		}
-		if (!webProjectService.webProjectExists(webProject.getIdentification())) {
-			try {
-				webProjectService.createWebProject(webProject, utils.getUserId());
-			} catch (final WebProjectServiceException e) {
-				log.error("Cannot create webproject because of: " + e.getMessage());
-				utils.addRedirectMessage("webproject.create.error", redirect);
-				return REDIRECT_WEBPROJ_CREATE;
-			}
-		} else {
-			log.error("Cannot create webproject because of: " + "Web Project with identification: "
-					+ webProject.getIdentification() + " already exists");
-			utils.addRedirectMessage("webproject.validation.exists", redirect);
-			return REDIRECT_WEBPROJ_CREATE;
-		}
+    @PostMapping(value = "/create")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    public String createWebProject(Model model, @Valid WebProject webProject, BindingResult bindingResult,
+            RedirectAttributes redirect) {
+        if (bindingResult.hasErrors()) {
+            log.debug("Some web project properties missing");
+            utils.addRedirectMessage("webproject.validation.error", redirect);
+            return REDIRECT_WEBPROJ_CREATE;
+        }
+        if (!webProjectService.webProjectExists(webProject.getIdentification())) {
+            try {
+                webProjectService.createWebProject(webProject, utils.getUserId());
+            } catch (final WebProjectServiceException e) {
+                log.error("Cannot create webproject because of: " + e.getMessage());
+                utils.addRedirectMessage("webproject.create.error", redirect);
+                return REDIRECT_WEBPROJ_CREATE;
+            }
+        } else {
+            log.error(
+                    "Cannot create webproject because of: " + "Web Project with identification: " + webProject.getIdentification() + " already exists");
+            utils.addRedirectMessage("webproject.validation.exists", redirect);
+            return REDIRECT_WEBPROJ_CREATE;
+        }
 
-		return REDIRECT_WEBPROJ_LIST;
-	}
+        return REDIRECT_WEBPROJ_LIST;
+    }
 
-	@GetMapping(value = "/update/{id}", produces = "text/html")
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	public String update(Model model, @PathVariable("id") String id) {
-		final WebProject webProject = webProjectService.getWebProjectById(id, utils.getUserId());
+    @GetMapping(value = "/update/{id}", produces = "text/html")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    public String update(Model model, @PathVariable("id") String id) {
+        final WebProject webProject = webProjectService.getWebProjectById(id, utils.getUserId());
 
-		if (webProject != null) {
-			model.addAttribute("webproject", webProject);
-			return WEBPROJ_CREATE;
-		} else {
-			return WEBPROJ_CREATE;
-		}
-	}
+        if (webProject != null) {
+            model.addAttribute("webproject", webProject);
+            return WEBPROJ_CREATE;
+        } else {
+            return WEBPROJ_CREATE;
+        }
+    }
 
-	@PutMapping(value = "/update/{id}", produces = "text/html")
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	public String updateWebProject(Model model, @PathVariable("id") String id, @Valid WebProject webProject,
-			BindingResult bindingResult, RedirectAttributes redirect) {
+    @PutMapping(value = "/update/{id}", produces = "text/html")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    public String updateWebProject(Model model, @PathVariable("id") String id, @Valid WebProject webProject,
+            BindingResult bindingResult, RedirectAttributes redirect) {
 
-		if (bindingResult.hasErrors()) {
-			log.debug("Some web project properties missing");
-			utils.addRedirectMessage("webproject.validation.error", redirect);
-			return "redirect:/webprojects/update/" + id;
-		}
-		try {
-			webProjectService.updateWebProject(webProject, utils.getUserId());
-		} catch (final WebProjectServiceException e) {
-			log.error("Cannot update web project because of: " + e);
-			utils.addRedirectMessage("webproject.update.error", redirect);
-			return "redirect:/webprojects/update/" + id;
-		}
-		return REDIRECT_WEBPROJ_LIST;
+        if (bindingResult.hasErrors()) {
+            log.debug("Some web project properties missing");
+            utils.addRedirectMessage("webproject.validation.error", redirect);
+            return "redirect:/webprojects/update/" + id;
+        }
+        try {
+            webProjectService.updateWebProject(webProject, utils.getUserId());
+        } catch (final WebProjectServiceException e) {
+            log.error("Cannot update web project because of: " + e);
+            utils.addRedirectMessage("webproject.update.error", redirect);
+            return "redirect:/webprojects/update/" + id;
+        }
+        return REDIRECT_WEBPROJ_LIST;
 
-	}
+    }
 
-	@GetMapping(value = "/delete/{id}")
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	public String deleteWebProject(Model model, @PathVariable("id") String id, RedirectAttributes redirect) {
+    @GetMapping(value = "/delete/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    public String deleteWebProject(Model model, @PathVariable("id") String id, RedirectAttributes redirect) {
 
-		final WebProject webProject = webProjectService.getWebProjectById(id, utils.getUserId());
-		if (webProject != null) {
-			try {
-				webProjectService.deleteWebProject(webProject, utils.getUserId());
-			} catch (final WebProjectServiceException e) {
-				log.error("Cannot update web project because of: " + e);
-				utils.addRedirectMessage("webproject.delete.error", redirect);
-				return REDIRECT_WEBPROJ_LIST;
-			}
-			return REDIRECT_WEBPROJ_LIST;
-		} else {
-			return REDIRECT_WEBPROJ_LIST;
-		}
-	}
+        final WebProject webProject = webProjectService.getWebProjectById(id, utils.getUserId());
+        if (webProject != null) {
+            try {
+                webProjectService.deleteWebProject(webProject, utils.getUserId());
+            } catch (final WebProjectServiceException e) {
+                log.error("Cannot update web project because of: " + e);
+                utils.addRedirectMessage("webproject.delete.error", redirect);
+                return REDIRECT_WEBPROJ_LIST;
+            }
+            return REDIRECT_WEBPROJ_LIST;
+        } else {
+            return REDIRECT_WEBPROJ_LIST;
+        }
+    }
 
-	@PostMapping(value = "/uploadZip")
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	public ResponseEntity<String> uploadZip(MultipartHttpServletRequest request) {
+    @PostMapping(value = "/uploadZip")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    public ResponseEntity<String> uploadZip(MultipartHttpServletRequest request) {
 
-		final Iterator<String> itr = request.getFileNames();
-		final String uploadedFile = itr.next();
-		final MultipartFile file = request.getFile(uploadedFile);
-		if (file != null) {
-			if (utils.isFileExtensionForbidden(file))
-				return new ResponseEntity<>("File type not allowed", HttpStatus.BAD_REQUEST);
-			if (file.getSize() > utils.getMaxFileSizeAllowed())
-				return new ResponseEntity<>("File size too large", HttpStatus.PAYLOAD_TOO_LARGE);
-		}
-		try {
-			webProjectService.uploadZip(file, utils.getUserId());
-			return new ResponseEntity<>("{\"status\" : \"ok\"}", HttpStatus.OK);
-		} catch (final WebProjectServiceException e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-	}
-	
-	@GetMapping(value = "/downloadZip/{id}", produces = "application/zip")
-	@PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
-	public ResponseEntity<?> downloadZip(@PathVariable("id") String id) {
-				
-		final WebProject webProject;
-		final byte[] zipFile;
-		
-		try {
-			webProject = webProjectService.getWebProjectById(id, utils.getUserId());
-			if (webProject == null) {
-				return new ResponseEntity<>("Web Project does not exist", HttpStatus.FORBIDDEN);
-			}
-		} catch (WebProjectServiceException e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED); // unauthorized
-		}		
-		
-		try {
-			zipFile = webProjectService.downloadZip(webProject.getIdentification(), utils.getUserId());
-		} catch (WebProjectServiceException e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST); 
-		}
-		
-		final HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.CONTENT_DISPOSITION,  "attachment; filename=\"" + webProject.getIdentification() + ".zip\"");
+        final Iterator<String> itr = request.getFileNames();
+        final String uploadedFile = itr.next();
+        final MultipartFile file = request.getFile(uploadedFile);
+        if (file != null) {
+            if (utils.isFileExtensionForbidden(file))
+                return new ResponseEntity<>("File type not allowed", HttpStatus.BAD_REQUEST);
+            if (file.getSize() > utils.getMaxFileSizeAllowed())
+                return new ResponseEntity<>("File size too large", HttpStatus.PAYLOAD_TOO_LARGE);
+        }
+        try {
+            webProjectService.uploadZip(file, utils.getUserId());
+            return new ResponseEntity<>("{\"status\" : \"ok\"}", HttpStatus.OK);
+        } catch (final WebProjectServiceException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 
-		return new ResponseEntity<>(zipFile, headers, HttpStatus.OK);
-	}
+    @GetMapping(value = "/downloadZip/{id}", produces = "application/zip")
+    @PreAuthorize("hasAnyRole('ROLE_ADMINISTRATOR','ROLE_DATASCIENTIST','ROLE_DEVELOPER')")
+    public ResponseEntity<?> downloadZip(@PathVariable("id") String id) {
+
+        final WebProject webProject;
+        final byte[] zipFile;
+
+        try {
+            webProject = webProjectService.getWebProjectById(id, utils.getUserId());
+            if (webProject == null) {
+                return new ResponseEntity<>("Web Project does not exist", HttpStatus.FORBIDDEN);
+            }
+        } catch (WebProjectServiceException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED); // unauthorized
+        }
+
+        try {
+            zipFile = webProjectService.downloadZip(webProject.getIdentification(), utils.getUserId());
+        } catch (WebProjectServiceException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename=\"" + webProject.getIdentification() + ".zip\"");
+
+        return new ResponseEntity<>(zipFile, headers, HttpStatus.OK);
+    }
 
 }

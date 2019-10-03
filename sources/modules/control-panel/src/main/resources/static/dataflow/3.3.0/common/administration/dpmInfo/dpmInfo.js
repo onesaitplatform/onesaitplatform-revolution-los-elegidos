@@ -18,30 +18,30 @@
  */
 
 angular
-  .module('dataCollectorApp')
-  .controller('DPMInfoModalInstanceController', function ($rootScope, $scope, $modalInstance, $modalStack, $modal,
-                                                          configuration, $translate) {
-    angular.extend($scope, {
-      openEnableDPMModal: function () {
-        if (configuration.isManagedByClouderaManager()) {
-          $translate('home.enableDPM.isManagedByClouderaManager').then(function(translation) {
-            $rootScope.common.errors = [translation];
-          });
-          $modalInstance.dismiss('cancel');
-          return;
-        }
+    .module('dataCollectorApp')
+    .controller('DPMInfoModalInstanceController', function ($rootScope, $scope, $modalInstance, $modalStack, $modal,
+                                                            configuration, $translate) {
+        angular.extend($scope, {
+            openEnableDPMModal: function () {
+                if (configuration.isManagedByClouderaManager()) {
+                    $translate('home.enableDPM.isManagedByClouderaManager').then(function (translation) {
+                        $rootScope.common.errors = [translation];
+                    });
+                    $modalInstance.dismiss('cancel');
+                    return;
+                }
 
-        $modalStack.dismissAll();
-        $modal.open({
-          templateUrl: 'common/administration/enableDPM/enableDPM.tpl.html',
-          controller: 'EnableDPMModalInstanceController',
-          size: 'lg',
-          backdrop: 'static'
+                $modalStack.dismissAll();
+                $modal.open({
+                    templateUrl: 'common/administration/enableDPM/enableDPM.tpl.html',
+                    controller: 'EnableDPMModalInstanceController',
+                    size: 'lg',
+                    backdrop: 'static'
+                });
+            },
+
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
+            }
         });
-      },
-
-      cancel: function() {
-        $modalInstance.dismiss('cancel');
-      }
     });
-  });

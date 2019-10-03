@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,240 +59,238 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class JsonRelationalHelperKuduImpl {
 
-	@Autowired
-	private KuduTableGenerator kuduTableGenerator;
-	
-	private static final String DATE_OPERATOR="$date";
+    @Autowired
+    private KuduTableGenerator kuduTableGenerator;
 
-	public void instanceToPartialRow(Schema schema, String instance, PartialRow prow, String id, boolean onlyPKey) {
-		JSONObject obj = new JSONObject(instance);
-		Iterator<String> keys = obj.keys();
+    private static final String DATE_OPERATOR = "$date";
 
-		if (!onlyPKey || (onlyPKey && schema.getColumn(JsonFieldType.PRIMARY_ID_FIELD).isKey())) {
-			prow.addString(JsonFieldType.PRIMARY_ID_FIELD, id);
-		}
+    public void instanceToPartialRow(Schema schema, String instance, PartialRow prow, String id, boolean onlyPKey) {
+        JSONObject obj = new JSONObject(instance);
+        Iterator<String> keys = obj.keys();
 
-		while (keys.hasNext()) {
-			String key = keys.next();
-			if (obj.get(key) instanceof JSONObject) {
+        if (!onlyPKey || (onlyPKey && schema.getColumn(JsonFieldType.PRIMARY_ID_FIELD).isKey())) {
+            prow.addString(JsonFieldType.PRIMARY_ID_FIELD, id);
+        }
 
-				JSONObject o = obj.getJSONObject(key);
-				if (JSONObject.NULL.equals(o)) {
-					prow.setNull(key);
-				} else if (isGeometry(o)) {
-					JSONArray coordinates = o.getJSONArray("coordinates");
-					if (!onlyPKey || (onlyPKey && schema.getColumn(key + HiveFieldType.LATITUDE_FIELD).isKey())) {
-						prow.addDouble(key + HiveFieldType.LATITUDE_FIELD, coordinates.getDouble(0));
-					}
-					if (!onlyPKey || (onlyPKey && schema.getColumn(key + HiveFieldType.LONGITUDE_FIELD).isKey())) {
-						prow.addDouble(key + HiveFieldType.LONGITUDE_FIELD, coordinates.getDouble(1));
-					}
-				} else if (isTimestamp(o)) {
-					if (!onlyPKey || (onlyPKey && schema.getColumn(key + HiveFieldType.LONGITUDE_FIELD).isKey())) {
-						prow.addTimestamp(key, new Timestamp(
-								ISODateTimeFormat.dateTimeParser().parseDateTime((String) o.get(DATE_OPERATOR)).getMillis()));
-					}
-				} else if (isContextData(key)) {
-					if (!onlyPKey || (onlyPKey && schema.getColumn(CONTEXT_DATA_FIELD_DEVICE_TEMPLATE).isKey())) {
-						prow.addString(CONTEXT_DATA_FIELD_DEVICE_TEMPLATE, (String) o.get(FIELD_DEVICE_TEMPLATE));
-					}
-					if (!onlyPKey || (onlyPKey && schema.getColumn(CONTEXT_DATA_FIELD_DEVICE).isKey())) {
-						prow.addString(CONTEXT_DATA_FIELD_DEVICE, (String) o.get(FIELD_DEVICE));
-					}
-					if (!onlyPKey
-							|| (onlyPKey && schema.getColumn(CONTEXT_DATA_FIELD_DEVICE_TEMPLATE_CONNECTION).isKey())) {
-						prow.addString(CONTEXT_DATA_FIELD_DEVICE_TEMPLATE_CONNECTION,
-								(String) o.get(FIELD_DEVICE_TEMPLATE_CONNECTION));
-					}
-					if (!onlyPKey || (onlyPKey && schema.getColumn(CONTEXT_DATA_FIELD_CLIENT_SESSION).isKey())) {
-						prow.addString(CONTEXT_DATA_FIELD_CLIENT_SESSION, (String) o.get(FIELD_CLIENT_SESSION));
-					}
-					if (!onlyPKey || (onlyPKey && schema.getColumn(CONTEXT_DATA_FIELD_USER).isKey())) {
-						prow.addString(CONTEXT_DATA_FIELD_USER, (String) o.get(FIELD_USER));
-					}
-					if (!onlyPKey || (onlyPKey && schema.getColumn(CONTEXT_DATA_FIELD_TIMEZONE_ID).isKey())) {
-						prow.addString(CONTEXT_DATA_FIELD_TIMEZONE_ID, (String) o.get(FIELD_TIMEZONE_ID));
-					}
-					if (!onlyPKey || (onlyPKey && schema.getColumn(CONTEXT_DATA_FIELD_TIMESTAMP).isKey())) {
-						prow.addString(CONTEXT_DATA_FIELD_TIMESTAMP, (String) o.get(FIELD_TIMESTAMP));
-					}
-					if (!onlyPKey || (onlyPKey && schema.getColumn(CONTEXT_DATA_FIELD_TIMESTAMP_MILLIS).isKey())) {
-						prow.addLong(CONTEXT_DATA_FIELD_TIMESTAMP_MILLIS, (Long) o.get(FIELD_TIMESTAMP_MILLIS));
-					}
-				}
+        while (keys.hasNext()) {
+            String key = keys.next();
+            if (obj.get(key) instanceof JSONObject) {
 
-			} else {
-				if (!onlyPKey || (onlyPKey && schema.getColumn(key).isKey())) {
-					Object o = obj.get(key);
+                JSONObject o = obj.getJSONObject(key);
+                if (JSONObject.NULL.equals(o)) {
+                    prow.setNull(key);
+                } else if (isGeometry(o)) {
+                    JSONArray coordinates = o.getJSONArray("coordinates");
+                    if (!onlyPKey || (onlyPKey && schema.getColumn(key + HiveFieldType.LATITUDE_FIELD).isKey())) {
+                        prow.addDouble(key + HiveFieldType.LATITUDE_FIELD, coordinates.getDouble(0));
+                    }
+                    if (!onlyPKey || (onlyPKey && schema.getColumn(key + HiveFieldType.LONGITUDE_FIELD).isKey())) {
+                        prow.addDouble(key + HiveFieldType.LONGITUDE_FIELD, coordinates.getDouble(1));
+                    }
+                } else if (isTimestamp(o)) {
+                    if (!onlyPKey || (onlyPKey && schema.getColumn(key + HiveFieldType.LONGITUDE_FIELD).isKey())) {
+                        prow.addTimestamp(key, new Timestamp(ISODateTimeFormat.dateTimeParser().parseDateTime(
+                                (String) o.get(DATE_OPERATOR)).getMillis()));
+                    }
+                } else if (isContextData(key)) {
+                    if (!onlyPKey || (onlyPKey && schema.getColumn(CONTEXT_DATA_FIELD_DEVICE_TEMPLATE).isKey())) {
+                        prow.addString(CONTEXT_DATA_FIELD_DEVICE_TEMPLATE, (String) o.get(FIELD_DEVICE_TEMPLATE));
+                    }
+                    if (!onlyPKey || (onlyPKey && schema.getColumn(CONTEXT_DATA_FIELD_DEVICE).isKey())) {
+                        prow.addString(CONTEXT_DATA_FIELD_DEVICE, (String) o.get(FIELD_DEVICE));
+                    }
+                    if (!onlyPKey || (onlyPKey && schema.getColumn(
+                            CONTEXT_DATA_FIELD_DEVICE_TEMPLATE_CONNECTION).isKey())) {
+                        prow.addString(CONTEXT_DATA_FIELD_DEVICE_TEMPLATE_CONNECTION,
+                                       (String) o.get(FIELD_DEVICE_TEMPLATE_CONNECTION));
+                    }
+                    if (!onlyPKey || (onlyPKey && schema.getColumn(CONTEXT_DATA_FIELD_CLIENT_SESSION).isKey())) {
+                        prow.addString(CONTEXT_DATA_FIELD_CLIENT_SESSION, (String) o.get(FIELD_CLIENT_SESSION));
+                    }
+                    if (!onlyPKey || (onlyPKey && schema.getColumn(CONTEXT_DATA_FIELD_USER).isKey())) {
+                        prow.addString(CONTEXT_DATA_FIELD_USER, (String) o.get(FIELD_USER));
+                    }
+                    if (!onlyPKey || (onlyPKey && schema.getColumn(CONTEXT_DATA_FIELD_TIMEZONE_ID).isKey())) {
+                        prow.addString(CONTEXT_DATA_FIELD_TIMEZONE_ID, (String) o.get(FIELD_TIMEZONE_ID));
+                    }
+                    if (!onlyPKey || (onlyPKey && schema.getColumn(CONTEXT_DATA_FIELD_TIMESTAMP).isKey())) {
+                        prow.addString(CONTEXT_DATA_FIELD_TIMESTAMP, (String) o.get(FIELD_TIMESTAMP));
+                    }
+                    if (!onlyPKey || (onlyPKey && schema.getColumn(CONTEXT_DATA_FIELD_TIMESTAMP_MILLIS).isKey())) {
+                        prow.addLong(CONTEXT_DATA_FIELD_TIMESTAMP_MILLIS, (Long) o.get(FIELD_TIMESTAMP_MILLIS));
+                    }
+                }
 
-					switch (schema.getColumn(key).getType()) {
-					case STRING:
-						prow.addString(key, (String) o);
-						break;
-					case UNIXTIME_MICROS:
-						prow.addTimestamp(key, new Timestamp(
-								ISODateTimeFormat.dateTimeParser().parseDateTime((String) o).getMillis()));
-						break;
-					case BOOL:
-						prow.addBoolean(key, (boolean) o);
-						break;
-					case FLOAT:
-						float f;
-						if (o instanceof Integer) {
-							f = (Integer) o;
-						} else if (o instanceof Double) {
-							f = (float) ((double) o);
-						} else {
-							f = (float) o;
-						}
-						prow.addFloat(key, f);
-						break;
-					case DOUBLE:
-						prow.addDouble(key, (double) o);
-						break;
-					case DECIMAL:
-						prow.addDecimal(key, (BigDecimal) o);
-						break;
-					case INT8:
-					case INT16:
-					case INT32:
-					case INT64:
-						prow.addInt(key, (int) o);
-						break;
-					default:
-						break;
-					}
-				}
-			}
-		}
-	}
+            } else {
+                if (!onlyPKey || (onlyPKey && schema.getColumn(key).isKey())) {
+                    Object o = obj.get(key);
 
-	public String getInsertStatement(String ontology, String schema, String instance, String id) {
+                    switch (schema.getColumn(key).getType()) {
+                        case STRING:
+                            prow.addString(key, (String) o);
+                            break;
+                        case UNIXTIME_MICROS:
+                            prow.addTimestamp(key, new Timestamp(
+                                    ISODateTimeFormat.dateTimeParser().parseDateTime((String) o).getMillis()));
+                            break;
+                        case BOOL:
+                            prow.addBoolean(key, (boolean) o);
+                            break;
+                        case FLOAT:
+                            float f;
+                            if (o instanceof Integer) {
+                                f = (Integer) o;
+                            } else if (o instanceof Double) {
+                                f = (float) ((double) o);
+                            } else {
+                                f = (float) o;
+                            }
+                            prow.addFloat(key, f);
+                            break;
+                        case DOUBLE:
+                            prow.addDouble(key, (double) o);
+                            break;
+                        case DECIMAL:
+                            prow.addDecimal(key, (BigDecimal) o);
+                            break;
+                        case INT8:
+                        case INT16:
+                        case INT32:
+                        case INT64:
+                            prow.addInt(key, (int) o);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+    }
 
-		StringBuilder sqlInsert = new StringBuilder();
-		StringBuilder sqlValues = new StringBuilder();
+    public String getInsertStatement(String ontology, String schema, String instance, String id) {
 
-		sqlInsert.append("INSERT INTO " + ontology + " ( " + JsonFieldType.PRIMARY_ID_FIELD);
-		sqlValues.append(" VALUES ('" + id + "' ");
+        StringBuilder sqlInsert = new StringBuilder();
+        StringBuilder sqlValues = new StringBuilder();
 
-		KuduTable table = kuduTableGenerator.builTable(ontology, schema, null);
+        sqlInsert.append("INSERT INTO " + ontology + " ( " + JsonFieldType.PRIMARY_ID_FIELD);
+        sqlValues.append(" VALUES ('" + id + "' ");
 
-		Map<String, String> columnTypes = table.getColumns().stream()
-				.collect(Collectors.toMap(x -> x.getName(), x -> x.getColumnType()));
+        KuduTable table = kuduTableGenerator.builTable(ontology, schema, null);
 
-		JSONObject obj = new JSONObject(instance);
+        Map<String, String> columnTypes = table.getColumns().stream().collect(
+                Collectors.toMap(x -> x.getName(), x -> x.getColumnType()));
 
-		@SuppressWarnings("unchecked")
-		Iterator<String> it = obj.keys();
+        JSONObject obj = new JSONObject(instance);
 
-		while (it.hasNext()) {
+        @SuppressWarnings("unchecked") Iterator<String> it = obj.keys();
 
-			String key = it.next();
+        while (it.hasNext()) {
 
-			sqlInsert.append(", ");
-			sqlValues.append(", ");
+            String key = it.next();
 
-			if (obj.get(key) instanceof JSONObject) {
+            sqlInsert.append(", ");
+            sqlValues.append(", ");
 
-				JSONObject o = obj.getJSONObject(key);
+            if (obj.get(key) instanceof JSONObject) {
 
-				if (isGeometry(obj.getJSONObject(key))) {
-					JSONArray coordinates = o.getJSONArray("coordinates");
-					sqlInsert.append(key + HiveFieldType.LATITUDE_FIELD).append(", ")
-							.append(key + HiveFieldType.LONGITUDE_FIELD);
-					sqlValues.append(coordinates.getDouble(0)).append(",").append(coordinates.getDouble(1));
-				} else if (isTimestamp(obj.getJSONObject(key))) {
-					sqlInsert.append(key);
-					sqlValues.append("'").append(o.get(DATE_OPERATOR)).append("'");
-				} else if (isContextData(key)) {
+                JSONObject o = obj.getJSONObject(key);
 
-					sqlInsert.append(CONTEXT_DATA_FIELD_DEVICE_TEMPLATE).append(", ");
-					sqlValues.append("'").append(o.get(FIELD_DEVICE_TEMPLATE)).append("', ");
+                if (isGeometry(obj.getJSONObject(key))) {
+                    JSONArray coordinates = o.getJSONArray("coordinates");
+                    sqlInsert.append(key + HiveFieldType.LATITUDE_FIELD).append(", ").append(
+                            key + HiveFieldType.LONGITUDE_FIELD);
+                    sqlValues.append(coordinates.getDouble(0)).append(",").append(coordinates.getDouble(1));
+                } else if (isTimestamp(obj.getJSONObject(key))) {
+                    sqlInsert.append(key);
+                    sqlValues.append("'").append(o.get(DATE_OPERATOR)).append("'");
+                } else if (isContextData(key)) {
 
-					sqlInsert.append(CONTEXT_DATA_FIELD_DEVICE).append(", ");
-					sqlValues.append("'").append(o.get(FIELD_DEVICE)).append("', ");
+                    sqlInsert.append(CONTEXT_DATA_FIELD_DEVICE_TEMPLATE).append(", ");
+                    sqlValues.append("'").append(o.get(FIELD_DEVICE_TEMPLATE)).append("', ");
 
-					sqlInsert.append(CONTEXT_DATA_FIELD_DEVICE_TEMPLATE_CONNECTION).append(", ");
-					sqlValues.append("'").append(o.get(FIELD_DEVICE_TEMPLATE_CONNECTION)).append("', ");
+                    sqlInsert.append(CONTEXT_DATA_FIELD_DEVICE).append(", ");
+                    sqlValues.append("'").append(o.get(FIELD_DEVICE)).append("', ");
 
-					sqlInsert.append(CONTEXT_DATA_FIELD_CLIENT_SESSION).append(", ");
-					sqlValues.append("'").append(o.get(FIELD_CLIENT_SESSION)).append("', ");
+                    sqlInsert.append(CONTEXT_DATA_FIELD_DEVICE_TEMPLATE_CONNECTION).append(", ");
+                    sqlValues.append("'").append(o.get(FIELD_DEVICE_TEMPLATE_CONNECTION)).append("', ");
 
-					sqlInsert.append(CONTEXT_DATA_FIELD_USER).append(", ");
-					sqlValues.append("'").append(o.get(FIELD_USER)).append("', ");
+                    sqlInsert.append(CONTEXT_DATA_FIELD_CLIENT_SESSION).append(", ");
+                    sqlValues.append("'").append(o.get(FIELD_CLIENT_SESSION)).append("', ");
 
-					sqlInsert.append(CONTEXT_DATA_FIELD_TIMEZONE_ID).append(", ");
-					sqlValues.append("'").append(o.get(FIELD_TIMEZONE_ID)).append("', ");
+                    sqlInsert.append(CONTEXT_DATA_FIELD_USER).append(", ");
+                    sqlValues.append("'").append(o.get(FIELD_USER)).append("', ");
 
-					sqlInsert.append(CONTEXT_DATA_FIELD_TIMESTAMP).append(", ");
-					sqlValues.append("'").append(o.get(FIELD_TIMESTAMP)).append("', ");
+                    sqlInsert.append(CONTEXT_DATA_FIELD_TIMEZONE_ID).append(", ");
+                    sqlValues.append("'").append(o.get(FIELD_TIMEZONE_ID)).append("', ");
 
-					sqlInsert.append(CONTEXT_DATA_FIELD_TIMESTAMP_MILLIS);
-					sqlValues.append(o.get(FIELD_TIMESTAMP_MILLIS));
+                    sqlInsert.append(CONTEXT_DATA_FIELD_TIMESTAMP).append(", ");
+                    sqlValues.append("'").append(o.get(FIELD_TIMESTAMP)).append("', ");
 
-				}
+                    sqlInsert.append(CONTEXT_DATA_FIELD_TIMESTAMP_MILLIS);
+                    sqlValues.append(o.get(FIELD_TIMESTAMP_MILLIS));
 
-			} else {
-				String columnType = columnTypes.get(key);
-				sqlInsert.append(key);
+                }
 
-				if (HiveFieldType.STRING_FIELD.equals(columnType) || HiveFieldType.TIMESTAMP_FIELD.equals(columnType)) {
-					sqlValues.append("'").append(obj.get(key)).append("'");
-				} else {
-					sqlValues.append(obj.get(key));
-				}
-			}
+            } else {
+                String columnType = columnTypes.get(key);
+                sqlInsert.append(key);
 
-		}
+                if (HiveFieldType.STRING_FIELD.equals(columnType) || HiveFieldType.TIMESTAMP_FIELD.equals(columnType)) {
+                    sqlValues.append("'").append(obj.get(key)).append("'");
+                } else {
+                    sqlValues.append(obj.get(key));
+                }
+            }
 
-		return sqlInsert.append(")").append(sqlValues).append(")").toString();
-	}
+        }
 
-	public boolean isGeometry(JSONObject o) {
-		boolean result = false;
+        return sqlInsert.append(")").append(sqlValues).append(")").toString();
+    }
 
-		try {
-			if (o.has(JsonFieldType.TYPE_FIELD)) {
-				String jsonType = (String) o.get(JsonFieldType.TYPE_FIELD);
-				result = (GeometryType.POINT.name()).equalsIgnoreCase(jsonType);
-			}
+    public boolean isGeometry(JSONObject o) {
+        boolean result = false;
 
-		} catch (Exception e) {
-			log.error("error checking if a object is a geometry");
-		}
+        try {
+            if (o.has(JsonFieldType.TYPE_FIELD)) {
+                String jsonType = (String) o.get(JsonFieldType.TYPE_FIELD);
+                result = (GeometryType.POINT.name()).equalsIgnoreCase(jsonType);
+            }
 
-		return result;
-	}
+        } catch (Exception e) {
+            log.error("error checking if a object is a geometry");
+        }
 
-	public boolean isTimestamp(JSONObject o) {
-		return o.has(DATE_OPERATOR);
-	}
+        return result;
+    }
 
-	public boolean isContextData(String key) {
-		return key.equalsIgnoreCase(JsonFieldType.CONTEXT_DATA_FIELD);
-	}
+    public boolean isTimestamp(JSONObject o) {
+        return o.has(DATE_OPERATOR);
+    }
 
-	public Map<String, Object> transfromJSON(String json) {
+    public boolean isContextData(String key) {
+        return key.equalsIgnoreCase(JsonFieldType.CONTEXT_DATA_FIELD);
+    }
 
-		Map<String, Object> map = new LinkedHashMap<>();
-		String nombreClave = "";
+    public Map<String, Object> transfromJSON(String json) {
 
-		try {
-			@SuppressWarnings("unchecked")
-			Map<String, Object> obj = new ObjectMapper().readValue(json, Map.class);
+        Map<String, Object> map = new LinkedHashMap<>();
+        String nombreClave = "";
 
-			Iterator<Entry<String, Object>> it = obj.entrySet().iterator();
+        try {
+            @SuppressWarnings("unchecked") Map<String, Object> obj = new ObjectMapper().readValue(json, Map.class);
 
-			while (it.hasNext()) {
-				Map.Entry<String, Object> e = it.next();
-				nombreClave = e.getKey();
-				map.put(nombreClave, e.getValue());
-			}
-		} catch (Exception e) {
-			log.error("Error in transfromJSON", e);
-			throw new DBPersistenceException(e);
-		}
+            Iterator<Entry<String, Object>> it = obj.entrySet().iterator();
 
-		return map;
-	}
+            while (it.hasNext()) {
+                Map.Entry<String, Object> e = it.next();
+                nombreClave = e.getKey();
+                map.put(nombreClave, e.getValue());
+            }
+        } catch (Exception e) {
+            log.error("Error in transfromJSON", e);
+            throw new DBPersistenceException(e);
+        }
+
+        return map;
+    }
 }

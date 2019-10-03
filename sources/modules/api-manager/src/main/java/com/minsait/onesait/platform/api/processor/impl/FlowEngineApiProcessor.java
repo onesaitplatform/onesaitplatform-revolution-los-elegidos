@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -53,139 +53,139 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FlowEngineApiProcessor implements ApiProcessor {
 
-	@Autowired
-	private ApiManagerService apiManagerService;
-	@Autowired
-	private com.minsait.onesait.platform.config.services.apimanager.ApiManagerService apiManagerServiceConfig;
+    @Autowired
+    private ApiManagerService apiManagerService;
+    @Autowired
+    private com.minsait.onesait.platform.config.services.apimanager.ApiManagerService apiManagerServiceConfig;
 
-	private final RestTemplate restTemplate = new RestTemplate(SSLUtil.getHttpRequestFactoryAvoidingSSLVerification());
+    private final RestTemplate restTemplate = new RestTemplate(SSLUtil.getHttpRequestFactoryAvoidingSSLVerification());
 
-	@Autowired
-	private ScriptProcessorFactory scriptEngine;
+    @Autowired
+    private ScriptProcessorFactory scriptEngine;
 
-	@Override
-	@ApiManagerAuditable
-	public Map<String, Object> process(Map<String, Object> data) throws GenericOPException {
-		proxyHttp(data);
-		postProcess(data);
-		return data;
-	}
+    @Override
+    @ApiManagerAuditable
+    public Map<String, Object> process(Map<String, Object> data) throws GenericOPException {
+        proxyHttp(data);
+        postProcess(data);
+        return data;
+    }
 
-	@Override
-	public List<ApiType> getApiProcessorTypes() {
-		return Collections.singletonList(ApiType.NODE_RED);
-	}
+    @Override
+    public List<ApiType> getApiProcessorTypes() {
+        return Collections.singletonList(ApiType.NODE_RED);
+    }
 
-	private void proxyHttp(Map<String, Object> data) {
-		final String method = (String) data.get(Constants.METHOD);
-		final String pathInfo = (String) data.get(Constants.PATH_INFO);
-		final String pathOperation = apiManagerService.getOperationPath(pathInfo);
-		final String body = (String) data.get(Constants.BODY);
-		final Api api = (Api) data.get(Constants.API);
+    private void proxyHttp(Map<String, Object> data) {
+        final String method = (String) data.get(Constants.METHOD);
+        final String pathInfo = (String) data.get(Constants.PATH_INFO);
+        final String pathOperation = apiManagerService.getOperationPath(pathInfo);
+        final String body = (String) data.get(Constants.BODY);
+        final Api api = (Api) data.get(Constants.API);
 
-		@SuppressWarnings("unchecked")
-		final Map<String, String[]> queryParams = (Map<String, String[]>) data.get(Constants.QUERY_PARAMS);
+        @SuppressWarnings("unchecked") final Map<String, String[]> queryParams = (Map<String, String[]>) data.get(
+                Constants.QUERY_PARAMS);
 
-		final ApiOperation operation = apiManagerService.getFlowEngineApiOperation(pathInfo, api, method, queryParams);
+        final ApiOperation operation = apiManagerService.getFlowEngineApiOperation(pathInfo, api, method, queryParams);
 
-		final HttpServletRequest request = (HttpServletRequest) data.get(Constants.REQUEST);
+        final HttpServletRequest request = (HttpServletRequest) data.get(Constants.REQUEST);
 
-		String nodeId = operation.getEndpoint().substring(0, operation.getEndpoint().indexOf('/', 1));
-		String url = api.getEndpointExt() + nodeId + pathOperation;
-		url = addExtraQueryParameters(url, queryParams);
-		// TO-DO headers?
-		String result = "";
-		final HttpHeaders headers = new HttpHeaders();
-		// add the headers
-		addHeaders(headers, request);
-		final HttpEntity<String> entity = new HttpEntity<>(body, headers);
-		try {
-			switch (method) {
-			case "GET":
-				result = restTemplate.exchange(url, HttpMethod.GET, entity, String.class).getBody();
-				break;
-			case "POST":
-				result = restTemplate.postForEntity(url, entity, String.class).getBody();
-				break;
-			case "PUT":
-				result = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class).getBody();
-				break;
-			case "DELETE":
-				result = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class).getBody();
-				break;
-			default:
-				break;
+        String nodeId = operation.getEndpoint().substring(0, operation.getEndpoint().indexOf('/', 1));
+        String url = api.getEndpointExt() + nodeId + pathOperation;
+        url = addExtraQueryParameters(url, queryParams);
+        // TO-DO headers?
+        String result = "";
+        final HttpHeaders headers = new HttpHeaders();
+        // add the headers
+        addHeaders(headers, request);
+        final HttpEntity<String> entity = new HttpEntity<>(body, headers);
+        try {
+            switch (method) {
+                case "GET":
+                    result = restTemplate.exchange(url, HttpMethod.GET, entity, String.class).getBody();
+                    break;
+                case "POST":
+                    result = restTemplate.postForEntity(url, entity, String.class).getBody();
+                    break;
+                case "PUT":
+                    result = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class).getBody();
+                    break;
+                case "DELETE":
+                    result = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class).getBody();
+                    break;
+                default:
+                    break;
 
-			}
-		} catch (final HttpClientErrorException | HttpServerErrorException e) {
-			log.error("Error: code {}, {}", e.getStatusCode(), e.getResponseBodyAsString());
-			data.put(Constants.STATUS, ChainProcessingStatus.STOP);
+            }
+        } catch (final HttpClientErrorException | HttpServerErrorException e) {
+            log.error("Error: code {}, {}", e.getStatusCode(), e.getResponseBodyAsString());
+            data.put(Constants.STATUS, ChainProcessingStatus.STOP);
 
-			data.put(Constants.HTTP_RESPONSE_CODE, e.getStatusCode());
+            data.put(Constants.HTTP_RESPONSE_CODE, e.getStatusCode());
 
-			data.put(Constants.REASON, e.getResponseBodyAsString());
+            data.put(Constants.REASON, e.getResponseBodyAsString());
 
-			throw e;
-		}
+            throw e;
+        }
 
-		data.put(Constants.OUTPUT, result);
-	}
+        data.put(Constants.OUTPUT, result);
+    }
 
-	private void postProcess(Map<String, Object> data) {
-		final Api api = (Api) data.get(Constants.API);
-		final String method = (String) data.get(Constants.METHOD);
-		if (apiManagerServiceConfig.postProcess(api) && method.equalsIgnoreCase("get")) {
-			final String postProcess = apiManagerServiceConfig.getPostProccess(api);
-			if (!StringUtils.isEmpty(postProcess)) {
-				try {
-					Object result = scriptEngine.invokeScript(postProcess, data.get(Constants.OUTPUT));
-					data.put(Constants.OUTPUT, result);
-				} catch (final ScriptException e) {
-					log.error("Execution logic for postprocess error", e);
-					data.put(Constants.STATUS, ChainProcessingStatus.STOP);
-					data.put(Constants.HTTP_RESPONSE_CODE, HttpStatus.INTERNAL_SERVER_ERROR);
-					final String messageError = ApiProcessorUtils.generateErrorMessage(
-							"ERROR from Scripting Post Process", "Execution logic for Postprocess error",
-							e.getCause().getMessage());
-					data.put(Constants.REASON, messageError);
+    private void postProcess(Map<String, Object> data) {
+        final Api api = (Api) data.get(Constants.API);
+        final String method = (String) data.get(Constants.METHOD);
+        if (apiManagerServiceConfig.postProcess(api) && method.equalsIgnoreCase("get")) {
+            final String postProcess = apiManagerServiceConfig.getPostProccess(api);
+            if (!StringUtils.isEmpty(postProcess)) {
+                try {
+                    Object result = scriptEngine.invokeScript(postProcess, data.get(Constants.OUTPUT));
+                    data.put(Constants.OUTPUT, result);
+                } catch (final ScriptException e) {
+                    log.error("Execution logic for postprocess error", e);
+                    data.put(Constants.STATUS, ChainProcessingStatus.STOP);
+                    data.put(Constants.HTTP_RESPONSE_CODE, HttpStatus.INTERNAL_SERVER_ERROR);
+                    final String messageError = ApiProcessorUtils.generateErrorMessage(
+                            "ERROR from Scripting Post Process", "Execution logic for Postprocess error",
+                            e.getCause().getMessage());
+                    data.put(Constants.REASON, messageError);
 
-				} catch (final Exception e) {
-					data.put(Constants.STATUS, ChainProcessingStatus.STOP);
-					data.put(Constants.HTTP_RESPONSE_CODE, HttpStatus.INTERNAL_SERVER_ERROR);
-					final String messageError = ApiProcessorUtils.generateErrorMessage(
-							"ERROR from Scripting Post Process", "Exception detected", e.getCause().getMessage());
-					data.put(Constants.REASON, messageError);
-				}
-			}
-		}
-	}
+                } catch (final Exception e) {
+                    data.put(Constants.STATUS, ChainProcessingStatus.STOP);
+                    data.put(Constants.HTTP_RESPONSE_CODE, HttpStatus.INTERNAL_SERVER_ERROR);
+                    final String messageError = ApiProcessorUtils.generateErrorMessage(
+                            "ERROR from Scripting Post Process", "Exception detected", e.getCause().getMessage());
+                    data.put(Constants.REASON, messageError);
+                }
+            }
+        }
+    }
 
-	private String addExtraQueryParameters(String url, Map<String, String[]> queryParams) {
-		final StringBuilder sb = new StringBuilder(url);
-		if (queryParams.size() > 0) {
-			sb.append("?");
-			queryParams.entrySet().forEach(e -> {
-				final String param = e.getKey() + "=" + String.join("", e.getValue());
-				sb.append(param).append("&&");
-			});
-		}
+    private String addExtraQueryParameters(String url, Map<String, String[]> queryParams) {
+        final StringBuilder sb = new StringBuilder(url);
+        if (queryParams.size() > 0) {
+            sb.append("?");
+            queryParams.entrySet().forEach(e -> {
+                final String param = e.getKey() + "=" + String.join("", e.getValue());
+                sb.append(param).append("&&");
+            });
+        }
 
-		return sb.toString();
-	}
+        return sb.toString();
+    }
 
-	private HttpHeaders addHeaders(HttpHeaders headers, HttpServletRequest request) {
-		Enumeration<String> headerNames = request.getHeaderNames();
-		while (headerNames.hasMoreElements()) {
-			String headerName = headerNames.nextElement();
-			String headerValue = request.getHeader(headerName);
-			headers.add(headerName, headerValue);
-		}
-		final String contentType = request.getContentType();
-		if (contentType == null)
-			headers.setContentType(MediaType.APPLICATION_JSON);
-		else
-			headers.setContentType(MediaType.valueOf(contentType));
-		return headers;
-	}
+    private HttpHeaders addHeaders(HttpHeaders headers, HttpServletRequest request) {
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            String headerValue = request.getHeader(headerName);
+            headers.add(headerName, headerValue);
+        }
+        final String contentType = request.getContentType();
+        if (contentType == null)
+            headers.setContentType(MediaType.APPLICATION_JSON);
+        else
+            headers.setContentType(MediaType.valueOf(contentType));
+        return headers;
+    }
 
 }

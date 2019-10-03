@@ -18,67 +18,67 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('ResetOffsetModalInstanceController', function ($scope, $modalInstance, pipelineInfo, originStageDef,
-                                                              $translate, api) {
-    angular.extend($scope, {
-      showLoading: false,
-      isOffsetResetSucceed: false,
-      common: {
-        errors: []
-      },
-      pipelineInfo: pipelineInfo,
-      isList: _.isArray(pipelineInfo),
+    .module('dataCollectorApp.home')
+    .controller('ResetOffsetModalInstanceController', function ($scope, $modalInstance, pipelineInfo, originStageDef,
+                                                                $translate, api) {
+        angular.extend($scope, {
+            showLoading: false,
+            isOffsetResetSucceed: false,
+            common: {
+                errors: []
+            },
+            pipelineInfo: pipelineInfo,
+            isList: _.isArray(pipelineInfo),
 
-      /**
-       * Callback function Yes button
-       */
-      yes: function() {
-        if ($scope.isList) {
-          $scope.showLoading = true;
-          api.pipelineAgent.resetOffsets(_.pluck(pipelineInfo, 'pipelineId'))
-            .then(function() {
-              $scope.showLoading = false;
-              $scope.isOffsetResetSucceed = true;
-            })
-            .catch(function(res) {
-              $scope.showLoading = false;
-              $scope.common.errors = [res.data];
-            });
+            /**
+             * Callback function Yes button
+             */
+            yes: function () {
+                if ($scope.isList) {
+                    $scope.showLoading = true;
+                    api.pipelineAgent.resetOffsets(_.pluck(pipelineInfo, 'pipelineId'))
+                        .then(function () {
+                            $scope.showLoading = false;
+                            $scope.isOffsetResetSucceed = true;
+                        })
+                        .catch(function (res) {
+                            $scope.showLoading = false;
+                            $scope.common.errors = [res.data];
+                        });
 
-        } else {
-          if(originStageDef.resetOffset) {
-            $scope.showLoading = true;
-            api.pipelineAgent.resetOffset(pipelineInfo.pipelineId)
-              .then(function() {
-                $scope.showLoading = false;
-                $scope.isOffsetResetSucceed = true;
-              })
-              .catch(function(res) {
-                $scope.showLoading = false;
-                $scope.common.errors = [res.data];
-              });
-          } else {
-            $translate('home.resetOffset.noSupport', { label: originStageDef.label })
-                .then(function(translation) {
-                  $scope.common.errors = [translation];
-                });
-          }
-        }
-      },
+                } else {
+                    if (originStageDef.resetOffset) {
+                        $scope.showLoading = true;
+                        api.pipelineAgent.resetOffset(pipelineInfo.pipelineId)
+                            .then(function () {
+                                $scope.showLoading = false;
+                                $scope.isOffsetResetSucceed = true;
+                            })
+                            .catch(function (res) {
+                                $scope.showLoading = false;
+                                $scope.common.errors = [res.data];
+                            });
+                    } else {
+                        $translate('home.resetOffset.noSupport', {label: originStageDef.label})
+                            .then(function (translation) {
+                                $scope.common.errors = [translation];
+                            });
+                    }
+                }
+            },
 
-      /**
-       * Callback function for No button
-       */
-      no: function() {
-        $modalInstance.dismiss('cancel');
-      },
+            /**
+             * Callback function for No button
+             */
+            no: function () {
+                $modalInstance.dismiss('cancel');
+            },
 
-      /**
-       * Callback function for Close button
-       */
-      close: function() {
-        $modalInstance.close(pipelineInfo);
-      }
+            /**
+             * Callback function for Close button
+             */
+            close: function () {
+                $modalInstance.close(pipelineInfo);
+            }
+        });
     });
-  });

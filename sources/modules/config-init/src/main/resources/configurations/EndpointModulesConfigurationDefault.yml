@@ -4,7 +4,7 @@ onesaitplatform:
     domain:
       base: http://localhost:18000/
     digitalTwinBroker:
-      base: http://localhost:19300/digitaltwinbroker  
+      base: http://localhost:19300/digitaltwinbroker
     iotbroker:
       base: http://localhost:19000/iot-broker
       advice: http://localhost:19000/iot-broker/advice

@@ -1,9 +1,9 @@
 spring: ## General Config  
-   datasource: ## JPA Config
-      url: ${JDBCPROTOCOL}//${CONFIGDBSERVERS}/onesaitplatform_config?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&autoReconnect=true${DBADDPROPS}
+  datasource: ## JPA Config
+    url: ${JDBCPROTOCOL}//${CONFIGDBSERVERS}/onesaitplatform_config?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&useSSL=false&autoReconnect=true${DBADDPROPS}
 onesaitplatform:
-   hazelcast.service.discovery.strategy: ${HZ_SERVICE_DISCOVERY_STRATEGY}
-   hazelcast.service.discovery.zookeeper.url: ${HZ_ZOOKEEPER_URL}
+  hazelcast.service.discovery.strategy: ${HZ_SERVICE_DISCOVERY_STRATEGY}
+  hazelcast.service.discovery.zookeeper.url: ${HZ_ZOOKEEPER_URL}
 security:
   oauth2:
     client:
@@ -18,4 +18,4 @@ security:
 
 ## LOGGING CONF
 logging:
-   path: /var/log/platform-logs
+  path: /var/log/platform-logs

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,46 +31,48 @@ import com.minsait.onesait.platform.config.repository.DeviceRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
-@ConditionalOnProperty(prefix = "onesaitplatform.iotbroker.device.update.schedule", name = "enable", havingValue = "true")
+@ConditionalOnProperty(prefix = "onesaitplatform.iotbroker.device.update.schedule", name = "enable", havingValue =
+        "true")
 @Slf4j
 public class DeviceScheduledUpdaterImpl implements DeviceScheduledUpdater {
 
-	@Autowired
-	DeviceRepository deviceRepository;
+    @Autowired
+    DeviceRepository deviceRepository;
 
-	private Map<String, Device> mLastUpdates;
+    private Map<String, Device> mLastUpdates;
 
-	@PostConstruct
-	public void init() {
-		this.mLastUpdates = new ConcurrentHashMap<>();
-	}
+    @PostConstruct
+    public void init() {
+        this.mLastUpdates = new ConcurrentHashMap<>();
+    }
 
-	@Override
-	public Device updateDevice(Device device) {
-		synchronized (this.mLastUpdates) {
-			String key = device.getClientPlatform().getId() + device.getIdentification() + device.getSessionKey();
-			this.mLastUpdates.put(key, device);
-		}
+    @Override
+    public Device updateDevice(Device device) {
+        synchronized (this.mLastUpdates) {
+            String key = device.getClientPlatform().getId() + device.getIdentification() + device.getSessionKey();
+            this.mLastUpdates.put(key, device);
+        }
 
-		return device;
-	}
+        return device;
+    }
 
-	@Scheduled(fixedDelayString = "${onesaitplatform.iotbroker.device.update.schedule.delay.millis: 5000}")
-	@Transactional
-	public void updateDevicePhysically() {
-		log.info("Update Devices in BDC");
-		synchronized (this.mLastUpdates) {
-			for (Map.Entry<String, Device> entry : this.mLastUpdates.entrySet()) {
-				if (log.isDebugEnabled()) {
-					log.debug("Update Device: " + entry.getKey());
-				}
-				Device device = entry.getValue();
-				deviceRepository.updateDevice(device.getClientPlatform(), device.getIdentification(),
-						device.getSessionKey(), device.getProtocol(), device.getLocation(), device.getUpdatedAt(),
-						device.getStatus(), device.isConnected(), device.isDisabled(), device.getId());
-			}
-			this.mLastUpdates.clear();
-		}
-	}
+    @Scheduled(fixedDelayString = "${onesaitplatform.iotbroker.device.update.schedule.delay.millis: 5000}")
+    @Transactional
+    public void updateDevicePhysically() {
+        log.info("Update Devices in BDC");
+        synchronized (this.mLastUpdates) {
+            for (Map.Entry<String, Device> entry : this.mLastUpdates.entrySet()) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Update Device: " + entry.getKey());
+                }
+                Device device = entry.getValue();
+                deviceRepository.updateDevice(device.getClientPlatform(), device.getIdentification(),
+                                              device.getSessionKey(), device.getProtocol(), device.getLocation(),
+                                              device.getUpdatedAt(), device.getStatus(), device.isConnected(),
+                                              device.isDisabled(), device.getId());
+            }
+            this.mLastUpdates.clear();
+        }
+    }
 
 }

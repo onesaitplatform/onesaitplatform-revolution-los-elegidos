@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,35 +33,35 @@ import com.minsait.onesait.platform.api.service.Constants;
 @Rule
 public class IsSqlLikeRule extends DefaultRuleBase {
 
-	@Priority
-	public int getPriority() {
-		return 1;
-	}
+    @Priority
+    public int getPriority() {
+        return 1;
+    }
 
-	@Condition
-	public boolean existsRequest(Facts facts) {
-		HttpServletRequest request = facts.get(RuleManager.REQUEST);
-		return ((request != null) && canExecuteRule(facts));
-	}
+    @Condition
+    public boolean existsRequest(Facts facts) {
+        HttpServletRequest request = facts.get(RuleManager.REQUEST);
+        return ((request != null) && canExecuteRule(facts));
+    }
 
-	@Action
-	public void setFirstDerivedData(Facts facts) {
-		HttpServletRequest request = facts.get(RuleManager.REQUEST);
-		Map<String, Object> data = facts.get(RuleManager.FACTS);
-		request.getRequestURI();
-		String query = (String) data.get(Constants.QUERY);
-		String queryType = (String) data.get(Constants.QUERY_TYPE);
+    @Action
+    public void setFirstDerivedData(Facts facts) {
+        HttpServletRequest request = facts.get(RuleManager.REQUEST);
+        Map<String, Object> data = facts.get(RuleManager.FACTS);
+        request.getRequestURI();
+        String query = (String) data.get(Constants.QUERY);
+        String queryType = (String) data.get(Constants.QUERY_TYPE);
 
-		boolean isSQLLIKE = isSQLLIKE(query, queryType);
+        boolean isSQLLIKE = isSQLLIKE(query, queryType);
 
-		data.put(Constants.ISSQLLIKE, isSQLLIKE);
+        data.put(Constants.ISSQLLIKE, isSQLLIKE);
 
-	}
+    }
 
-	private boolean isSQLLIKE(String query, String queryType) {
-		if (query != null && query.length() > 0 && queryType != null && queryType.length() > 0) {
-			return queryType.equals("SQLLIKE");
-		}
-		return false;
-	}
+    private boolean isSQLLIKE(String query, String queryType) {
+        if (query != null && query.length() > 0 && queryType != null && queryType.length() > 0) {
+            return queryType.equals("SQLLIKE");
+        }
+        return false;
+    }
 }

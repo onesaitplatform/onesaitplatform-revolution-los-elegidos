@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,41 +33,41 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping(value = "/actions")
 public class ActionRestController {
 
-	@Autowired
-	private TransactionManager transactionManager;
+    @Autowired
+    private TransactionManager transactionManager;
 
-	@Autowired
-	private ActionExecutor actionExecutor;
+    @Autowired
+    private ActionExecutor actionExecutor;
 
-	@RequestMapping(method = RequestMethod.POST)
-	public void executeAction(@RequestBody String action, HttpServletRequest request) {
-		try {
-			log.info("Received action request");
-			JSONObject actionJSON = new JSONObject(action);
-			String idTransaction = request.getHeader("Transaction-Id");
+    @RequestMapping(method = RequestMethod.POST)
+    public void executeAction(@RequestBody String action, HttpServletRequest request) {
+        try {
+            log.info("Received action request");
+            JSONObject actionJSON = new JSONObject(action);
+            String idTransaction = request.getHeader("Transaction-Id");
 
-			if (!actionJSON.has("name")) {
-				log.error("Invalid JSON action, \"name\" property is required");
-				return;
-			}
-			String actionName = actionJSON.getString("name");
+            if (!actionJSON.has("name")) {
+                log.error("Invalid JSON action, \"name\" property is required");
+                return;
+            }
+            String actionName = actionJSON.getString("name");
 
-			String data = "";
-			if (actionJSON.has("data")) {
-				data = actionJSON.getString("data");
-			}
+            String data = "";
+            if (actionJSON.has("data")) {
+                data = actionJSON.getString("data");
+            }
 
-			if (idTransaction != null && idTransaction != "") {// Action Finish transaction
-				// First executing set properties
-				transactionManager.completeTransaction(idTransaction, actionName, data);
+            if (idTransaction != null && idTransaction != "") {// Action Finish transaction
+                // First executing set properties
+                transactionManager.completeTransaction(idTransaction, actionName, data);
 
-			} else {// Action without transactcion, executes it inmediately
-				actionExecutor.executeAction(actionName, data);
-			}
+            } else {// Action without transactcion, executes it inmediately
+                actionExecutor.executeAction(actionName, data);
+            }
 
-		} catch (Exception e) {
-			log.error("Invalid JSON action: " + action, e);
-		}
-	}
+        } catch (Exception e) {
+            log.error("Invalid JSON action: " + action, e);
+        }
+    }
 
 }

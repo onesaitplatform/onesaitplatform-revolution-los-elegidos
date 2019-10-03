@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,28 +18,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public enum GeometryType {
 
-	@JsonProperty("Point")
-	POINT("Point"),
+    @JsonProperty("Point") POINT("Point"),
 
-	@JsonProperty("LineString")
-	LINE_STRING("LineString"),
+    @JsonProperty("LineString") LINE_STRING("LineString"),
 
-	@JsonProperty("MultiLineString")
-	MULTILINE_STRING("MultiLineString"),
+    @JsonProperty("MultiLineString") MULTILINE_STRING("MultiLineString"),
 
-	@JsonProperty("Polygon")
-	POLYGON("Polygon"),
+    @JsonProperty("Polygon") POLYGON("Polygon"),
 
-	@JsonProperty("MultiPolygon")
-	MULTI_POLYGON("MultiPolygon");
+    @JsonProperty("MultiPolygon") MULTI_POLYGON("MultiPolygon");
 
-	private String name;
+    private String name;
 
-	private GeometryType(String name) {
-		this.name = name;
-	}
+    private GeometryType(String name) {
+        this.name = name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 }

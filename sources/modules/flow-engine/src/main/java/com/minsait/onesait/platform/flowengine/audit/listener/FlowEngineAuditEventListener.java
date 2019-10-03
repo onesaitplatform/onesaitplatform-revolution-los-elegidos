@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,13 +28,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FlowEngineAuditEventListener {
 
-	@Autowired
-	private EventRouter eventRouter;
+    @Autowired
+    private EventRouter eventRouter;
 
-	@EventListener
-	@Async
-	public void handleSofia2AuditErrorEvent(FlowEngineAuditEvent event) {
-		log.debug("flow engine audit event: " + event.toString());
-		eventRouter.notify(event.toJson());
-	}
+    @EventListener
+    @Async
+    public void handleSofia2AuditErrorEvent(FlowEngineAuditEvent event) {
+        log.debug("flow engine audit event: " + event.toString());
+        eventRouter.notify(event.toJson());
+    }
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,80 +34,80 @@ import lombok.Setter;
 @Table(name = "VIDEO_CAPTURE")
 public class VideoCapture extends OPResource {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public enum Protocol {
-		HTTP, RTSP, TCP, UDP
-	}
+    public enum Protocol {
+        HTTP, RTSP, TCP, UDP
+    }
 
-	public enum Processor {
-		PEOPLE, TEXT, PLATES, STATS, YOLO
-	}
+    public enum Processor {
+        PEOPLE, TEXT, PLATES, STATS, YOLO
+    }
 
-	public enum State {
-		START, STOP
-	}
+    public enum State {
+        START, STOP
+    }
 
-	@Column(name = "PROTOCOL")
-	@Enumerated(EnumType.STRING)
-	@Getter
-	@Setter
-	private Protocol protocol;
+    @Column(name = "PROTOCOL")
+    @Enumerated(EnumType.STRING)
+    @Getter
+    @Setter
+    private Protocol protocol;
 
-	@Column(name = "PROCESSOR", nullable = false)
-	@Enumerated(EnumType.STRING)
-	@Getter
-	@Setter
-	private Processor processor;
+    @Column(name = "PROCESSOR", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Getter
+    @Setter
+    private Processor processor;
 
-	@Column(name = "IP")
-	@Getter
-	@Setter
-	private String ip;
+    @Column(name = "IP")
+    @Getter
+    @Setter
+    private String ip;
 
-	@Column(name = "PORT")
-	@Getter
-	@Setter
-	private String port;
+    @Column(name = "PORT")
+    @Getter
+    @Setter
+    private String port;
 
-	@Column(name = "PATH")
-	@Getter
-	@Setter
-	private String path;
+    @Column(name = "PATH")
+    @Getter
+    @Setter
+    private String path;
 
-	@Column(name = "USERNAME")
-	@Getter
-	@Setter
-	private String username;
+    @Column(name = "USERNAME")
+    @Getter
+    @Setter
+    private String username;
 
-	@Column(name = "PASSWORD")
-	@Getter
-	@Setter
-	private String password;
+    @Column(name = "PASSWORD")
+    @Getter
+    @Setter
+    private String password;
 
-	@Column(name = "CONNECTION_URL")
-	@Getter
-	@Setter
-	private String url;
+    @Column(name = "CONNECTION_URL")
+    @Getter
+    @Setter
+    private String url;
 
-	@ManyToOne
-	@JoinColumn(name = "ONTOLOGY_ID", referencedColumnName = "ID", nullable = false)
-	@Getter
-	@Setter
-	private Ontology ontology;
+    @ManyToOne
+    @JoinColumn(name = "ONTOLOGY_ID", referencedColumnName = "ID", nullable = false)
+    @Getter
+    @Setter
+    private Ontology ontology;
 
-	@Column(name = "STATE", nullable = false)
-	@Enumerated(EnumType.STRING)
-	@Getter
-	@Setter
-	private State state = State.STOP;
+    @Column(name = "STATE", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Getter
+    @Setter
+    private State state = State.STOP;
 
-	@Column(name = "SAMPLING_INTERVAL", nullable = false)
-	@Getter
-	@Setter
-	private long samplingInterval;
-	
-	@Override
+    @Column(name = "SAMPLING_INTERVAL", nullable = false)
+    @Getter
+    @Setter
+    private long samplingInterval;
+
+    @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;

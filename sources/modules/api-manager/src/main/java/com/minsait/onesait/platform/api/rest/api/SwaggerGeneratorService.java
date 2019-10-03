@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,29 +36,30 @@ import io.swagger.annotations.ApiResponses;
 @Api(value = "Swagger Generator")
 public interface SwaggerGeneratorService {
 
-	/**
-	 * 
-	 * @deprecated
-	 */
-	@GET
-	@Path("/{identificacion}/{token}")
-	@Deprecated
-	@ApiOperation(value = "Generate Swagger.json File", notes = "Generate Swagger.json File", httpMethod = "GET", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
-	@ApiResponses(value = { @ApiResponse(code = 204, message = "No Content"),
-			@ApiResponse(code = 400, message = "Bad Request"), @ApiResponse(code = 401, message = "Unauthorized"),
-			@ApiResponse(code = 501, message = "Internal Server Error") })
-	public Response getApi(
-			@PathParam("identificacion") @ApiParam(name = "identificacion", required = true) String identificacion,
-			@PathParam("token") @ApiParam(name = "token", required = true) String token) throws GenericOPException;
+    /**
+     *
+     * @deprecated
+     */
+    @GET
+    @Path("/{identificacion}/{token}")
+    @Deprecated
+    @ApiOperation(value = "Generate Swagger.json File", notes = "Generate Swagger.json File", httpMethod = "GET",
+            produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {@ApiResponse(code = 204, message = "No Content"), @ApiResponse(code = 400, message = "Bad " +
+            "Request"), @ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 501, message =
+            "Internal Server Error")})
+    public Response getApi(
+            @PathParam("identificacion") @ApiParam(name = "identificacion", required = true) String identificacion,
+            @PathParam("token") @ApiParam(name = "token", required = true) String token) throws GenericOPException;
 
-	@GET
-	@Path("/{version}/{identification}/swagger.json")
-	@ApiOperation(value = "Generate Swagger.json File", notes = "Generate Swagger.json File", httpMethod = "GET", produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
-	@ApiResponses(value = { @ApiResponse(code = 204, message = "No Content"),
-			@ApiResponse(code = 400, message = "Bad Request"), @ApiResponse(code = 401, message = "Unauthorized"),
-			@ApiResponse(code = 501, message = "Internal Server Error") })
-	public Response getApiWithoutToken(
-			@PathParam("version") @ApiParam(name = "version", required = true) String version,
-			@PathParam("identification") @ApiParam(name = "identification", required = true) String identificacion)
-			throws GenericOPException;
+    @GET
+    @Path("/{version}/{identification}/swagger.json")
+    @ApiOperation(value = "Generate Swagger.json File", notes = "Generate Swagger.json File", httpMethod = "GET",
+            produces = MediaType.APPLICATION_JSON, consumes = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {@ApiResponse(code = 204, message = "No Content"), @ApiResponse(code = 400, message = "Bad " +
+            "Request"), @ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 501, message =
+            "Internal Server Error")})
+    public Response getApiWithoutToken(
+            @PathParam("version") @ApiParam(name = "version", required = true) String version,
+            @PathParam("identification") @ApiParam(name = "identification", required = true) String identificacion) throws GenericOPException;
 }

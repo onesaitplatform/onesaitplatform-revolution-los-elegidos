@@ -18,41 +18,41 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('DeleteModalInstanceController', ["$scope", "$modalInstance", "pipelineInfo", "api", function ($scope, $modalInstance, pipelineInfo, api) {
-    angular.extend($scope, {
-      common: {
-        errors: []
-      },
-      pipelineInfo: pipelineInfo,
-      isList: _.isArray(pipelineInfo),
-      operationInProgress: false,
-      yes: function() {
-        $scope.operationInProgress = true;
-        if ($scope.isList) {
-          api.pipelineAgent.deletePipelines(_.pluck(pipelineInfo, 'pipelineId'))
-            .then(function() {
-              $modalInstance.close(pipelineInfo);
-            })
-            .catch(function(res) {
-              $scope.operationInProgress = false;
-              $scope.common.errors = [res.data];
-            });
+    .module('dataCollectorApp.home')
+    .controller('DeleteModalInstanceController', ["$scope", "$modalInstance", "pipelineInfo", "api", function ($scope, $modalInstance, pipelineInfo, api) {
+        angular.extend($scope, {
+            common: {
+                errors: []
+            },
+            pipelineInfo: pipelineInfo,
+            isList: _.isArray(pipelineInfo),
+            operationInProgress: false,
+            yes: function () {
+                $scope.operationInProgress = true;
+                if ($scope.isList) {
+                    api.pipelineAgent.deletePipelines(_.pluck(pipelineInfo, 'pipelineId'))
+                        .then(function () {
+                            $modalInstance.close(pipelineInfo);
+                        })
+                        .catch(function (res) {
+                            $scope.operationInProgress = false;
+                            $scope.common.errors = [res.data];
+                        });
 
-        } else {
-          api.pipelineAgent.deletePipelineConfig(pipelineInfo.pipelineId)
-            .then(function() {
-              $modalInstance.close(pipelineInfo);
-            })
-            .catch(function(res) {
-              $scope.operationInProgress = false;
-              $scope.common.errors = [res.data];
-            });
-        }
-      },
+                } else {
+                    api.pipelineAgent.deletePipelineConfig(pipelineInfo.pipelineId)
+                        .then(function () {
+                            $modalInstance.close(pipelineInfo);
+                        })
+                        .catch(function (res) {
+                            $scope.operationInProgress = false;
+                            $scope.common.errors = [res.data];
+                        });
+                }
+            },
 
-      no: function() {
-        $modalInstance.dismiss('cancel');
-      }
-    });
-  }]);
+            no: function () {
+                $modalInstance.dismiss('cancel');
+            }
+        });
+    }]);

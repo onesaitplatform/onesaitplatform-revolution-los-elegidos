@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,23 +37,25 @@ import com.minsait.onesait.platform.security.CustomBasicAuthenticationEntryPoint
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Value("${onesaitplatform.dashboardengine.auth.token.endpoint:'http://localhost:18000/controlpanel/api/login/info'}")
-	private String onesaitPlatformTokenAuth;
+    @Value("${onesaitplatform.dashboardengine.auth.token" +
+            ".endpoint:'http://localhost:18000/controlpanel/api/login/info'}")
+    private String onesaitPlatformTokenAuth;
 
-	@Autowired
-	private CustomBasicAuthenticationEntryPoint authenticationEntryPoint;
-	
-	@Autowired
-	@Qualifier("configDBAuthenticationProvider")
-	AuthenticationProvider configDBAuthenticationProvider;
-	/**
-	 * Authentication beans
-	 */
+    @Autowired
+    private CustomBasicAuthenticationEntryPoint authenticationEntryPoint;
 
-	@Bean
-	public PasswordEncoder encoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Autowired
+    @Qualifier("configDBAuthenticationProvider")
+    AuthenticationProvider configDBAuthenticationProvider;
+
+    /**
+     * Authentication beans
+     */
+
+    @Bean
+    public PasswordEncoder encoder() {
+        return new BCryptPasswordEncoder();
+    }
 
 	/*@Bean
 	public ConfigDBAuthenticationProvider authenticationProviderOnesaitPlatform() {
@@ -61,23 +63,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return bean;
 	}*/
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.cors().and().authorizeRequests().antMatchers("/**").authenticated().and().httpBasic()
-				.authenticationEntryPoint(authenticationEntryPoint).and()
-				.authenticationProvider(configDBAuthenticationProvider);
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.cors().and().authorizeRequests().antMatchers(
+                "/**").authenticated().and().httpBasic().authenticationEntryPoint(
+                authenticationEntryPoint).and().authenticationProvider(configDBAuthenticationProvider);
 
-		http.csrf().disable();
+        http.csrf().disable();
 
-		http.headers().frameOptions().disable();
+        http.headers().frameOptions().disable();
 
-		http.addFilterAfter(new CustomFilter(onesaitPlatformTokenAuth), BasicAuthenticationFilter.class);
+        http.addFilterAfter(new CustomFilter(onesaitPlatformTokenAuth), BasicAuthenticationFilter.class);
 
-	}
+    }
 
-	@Override
-	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/resources/**");
-	}
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/resources/**");
+    }
 
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,49 +43,49 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class FrameProcessor {
 
-	@Getter
-	@Setter
-	private Mat lastProcessedFrame;
-	@Getter
-	@Setter
-	private VideoProcessorResults lastProcessedResults;
-	@Getter
-	@Setter
-	private ProcessType processingType;
+    @Getter
+    @Setter
+    private Mat lastProcessedFrame;
+    @Getter
+    @Setter
+    private VideoProcessorResults lastProcessedResults;
+    @Getter
+    @Setter
+    private ProcessType processingType;
 
-	public abstract VideoProcessorResults process(Mat frame);
+    public abstract VideoProcessorResults process(Mat frame);
 
-	public static Mat getSubMatFromRectanbe(Mat matOriginal, Rect rectange) {
+    public static Mat getSubMatFromRectanbe(Mat matOriginal, Rect rectange) {
 
-		return new Mat(matOriginal, rectange);
+        return new Mat(matOriginal, rectange);
 
-	}
+    }
 
-	public static void displayImage(Mat img, String title) {
-		final BufferedImage imgImage = VideoUtils.matToBufferedImage(img);
-		displayImage(imgImage, title);
-	}
+    public static void displayImage(Mat img, String title) {
+        final BufferedImage imgImage = VideoUtils.matToBufferedImage(img);
+        displayImage(imgImage, title);
+    }
 
-	public static void displayImage(Image img, String title) {
+    public static void displayImage(Image img, String title) {
 
-		final ImageIcon icon = new ImageIcon(img);
-		final JFrame frame = new JFrame();
-		frame.setTitle(title);
-		frame.setLayout(new FlowLayout());
-		frame.setSize(img.getWidth(null) + 50, img.getHeight(null) + 50);
-		final JLabel lbl = new JLabel();
-		lbl.setIcon(icon);
-		frame.add(lbl);
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
+        final ImageIcon icon = new ImageIcon(img);
+        final JFrame frame = new JFrame();
+        frame.setTitle(title);
+        frame.setLayout(new FlowLayout());
+        frame.setSize(img.getWidth(null) + 50, img.getHeight(null) + 50);
+        final JLabel lbl = new JLabel();
+        lbl.setIcon(icon);
+        frame.add(lbl);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
 
-	public static void saveImage(Mat mat, String filename) {
+    public static void saveImage(Mat mat, String filename) {
 
-		Imgcodecs.imwrite(filename, mat);
-		log.info("Saved image {}", filename);
-	}
+        Imgcodecs.imwrite(filename, mat);
+        log.info("Saved image {}", filename);
+    }
 
-	public abstract ProcessType getProcessType();
+    public abstract ProcessType getProcessType();
 
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,41 +25,37 @@ import com.minsait.onesait.platform.config.model.UserToken;
 
 public interface UserTokenRepository extends JpaRepository<UserToken, String> {
 
-	@Override
+    @Override
+    <S extends UserToken> List<S> save(Iterable<S> entities);
 
-	<S extends UserToken> List<S> save(Iterable<S> entities);
+    @Override
+    void flush();
 
-	@Override
+    @Override
+    <S extends UserToken> S saveAndFlush(S entity);
 
-	void flush();
+    @SuppressWarnings("unchecked")
+    @Override
+    UserToken save(UserToken entity);
 
-	@Override
+    @Override
+    @Transactional
+    void delete(UserToken id);
 
-	<S extends UserToken> S saveAndFlush(S entity);
+    @Override
+    @Transactional
+    void deleteAll();
 
-	@SuppressWarnings("unchecked")
-	@Override
+    List<UserToken> findByUser(User user);
 
-	UserToken save(UserToken entity);
+    UserToken findByToken(String token);
 
-	@Override
-	@Transactional
-	void delete(UserToken id);
+    UserToken findById(String id);
 
-	@Override
-	@Transactional
-	void deleteAll();
+    UserToken findByUserAndToken(String user, String token);
 
-	List<UserToken> findByUser(User user);
+    UserToken findByUserAndToken(User user, String token);
 
-	UserToken findByToken(String token);
-
-	UserToken findById(String id);
-
-	UserToken findByUserAndToken(String user, String token);
-
-	UserToken findByUserAndToken(User user, String token);
-
-	@Transactional
-	void deleteByUser(User user);
+    @Transactional
+    void deleteByUser(User user);
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,29 +21,29 @@ import com.minsait.onesait.platform.config.model.DeviceSimulation;
 
 public interface DeviceSimulationService {
 
-	List<String> getClientsForUser(String userId);
+    List<String> getClientsForUser(String userId);
 
-	List<String> getClientTokensIdentification(String clientPlatformId);
+    List<String> getClientTokensIdentification(String clientPlatformId);
 
-	List<String> getClientOntologiesIdentification(String clientPlatformId);
+    List<String> getClientOntologiesIdentification(String clientPlatformId);
 
-	List<String> getSimulatorTypes();
+    List<String> getSimulatorTypes();
 
-	List<DeviceSimulation> getAllSimulations();
+    List<DeviceSimulation> getAllSimulations();
 
-	DeviceSimulation getSimulatorByIdentification(String identification);
+    DeviceSimulation getSimulatorByIdentification(String identification);
 
-	DeviceSimulation createSimulation(String identification, int interval, String userId, String json)
-			throws IOException;
+    DeviceSimulation createSimulation(String identification, int interval, String userId,
+            String json) throws IOException;
 
-	void save(DeviceSimulation simulation);
+    void save(DeviceSimulation simulation);
 
-	DeviceSimulation getSimulationById(String id);
+    DeviceSimulation getSimulationById(String id);
 
-	List<DeviceSimulation> getSimulationsForUser(String userId);
+    List<DeviceSimulation> getSimulationsForUser(String userId);
 
-	DeviceSimulation updateSimulation(String identification, int interval, String json, DeviceSimulation simulation)
-			throws IOException;
+    DeviceSimulation updateSimulation(String identification, int interval, String json,
+            DeviceSimulation simulation) throws IOException;
 
-	DeviceSimulation getSimulationByJobName(String jobName);
+    DeviceSimulation getSimulationByJobName(String jobName);
 }

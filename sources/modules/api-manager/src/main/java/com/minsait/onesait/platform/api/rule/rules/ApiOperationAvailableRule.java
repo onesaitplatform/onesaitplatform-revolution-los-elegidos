@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,32 +37,32 @@ import com.minsait.onesait.platform.config.services.apimanager.ApiManagerService
 @Rule
 public class ApiOperationAvailableRule extends DefaultRuleBase {
 
-	@Autowired
-	private ApiManagerService apiManagerService;
+    @Autowired
+    private ApiManagerService apiManagerService;
 
-	@Priority
-	public int getPriority() {
-		return 3;
-	}
+    @Priority
+    public int getPriority() {
+        return 3;
+    }
 
-	@Condition
-	public boolean existsRequest(Facts facts) {
-		final Map<String, Object> data = facts.get(RuleManager.FACTS);
-		final Api api = (Api) data.get(Constants.API);
-		return(api != null && !api.getApiType().equals(ApiType.EXTERNAL_FROM_JSON));
-	}
+    @Condition
+    public boolean existsRequest(Facts facts) {
+        final Map<String, Object> data = facts.get(RuleManager.FACTS);
+        final Api api = (Api) data.get(Constants.API);
+        return (api != null && !api.getApiType().equals(ApiType.EXTERNAL_FROM_JSON));
+    }
 
-	@Action
-	public void checkOperationIsAvailable(Facts facts) {
-		final Map<String, Object> data = facts.get(RuleManager.FACTS);
-		final Api api = (Api) data.get(Constants.API);
-		final String method = (String) data.get(Constants.METHOD);
-		final ApiOperation operation = apiManagerService.getOperationsByMethod(api, Type.valueOf(method)).stream()
-				.findAny().orElse(null);
-		if (operation == null)
-			stopAllNextRules(facts, "There are no operations allowed for this API with HTTP method " + method,
+    @Action
+    public void checkOperationIsAvailable(Facts facts) {
+        final Map<String, Object> data = facts.get(RuleManager.FACTS);
+        final Api api = (Api) data.get(Constants.API);
+        final String method = (String) data.get(Constants.METHOD);
+        final ApiOperation operation = apiManagerService.getOperationsByMethod(api, Type.valueOf(
+                method)).stream().findAny().orElse(null);
+        if (operation == null)
+            stopAllNextRules(facts, "There are no operations allowed for this API with HTTP method " + method,
 
-					DefaultRuleBase.ReasonType.GENERAL);
-	}
+                             DefaultRuleBase.ReasonType.GENERAL);
+    }
 
 }

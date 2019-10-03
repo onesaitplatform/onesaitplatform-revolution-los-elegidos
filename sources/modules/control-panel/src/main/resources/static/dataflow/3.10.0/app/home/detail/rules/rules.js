@@ -18,24 +18,24 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('RulesController', ["$scope", "pipelineService", "$timeout", function ($scope, pipelineService, $timeout) {
-    angular.extend($scope, {
-      onTabSelect: function() {
-        refreshCodemirrorWidget();
-      },
+    .module('dataCollectorApp.home')
+    .controller('RulesController', ["$scope", "pipelineService", "$timeout", function ($scope, pipelineService, $timeout) {
+        angular.extend($scope, {
+            onTabSelect: function () {
+                refreshCodemirrorWidget();
+            },
 
-      showConfigurationWarning: function() {
-        var pipelineRules = $scope.pipelineRules;
-        return pipelineRules && pipelineRules.configIssues && pipelineRules.configIssues.length > 0;
-      }
-    });
+            showConfigurationWarning: function () {
+                var pipelineRules = $scope.pipelineRules;
+                return pipelineRules && pipelineRules.configIssues && pipelineRules.configIssues.length > 0;
+            }
+        });
 
-    var refreshCodemirrorWidget = function() {
-      $scope.refreshCodemirror = true;
-      $timeout(function () {
-        $scope.refreshCodemirror = false;
-      }, 100);
-    };
+        var refreshCodemirrorWidget = function () {
+            $scope.refreshCodemirror = true;
+            $timeout(function () {
+                $scope.refreshCodemirror = false;
+            }, 100);
+        };
 
-  }]);
+    }]);

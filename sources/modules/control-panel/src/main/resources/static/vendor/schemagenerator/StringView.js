@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
 
 
     SchemaStrV = Backbone.View.extend({
@@ -6,12 +6,12 @@ $(document).ready(function() {
         sb: [],
         l: 0,
 
-        resetBuffer: function() {
+        resetBuffer: function () {
             this.sb = [];
             this.l = 0;
         },
 
-        render: function() {
+        render: function () {
             this.resetBuffer();
 
             var v = {
@@ -84,7 +84,7 @@ $(document).ready(function() {
             return this.sb.join(',');
         },
 
-        makeAttribute: function(attribute, value, hasQuotes) {
+        makeAttribute: function (attribute, value, hasQuotes) {
             if (hasQuotes) {
                 return ('"' + attribute + '": "' + value + '"');
             }
@@ -99,12 +99,12 @@ $(document).ready(function() {
         sb: [],
         l: 0,
 
-        resetBuffer: function() {
+        resetBuffer: function () {
             this.sb = [];
             this.l = 0;
         },
 
-        render: function() {
+        render: function () {
             this.resetBuffer();
 
             var root = this.model.get('root');
@@ -145,17 +145,17 @@ $(document).ready(function() {
         sb: [],
         l: 0,
 
-        resetBuffer: function() {
+        resetBuffer: function () {
             this.sb = [];
             this.l = 0;
         },
 
-        render: function() {
+        render: function () {
             var self = this;
             var pSchemas = (this.className == 'Properties');
             var iSchemas = (this.className == 'Items');
             var eSchemas = (this.className == 'Extensions');
-            var tupleTyping = ((iSchemas||eSchemas) && (this.collection.length > 1));
+            var tupleTyping = ((iSchemas || eSchemas) && (this.collection.length > 1));
 
             this.resetBuffer();
 
@@ -169,7 +169,7 @@ $(document).ready(function() {
             }
 
 
-            _(this.collection.models).each(function(sp) {
+            _(this.collection.models).each(function (sp) {
                 var index = this.collection.indexOf(sp);
                 var isLast = (index == (this.collection.length - 1));
 
@@ -202,12 +202,12 @@ $(document).ready(function() {
         sb: [],
         l: 0,
 
-        resetBuffer: function() {
+        resetBuffer: function () {
             this.sb = [];
             this.l = 0;
         },
 
-        render: function() {
+        render: function () {
             var self = this;
             var unionType = (this.collection.length > 1);
 
@@ -219,7 +219,7 @@ $(document).ready(function() {
                 this.sb[this.l] = '';
             }
 
-            _(this.collection.models).each(function(type) {
+            _(this.collection.models).each(function (type) {
                 var index = this.collection.indexOf(type);
                 var isLast = (index == (this.collection.length - 1));
 

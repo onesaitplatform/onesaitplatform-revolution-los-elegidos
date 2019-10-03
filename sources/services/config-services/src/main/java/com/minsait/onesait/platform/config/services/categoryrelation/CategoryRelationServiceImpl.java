@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,17 +26,17 @@ import com.minsait.onesait.platform.config.repository.CategoryRelationRepository
 @Service
 public class CategoryRelationServiceImpl implements CategoryRelationService {
 
-	@Autowired
-	private CategoryRelationRepository categoryRelationRepository;
+    @Autowired
+    private CategoryRelationRepository categoryRelationRepository;
 
-	@Override
-	public List<CategoryRelation> getByTypeIdAndType(String typeId, Type type) {
-		return categoryRelationRepository.findByTypeIdAndType(typeId, type);
-	}
-	
-	@Override
-	public CategoryRelation getByIdType(String typeId) {
-	    return categoryRelationRepository.findByTypeId(typeId);
-	}
+    @Override
+    public List<CategoryRelation> getByTypeIdAndType(String typeId, Type type) {
+        return categoryRelationRepository.findByTypeIdAndType(typeId, type);
+    }
+
+    @Override
+    public CategoryRelation getByIdType(String typeId) {
+        return categoryRelationRepository.findByTypeId(typeId);
+    }
 
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,28 +32,28 @@ import com.minsait.onesait.platform.config.repository.DigitalTwinDeviceRepositor
 @EnableAutoConfiguration
 public class ConfigGatewayImpl implements ConfigGateway {
 
-	@Autowired
-	private DigitalTwinDeviceRepository deviceRepo;
+    @Autowired
+    private DigitalTwinDeviceRepository deviceRepo;
 
-	@Override
-	public ResponseEntity<?> getWot(@RequestHeader(value = "Authorization") String apiKey, @RequestBody JsonNode data) {
-		// Validation apikey
-		if (data.get("id") == null) {
-			return new ResponseEntity<>("id are required", HttpStatus.BAD_REQUEST);
-		}
-		DigitalTwinDevice device = deviceRepo.findByIdentification(data.get("id").asText());
+    @Override
+    public ResponseEntity<?> getWot(@RequestHeader(value = "Authorization") String apiKey, @RequestBody JsonNode data) {
+        // Validation apikey
+        if (data.get("id") == null) {
+            return new ResponseEntity<>("id are required", HttpStatus.BAD_REQUEST);
+        }
+        DigitalTwinDevice device = deviceRepo.findByIdentification(data.get("id").asText());
 
-		if (null == device) {
-			return new ResponseEntity<>("Digital Twin not found", HttpStatus.NOT_FOUND);
-		}
+        if (null == device) {
+            return new ResponseEntity<>("Digital Twin not found", HttpStatus.NOT_FOUND);
+        }
 
-		if (apiKey.equals(device.getDigitalKey())) {
+        if (apiKey.equals(device.getDigitalKey())) {
 
-			return new ResponseEntity<>(device.getTypeId().getJson(), HttpStatus.OK);
+            return new ResponseEntity<>(device.getTypeId().getJson(), HttpStatus.OK);
 
-		} else {
-			return new ResponseEntity<>("Token not valid", HttpStatus.UNAUTHORIZED);
-		}
-	}
+        } else {
+            return new ResponseEntity<>("Token not valid", HttpStatus.UNAUTHORIZED);
+        }
+    }
 
 }

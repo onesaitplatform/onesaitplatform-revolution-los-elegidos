@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,107 +40,102 @@ import com.minsait.onesait.platform.iotbroker.plugable.impl.security.SecurityPlu
 @RunWith(MockitoJUnitRunner.class)
 public class RestDecryptTest {
 
-	private MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-	@InjectMocks
-	private Rest rest;
+    @InjectMocks
+    private Rest rest;
 
-	@Mock
-	SecurityPluginManager securityPluginManager;
+    @Mock
+    SecurityPluginManager securityPluginManager;
 
-	@Mock
-	OntologyDataService ontologyDataService;
+    @Mock
+    OntologyDataService ontologyDataService;
 
-	private final String simpleEncryptedData = "{\"data\": \"encrypted\"}";
-	private final String simpleClearData = "{\"data\": \"clear\"}";
-	private final String simpleOntology = "ontology";
+    private final String simpleEncryptedData = "{\"data\": \"encrypted\"}";
+    private final String simpleClearData = "{\"data\": \"clear\"}";
+    private final String simpleOntology = "ontology";
 
-	@Before
-	public void setup() {
-		// Setup Spring test in standalone mode
-		this.mockMvc = MockMvcBuilders.standaloneSetup(rest).build();
-	}
+    @Before
+    public void setup() {
+        // Setup Spring test in standalone mode
+        this.mockMvc = MockMvcBuilders.standaloneSetup(rest).build();
+    }
 
-	@Test
-	public void given_EncryptedEntityFromOneOntology_When_InvalidSessionIsProvided_Then_UnathorizedErrorIsGenerated()
-			throws Exception {
+    @Test
+    public void given_EncryptedEntityFromOneOntology_When_InvalidSessionIsProvided_Then_UnathorizedErrorIsGenerated() throws Exception {
 
-		String sessionKey = "sessionkey";
-		when(securityPluginManager.getSession(sessionKey)).thenReturn(Optional.empty());
+        String sessionKey = "sessionkey";
+        when(securityPluginManager.getSession(sessionKey)).thenReturn(Optional.empty());
 
-		mockMvc.perform(post("/rest/ontology/decrypt/" + simpleOntology).header("Authorization", sessionKey)
-				.content(simpleEncryptedData)).andExpect(status().isUnauthorized());
-	}
+        mockMvc.perform(post("/rest/ontology/decrypt/" + simpleOntology).header("Authorization", sessionKey).content(
+                simpleEncryptedData)).andExpect(status().isUnauthorized());
+    }
 
-	@Test
-	public void given_EncryptedEntityFromOneOntology_When_ValidSessionIsProvidedButTheServiceFailsDecrypting_Then_BadRequestIsResturned()
-			throws Exception {
+    @Test
+    public void given_EncryptedEntityFromOneOntology_When_ValidSessionIsProvidedButTheServiceFailsDecrypting_Then_BadRequestIsResturned() throws Exception {
 
-		String user = "alguien";
+        String user = "alguien";
 
-		String sessionKey = "sessionkey";
-		IoTSession iotSession = new IoTSession();
-		iotSession.setUserID(user);
-		Optional<IoTSession> session = Optional.of(iotSession);
+        String sessionKey = "sessionkey";
+        IoTSession iotSession = new IoTSession();
+        iotSession.setUserID(user);
+        Optional<IoTSession> session = Optional.of(iotSession);
 
-		when(securityPluginManager.getSession(sessionKey)).thenReturn(session);
-		when(ontologyDataService.decrypt(simpleEncryptedData, simpleOntology, user)).thenReturn(null);
+        when(securityPluginManager.getSession(sessionKey)).thenReturn(session);
+        when(ontologyDataService.decrypt(simpleEncryptedData, simpleOntology, user)).thenReturn(null);
 
-		mockMvc.perform(post("/rest/ontology/decrypt/" + simpleOntology).header("Authorization", sessionKey)
-				.content(simpleEncryptedData)).andExpect(status().isBadRequest());
-	}
+        mockMvc.perform(post("/rest/ontology/decrypt/" + simpleOntology).header("Authorization", sessionKey).content(
+                simpleEncryptedData)).andExpect(status().isBadRequest());
+    }
 
-	@Test
-	public void given_EncryptedEntityFromOneOntology_When_ValidSessionIsProvided_Then_TheClearDataIsReturned()
-			throws Exception {
-		String user = "alguien";
+    @Test
+    public void given_EncryptedEntityFromOneOntology_When_ValidSessionIsProvided_Then_TheClearDataIsReturned() throws Exception {
+        String user = "alguien";
 
-		String sessionKey = "sessionkey";
-		IoTSession iotSession = new IoTSession();
-		iotSession.setUserID(user);
-		Optional<IoTSession> session = Optional.of(iotSession);
+        String sessionKey = "sessionkey";
+        IoTSession iotSession = new IoTSession();
+        iotSession.setUserID(user);
+        Optional<IoTSession> session = Optional.of(iotSession);
 
-		when(securityPluginManager.getSession(sessionKey)).thenReturn(session);
-		when(ontologyDataService.decrypt(simpleEncryptedData, simpleOntology, user)).thenReturn(simpleClearData);
+        when(securityPluginManager.getSession(sessionKey)).thenReturn(session);
+        when(ontologyDataService.decrypt(simpleEncryptedData, simpleOntology, user)).thenReturn(simpleClearData);
 
-		mockMvc.perform(post("/rest/ontology/decrypt/" + simpleOntology).header("Authorization", sessionKey)
-				.content(simpleEncryptedData)).andExpect(status().isOk()).andExpect(jsonPath("$.data", is("clear")));
-	}
+        mockMvc.perform(post("/rest/ontology/decrypt/" + simpleOntology).header("Authorization", sessionKey).content(
+                simpleEncryptedData)).andExpect(status().isOk()).andExpect(jsonPath("$.data", is("clear")));
+    }
 
-	@Test
-	public void given_EncryptedEntityFromOneOntology_When_UnauthorizedUserTryToDecrypt_Then_UnathorizedErrorIsGenerated()
-			throws Exception {
-		String user = "alguien";
+    @Test
+    public void given_EncryptedEntityFromOneOntology_When_UnauthorizedUserTryToDecrypt_Then_UnathorizedErrorIsGenerated() throws Exception {
+        String user = "alguien";
 
-		String sessionKey = "sessionkey";
-		IoTSession iotSession = new IoTSession();
-		iotSession.setUserID(user);
-		Optional<IoTSession> session = Optional.of(iotSession);
+        String sessionKey = "sessionkey";
+        IoTSession iotSession = new IoTSession();
+        iotSession.setUserID(user);
+        Optional<IoTSession> session = Optional.of(iotSession);
 
-		when(securityPluginManager.getSession(sessionKey)).thenReturn(session);
-		when(ontologyDataService.decrypt(simpleEncryptedData, simpleOntology, user))
-				.thenThrow(new OntologyDataUnauthorizedException());
+        when(securityPluginManager.getSession(sessionKey)).thenReturn(session);
+        when(ontologyDataService.decrypt(simpleEncryptedData, simpleOntology, user)).thenThrow(
+                new OntologyDataUnauthorizedException());
 
-		mockMvc.perform(post("/rest/ontology/decrypt/" + simpleOntology).header("Authorization", sessionKey)
-				.content(simpleEncryptedData)).andExpect(status().isUnauthorized());
-	}
+        mockMvc.perform(post("/rest/ontology/decrypt/" + simpleOntology).header("Authorization", sessionKey).content(
+                simpleEncryptedData)).andExpect(status().isUnauthorized());
+    }
 
-	@Test
-	public void given_EncryptedEntityFromOneOntology_When_FailsToDecryptData_Then_OntologyDataJsonProblemExceptionIsGenerated()
-			throws Exception {
-		String user = "alguien";
+    @Test
+    public void given_EncryptedEntityFromOneOntology_When_FailsToDecryptData_Then_OntologyDataJsonProblemExceptionIsGenerated() throws Exception {
+        String user = "alguien";
 
-		String sessionKey = "sessionkey";
-		IoTSession iotSession = new IoTSession();
-		iotSession.setUserID(user);
-		Optional<IoTSession> session = Optional.of(iotSession);
+        String sessionKey = "sessionkey";
+        IoTSession iotSession = new IoTSession();
+        iotSession.setUserID(user);
+        Optional<IoTSession> session = Optional.of(iotSession);
 
-		when(securityPluginManager.getSession(sessionKey)).thenReturn(session);
-		when(ontologyDataService.decrypt(simpleEncryptedData, simpleOntology, user))
-				.thenThrow(new OntologyDataJsonProblemException());
+        when(securityPluginManager.getSession(sessionKey)).thenReturn(session);
+        when(ontologyDataService.decrypt(simpleEncryptedData, simpleOntology, user)).thenThrow(
+                new OntologyDataJsonProblemException());
 
-		mockMvc.perform(post("/rest/ontology/decrypt/" + simpleOntology).header("Authorization", sessionKey)
-				.content(simpleEncryptedData)).andExpect(status().isInternalServerError());
-	}
+        mockMvc.perform(post("/rest/ontology/decrypt/" + simpleOntology).header("Authorization", sessionKey).content(
+                simpleEncryptedData)).andExpect(status().isInternalServerError());
+    }
 
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 package com.minsait.onesait.platform.security.jwt.ri;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -31,18 +32,16 @@ public class CustomTokenEnhancer implements TokenEnhancer {
     public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
         final Map<String, Object> additionalInfo = new HashMap<>();
         additionalInfo.put("name", authentication.getName());
-        
-        Collection<GrantedAuthority>  authorities = authentication.getAuthorities();
-        List<String> collect = authorities.stream()
-                .map(GrantedAuthority:: getAuthority)
-                .collect(Collectors.toList());
-        
+
+        Collection<GrantedAuthority> authorities = authentication.getAuthorities();
+        List<String> collect = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+
         additionalInfo.put("authorities", collect);
-        additionalInfo.put("principal",  authentication.getUserAuthentication().getPrincipal());
-        additionalInfo.put("parameters",  authentication.getOAuth2Request().getRequestParameters());
-        additionalInfo.put("clientId",  authentication.getOAuth2Request().getClientId());
-        additionalInfo.put("grantType",  authentication.getOAuth2Request().getGrantType());
-       
+        additionalInfo.put("principal", authentication.getUserAuthentication().getPrincipal());
+        additionalInfo.put("parameters", authentication.getOAuth2Request().getRequestParameters());
+        additionalInfo.put("clientId", authentication.getOAuth2Request().getClientId());
+        additionalInfo.put("grantType", authentication.getOAuth2Request().getGrantType());
+
         ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
         return accessToken;
     }

@@ -18,38 +18,38 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
+    .module('dataCollectorApp.home')
 
-  .controller('RawPreviewController', function ($scope, $rootScope, $q, $modal, _, api) {
+    .controller('RawPreviewController', function ($scope, $rootScope, $q, $modal, _, api) {
 
-    angular.extend($scope, {
-      rawDataCodemirrorOptions: {
-        mode: {
-          name: 'application/json'
-        },
-        readOnly: true,
-        lineNumbers: true
-      },
+        angular.extend($scope, {
+            rawDataCodemirrorOptions: {
+                mode: {
+                    name: 'application/json'
+                },
+                readOnly: true,
+                lineNumbers: true
+            },
 
-      /**
-       * Raw Source Preview
-       */
-      rawSourcePreview: function() {
-        api.pipelineAgent.rawSourcePreview($scope.activeConfigInfo.pipelineId, 0, $scope.detailPaneConfig.uiInfo.rawSource.configuration)
-          .then(function(res) {
-            var data = res.data;
-            $rootScope.common.errors = [];
-            $scope.rawSourcePreviewData = data ? data.previewData : '';
+            /**
+             * Raw Source Preview
+             */
+            rawSourcePreview: function () {
+                api.pipelineAgent.rawSourcePreview($scope.activeConfigInfo.pipelineId, 0, $scope.detailPaneConfig.uiInfo.rawSource.configuration)
+                    .then(function (res) {
+                        var data = res.data;
+                        $rootScope.common.errors = [];
+                        $scope.rawSourcePreviewData = data ? data.previewData : '';
 
-            $scope.refreshCodemirror = true;
-            $timeout(function () {
-              $scope.refreshCodemirror = false;
-            }, 100);
-          })
-          .catch(function(res) {
-            $rootScope.common.errors = [res.data];
-          });
-      }
+                        $scope.refreshCodemirror = true;
+                        $timeout(function () {
+                            $scope.refreshCodemirror = false;
+                        }, 100);
+                    })
+                    .catch(function (res) {
+                        $rootScope.common.errors = [res.data];
+                    });
+            }
+        });
+
     });
-
-  });

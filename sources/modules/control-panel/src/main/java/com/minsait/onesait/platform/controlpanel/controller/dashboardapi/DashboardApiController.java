@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,42 +33,46 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DashboardApiController {
 
-	@Autowired
-	private AppWebUtils utils;
+    @Autowired
+    private AppWebUtils utils;
 
-	@Autowired
-	private DashboardService dashboardService;
+    @Autowired
+    private DashboardService dashboardService;
 
-	@Autowired
-	private DashboardApiService dashboardApiService;
+    @Autowired
+    private DashboardApiService dashboardApiService;
 
-	@PostMapping(value = { "/createGadget" }, produces = "application/json")
-	public @ResponseBody String createGadget(String json) {
-		return dashboardApiService.createGadget(json, this.utils.getUserId());
-	}
+    @PostMapping(value = {"/createGadget"}, produces = "application/json")
+    public @ResponseBody
+    String createGadget(String json) {
+        return dashboardApiService.createGadget(json, this.utils.getUserId());
+    }
 
-	@PostMapping(value = { "/updateGadget" }, produces = "application/json")
-	public @ResponseBody String updateGadget(String json) {
-		return dashboardApiService.updateGadget(json, this.utils.getUserId());
-	}
+    @PostMapping(value = {"/updateGadget"}, produces = "application/json")
+    public @ResponseBody
+    String updateGadget(String json) {
+        return dashboardApiService.updateGadget(json, this.utils.getUserId());
+    }
 
-	@PostMapping(value = { "/deleteGadget" }, produces = "application/json")
-	public @ResponseBody String deleteGadget(String json) {
-		return "";
-	}
+    @PostMapping(value = {"/deleteGadget"}, produces = "application/json")
+    public @ResponseBody
+    String deleteGadget(String json) {
+        return "";
+    }
 
-	@PutMapping(value = "/savemodel/{id}", produces = "application/json")
-	public @ResponseBody String updateDashboardModel(@PathVariable("id") String id, String json) {
-		if (id != null && !id.equals("") && json != null && !json.equals("")) {
-			if (dashboardService.dashboardExistsById(id)) {
-				dashboardService.saveDashboardModel(id, json, utils.getUserId());
-				return "{\"ok\":true}";
-			} else {
-				return "{\"error\":\"Dashboard does not exist\"}";
-			}
-		} else
-			log.error("Missing json data");
-		return "{\"error\":\"Missing json data\"}";
-	}
+    @PutMapping(value = "/savemodel/{id}", produces = "application/json")
+    public @ResponseBody
+    String updateDashboardModel(@PathVariable("id") String id, String json) {
+        if (id != null && !id.equals("") && json != null && !json.equals("")) {
+            if (dashboardService.dashboardExistsById(id)) {
+                dashboardService.saveDashboardModel(id, json, utils.getUserId());
+                return "{\"ok\":true}";
+            } else {
+                return "{\"error\":\"Dashboard does not exist\"}";
+            }
+        } else
+            log.error("Missing json data");
+        return "{\"error\":\"Missing json data\"}";
+    }
 
 }

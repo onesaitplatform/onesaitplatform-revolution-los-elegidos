@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,36 +27,36 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class MyEntryListener implements EntryAddedListener<String, String>, EntryRemovedListener<String, String>,
-		EntryUpdatedListener<String, String>, EntryEvictedListener<String, String>, MapEvictedListener,
-		MapClearedListener {
-	@Override
-	public void entryAdded(EntryEvent<String, String> event) {
-		log.debug("Entry Added: {}", event);
-	}
+        EntryUpdatedListener<String, String>, EntryEvictedListener<String, String>, MapEvictedListener,
+        MapClearedListener {
+    @Override
+    public void entryAdded(EntryEvent<String, String> event) {
+        log.debug("Entry Added: {}", event);
+    }
 
-	@Override
-	public void entryRemoved(EntryEvent<String, String> event) {
-		log.debug("Entry Removed: {}", event);
-	}
+    @Override
+    public void entryRemoved(EntryEvent<String, String> event) {
+        log.debug("Entry Removed: {}", event);
+    }
 
-	@Override
-	public void entryUpdated(EntryEvent<String, String> event) {
-		log.debug("Entry Updated: {}", event);
-	}
+    @Override
+    public void entryUpdated(EntryEvent<String, String> event) {
+        log.debug("Entry Updated: {}", event);
+    }
 
-	@Override
-	public void entryEvicted(EntryEvent<String, String> event) {
-		log.debug("Entry Evicted: {}", event);
-	}
+    @Override
+    public void entryEvicted(EntryEvent<String, String> event) {
+        log.debug("Entry Evicted: {}", event);
+    }
 
-	@Override
-	public void mapEvicted(MapEvent event) {
-		log.debug("Map Evicted: {}", event);
-	}
+    @Override
+    public void mapEvicted(MapEvent event) {
+        log.debug("Map Evicted: {}", event);
+    }
 
-	@Override
-	public void mapCleared(MapEvent event) {
-		log.debug("Map Cleared: {}",event);
-	}
+    @Override
+    public void mapCleared(MapEvent event) {
+        log.debug("Map Cleared: {}", event);
+    }
 
 }

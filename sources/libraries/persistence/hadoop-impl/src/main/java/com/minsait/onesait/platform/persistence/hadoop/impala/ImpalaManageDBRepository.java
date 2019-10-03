@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,154 +42,154 @@ import lombok.extern.slf4j.Slf4j;
 @Scope("prototype")
 @Lazy
 @Slf4j
-@ConditionalOnBean(name = { NameBeanConst.IMPALA_TEMPLATE_JDBC_BEAN_NAME })
+@ConditionalOnBean(name = {NameBeanConst.IMPALA_TEMPLATE_JDBC_BEAN_NAME})
 public class ImpalaManageDBRepository implements ManageDBRepository {
 
-	private static final String INVALIDATE_METADATA = "invalidate metadata %s";
+    private static final String INVALIDATE_METADATA = "invalidate metadata %s";
 
-	@Autowired
-	@Qualifier(NameBeanConst.IMPALA_TEMPLATE_JDBC_BEAN_NAME)
-	private JdbcTemplate impalaJdbcTemplate;
+    @Autowired
+    @Qualifier(NameBeanConst.IMPALA_TEMPLATE_JDBC_BEAN_NAME)
+    private JdbcTemplate impalaJdbcTemplate;
 
-	public void invalidateMetadata(String name) {
-		try {
-			String sql = String.format(INVALIDATE_METADATA, name);
-			impalaJdbcTemplate.execute(sql);
-		} catch (DataAccessException e) {
-			log.error("error invalidating hive table " + name, e);
-			throw new DBPersistenceException(e);
-		}
-	}
+    public void invalidateMetadata(String name) {
+        try {
+            String sql = String.format(INVALIDATE_METADATA, name);
+            impalaJdbcTemplate.execute(sql);
+        } catch (DataAccessException e) {
+            log.error("error invalidating hive table " + name, e);
+            throw new DBPersistenceException(e);
+        }
+    }
 
-	@Override
-	public Map<String, Boolean> getStatusDatabase() {
-		return null;
-	}
+    @Override
+    public Map<String, Boolean> getStatusDatabase() {
+        return null;
+    }
 
-	@Override
-	public String createTable4Ontology(String ontology, String schema, Map<String, String> config) {
-		return null;
-	}
+    @Override
+    public String createTable4Ontology(String ontology, String schema, Map<String, String> config) {
+        return null;
+    }
 
-	@Override
-	public List<String> getListOfTables() {
+    @Override
+    public List<String> getListOfTables() {
 
-		List<String> tables = null;
+        List<String> tables = null;
 
-		try {
-			tables = impalaJdbcTemplate.queryForList(CommonQuery.LIST_TABLES, String.class);
-		} catch (DataAccessException e) {
-			log.error("error getting all impala tables ", e);
-			throw new DBPersistenceException(e);
-		}
+        try {
+            tables = impalaJdbcTemplate.queryForList(CommonQuery.LIST_TABLES, String.class);
+        } catch (DataAccessException e) {
+            log.error("error getting all impala tables ", e);
+            throw new DBPersistenceException(e);
+        }
 
-		return tables;
-	}
+        return tables;
+    }
 
-	@Override
-	public List<String> getListOfTables4Ontology(String ontology) {
-		return Collections.emptyList();
-	}
+    @Override
+    public List<String> getListOfTables4Ontology(String ontology) {
+        return Collections.emptyList();
+    }
 
-	@Override
-	public void removeTable4Ontology(String ontology) {
-		try {
-			String sql = String.format(CommonQuery.DROP_TABLE, ontology);
-			impalaJdbcTemplate.execute(sql);
-		} catch (DataAccessException e) {
-			log.error("error drop impala table ", e);
-			throw new DBPersistenceException(e);
-		}
-	}
+    @Override
+    public void removeTable4Ontology(String ontology) {
+        try {
+            String sql = String.format(CommonQuery.DROP_TABLE, ontology);
+            impalaJdbcTemplate.execute(sql);
+        } catch (DataAccessException e) {
+            log.error("error drop impala table ", e);
+            throw new DBPersistenceException(e);
+        }
+    }
 
-	@Override
-	public void createIndex(String ontology, String attribute) {
-		// no_needed
-	}
+    @Override
+    public void createIndex(String ontology, String attribute) {
+        // no_needed
+    }
 
-	@Override
-	public void createIndex(String ontology, String nameIndex, String attribute) {
-		// no_needed
-	}
+    @Override
+    public void createIndex(String ontology, String nameIndex, String attribute) {
+        // no_needed
+    }
 
-	@Override
-	public void createIndex(String sentence) {
-		// no_needed
-	}
+    @Override
+    public void createIndex(String sentence) {
+        // no_needed
+    }
 
-	@Override
-	public void dropIndex(String ontology, String indexName) {
-		// no_needed
-	}
+    @Override
+    public void dropIndex(String ontology, String indexName) {
+        // no_needed
+    }
 
-	@Override
-	public List<String> getListIndexes(String ontology) {
-		return Collections.emptyList();
-	}
+    @Override
+    public List<String> getListIndexes(String ontology) {
+        return Collections.emptyList();
+    }
 
-	@Override
-	public String getIndexes(String ontology) {
-		return null;
-	}
+    @Override
+    public String getIndexes(String ontology) {
+        return null;
+    }
 
-	@Override
-	public void validateIndexes(String ontology, String schema) {
-		// no_needed
-	}
+    @Override
+    public void validateIndexes(String ontology, String schema) {
+        // no_needed
+    }
 
-	@Override
-	public ExportData exportToJson(String ontology, long startDateMillis, String path) {
-		return null;
-	}
+    @Override
+    public ExportData exportToJson(String ontology, long startDateMillis, String path) {
+        return null;
+    }
 
-	@Override
-	public long deleteAfterExport(String ontology, String query) {
-		return 0;
-	}
+    @Override
+    public long deleteAfterExport(String ontology, String query) {
+        return 0;
+    }
 
-	@Override
-	public List<DescribeColumnData> describeTable(String name) {
+    @Override
+    public List<DescribeColumnData> describeTable(String name) {
 
-		List<DescribeColumnData> descriptors = new ArrayList<>();
+        List<DescribeColumnData> descriptors = new ArrayList<>();
 
-		try {
+        try {
 
-			String sql = String.format(CommonQuery.DESCRIBE_TABLE, name);
-			descriptors = impalaJdbcTemplate.query(sql, new ImpalaDescribeColumnRowMapper());
+            String sql = String.format(CommonQuery.DESCRIBE_TABLE, name);
+            descriptors = impalaJdbcTemplate.query(sql, new ImpalaDescribeColumnRowMapper());
 
-		} catch (DataAccessException e) {
-			log.error("error describe impala table " + name, e);
-			throw new DBPersistenceException(e);
-		}
+        } catch (DataAccessException e) {
+            log.error("error describe impala table " + name, e);
+            throw new DBPersistenceException(e);
+        }
 
-		return descriptors;
-	}
+        return descriptors;
+    }
 
-	@Override
-	public Map<String, String> getAdditionalDBConfig(String ontology) {
+    @Override
+    public Map<String, String> getAdditionalDBConfig(String ontology) {
 
-		return null;
-	}
+        return null;
+    }
 
-	public String showCreateTable(String name) {
-		String queryResponse;
-		try {
+    public String showCreateTable(String name) {
+        String queryResponse;
+        try {
 
-			String sql = String.format(CommonQuery.SHOW_CREATE_TABLE, name);
-			queryResponse = impalaJdbcTemplate.queryForObject(sql, String.class);
+            String sql = String.format(CommonQuery.SHOW_CREATE_TABLE, name);
+            queryResponse = impalaJdbcTemplate.queryForObject(sql, String.class);
 
-		} catch (DataAccessException e) {
-			log.error("Error show create table impala table " + name, e);
-			throw new DBPersistenceException(e);
-		}
+        } catch (DataAccessException e) {
+            log.error("Error show create table impala table " + name, e);
+            throw new DBPersistenceException(e);
+        }
 
-		return queryResponse;
-	}
+        return queryResponse;
+    }
 
-	@Override
-	public String updateTable4Ontology(String identification, String jsonSchema, Map<String, String> config) {
+    @Override
+    public String updateTable4Ontology(String identification, String jsonSchema, Map<String, String> config) {
 
-		return null;
-	}
+        return null;
+    }
 
 }

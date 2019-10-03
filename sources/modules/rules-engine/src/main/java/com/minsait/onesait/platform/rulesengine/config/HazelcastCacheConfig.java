@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,54 +34,55 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HazelcastCacheConfig {
 
-	@Autowired
-	private HazelcastInstance hazelcastInstance;
-	@Value("${onesaitplatform.rules-engine.hazelcast.topic_rules:topicRules}")
-	private String topicRulesName;
-	@Value("${onesaitplatform.rules-engine.hazelcast.topic_domains:topicDomains}")
-	private String topicDomainsName;
-	@Value("${onesaitplatform.rules-engine.hazelcast.topic_domains:topicAsyncComm}")
-	private String topicAsyncComm;
+    @Autowired
+    private HazelcastInstance hazelcastInstance;
+    @Value("${onesaitplatform.rules-engine.hazelcast.topic_rules:topicRules}")
+    private String topicRulesName;
+    @Value("${onesaitplatform.rules-engine.hazelcast.topic_domains:topicDomains}")
+    private String topicDomainsName;
+    @Value("${onesaitplatform.rules-engine.hazelcast.topic_domains:topicAsyncComm}")
+    private String topicAsyncComm;
 
-	@Autowired
-	private RulesManagerService rulesManagerService;
+    @Autowired
+    private RulesManagerService rulesManagerService;
 
-	@Bean(name = "topicChangedRules")
-	public ITopic<String> topicChangedRules() {
-		final ITopic<String> topicChangedRules = hazelcastInstance.getTopic(topicRulesName);
-		topicChangedRules.addMessageListener(msg -> HazelcastRuleObject.fromJson(msg.getMessageObject())
-				.ifPresent(hro -> rulesManagerService.manageRule(hro))
+    @Bean(name = "topicChangedRules")
+    public ITopic<String> topicChangedRules() {
+        final ITopic<String> topicChangedRules = hazelcastInstance.getTopic(topicRulesName);
+        topicChangedRules.addMessageListener(msg -> HazelcastRuleObject.fromJson(msg.getMessageObject()).ifPresent(
+                hro -> rulesManagerService.manageRule(hro))
 
-		);
-		return topicChangedRules;
-	}
+        );
+        return topicChangedRules;
+    }
 
-	@Bean(name = "topicChangedDomains")
-	public ITopic<String> topicChangedDomain() {
-		final ITopic<String> topicChangedDomains = hazelcastInstance.getTopic(topicDomainsName);
-		topicChangedDomains.addMessageListener(msg ->
+    @Bean(name = "topicChangedDomains")
+    public ITopic<String> topicChangedDomain() {
+        final ITopic<String> topicChangedDomains = hazelcastInstance.getTopic(topicDomainsName);
+        topicChangedDomains.addMessageListener(msg ->
 
-		HazelcastRuleDomainObject.fromJson(msg.getMessageObject())
-				.ifPresent(hrdo -> rulesManagerService.manageDomain(hrdo))
+                                                       HazelcastRuleDomainObject.fromJson(
+                                                               msg.getMessageObject()).ifPresent(
+                                                               hrdo -> rulesManagerService.manageDomain(hrdo))
 
-		);
-		return topicChangedDomains;
-	}
+        );
+        return topicChangedDomains;
+    }
 
-	@Bean(name = "topicAsyncComm")
-	public ITopic<String> topicAsyncComm() {
-		return hazelcastInstance.getTopic(topicAsyncComm);
+    @Bean(name = "topicAsyncComm")
+    public ITopic<String> topicAsyncComm() {
+        return hazelcastInstance.getTopic(topicAsyncComm);
 
-	}
+    }
 
-	@Bean
-	CacheManager cacheManager() {
-		if (hazelcastInstance != null) {
-			final CacheManager manager = new HazelcastCacheManager(hazelcastInstance);
-			log.info("Configured Local Cache Manager: Name : {} ", manager.toString());
-			return manager;
-		} else {
-			return new NoOpCacheManager();
-		}
-	}
+    @Bean
+    CacheManager cacheManager() {
+        if (hazelcastInstance != null) {
+            final CacheManager manager = new HazelcastCacheManager(hazelcastInstance);
+            log.info("Configured Local Cache Manager: Name : {} ", manager.toString());
+            return manager;
+        } else {
+            return new NoOpCacheManager();
+        }
+    }
 }

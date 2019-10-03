@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,44 +26,44 @@ import com.minsait.onesait.platform.config.services.app.dto.Realm;
 
 public interface AppService {
 
-	public List<App> getAllApps();
-	
-	public List<App> getAppsByUser(String sessionUserId, String identification);
+    public List<App> getAllApps();
 
-	public List<AppRole> getAllRoles();
+    public List<App> getAppsByUser(String sessionUserId, String identification);
 
-	public void createApp(App app);
+    public List<AppRole> getAllRoles();
 
-	public App getByIdentification(String identification);
+    public void createApp(App app);
 
-	public void updateApp(AppCreateDTO appDTO);
+    public App getByIdentification(String identification);
 
-	public void deleteApp(String id);
+    public void updateApp(AppCreateDTO appDTO);
 
-	public Long createUserAccess(String appId, String userId, String roleId);
+    public void deleteApp(String id);
 
-	public Long createUserAccess(String appId, String userId, Long roleId);
+    public Long createUserAccess(String appId, String userId, String roleId);
 
-	public void deleteUserAccess(Long appUserId);
+    public Long createUserAccess(String appId, String userId, Long roleId);
 
-	public Set<AppUser> findUsersByRole(AppRole role);
+    public void deleteUserAccess(Long appUserId);
 
-	public Map<String, String> createAssociation(String fatherRoleId, String childRoleId);
+    public Set<AppUser> findUsersByRole(AppRole role);
 
-	public void createAssociation(String fatherRoleName, String childRoleName, String fatherAppId, String childAppId);
+    public Map<String, String> createAssociation(String fatherRoleId, String childRoleId);
 
-	public void deleteAssociation(String fatherRoleName, String childRoleName, String fatherAppId, String childAppId);
+    public void createAssociation(String fatherRoleName, String childRoleName, String fatherAppId, String childAppId);
 
-	public AppRole getByRoleNameAndApp(String roleName, App app);
+    public void deleteAssociation(String fatherRoleName, String childRoleName, String fatherAppId, String childAppId);
 
-	public void updateApp(App app);
+    public AppRole getByRoleNameAndApp(String roleName, App app);
 
-	public void deleteRole(AppRole role);
+    public void updateApp(App app);
 
-	public AppRole findRole(Long roleId);
+    public void deleteRole(AppRole role);
+
+    public AppRole findRole(Long roleId);
 
     public Realm getRealmByAppIdentification(String realmId);
-    
+
     public boolean isUserInApp(String userId, String realmId);
 
 }

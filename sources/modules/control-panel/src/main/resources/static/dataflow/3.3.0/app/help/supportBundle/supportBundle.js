@@ -21,87 +21,87 @@ angular
     .module('dataCollectorApp')
     .controller('SupportBundleModalInstanceController', function ($scope, $rootScope, $modalInstance, $window, api, configuration) {
 
-  // True if we're waiting on list of generators from SDC
-  $scope.showLoading = true;
-  // True if user pressed "Upload" button and the bundle is still "uploading"
-  $scope.uploading = false;
-  // Messaging to show on the UI
-  $scope.message = null;
-  // Validate that bundle upload is allowed
-  $scope.isSupportBundleUplodEnabled = configuration.isSupportBundleUplodEnabled();
+        // True if we're waiting on list of generators from SDC
+        $scope.showLoading = true;
+        // True if user pressed "Upload" button and the bundle is still "uploading"
+        $scope.uploading = false;
+        // Messaging to show on the UI
+        $scope.message = null;
+        // Validate that bundle upload is allowed
+        $scope.isSupportBundleUplodEnabled = configuration.isSupportBundleUplodEnabled();
 
-  api.admin.getSdcId().then(function(res) {
-    $scope.sdc_id = res.data.id;
-  }, function(res) {
-    $scope.common.errors = [res.data];
-  });
+        api.admin.getSdcId().then(function (res) {
+            $scope.sdc_id = res.data.id;
+        }, function (res) {
+            $scope.common.errors = [res.data];
+        });
 
-  api.system.getSupportBundleGenerators().then(function(res) {
-    $scope.showLoading = false;
-    $scope.generators = _.map(res.data, function(generator) {
-      generator.checked = generator.enabledByDefault;
-      return generator;
+        api.system.getSupportBundleGenerators().then(function (res) {
+            $scope.showLoading = false;
+            $scope.generators = _.map(res.data, function (generator) {
+                generator.checked = generator.enabledByDefault;
+                return generator;
+            });
+        }, function (res) {
+            $scope.showLoading = false;
+            $scope.common.errors = [res.data];
+        });
+
+        angular.extend($scope, {
+            common: {
+                errors: []
+            },
+
+            hasAnyGeneratorSelected: function () {
+                return _.any($scope.generators, function (generator) {
+                    return generator.checked;
+                });
+            },
+
+            getSelectedGenerators: function () {
+                var selectedGenerators = _.filter($scope.generators, function (generator) {
+                    return generator.checked;
+                });
+                var fullyQualifiedClassNames = _.pluck(selectedGenerators, 'klass');
+                var simpleClassNames = _.map(fullyQualifiedClassNames, function (className) {
+                    return _.last(className.split('.'));
+                });
+                return simpleClassNames;
+            },
+
+            toggleGenerator: function ($event, generator) {
+                if ($($event.target).is(':not(:checkbox)')) {
+                    generator.checked = !generator.checked;
+                }
+            },
+
+            downloadBundle: function () {
+                if (!this.hasAnyGeneratorSelected()) {
+                    return '';
+                }
+
+                $window.location.href = api.system.getGenerateSupportBundleUrl(this.getSelectedGenerators());
+                $scope.message = {id: 'sdcSupportBundle.downloadingMessage', type: 'success'};
+            },
+
+            uploadBundle: function () {
+                if (!this.hasAnyGeneratorSelected()) {
+                    return;
+                }
+
+                $scope.uploading = true;
+                $scope.message = null;
+                api.system.uploadSupportBundle(this.getSelectedGenerators()).then(function (res) {
+                    $scope.uploading = false;
+                    $scope.message = {id: 'sdcSupportBundle.uploadedMessage', type: 'success'};
+                }, function (res) {
+                    $scope.uploading = false;
+                    $scope.common.errors = [res.data];
+                });
+            },
+
+            done: function () {
+                $modalInstance.dismiss('cancel');
+            },
+        });
     });
-  }, function(res) {
-    $scope.showLoading = false;
-    $scope.common.errors = [res.data];
-  });
-
-  angular.extend($scope, {
-    common: {
-      errors: []
-    },
-
-    hasAnyGeneratorSelected: function() {
-      return _.any($scope.generators, function(generator) {
-        return generator.checked;
-      });
-    },
-
-    getSelectedGenerators: function() {
-      var selectedGenerators = _.filter($scope.generators, function(generator) {
-        return generator.checked;
-      });
-      var fullyQualifiedClassNames = _.pluck(selectedGenerators, 'klass');
-      var simpleClassNames = _.map(fullyQualifiedClassNames, function(className) {
-        return _.last(className.split('.'));
-      });
-      return simpleClassNames;
-    },
-
-    toggleGenerator: function($event, generator) {
-      if ($($event.target).is(':not(:checkbox)')) {
-        generator.checked = !generator.checked;
-      }
-    },
-
-    downloadBundle: function() {
-      if (!this.hasAnyGeneratorSelected()) {
-        return '';
-      }
-
-      $window.location.href = api.system.getGenerateSupportBundleUrl(this.getSelectedGenerators());
-      $scope.message = {id: 'sdcSupportBundle.downloadingMessage', type: 'success'};
-    },
-
-    uploadBundle: function() {
-      if (!this.hasAnyGeneratorSelected()) {
-        return;
-      }
-
-      $scope.uploading = true;
-      $scope.message = null;
-      api.system.uploadSupportBundle(this.getSelectedGenerators()).then(function(res) {
-        $scope.uploading = false;
-        $scope.message = {id: 'sdcSupportBundle.uploadedMessage', type: 'success'};
-      }, function(res) {
-        $scope.uploading = false;
-        $scope.common.errors = [res.data];
-      });
-    },
-
-    done: function() {
-      $modalInstance.dismiss('cancel');
-    },
-  });
-});

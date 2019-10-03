@@ -18,25 +18,25 @@
  */
 
 angular
-  .module('commonUI.jvmMetrics')
-  .controller('JVMMetricsSettingsModalInstanceController', ["$scope", "$modalInstance", "availableCharts", "selectedCharts", function ($scope, $modalInstance, availableCharts, selectedCharts) {
-    angular.extend($scope, {
-      showLoading: false,
-      common: {
-        errors: []
-      },
-      availableCharts: availableCharts,
-      selectedCharts: {
-        selected : selectedCharts
-      },
+    .module('commonUI.jvmMetrics')
+    .controller('JVMMetricsSettingsModalInstanceController', ["$scope", "$modalInstance", "availableCharts", "selectedCharts", function ($scope, $modalInstance, availableCharts, selectedCharts) {
+        angular.extend($scope, {
+            showLoading: false,
+            common: {
+                errors: []
+            },
+            availableCharts: availableCharts,
+            selectedCharts: {
+                selected: selectedCharts
+            },
 
-      save : function () {
-        $modalInstance.close($scope.selectedCharts.selected);
-      },
-      cancel : function () {
-        $modalInstance.dismiss('cancel');
-      }
-    });
+            save: function () {
+                $modalInstance.close($scope.selectedCharts.selected);
+            },
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
+            }
+        });
 
-    $scope.$broadcast('show-errors-check-validity');
-  }]);
+        $scope.$broadcast('show-errors-check-validity');
+    }]);

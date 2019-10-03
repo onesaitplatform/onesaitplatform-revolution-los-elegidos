@@ -18,4 +18,4 @@
  */
 
 angular
-  .module('commonUI.commonDirectives', []);
+    .module('commonUI.commonDirectives', []);

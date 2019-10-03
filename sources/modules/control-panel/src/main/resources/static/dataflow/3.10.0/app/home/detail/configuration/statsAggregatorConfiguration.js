@@ -16,22 +16,22 @@
 
 // Controller for StatsAggregator Configuration.
 angular
-  .module('dataCollectorApp.home')
-  .controller('StatsAggregatorConfigurationController', ["$scope", function ($scope) {
-    var initialize = function() {
-      $scope.detailPaneConfig = $scope.statsAggregatorStageConfig;
-      $scope.detailPaneServices = [];
-      angular.forEach($scope.detailPaneConfig.services, function(serviceConfig) {
-        $scope.detailPaneServices.push({
-          definition: pipelineService.getServiceDefinition(serviceConfig.service),
-          config: serviceConfig
+    .module('dataCollectorApp.home')
+    .controller('StatsAggregatorConfigurationController', ["$scope", function ($scope) {
+        var initialize = function () {
+            $scope.detailPaneConfig = $scope.statsAggregatorStageConfig;
+            $scope.detailPaneServices = [];
+            angular.forEach($scope.detailPaneConfig.services, function (serviceConfig) {
+                $scope.detailPaneServices.push({
+                    definition: pipelineService.getServiceDefinition(serviceConfig.service),
+                    config: serviceConfig
+                });
+            });
+        };
+
+        $scope.$watch('statsAggregatorStageConfig', function () {
+            initialize();
         });
-      });
-    };
 
-    $scope.$watch('statsAggregatorStageConfig', function() {
-      initialize();
-    });
-
-    initialize();
-  }]);
+        initialize();
+    }]);

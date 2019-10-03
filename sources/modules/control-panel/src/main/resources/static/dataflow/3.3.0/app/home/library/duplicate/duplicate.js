@@ -18,79 +18,79 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('DuplicateModalInstanceController', function ($scope, $modalInstance, pipelineInfo, api, $q) {
-    angular.extend($scope, {
-      common: {
-        errors: []
-      },
-      newConfig : {
-        title: pipelineInfo.title + 'copy',
-        description: pipelineInfo.description,
-        numberOfCopies: 1
-      },
-      operationInProgress: false,
-      save : function () {
-        if ($scope.newConfig.numberOfCopies === 1) {
-          $scope.operationInProgress = true;
-          $q.all([
-            api.pipelineAgent.getPipelineConfig(pipelineInfo.pipelineId),
-            api.pipelineAgent.getPipelineRules(pipelineInfo.pipelineId)
-          ]).then(function(results) {
-            var pipelineObject = results[0].data;
-            var pipelineRulesObject = results[1].data;
-            return api.pipelineAgent.duplicatePipelineConfig(
-              $scope.newConfig.title,
-              $scope.newConfig.description,
-              pipelineObject,
-              pipelineRulesObject
-            );
-          }).then(
-            function(configObject) {
-              $modalInstance.close(configObject);
+    .module('dataCollectorApp.home')
+    .controller('DuplicateModalInstanceController', function ($scope, $modalInstance, pipelineInfo, api, $q) {
+        angular.extend($scope, {
+            common: {
+                errors: []
             },
-            function(res) {
-              $scope.operationInProgress = false;
-              $scope.common.errors = [res.data];
-            }
-          );
-        } else {
-          $scope.operationInProgress = true;
-          $q.all([
-            api.pipelineAgent.getPipelineConfig(pipelineInfo.pipelineId),
-            api.pipelineAgent.getPipelineRules(pipelineInfo.pipelineId)
-          ]).then(function(results) {
-            var pipelineObject = results[0].data;
-            var pipelineRulesObject = results[1].data;
-            var deferList = [];
-            for (var i = 0; i < $scope.newConfig.numberOfCopies; i++) {
-              deferList.push(
-                api.pipelineAgent.duplicatePipelineConfig(
-                  $scope.newConfig.title + (i + 1),
-                  $scope.newConfig.description,
-                  pipelineObject,
-                  pipelineRulesObject
-                )
-              );
-            }
-            $q.all(deferList)
-              .then(
-                function(configObjects) {
-                  $modalInstance.close(configObjects);
-                },
-                function(res) {
-                  $scope.operationInProgress = false;
-                  $scope.common.errors = [res.data];
+            newConfig: {
+                title: pipelineInfo.title + 'copy',
+                description: pipelineInfo.description,
+                numberOfCopies: 1
+            },
+            operationInProgress: false,
+            save: function () {
+                if ($scope.newConfig.numberOfCopies === 1) {
+                    $scope.operationInProgress = true;
+                    $q.all([
+                        api.pipelineAgent.getPipelineConfig(pipelineInfo.pipelineId),
+                        api.pipelineAgent.getPipelineRules(pipelineInfo.pipelineId)
+                    ]).then(function (results) {
+                        var pipelineObject = results[0].data;
+                        var pipelineRulesObject = results[1].data;
+                        return api.pipelineAgent.duplicatePipelineConfig(
+                            $scope.newConfig.title,
+                            $scope.newConfig.description,
+                            pipelineObject,
+                            pipelineRulesObject
+                        );
+                    }).then(
+                        function (configObject) {
+                            $modalInstance.close(configObject);
+                        },
+                        function (res) {
+                            $scope.operationInProgress = false;
+                            $scope.common.errors = [res.data];
+                        }
+                    );
+                } else {
+                    $scope.operationInProgress = true;
+                    $q.all([
+                        api.pipelineAgent.getPipelineConfig(pipelineInfo.pipelineId),
+                        api.pipelineAgent.getPipelineRules(pipelineInfo.pipelineId)
+                    ]).then(function (results) {
+                        var pipelineObject = results[0].data;
+                        var pipelineRulesObject = results[1].data;
+                        var deferList = [];
+                        for (var i = 0; i < $scope.newConfig.numberOfCopies; i++) {
+                            deferList.push(
+                                api.pipelineAgent.duplicatePipelineConfig(
+                                    $scope.newConfig.title + (i + 1),
+                                    $scope.newConfig.description,
+                                    pipelineObject,
+                                    pipelineRulesObject
+                                )
+                            );
+                        }
+                        $q.all(deferList)
+                            .then(
+                                function (configObjects) {
+                                    $modalInstance.close(configObjects);
+                                },
+                                function (res) {
+                                    $scope.operationInProgress = false;
+                                    $scope.common.errors = [res.data];
+                                }
+                            );
+                    }, function (res) {
+                        $scope.operationInProgress = false;
+                        $scope.common.errors = [res.data];
+                    });
                 }
-              );
-          },function(res) {
-            $scope.operationInProgress = false;
-            $scope.common.errors = [res.data];
-          });
-        }
-      },
-      cancel : function () {
-        $modalInstance.dismiss('cancel');
-      }
+            },
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
+            }
+        });
     });
-  });

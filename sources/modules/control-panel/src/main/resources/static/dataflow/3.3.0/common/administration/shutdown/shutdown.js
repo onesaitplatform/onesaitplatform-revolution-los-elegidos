@@ -18,28 +18,28 @@
  */
 
 angular
-  .module('dataCollectorApp')
-  .controller('ShutdownModalInstanceController', function ($scope, $modalInstance, api) {
-    angular.extend($scope, {
-      issues: [],
-      isShuttingDown: false,
-      isShutdownSucceed: false,
+    .module('dataCollectorApp')
+    .controller('ShutdownModalInstanceController', function ($scope, $modalInstance, api) {
+        angular.extend($scope, {
+            issues: [],
+            isShuttingDown: false,
+            isShutdownSucceed: false,
 
-      shutdown: function() {
-        $scope.isShuttingDown = true;
-        api.admin.shutdownCollector()
-          .then(function() {
-            $scope.isShutdownSucceed = true;
-            $scope.isShuttingDown = false;
-          })
-          .catch(function(res) {
-            $scope.issues = [res.data];
-            $scope.isShuttingDown = false;
-          });
-      },
+            shutdown: function () {
+                $scope.isShuttingDown = true;
+                api.admin.shutdownCollector()
+                    .then(function () {
+                        $scope.isShutdownSucceed = true;
+                        $scope.isShuttingDown = false;
+                    })
+                    .catch(function (res) {
+                        $scope.issues = [res.data];
+                        $scope.isShuttingDown = false;
+                    });
+            },
 
-      cancel: function() {
-        $modalInstance.dismiss('cancel');
-      }
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
+            }
+        });
     });
-  });

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,70 +40,70 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/audit")
 public class AuditController {
 
-	@Autowired
-	private QueryToolService queryToolService;
-	@Autowired
-	private OntologyService ontologyServie;
-	@Autowired
-	private AppWebUtils utils;
-	
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private QueryToolService queryToolService;
+    @Autowired
+    private OntologyService ontologyServie;
+    @Autowired
+    private AppWebUtils utils;
 
-	@GetMapping("show")
-	public String show(Model model) {
+    @Autowired
+    private UserService userService;
 
-		final List<OperationType> operations = Arrays.asList(OperationType.values());
-		final List<User> users = userService.getAllActiveUsers();
-		model.addAttribute("operations", operations);
-		model.addAttribute("userRole", utils.getRole());
-		model.addAttribute("users", users);
-		return "audit/show";
-	}
+    @GetMapping("show")
+    public String show(Model model) {
 
-	@PostMapping("executeQuery")
-	public String query(Model model, @RequestParam String offset, @RequestParam String operation, String user) {
+        final List<OperationType> operations = Arrays.asList(OperationType.values());
+        final List<User> users = userService.getAllActiveUsers();
+        model.addAttribute("operations", operations);
+        model.addAttribute("userRole", utils.getRole());
+        model.addAttribute("users", users);
+        return "audit/show";
+    }
 
-		String result = "main";
-		String userQuery;
-		if (utils.getRole().equals("ROLE_ADMINISTRATOR")) {
-			userQuery = user;
-		} else {
-			userQuery = utils.getUserId();
-		}
+    @PostMapping("executeQuery")
+    public String query(Model model, @RequestParam String offset, @RequestParam String operation, String user) {
 
-		try {
+        String result = "main";
+        String userQuery;
+        if (utils.getRole().equals("ROLE_ADMINISTRATOR")) {
+            userQuery = user;
+        } else {
+            userQuery = utils.getUserId();
+        }
 
-			try {
-				final String queryResult = getResultForQuery(userQuery, operation, offset);
-				model.addAttribute("queryResult", queryResult);
-			} catch (final Exception e) {
-				log.error("Error getting audit of user {}", utils.getUserId());
-			}
+        try {
 
-			result = "audit/show :: query";
+            try {
+                final String queryResult = getResultForQuery(userQuery, operation, offset);
+                model.addAttribute("queryResult", queryResult);
+            } catch (final Exception e) {
+                log.error("Error getting audit of user {}", utils.getUserId());
+            }
 
-		} catch (final Exception e) {
-			model.addAttribute("queryResult",
-					utils.getMessage("querytool.query.native.error", "Error malformed query"));
-		}
-		return result;
-	}
+            result = "audit/show :: query";
 
-	private String getResultForQuery(String user, String operation, String offset) {
+        } catch (final Exception e) {
+            model.addAttribute("queryResult",
+                               utils.getMessage("querytool.query.native.error", "Error malformed query"));
+        }
+        return result;
+    }
 
-		final String collection = ServiceUtils.getAuditCollectionName(user);
+    private String getResultForQuery(String user, String operation, String offset) {
 
-		String query = "select message, user, formatedTimeStamp, module, ontology, operationType, data from "
-				+ collection;
+        final String collection = ServiceUtils.getAuditCollectionName(user);
 
-		if (!operation.equalsIgnoreCase("all")) {
-			query += " where operationType = \"" + operation + "\"";
-		}
+        String query =
+                "select message, user, formatedTimeStamp, module, ontology, operationType, data from " + collection;
 
-		query += " order by timeStamp desc limit " + Integer.parseInt(offset);
+        if (!operation.equalsIgnoreCase("all")) {
+            query += " where operationType = \"" + operation + "\"";
+        }
 
-		return queryToolService.querySQLAsJson(utils.getUserId(), collection, query, 0);
+        query += " order by timeStamp desc limit " + Integer.parseInt(offset);
 
-	}
+        return queryToolService.querySQLAsJson(utils.getUserId(), collection, query, 0);
+
+    }
 }

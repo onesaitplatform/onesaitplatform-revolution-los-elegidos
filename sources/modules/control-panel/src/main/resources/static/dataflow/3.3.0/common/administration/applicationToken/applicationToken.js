@@ -18,47 +18,47 @@
  */
 
 angular
-  .module('dataCollectorApp')
-  .controller('ApplicationTokenModalInstanceController', function ($scope, $modalInstance, api, authService) {
-    angular.extend($scope, {
-      issues: [],
-      isGeneratingToken: false,
-      isGeneratingTokenSucceed: false,
-      isRemoteUserOrgAdmin: authService.isRemoteUserOrgAdmin(),
-      isRestartInProgress: false,
+    .module('dataCollectorApp')
+    .controller('ApplicationTokenModalInstanceController', function ($scope, $modalInstance, api, authService) {
+        angular.extend($scope, {
+            issues: [],
+            isGeneratingToken: false,
+            isGeneratingTokenSucceed: false,
+            isRemoteUserOrgAdmin: authService.isRemoteUserOrgAdmin(),
+            isRestartInProgress: false,
 
-      restart: function() {
-        $scope.isRestartInProgress = true;
-        api.admin.restartDataCollector();
-      },
+            restart: function () {
+                $scope.isRestartInProgress = true;
+                api.admin.restartDataCollector();
+            },
 
-      generateToken: function() {
-        $scope.isGeneratingToken = true;
-        api.remote.generateApplicationToken(
-          authService.getRemoteBaseUrl(),
-          authService.getSSOToken(),
-          authService.getRemoteOrgId()
-        ).then(function(response) {
-          var res = response.data;
-          var authToken = res[0].fullAuthToken;
-          api.admin.updateApplicationToken(authToken)
-            .then(function() {
-              $scope.isGeneratingTokenSucceed = true;
-              $scope.isGeneratingToken = false;
-            })
-            .catch(function(res) {
-              $scope.issues = [res.data];
-              $scope.isGeneratingToken = false;
-            });
-        }).catch(function(res) {
-          $scope.issues = [res.data];
-          $scope.isGeneratingToken = false;
+            generateToken: function () {
+                $scope.isGeneratingToken = true;
+                api.remote.generateApplicationToken(
+                    authService.getRemoteBaseUrl(),
+                    authService.getSSOToken(),
+                    authService.getRemoteOrgId()
+                ).then(function (response) {
+                    var res = response.data;
+                    var authToken = res[0].fullAuthToken;
+                    api.admin.updateApplicationToken(authToken)
+                        .then(function () {
+                            $scope.isGeneratingTokenSucceed = true;
+                            $scope.isGeneratingToken = false;
+                        })
+                        .catch(function (res) {
+                            $scope.issues = [res.data];
+                            $scope.isGeneratingToken = false;
+                        });
+                }).catch(function (res) {
+                    $scope.issues = [res.data];
+                    $scope.isGeneratingToken = false;
+                });
+
+            },
+
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
+            }
         });
-
-      },
-
-      cancel: function() {
-        $modalInstance.dismiss('cancel');
-      }
     });
-  });

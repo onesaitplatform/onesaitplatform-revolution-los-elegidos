@@ -18,18 +18,18 @@
  */
 
 angular
-  .module('dataCollectorApp')
-  .controller('SDCDirectoriesModalInstanceController', ["$scope", "$modalInstance", "api", function ($scope, $modalInstance, api) {
-    angular.extend($scope, {
-      sdcDirectories: [],
-      close: function() {
-        $modalInstance.dismiss('cancel');
-      }
-    });
+    .module('dataCollectorApp')
+    .controller('SDCDirectoriesModalInstanceController', ["$scope", "$modalInstance", "api", function ($scope, $modalInstance, api) {
+        angular.extend($scope, {
+            sdcDirectories: [],
+            close: function () {
+                $modalInstance.dismiss('cancel');
+            }
+        });
 
-    api.admin.getSDCDirectories().then(function(res) {
-      $scope.sdcDirectories = res.data;
-    }, function() {
+        api.admin.getSDCDirectories().then(function (res) {
+            $scope.sdcDirectories = res.data;
+        }, function () {
 
-    });
-  }]);
+        });
+    }]);

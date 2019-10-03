@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,27 +26,27 @@ import com.minsait.onesait.platform.persistence.exceptions.DBPersistenceExceptio
 
 public class ClientHttpErrorHandler implements ResponseErrorHandler {
 
-	private final ResponseErrorHandler errorHandler = new DefaultResponseErrorHandler();
+    private final ResponseErrorHandler errorHandler = new DefaultResponseErrorHandler();
 
-	@Override
-	public void handleError(ClientHttpResponse response) throws IOException {
+    @Override
+    public void handleError(ClientHttpResponse response) throws IOException {
 
-		try {
+        try {
 
-			if (response.getBody() != null) {
-				final String json = new String(ByteStreams.toByteArray(response.getBody()), Charset.forName("UTF-8"));
-				throw new DBPersistenceException(json);
-			} else
-				errorHandler.handleError(response);
+            if (response.getBody() != null) {
+                final String json = new String(ByteStreams.toByteArray(response.getBody()), Charset.forName("UTF-8"));
+                throw new DBPersistenceException(json);
+            } else
+                errorHandler.handleError(response);
 
-		} finally {
-			response.close();
-		}
-	}
+        } finally {
+            response.close();
+        }
+    }
 
-	@Override
-	public boolean hasError(ClientHttpResponse response) throws IOException {
-		return errorHandler.hasError(response);
-	}
+    @Override
+    public boolean hasError(ClientHttpResponse response) throws IOException {
+        return errorHandler.hasError(response);
+    }
 
 }

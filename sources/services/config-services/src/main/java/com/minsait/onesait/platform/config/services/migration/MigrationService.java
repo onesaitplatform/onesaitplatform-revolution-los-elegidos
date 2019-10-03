@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,31 +29,43 @@ import de.galan.verjson.step.ProcessStepException;
 
 public interface MigrationService {
 
-	public ExportResult exportData(MigrationConfiguration config) throws IllegalAccessException;
+    public ExportResult exportData(MigrationConfiguration config) throws IllegalAccessException;
 
-	public String getJsonFromData(DataFromDB data) throws JsonProcessingException ;
+    public String getJsonFromData(DataFromDB data) throws JsonProcessingException;
 
-	public DataFromDB getDataFromJson(String json) throws VersionNotSupportedException, NamespaceMismatchException, ProcessStepException, IOReadException;
+    public DataFromDB getDataFromJson(
+            String json) throws VersionNotSupportedException, NamespaceMismatchException, ProcessStepException,
+            IOReadException;
 
-	public LoadEntityResult loadData(MigrationConfiguration config, DataFromDB readData) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException;
+    public LoadEntityResult loadData(MigrationConfiguration config,
+            DataFromDB readData) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException,
+            InstantiationException;
 
-	public void persistData(List<Object> entities, MigrationErrors errors) throws NoSuchFieldException, IllegalAccessException;
-	
-	public MigrationConfiguration configImportAll(DataFromDB data);
-	
-	public ExportResult exportAll() throws IllegalAccessException;
-	public MigrationErrors importAll(DataFromDB data) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException;
-	public MigrationErrors importData(MigrationConfiguration config, DataFromDB data)
-			throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InstantiationException;
-	
-	MigrationError persistEntity(Object entity, Serializable id);
-	
-	public SchemaFromDB exportSchema();
-	public String getJsonFromSchema(SchemaFromDB schema) throws JsonProcessingException;
+    public void persistData(List<Object> entities,
+            MigrationErrors errors) throws NoSuchFieldException, IllegalAccessException;
 
-	public String compareSchemas(String currentSchemaJson, String otherSchemaJson) throws IOException;
-	
-	public void storeMigrationData(User user, String name, String description, String fileName, byte[] file);
-	public MigrationData findMigrationData(User user); 
+    public MigrationConfiguration configImportAll(DataFromDB data);
+
+    public ExportResult exportAll() throws IllegalAccessException;
+
+    public MigrationErrors importAll(
+            DataFromDB data) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException,
+            InstantiationException;
+
+    public MigrationErrors importData(MigrationConfiguration config,
+            DataFromDB data) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException,
+            InstantiationException;
+
+    MigrationError persistEntity(Object entity, Serializable id);
+
+    public SchemaFromDB exportSchema();
+
+    public String getJsonFromSchema(SchemaFromDB schema) throws JsonProcessingException;
+
+    public String compareSchemas(String currentSchemaJson, String otherSchemaJson) throws IOException;
+
+    public void storeMigrationData(User user, String name, String description, String fileName, byte[] file);
+
+    public MigrationData findMigrationData(User user);
 
 }

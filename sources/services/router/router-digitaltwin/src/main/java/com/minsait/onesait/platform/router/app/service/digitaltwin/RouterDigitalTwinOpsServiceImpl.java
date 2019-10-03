@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,250 +46,252 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RouterDigitalTwinOpsServiceImpl implements RouterDigitalTwinService {
 
-	static final String EVENTS_COLLECTION = "TwinEvents";
-	static final String LOG_COLLECTION = "TwinLogs";
-	static final String PROPERTIES_COLLECTION = "TwinProperties";
-	static final String ACTIONS_COLLECTION = "TwinActions";
+    static final String EVENTS_COLLECTION = "TwinEvents";
+    static final String LOG_COLLECTION = "TwinLogs";
+    static final String PROPERTIES_COLLECTION = "TwinProperties";
+    static final String ACTIONS_COLLECTION = "TwinActions";
 
-	private static final String ROUTER_DT_SERVICE_OPERATION = "Router Digital Twin Service Operation ";
-	private static final String SDATE = "$date";
-	private static final String DEVICE_ID = "deviceId";
-	private static final String TIMESTAMP_STR = "timestamp";
+    private static final String ROUTER_DT_SERVICE_OPERATION = "Router Digital Twin Service Operation ";
+    private static final String SDATE = "$date";
+    private static final String DEVICE_ID = "deviceId";
+    private static final String TIMESTAMP_STR = "timestamp";
 
-	DateTimeFormatter timestampFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    DateTimeFormatter timestampFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-	@Autowired
-	private MongoBasicOpsDBRepository mongoRepo;
+    @Autowired
+    private MongoBasicOpsDBRepository mongoRepo;
 
-	@Autowired
-	private PropertyDigitalTwinTypeRepository propertyDigitalTwinTypeRepo;
+    @Autowired
+    private PropertyDigitalTwinTypeRepository propertyDigitalTwinTypeRepo;
 
-	@Autowired
-	private DigitalTwinTypeRepository digitalTwinTypeRepository;
+    @Autowired
+    private DigitalTwinTypeRepository digitalTwinTypeRepository;
 
-	@Autowired
-	@Qualifier("routerServiceImpl")
-	private RouterService routerService;
+    @Autowired
+    @Qualifier("routerServiceImpl")
+    private RouterService routerService;
 
-	@Override
-	public OperationResultModel insertEvent(DigitalTwinCompositeModel compositeModel) {
-		log.info(ROUTER_DT_SERVICE_OPERATION + compositeModel.getDigitalTwinModel().toString());
-		OperationResultModel result = new OperationResultModel();
-		DigitalTwinModel model = compositeModel.getDigitalTwinModel();
+    @Override
+    public OperationResultModel insertEvent(DigitalTwinCompositeModel compositeModel) {
+        log.info(ROUTER_DT_SERVICE_OPERATION + compositeModel.getDigitalTwinModel().toString());
+        OperationResultModel result = new OperationResultModel();
+        DigitalTwinModel model = compositeModel.getDigitalTwinModel();
 
-		final String event = model.getEvent().name();
+        final String event = model.getEvent().name();
 
-		JSONObject instance = new JSONObject();
+        JSONObject instance = new JSONObject();
 
-		JSONObject timestamp = new JSONObject();
-		timestamp.put(SDATE, LocalDateTime.now().format(timestampFormatter));
+        JSONObject timestamp = new JSONObject();
+        timestamp.put(SDATE, LocalDateTime.now().format(timestampFormatter));
 
-		instance.put(DEVICE_ID, model.getDeviceId());
-		instance.put("type", model.getType());
-		instance.put(TIMESTAMP_STR, timestamp);
-		instance.put("event", event);
+        instance.put(DEVICE_ID, model.getDeviceId());
+        instance.put("type", model.getType());
+        instance.put(TIMESTAMP_STR, timestamp);
+        instance.put("event", event);
 
-		if (model.getEventName() != null) {
-			instance.put("eventName", model.getEventName());
-		}
+        if (model.getEventName() != null) {
+            instance.put("eventName", model.getEventName());
+        }
 
-		Optional<JSONObject> optionalContent = buildEventContent(model);
-		if (optionalContent.isPresent()) {
-			instance.put("content", optionalContent.get());
-		}
+        Optional<JSONObject> optionalContent = buildEventContent(model);
+        if (optionalContent.isPresent()) {
+            instance.put("content", optionalContent.get());
+        }
 
-		String output = "";
+        String output = "";
 
-		result.setMessage("OK");
-		result.setStatus(true);
+        result.setMessage("OK");
+        result.setStatus(true);
 
-		try {
+        try {
 
-			output = mongoRepo.insert(EVENTS_COLLECTION, null, instance.toString());
+            output = mongoRepo.insert(EVENTS_COLLECTION, null, instance.toString());
 
-		} catch (final Exception e) {
-			result.setResult(output);
-			result.setStatus(false);
-			result.setMessage(e.getMessage());
-		}
+        } catch (final Exception e) {
+            result.setResult(output);
+            result.setStatus(false);
+            result.setMessage(e.getMessage());
+        }
 
-		result.setResult(output);
-		result.setOperation(event);
-		return result;
-	}
+        result.setResult(output);
+        result.setOperation(event);
+        return result;
+    }
 
-	@Override
-	public OperationResultModel insertLog(DigitalTwinCompositeModel compositeModel) {
-		log.info(ROUTER_DT_SERVICE_OPERATION + compositeModel.getDigitalTwinModel().toString());
-		OperationResultModel result = new OperationResultModel();
-		DigitalTwinModel model = compositeModel.getDigitalTwinModel();
+    @Override
+    public OperationResultModel insertLog(DigitalTwinCompositeModel compositeModel) {
+        log.info(ROUTER_DT_SERVICE_OPERATION + compositeModel.getDigitalTwinModel().toString());
+        OperationResultModel result = new OperationResultModel();
+        DigitalTwinModel model = compositeModel.getDigitalTwinModel();
 
-		String event = model.getEvent().name();
+        String event = model.getEvent().name();
 
-		JSONObject instance = new JSONObject();
+        JSONObject instance = new JSONObject();
 
-		JSONObject timestamp = new JSONObject();
-		timestamp.put(SDATE, LocalDateTime.now().format(timestampFormatter));
+        JSONObject timestamp = new JSONObject();
+        timestamp.put(SDATE, LocalDateTime.now().format(timestampFormatter));
 
-		instance.put("trace", model.getLog());
-		instance.put(DEVICE_ID, model.getDeviceId());
-		instance.put("type", model.getType());
-		instance.put(TIMESTAMP_STR, timestamp);
+        instance.put("trace", model.getLog());
+        instance.put(DEVICE_ID, model.getDeviceId());
+        instance.put("type", model.getType());
+        instance.put(TIMESTAMP_STR, timestamp);
 
-		String output = "";
+        String output = "";
 
-		result.setMessage("OK");
-		result.setStatus(true);
+        result.setMessage("OK");
+        result.setStatus(true);
 
-		try {
+        try {
 
-			output = mongoRepo.insert(LOG_COLLECTION, null, instance.toString());
+            output = mongoRepo.insert(LOG_COLLECTION, null, instance.toString());
 
-		} catch (final Exception e) {
-			result.setResult(output);
-			result.setStatus(false);
-			result.setMessage(e.getMessage());
-		}
+        } catch (final Exception e) {
+            result.setResult(output);
+            result.setStatus(false);
+            result.setMessage(e.getMessage());
+        }
 
-		result.setResult(output);
-		result.setOperation(event);
-		return result;
-	}
+        result.setResult(output);
+        result.setOperation(event);
+        return result;
+    }
 
-	@Override
-	public OperationResultModel updateShadow(DigitalTwinCompositeModel compositeModel) {
-		String output = "";
-		log.info(ROUTER_DT_SERVICE_OPERATION + compositeModel.getDigitalTwinModel().toString());
-		OperationResultModel result = new OperationResultModel();
+    @Override
+    public OperationResultModel updateShadow(DigitalTwinCompositeModel compositeModel) {
+        String output = "";
+        log.info(ROUTER_DT_SERVICE_OPERATION + compositeModel.getDigitalTwinModel().toString());
+        OperationResultModel result = new OperationResultModel();
 
-		DigitalTwinModel model = compositeModel.getDigitalTwinModel();
+        DigitalTwinModel model = compositeModel.getDigitalTwinModel();
+
+        String event = model.getEvent().name();
 
-		String event = model.getEvent().name();
+        JSONObject timestamp = new JSONObject();
+        timestamp.put(SDATE, LocalDateTime.now().format(timestampFormatter));
 
-		JSONObject timestamp = new JSONObject();
-		timestamp.put(SDATE, LocalDateTime.now().format(timestampFormatter));
+        JSONObject instance = new JSONObject();
+        instance.put(DEVICE_ID, model.getDeviceId());
+        instance.put("type", model.getType());
+        instance.put(TIMESTAMP_STR, timestamp);
 
-		JSONObject instance = new JSONObject();
-		instance.put(DEVICE_ID, model.getDeviceId());
-		instance.put("type", model.getType());
-		instance.put(TIMESTAMP_STR, timestamp);
+        List<PropertyDigitalTwinType> properties = propertyDigitalTwinTypeRepo.findByTypeId(
+                digitalTwinTypeRepository.findByName(model.getType()));
 
-		List<PropertyDigitalTwinType> properties = propertyDigitalTwinTypeRepo
-				.findByTypeId(digitalTwinTypeRepository.findByName(model.getType()));
+        JSONObject status = new JSONObject(model.getStatus());
+        Iterator<String> keys = status.keys();
+        String property = keys.next();
+
+        Map<String, PropertyDigitalTwinType> mOntologyProperties = new HashMap<>();
+        boolean ontologyProperties = false;
+        for (PropertyDigitalTwinType prop : properties) {
+            if (prop.getName().equals(property) && prop.getType().equalsIgnoreCase("ontology")) {
+                ontologyProperties = true;
+                mOntologyProperties.put(prop.getName(), prop);
+            }
+        }
 
-		JSONObject status = new JSONObject(model.getStatus());
-		Iterator<String> keys = status.keys();
-		String property = keys.next();
+        if (ontologyProperties) {
+
+            Iterator<String> itKeys = status.keys();
+            while (itKeys.hasNext()) {
+                String key = itKeys.next();
+                PropertyDigitalTwinType ontologyProperty = mOntologyProperties.get(key);
+                Object data = status.get(key);
 
-		Map<String, PropertyDigitalTwinType> mOntologyProperties = new HashMap<>();
-		boolean ontologyProperties = false;
-		for (PropertyDigitalTwinType prop : properties) {
-			if (prop.getName().equals(property) && prop.getType().equalsIgnoreCase("ontology")) {
-				ontologyProperties = true;
-				mOntologyProperties.put(prop.getName(), prop);
-			}
-		}
+                if (null != ontologyProperty && null != data && JSONObject.NULL != data) {
+                    try {
+                        String ontology = ontologyProperty.getUnit();
 
-		if (ontologyProperties) {
+                        OperationModel insertOperationModel = OperationModel.builder(ontology, OperationType.INSERT,
+                                                                                     null,
+                                                                                     OperationModel.Source.DIGITALTWINBROKER).body(
+                                data.toString()).build();
 
-			Iterator<String> itKeys = status.keys();
-			while (itKeys.hasNext()) {
-				String key = itKeys.next();
-				PropertyDigitalTwinType ontologyProperty = mOntologyProperties.get(key);
-				Object data = status.get(key);
+                        NotificationModel modelNotification = new NotificationModel();
+                        modelNotification.setOperationModel(insertOperationModel);
+                        routerService.insert(modelNotification);
 
-				if (null != ontologyProperty && null != data && JSONObject.NULL != data) {
-					try {
-						String ontology = ontologyProperty.getUnit();
+                    } catch (Exception e) {
+                        log.error("Error storing Digital Twin Ontology type", e);
+                    }
+                }
 
-						OperationModel insertOperationModel = OperationModel
-								.builder(ontology, OperationType.INSERT, null, OperationModel.Source.DIGITALTWINBROKER)
-								.body(data.toString()).build();
+            }
 
-						NotificationModel modelNotification = new NotificationModel();
-						modelNotification.setOperationModel(insertOperationModel);
-						routerService.insert(modelNotification);
+        }
 
-					} catch (Exception e) {
-						log.error("Error storing Digital Twin Ontology type", e);
-					}
-				}
+        instance.put("status", new JSONObject(model.getStatus()));
 
-			}
+        result.setMessage("OK");
+        result.setStatus(true);
 
-		}
+        try {
 
-		instance.put("status", new JSONObject(model.getStatus()));
+            output = mongoRepo.insert(
+                    PROPERTIES_COLLECTION + model.getType().substring(0, 1).toUpperCase() + model.getType().substring(
+                            1), null, instance.toString());
 
-		result.setMessage("OK");
-		result.setStatus(true);
+        } catch (final Exception e) {
+            result.setResult(output);
+            result.setStatus(false);
+            result.setMessage(e.getMessage());
+        }
 
-		try {
+        result.setResult(output);
+        result.setOperation(event);
+        return result;
+    }
 
-			output = mongoRepo.insert(PROPERTIES_COLLECTION + model.getType().substring(0, 1).toUpperCase()
-					+ model.getType().substring(1), null, instance.toString());
+    @Override
+    public OperationResultModel insertAction(DigitalTwinCompositeModel compositeModel) {
+        log.info(ROUTER_DT_SERVICE_OPERATION + compositeModel.getDigitalTwinModel().toString());
+        OperationResultModel result = new OperationResultModel();
 
-		} catch (final Exception e) {
-			result.setResult(output);
-			result.setStatus(false);
-			result.setMessage(e.getMessage());
-		}
+        DigitalTwinModel model = compositeModel.getDigitalTwinModel();
 
-		result.setResult(output);
-		result.setOperation(event);
-		return result;
-	}
+        String action = model.getActionName();
 
-	@Override
-	public OperationResultModel insertAction(DigitalTwinCompositeModel compositeModel) {
-		log.info(ROUTER_DT_SERVICE_OPERATION + compositeModel.getDigitalTwinModel().toString());
-		OperationResultModel result = new OperationResultModel();
+        JSONObject timestamp = new JSONObject();
+        timestamp.put(SDATE, LocalDateTime.now().format(timestampFormatter));
 
-		DigitalTwinModel model = compositeModel.getDigitalTwinModel();
+        JSONObject instance = new JSONObject();
+        instance.put(DEVICE_ID, model.getDeviceId());
+        instance.put("type", model.getType());
+        instance.put(TIMESTAMP_STR, timestamp);
+        instance.put("action", action);
 
-		String action = model.getActionName();
+        String output = "";
+        result.setMessage("OK");
+        result.setStatus(true);
 
-		JSONObject timestamp = new JSONObject();
-		timestamp.put(SDATE, LocalDateTime.now().format(timestampFormatter));
+        try {
 
-		JSONObject instance = new JSONObject();
-		instance.put(DEVICE_ID, model.getDeviceId());
-		instance.put("type", model.getType());
-		instance.put(TIMESTAMP_STR, timestamp);
-		instance.put("action", action);
+            output = mongoRepo.insert(
+                    ACTIONS_COLLECTION + model.getType().substring(0, 1).toUpperCase() + model.getType().substring(1),
+                    null, instance.toString());
 
-		String output = "";
-		result.setMessage("OK");
-		result.setStatus(true);
+        } catch (final Exception e) {
+            result.setResult(output);
+            result.setStatus(false);
+            result.setMessage(e.getMessage());
+        }
 
-		try {
+        result.setResult(output);
+        result.setOperation(action);
+        return result;
+    }
 
-			output = mongoRepo.insert(
-					ACTIONS_COLLECTION + model.getType().substring(0, 1).toUpperCase() + model.getType().substring(1),
-					null, instance.toString());
+    private Optional<JSONObject> buildEventContent(DigitalTwinModel model) {
+        JSONObject content = new JSONObject();
 
-		} catch (final Exception e) {
-			result.setResult(output);
-			result.setStatus(false);
-			result.setMessage(e.getMessage());
-		}
+        switch (model.getEvent()) {
+            case REGISTER:
+                content.put("endpoint", model.getEndpoint());
+                return Optional.of(content);
 
-		result.setResult(output);
-		result.setOperation(action);
-		return result;
-	}
+            default:
+                return Optional.empty();
+        }
 
-	private Optional<JSONObject> buildEventContent(DigitalTwinModel model) {
-		JSONObject content = new JSONObject();
-
-		switch (model.getEvent()) {
-		case REGISTER:
-			content.put("endpoint", model.getEndpoint());
-			return Optional.of(content);
-
-		default:
-			return Optional.empty();
-		}
-
-	}
+    }
 }

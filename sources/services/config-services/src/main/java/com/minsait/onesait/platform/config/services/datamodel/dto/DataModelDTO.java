@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,70 +24,70 @@ import lombok.Setter;
 
 public class DataModelDTO implements java.io.Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	@Getter
-	@Setter
-	private String id;
+    @Getter
+    @Setter
+    private String id;
 
-	@Getter
-	@Setter
-	private String user;
+    @Getter
+    @Setter
+    private String user;
 
-	@Getter
-	@Setter
-	private String jsonSchema;
+    @Getter
+    @Setter
+    private String jsonSchema;
 
-	@Setter
-	@Getter
-	private String name;
+    @Setter
+    @Getter
+    private String name;
 
-	@Setter
-	@Getter
-	private String type;
+    @Setter
+    @Getter
+    private String type;
 
-	@Setter
-	@Getter
-	private String description;
+    @Setter
+    @Getter
+    private String description;
 
-	@Setter
-	@Getter
-	private String labels;
+    @Setter
+    @Getter
+    private String labels;
 
-	public static DataModelDTO fromDataModel(DataModel datamodel) {
-		DataModelDTO dto = new DataModelDTO();
-		dto.id = datamodel.getId();
-		dto.user = datamodel.getUser().getUserId();
-		dto.jsonSchema = datamodel.getJsonSchema();
-		dto.name = datamodel.getName();
-		dto.type = datamodel.getType();
-		dto.description = datamodel.getDescription();
-		dto.labels = datamodel.getLabels();
+    public static DataModelDTO fromDataModel(DataModel datamodel) {
+        DataModelDTO dto = new DataModelDTO();
+        dto.id = datamodel.getId();
+        dto.user = datamodel.getUser().getUserId();
+        dto.jsonSchema = datamodel.getJsonSchema();
+        dto.name = datamodel.getName();
+        dto.type = datamodel.getType();
+        dto.description = datamodel.getDescription();
+        dto.labels = datamodel.getLabels();
 
-		return dto;
-	}
+        return dto;
+    }
 
-	public static List<DataModelDTO> fromDataModels(List<DataModel> datamodel) {
+    public static List<DataModelDTO> fromDataModels(List<DataModel> datamodel) {
 
-		List<DataModelDTO> ldtos = new ArrayList<>();
+        List<DataModelDTO> ldtos = new ArrayList<>();
 
-		datamodel.forEach(dm -> {
-			DataModelDTO dto = new DataModelDTO();
-			dto.id = dm.getId();
-			dto.user = dm.getUser().getUserId();
-			dto.jsonSchema = dm.getJsonSchema();
-			dto.name = dm.getName();
-			dto.type = dm.getType();
-			dto.description = dm.getDescription();
-			dto.labels = dm.getLabels();
+        datamodel.forEach(dm -> {
+            DataModelDTO dto = new DataModelDTO();
+            dto.id = dm.getId();
+            dto.user = dm.getUser().getUserId();
+            dto.jsonSchema = dm.getJsonSchema();
+            dto.name = dm.getName();
+            dto.type = dm.getType();
+            dto.description = dm.getDescription();
+            dto.labels = dm.getLabels();
 
-			ldtos.add(dto);
-		});
+            ldtos.add(dto);
+        });
 
-		return ldtos;
-	}
+        return ldtos;
+    }
 
 }

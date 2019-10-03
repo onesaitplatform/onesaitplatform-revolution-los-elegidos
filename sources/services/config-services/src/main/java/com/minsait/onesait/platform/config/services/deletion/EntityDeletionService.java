@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,27 +22,27 @@ import com.minsait.onesait.platform.config.model.TwitterListening;
 
 public interface EntityDeletionService {
 
-	void deleteOntology(String id, String userId);
+    void deleteOntology(String id, String userId);
 
-	void deleteTwitterListening(TwitterListening twitterListening);
+    void deleteTwitterListening(TwitterListening twitterListening);
 
-	void deleteClient(String id);
+    void deleteClient(String id);
 
-	void deleteToken(String id);
+    void deleteToken(String id);
 
-	void deleteDeviceSimulation(DeviceSimulation simulation);
+    void deleteDeviceSimulation(DeviceSimulation simulation);
 
-	void revokeAuthorizations(Ontology ontology);
+    void revokeAuthorizations(Ontology ontology);
 
-	void deleteGadgetDataSource(String id, String userId);
+    void deleteGadgetDataSource(String id, String userId);
 
-	void deleteUser(String userId);
+    void deleteUser(String userId);
 
-	void deleteQueryTemplate(String id);
+    void deleteQueryTemplate(String id);
 
-	void deactivateUser(String userId);
+    void deactivateUser(String userId);
 
-	void deactivateUser(List<String> userIds);
+    void deactivateUser(List<String> userIds);
 
-	void invalidateUserTokens(String userId);
+    void invalidateUserTokens(String userId);
 }

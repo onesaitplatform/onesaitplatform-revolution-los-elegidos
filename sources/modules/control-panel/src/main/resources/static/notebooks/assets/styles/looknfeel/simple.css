@@ -13,94 +13,94 @@
  */
 
 body {
-  background: white;
+    background: white;
 }
 
 .box {
-  border: 1px solid white;
-  min-height: 20px;
+    border: 1px solid white;
+    min-height: 20px;
 }
 
 .box:hover,
 .well:hover {
-  background: #ffffff;
-  border: 1px solid #DDDDDD;
+    background: #ffffff;
+    border: 1px solid #DDDDDD;
 }
 
 .paragraph-col .focused {
-  box-shadow: 1px 2px 7px rgba(0, 0, 0, 0.3);
+    box-shadow: 1px 2px 7px rgba(0, 0, 0, 0.3);
 }
 
 .paragraph-col {
-  border: 2px solid white;
+    border: 2px solid white;
 }
 
 .paragraph {
-  min-height: 32px;
+    min-height: 32px;
 }
 
 .paragraph-space {
-  padding: 0 2px 0 2px !important;
+    padding: 0 2px 0 2px !important;
 }
 
 .paragraph .control {
-  visibility: hidden;
-  top: 5px !important;
-  right: 10px !important;
+    visibility: hidden;
+    top: 5px !important;
+    right: 10px !important;
 }
 
 .paragraph:hover .control {
-  visibility: visible;
+    visibility: visible;
 }
 
 .paragraph .paragraphFooter {
-  visibility: hidden;
-  position: relative;
-  top : -9px;
-  z-index: 99;
+    visibility: hidden;
+    position: relative;
+    top: -9px;
+    z-index: 99;
 }
 
 .paragraph .paragraphFooterElapsed {
-  height: 0px;
-  float: right;
-  z-index: 99;
+    height: 0px;
+    float: right;
+    z-index: 99;
 }
 
 .paragraph .executionTime {
-  font-size: 8px;
-  text-align: right;
-  margin-right: 5px;
+    font-size: 8px;
+    text-align: right;
+    margin-right: 5px;
 }
 
 .paragraph .elapsedTime {
-  font-size: 8px;
-  text-align: right;
-  margin-right: 5px;
+    font-size: 8px;
+    text-align: right;
+    margin-right: 5px;
 }
 
 .paragraph:hover .paragraphFooter {
-  visibility: visible;
+    visibility: visible;
 }
 
 
 .noteAction span,
 .noteAction button,
 .noteAction form {
-  visibility: hidden;
+    visibility: hidden;
 }
 
 .noteAction:hover span,
 .noteAction:hover button,
 .noteAction:hover form {
-  visibility: visible;
+    visibility: visible;
 }
 
 .editor,
 .executionTime,
 .nv-controlsWrap {
-  display: block;
+    display: block;
 }
 
 .ng-toast.ng-toast--top {
-  top: 100px;
+    top: 100px;
 }

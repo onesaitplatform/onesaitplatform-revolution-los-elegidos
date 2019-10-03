@@ -1,11 +1,11 @@
 export default {
-  name: 'ClosePath',
-  buttons: [
-    {
-      title: 'Open path'
-    },
-    {
-      title: 'Close path'
-    }
-  ]
+    name: 'ClosePath',
+    buttons: [
+        {
+            title: 'Open path'
+        },
+        {
+            title: 'Close path'
+        }
+    ]
 };

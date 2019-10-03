@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -52,181 +52,190 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MessageProcessorDelegate implements MessageProcessor {
 
-	@Autowired
-	SecurityPluginManager securityPluginManager;
+    @Autowired
+    SecurityPluginManager securityPluginManager;
 
-	@Autowired
-	List<MessageTypeProcessor> processors;
+    @Autowired
+    List<MessageTypeProcessor> processors;
 
-	@Autowired
-	private DeviceManager deviceManager;
+    @Autowired
+    private DeviceManager deviceManager;
 
-	@Autowired(required = false)
-	private MetricsManager metricsManager;
+    @Autowired(required = false)
+    private MetricsManager metricsManager;
 
-	private static final String ERROR_PROCESSING = "Error processing message";
+    private static final String ERROR_PROCESSING = "Error processing message";
 
-	@IotBrokerAuditable
-	@Override
-	public <T extends SSAPBodyMessage> SSAPMessage<SSAPBodyReturnMessage> process(SSAPMessage<T> message,
-			GatewayInfo info) {
+    @IotBrokerAuditable
+    @Override
+    public <T extends SSAPBodyMessage> SSAPMessage<SSAPBodyReturnMessage> process(SSAPMessage<T> message,
+            GatewayInfo info) {
 
-		// CHECK: PRE-PROCESSORS
-		// DONE: PROCESS
-		// DONE: CHECK SSAP COMPLIANCE
-		// DONE: CHECK CREDENTIALS
-		// DONE: CHECK AUTHRIZATIONS & PERMISSIONS
-		// CHECK: VALIDATE ONTOLOGY SCHEMA IF NECESSARY
-		// DONE: GET PROCESSOR AN PROCESS
-		// CHECK: POST-PROCESSORS
-		// DONE: RETURN
+        // CHECK: PRE-PROCESSORS
+        // DONE: PROCESS
+        // DONE: CHECK SSAP COMPLIANCE
+        // DONE: CHECK CREDENTIALS
+        // DONE: CHECK AUTHRIZATIONS & PERMISSIONS
+        // CHECK: VALIDATE ONTOLOGY SCHEMA IF NECESSARY
+        // DONE: GET PROCESSOR AN PROCESS
+        // CHECK: POST-PROCESSORS
+        // DONE: RETURN
 
-		SSAPMessage<SSAPBodyReturnMessage> response = null;
-		Optional<IoTSession> session = Optional.empty();
-		try {
-			final Optional<SSAPMessage<SSAPBodyReturnMessage>> validation = validateMessage(message);
+        SSAPMessage<SSAPBodyReturnMessage> response = null;
+        Optional<IoTSession> session = Optional.empty();
+        try {
+            final Optional<SSAPMessage<SSAPBodyReturnMessage>> validation = validateMessage(message);
 
-			if (validation.isPresent()) {
-				return validation.get();
-			}
-			if (SSAPMessageTypes.LEAVE.equals(message.getMessageType())) {
-				session = securityPluginManager.getSession(message.getSessionKey());
-			}
-			final MessageTypeProcessor processor = proxyProcesor(message);
+            if (validation.isPresent()) {
+                return validation.get();
+            }
+            if (SSAPMessageTypes.LEAVE.equals(message.getMessageType())) {
+                session = securityPluginManager.getSession(message.getSessionKey());
+            }
+            final MessageTypeProcessor processor = proxyProcesor(message);
 
-			processor.validateMessage(message);
-			response = processor.process(message);
+            processor.validateMessage(message);
+            response = processor.process(message);
 
-			if (!SSAPMessageDirection.ERROR.equals(response.getDirection())) {
-				response.setDirection(SSAPMessageDirection.RESPONSE);
-				response.setMessageId(message.getMessageId());
-				response.setMessageType(message.getMessageType());
-			}
+            if (!SSAPMessageDirection.ERROR.equals(response.getDirection())) {
+                response.setDirection(SSAPMessageDirection.RESPONSE);
+                response.setMessageId(message.getMessageId());
+                response.setMessageType(message.getMessageType());
+            }
 
-		} catch (final SSAPProcessorException | OntologySchemaException e) {
-			log.error(ERROR_PROCESSING, e);
-			response = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.PROCESSOR,
-					String.format(e.getMessage(), message.getMessageType().name()));
-		} catch (final AuthorizationException e) {
-			log.error(ERROR_PROCESSING, e);
-			response = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.AUTHORIZATION,
-					String.format(e.getMessage(), message.getMessageType().name()));
-		} catch (final AuthenticationException e) {
-			log.error(ERROR_PROCESSING, e);
-			response = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.AUTENTICATION,
-					String.format(e.getMessage(), message.getMessageType().name()));
-		} catch (final Exception e) {
-			log.error(ERROR_PROCESSING, e);
-			response = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.PROCESSOR,
-					String.format(e.getMessage(), message.getMessageType().name()));
-		} finally {
-			if (SSAPMessageTypes.JOIN.equals(message.getMessageType())) {
-				session = response != null ? securityPluginManager.getSession(response.getSessionKey())
-						: Optional.empty();
-			} else if (!SSAPMessageTypes.LEAVE.equals(message.getMessageType()) || !session.isPresent()) {
-				session = securityPluginManager.getSession(message.getSessionKey());
-			}
-			final SSAPMessage<SSAPBodyReturnMessage> resp = response;
+        } catch (final SSAPProcessorException | OntologySchemaException e) {
+            log.error(ERROR_PROCESSING, e);
+            response = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.PROCESSOR,
+                                                      String.format(e.getMessage(), message.getMessageType().name()));
+        } catch (final AuthorizationException e) {
+            log.error(ERROR_PROCESSING, e);
+            response = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.AUTHORIZATION,
+                                                      String.format(e.getMessage(), message.getMessageType().name()));
+        } catch (final AuthenticationException e) {
+            log.error(ERROR_PROCESSING, e);
+            response = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.AUTENTICATION,
+                                                      String.format(e.getMessage(), message.getMessageType().name()));
+        } catch (final Exception e) {
+            log.error(ERROR_PROCESSING, e);
+            response = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.PROCESSOR,
+                                                      String.format(e.getMessage(), message.getMessageType().name()));
+        } finally {
+            if (SSAPMessageTypes.JOIN.equals(message.getMessageType())) {
+                session = response != null ? securityPluginManager.getSession(response.getSessionKey())
+                        : Optional.empty();
+            } else if (!SSAPMessageTypes.LEAVE.equals(message.getMessageType()) || !session.isPresent()) {
+                session = securityPluginManager.getSession(message.getSessionKey());
+            }
+            final SSAPMessage<SSAPBodyReturnMessage> resp = response;
 
-			session.ifPresent((s) -> {
+            session.ifPresent((s) -> {
 
-				deviceManager.registerActivity(message, resp, s, info);
+                deviceManager.registerActivity(message, resp, s, info);
 
-				// Metrics
-				String ontology = null;
-				if (message.getBody() instanceof SSAPBodyOntologyMessage) {
-					ontology = ((SSAPBodyOntologyMessage) message.getBody()).getOntology();
-				}
+                // Metrics
+                String ontology = null;
+                if (message.getBody() instanceof SSAPBodyOntologyMessage) {
+                    ontology = ((SSAPBodyOntologyMessage) message.getBody()).getOntology();
+                }
 
-				String metricsStatus = "OK";
-				if (null == resp || null == resp.getBody() || !resp.getBody().isOk()) {
-					metricsStatus = "KO";
-				}
-				if (null != metricsManager) {
-					metricsManager.logMetricDigitalBroker(s.getUserID(), ontology, message.getMessageType(),
-							Source.IOTBROKER, metricsStatus);
-				}
-			});
-		}
-		return response;
-	}
+                String metricsStatus = "OK";
+                if (null == resp || null == resp.getBody() || !resp.getBody().isOk()) {
+                    metricsStatus = "KO";
+                }
+                if (null != metricsManager) {
+                    metricsManager.logMetricDigitalBroker(s.getUserID(), ontology, message.getMessageType(),
+                                                          Source.IOTBROKER, metricsStatus);
+                }
+            });
+        }
+        return response;
+    }
 
-	@Override
-	@LogInterceptable
-	public String process(String message, GatewayInfo info) {
-		SSAPMessage<SSAPBodyReturnMessage> response = null;
-		SSAPMessage<?> request = null;
-		try {
-			request = SSAPJsonParser.getInstance().deserialize(message);
-			response = this.process(request, info);
-		} catch (final SSAPParseException e) {
-			response = SSAPUtils.generateErrorMessage(request, SSAPErrorCode.PROCESSOR,
-					"Request message is not parseable" + e.getMessage());
-		}
-		try {
-			return SSAPJsonParser.getInstance().serialize(response);
-		} catch (final SSAPParseException e) {
-			return e.getMessage();
-		}
+    @Override
+    @LogInterceptable
+    public String process(String message, GatewayInfo info) {
+        SSAPMessage<SSAPBodyReturnMessage> response = null;
+        SSAPMessage<?> request = null;
+        try {
+            request = SSAPJsonParser.getInstance().deserialize(message);
+            response = this.process(request, info);
+        } catch (final SSAPParseException e) {
+            response = SSAPUtils.generateErrorMessage(request, SSAPErrorCode.PROCESSOR,
+                                                      "Request message is not parseable" + e.getMessage());
+        }
+        try {
+            return SSAPJsonParser.getInstance().serialize(response);
+        } catch (final SSAPParseException e) {
+            return e.getMessage();
+        }
 
-	}
+    }
 
-	private Optional<SSAPMessage<SSAPBodyReturnMessage>> validateMessage(
-			SSAPMessage<? extends SSAPBodyMessage> message) {
-		SSAPMessage<SSAPBodyReturnMessage> response = null;
+    private Optional<SSAPMessage<SSAPBodyReturnMessage>> validateMessage(
+            SSAPMessage<? extends SSAPBodyMessage> message) {
+        SSAPMessage<SSAPBodyReturnMessage> response = null;
 
-		// Check presence of sessionKey and authorization of sessionKey
-		if (message.getBody().isSessionKeyMandatory() && StringUtils.isEmpty(message.getSessionKey())) {
-			response = SSAPMessageGenerator.generateResponseErrorMessage(message, SSAPErrorCode.PROCESSOR, String
-					.format(MessageException.ERR_FIELD_IS_MANDATORY, "Sessionkey", message.getMessageType().name()));
+        // Check presence of sessionKey and authorization of sessionKey
+        if (message.getBody().isSessionKeyMandatory() && StringUtils.isEmpty(message.getSessionKey())) {
+            response = SSAPMessageGenerator.generateResponseErrorMessage(message, SSAPErrorCode.PROCESSOR,
+                                                                         String.format(
+                                                                                 MessageException.ERR_FIELD_IS_MANDATORY,
+                                                                                 "Sessionkey",
+                                                                                 message.getMessageType().name()));
 
-			return Optional.of(response);
-		}
+            return Optional.of(response);
+        }
 
-		if (message.getBody().isSessionKeyMandatory()) {
-			if (!securityPluginManager.checkSessionKeyActive(message.getSessionKey())) {
-				response = SSAPMessageGenerator.generateResponseErrorMessage(message, SSAPErrorCode.AUTENTICATION,
-						String.format(MessageException.ERR_SESSIONKEY_NOT_VALID, message.getMessageType().name()));
-				return Optional.of(response);
-			}
-		}
-		// Check if ontology is present and autorization for ontology
-		if (message.getBody().isOntologyMandatory()) {
-			final SSAPBodyOntologyMessage body = (SSAPBodyOntologyMessage) message.getBody();
-			if (StringUtils.isEmpty(body.getOntology())) {
-				response = SSAPMessageGenerator.generateResponseErrorMessage(message, SSAPErrorCode.PROCESSOR,
-						String.format(MessageException.ERR_ONTOLOGY_SCHEMA, message.getMessageType().name()));
-				return Optional.of(response);
-			}
+        if (message.getBody().isSessionKeyMandatory()) {
+            if (!securityPluginManager.checkSessionKeyActive(message.getSessionKey())) {
+                response = SSAPMessageGenerator.generateResponseErrorMessage(message, SSAPErrorCode.AUTENTICATION,
+                                                                             String.format(
+                                                                                     MessageException.ERR_SESSIONKEY_NOT_VALID,
+                                                                                     message.getMessageType().name()));
+                return Optional.of(response);
+            }
+        }
+        // Check if ontology is present and autorization for ontology
+        if (message.getBody().isOntologyMandatory()) {
+            final SSAPBodyOntologyMessage body = (SSAPBodyOntologyMessage) message.getBody();
+            if (StringUtils.isEmpty(body.getOntology())) {
+                response = SSAPMessageGenerator.generateResponseErrorMessage(message, SSAPErrorCode.PROCESSOR,
+                                                                             String.format(
+                                                                                     MessageException.ERR_ONTOLOGY_SCHEMA,
+                                                                                     message.getMessageType().name()));
+                return Optional.of(response);
+            }
 
-			if (!securityPluginManager.checkAuthorization(message.getMessageType(), body.getOntology(),
-					message.getSessionKey())) {
-				response = SSAPMessageGenerator.generateResponseErrorMessage(message, SSAPErrorCode.AUTHORIZATION,
-						String.format(MessageException.ERR_ONTOLOGY_AUTH, message.getMessageType().name()));
-				return Optional.of(response);
-			}
-		}
-		return Optional.empty();
-	}
+            if (!securityPluginManager.checkAuthorization(message.getMessageType(), body.getOntology(),
+                                                          message.getSessionKey())) {
+                response = SSAPMessageGenerator.generateResponseErrorMessage(message, SSAPErrorCode.AUTHORIZATION,
+                                                                             String.format(
+                                                                                     MessageException.ERR_ONTOLOGY_AUTH,
+                                                                                     message.getMessageType().name()));
+                return Optional.of(response);
+            }
+        }
+        return Optional.empty();
+    }
 
-	private MessageTypeProcessor proxyProcesor(SSAPMessage<? extends SSAPBodyMessage> message) {
+    private MessageTypeProcessor proxyProcesor(SSAPMessage<? extends SSAPBodyMessage> message) {
 
-		if (null == message.getMessageType()) {
-			throw new SSAPProcessorException(MessageException.ERR_SSAP_MESSAGETYPE_MANDATORY_NOT_NULL);
-		}
+        if (null == message.getMessageType()) {
+            throw new SSAPProcessorException(MessageException.ERR_SSAP_MESSAGETYPE_MANDATORY_NOT_NULL);
+        }
 
-		final SSAPMessageTypes type = message.getMessageType();
+        final SSAPMessageTypes type = message.getMessageType();
 
-		final List<MessageTypeProcessor> filteredProcessors = processors.stream()
-				.filter(p -> p.getMessageTypes().contains(type)).collect(Collectors.toList());
+        final List<MessageTypeProcessor> filteredProcessors = processors.stream().filter(
+                p -> p.getMessageTypes().contains(type)).collect(Collectors.toList());
 
-		if (filteredProcessors.isEmpty()) {
-			throw new SSAPProcessorException(
-					String.format(MessageException.ERR_PROCESSOR_NOT_FOUND, message.getMessageType()));
-		}
+        if (filteredProcessors.isEmpty()) {
+            throw new SSAPProcessorException(
+                    String.format(MessageException.ERR_PROCESSOR_NOT_FOUND, message.getMessageType()));
+        }
 
-		return filteredProcessors.get(0);
+        return filteredProcessors.get(0);
 
-	}
+    }
 
 }

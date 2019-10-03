@@ -21,19 +21,19 @@ angular
     .module('dataCollectorApp')
     .controller('SettingsModalInstanceController', ["$scope", "$rootScope", "$modalInstance", function ($scope, $rootScope, $modalInstance) {
 
-  // Default Timezone (local storage)
-  var clientTimezone = moment().tz(moment.tz.guess()).format('z'),
-      timezoneOptions = _([clientTimezone, $rootScope.$storage.serverTimezone, 'UTC']).uniq();
+        // Default Timezone (local storage)
+        var clientTimezone = moment().tz(moment.tz.guess()).format('z'),
+            timezoneOptions = _([clientTimezone, $rootScope.$storage.serverTimezone, 'UTC']).uniq();
 
-  if (!_.contains(timezoneOptions, $rootScope.$storage.preferredTimezone)) {
-    $rootScope.$storage.preferredTimezone = clientTimezone;
-  }
+        if (!_.contains(timezoneOptions, $rootScope.$storage.preferredTimezone)) {
+            $rootScope.$storage.preferredTimezone = clientTimezone;
+        }
 
-  angular.extend($scope, {
-    timezoneOptions: timezoneOptions,
+        angular.extend($scope, {
+            timezoneOptions: timezoneOptions,
 
-    done: function() {
-      $modalInstance.dismiss('cancel');
-    }
-  });
-}]);
+            done: function () {
+                $modalInstance.dismiss('cancel');
+            }
+        });
+    }]);

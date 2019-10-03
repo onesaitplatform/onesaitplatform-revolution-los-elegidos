@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,62 +37,62 @@ import lombok.Setter;
 @Table(name = "ONTOLOGY_REST_OPERATION")
 public class OntologyRestOperation extends AuditableEntityWithUUID {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public enum OperationType {
-		GET, POST, PUT, DELETE
-	}
+    public enum OperationType {
+        GET, POST, PUT, DELETE
+    }
 
-	public enum DefaultOperationType {
-		NONE, GET_ALL, GET_BY_ID, DELETE_BY_ID, UPDATE_BY_ID, INSERT, DELETE_ALL
-	}
+    public enum DefaultOperationType {
+        NONE, GET_ALL, GET_BY_ID, DELETE_BY_ID, UPDATE_BY_ID, INSERT, DELETE_ALL
+    }
 
-	@ManyToOne
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JoinColumn(name = "ONTOLOGY_REST_ID", referencedColumnName = "ID", nullable = true)
-	@Getter
-	@Setter
-	private OntologyRest ontologyRestId;
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "ONTOLOGY_REST_ID", referencedColumnName = "ID", nullable = true)
+    @Getter
+    @Setter
+    private OntologyRest ontologyRestId;
 
-	@Column(name = "NAME", length = 512, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String name;
+    @Column(name = "NAME", length = 512, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String name;
 
-	@Column(name = "PATH", length = 512, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String path;
+    @Column(name = "PATH", length = 512, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String path;
 
-	@Column(name = "DESCRIPTION", length = 512, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String description;
+    @Column(name = "DESCRIPTION", length = 512, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String description;
 
-	@Column(name = "ORIGIN", length = 512, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String origin;
+    @Column(name = "ORIGIN", length = 512, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String origin;
 
-	@Column(name = "TYPE", length = 512, nullable = false)
-	@NotNull
-	@Enumerated(EnumType.STRING)
-	@Getter
-	@Setter
-	private OperationType type;
+    @Column(name = "TYPE", length = 512, nullable = false)
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Getter
+    @Setter
+    private OperationType type;
 
-	@Column(name = "DEFAULT_OPERATION_TYPE", length = 512, nullable = false)
-	@NotNull
-	@Enumerated(EnumType.STRING)
-	@Getter
-	@Setter
-	private DefaultOperationType defaultOperationType;
+    @Column(name = "DEFAULT_OPERATION_TYPE", length = 512, nullable = false)
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Getter
+    @Setter
+    private DefaultOperationType defaultOperationType;
 
 }

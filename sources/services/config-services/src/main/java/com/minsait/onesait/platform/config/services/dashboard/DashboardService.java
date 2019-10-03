@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,92 +36,92 @@ import com.minsait.onesait.platform.config.services.dashboard.dto.DashboardUserA
 
 public interface DashboardService {
 
-	List<DashboardDTO> findDashboardWithIdentificationAndDescription(String identification, String description,
-			String user);
+    List<DashboardDTO> findDashboardWithIdentificationAndDescription(String identification, String description,
+            String user);
 
-	List<String> getAllIdentifications();
+    List<String> getAllIdentifications();
 
-	void deleteDashboard(String id, String userId);
+    void deleteDashboard(String id, String userId);
 
-	void saveDashboard(String id, Dashboard dashboard, String userId);
+    void saveDashboard(String id, Dashboard dashboard, String userId);
 
-	Dashboard getDashboardById(String id, String userId);
+    Dashboard getDashboardById(String id, String userId);
 
-	String getCredentialsString(String userId);
+    String getCredentialsString(String userId);
 
-	String cloneDashboard(Dashboard originalDashboard, String identification, User user);
+    String cloneDashboard(Dashboard originalDashboard, String identification, User user);
 
-	String createNewDashboard(DashboardCreateDTO dashboardCreateDTO, String userId);
+    String createNewDashboard(DashboardCreateDTO dashboardCreateDTO, String userId);
 
-	boolean hasUserPermission(String id, String userId);
+    boolean hasUserPermission(String id, String userId);
 
-	boolean dashboardExists(String identification);
+    boolean dashboardExists(String identification);
 
-	void saveDashboardModel(String id, String model, String userId);
+    void saveDashboardModel(String id, String model, String userId);
 
-	List<DashboardUserAccess> getDashboardUserAccesses(Dashboard dashboard);
+    List<DashboardUserAccess> getDashboardUserAccesses(Dashboard dashboard);
 
-	String saveUpdateAccess(DashboardCreateDTO dashboard, String userId);
+    String saveUpdateAccess(DashboardCreateDTO dashboard, String userId);
 
-	String updatePublicDashboard(DashboardCreateDTO dashboard, String userId);
+    String updatePublicDashboard(DashboardCreateDTO dashboard, String userId);
 
-	String cleanDashboardAccess(DashboardCreateDTO dashboard, String userId);
+    String cleanDashboardAccess(DashboardCreateDTO dashboard, String userId);
 
-	Dashboard getDashboardEditById(String id, String userId);
+    Dashboard getDashboardEditById(String id, String userId);
 
-	boolean hasUserEditPermission(String id, String userId);
+    boolean hasUserEditPermission(String id, String userId);
 
-	boolean hasUserViewPermission(String id, String userId);
+    boolean hasUserViewPermission(String id, String userId);
 
-	byte[] getImgBytes(String id);
+    byte[] getImgBytes(String id);
 
-	String deleteDashboardAccess(String dashboardId, String userId);
+    String deleteDashboardAccess(String dashboardId, String userId);
 
-	List<Dashboard> getByUserId(String userId);
+    List<Dashboard> getByUserId(String userId);
 
-	Dashboard getDashboardByIdentification(String identification, String userId);
+    Dashboard getDashboardByIdentification(String identification, String userId);
 
-	void updateDashboardSimplified(String identification, DashboardSimplifiedDTO dashboard, String userId);
+    void updateDashboardSimplified(String identification, DashboardSimplifiedDTO dashboard, String userId);
 
-	List<Dashboard> getByUserIdOrdered(String userId, DashboardOrder order);
+    List<Dashboard> getByUserIdOrdered(String userId, DashboardOrder order);
 
-	int getNumGadgets(Dashboard dashboard);
+    int getNumGadgets(Dashboard dashboard);
 
-	DashboardExportDTO addGadgets(DashboardExportDTO dashboard);
+    DashboardExportDTO addGadgets(DashboardExportDTO dashboard);
 
-	String importDashboard(DashboardExportDTO dashboard, String userId);
+    String importDashboard(DashboardExportDTO dashboard, String userId);
 
-	boolean dashboardExistsById(String id);
+    boolean dashboardExistsById(String id);
 
-	String getElementsAssociated(String dashboardId);
+    String getElementsAssociated(String dashboardId);
 
-	ResponseEntity<byte[]> generateImgFromDashboardId(String id, int waittime, int height, int width, boolean fullpage,
-			String params, String oauthtoken);
+    ResponseEntity<byte[]> generateImgFromDashboardId(String id, int waittime, int height, int width, boolean fullpage,
+            String params, String oauthtoken);
 
-	ResponseEntity<byte[]> generatePDFFromDashboardId(String id, int waittime, int height, int width, String params,
-			String oauthtoken);
+    ResponseEntity<byte[]> generatePDFFromDashboardId(String id, int waittime, int height, int width, String params,
+            String oauthtoken);
 
-	public String importDashboard(String name, String data, String userId, String token);
+    public String importDashboard(String name, String data, String userId, String token);
 
-	public ResponseEntity<byte[]> exportDashboard(String id, String ususerIder, String token);
+    public ResponseEntity<byte[]> exportDashboard(String id, String ususerIder, String token);
 
-	public ResponseEntity<String> sendHttp(HttpServletRequest requestServlet, HttpMethod httpMethod, String body,
-			String token) throws URISyntaxException, IOException;
+    public ResponseEntity<String> sendHttp(HttpServletRequest requestServlet, HttpMethod httpMethod, String body,
+            String token) throws URISyntaxException, IOException;
 
-	public ResponseEntity<String> sendHttp(String url, HttpMethod httpMethod, String body, String token)
-			throws URISyntaxException, IOException;
+    public ResponseEntity<String> sendHttp(String url, HttpMethod httpMethod, String body,
+            String token) throws URISyntaxException, IOException;
 
-	public ResponseEntity<String> sendHttp(String url, HttpMethod httpMethod, String body, HttpHeaders headers)
-			throws URISyntaxException, IOException;
+    public ResponseEntity<String> sendHttp(String url, HttpMethod httpMethod, String body,
+            HttpHeaders headers) throws URISyntaxException, IOException;
 
-	DashboardUserAccess getDashboardUserAccessByIdentificationAndUser(String dashboardId, User user);
+    DashboardUserAccess getDashboardUserAccessByIdentificationAndUser(String dashboardId, User user);
 
-	String insertDashboardUserAccess(Dashboard dashboard, List<DashboardUserAccessDTO> dtos, boolean updated);
+    String insertDashboardUserAccess(Dashboard dashboard, List<DashboardUserAccessDTO> dtos, boolean updated);
 
-	String deleteDashboardUserAccess(List<DashboardUserAccessDTO> dtos, String dashboardIdentification,
-			boolean deleteAll);
+    String deleteDashboardUserAccess(List<DashboardUserAccessDTO> dtos, String dashboardIdentification,
+            boolean deleteAll);
 
-	// List<DashboardUserAccess> addDashboardUserAccess(List<DashboardUserAccess>
-	// usersAccessType, boolean updated);
+    // List<DashboardUserAccess> addDashboardUserAccess(List<DashboardUserAccess>
+    // usersAccessType, boolean updated);
 
 }

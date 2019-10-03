@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,107 +41,108 @@ import com.minsait.onesait.platform.config.repository.UserRepository;
 @EnableAutoConfiguration
 public class DashboardsRestImpl implements DashboardsRest {
 
-	@Autowired
-	CategoryRelationRepository categoryRelationRepository;
+    @Autowired
+    CategoryRelationRepository categoryRelationRepository;
 
-	@Autowired
-	DashboardRepository dashboardRepository;
+    @Autowired
+    DashboardRepository dashboardRepository;
 
-	@Autowired
-	UserRepository userRepository;
+    @Autowired
+    UserRepository userRepository;
 
-	@Autowired
-	CategoryRepository categoryRepository;
+    @Autowired
+    CategoryRepository categoryRepository;
 
-	@Autowired
-	SubcategoryRepository subcategoryRepository;
+    @Autowired
+    SubcategoryRepository subcategoryRepository;
 
-	@Value("${onesaitplatform.dashboardengine.url.view}")
-	private String url;
+    @Value("${onesaitplatform.dashboardengine.url.view}")
+    private String url;
 
-	@Override
-	public ResponseEntity<?> getByUser(@RequestParam(name = "userId", required = true) String userId,
-			@RequestParam(name = "category", required = false) String category,
-			@RequestParam(name = "subcategory", required = false) String subcategory) {
-		try {
-			User user = userRepository.findByUserId(userId);
+    @Override
+    public ResponseEntity<?> getByUser(@RequestParam(name = "userId", required = true) String userId,
+            @RequestParam(name = "category", required = false) String category,
+            @RequestParam(name = "subcategory", required = false) String subcategory) {
+        try {
+            User user = userRepository.findByUserId(userId);
 
-			if (user != null) {
+            if (user != null) {
 
-				List<Dashboard> dashboards = dashboardRepository.findByUser(user);
-				if (category == null && subcategory == null && !dashboards.isEmpty()) {
+                List<Dashboard> dashboards = dashboardRepository.findByUser(user);
+                if (category == null && subcategory == null && !dashboards.isEmpty()) {
 
-					List<DashboardDTO> dashboardsResult = new ArrayList<DashboardDTO>();
+                    List<DashboardDTO> dashboardsResult = new ArrayList<DashboardDTO>();
 
-					for (Dashboard d : dashboards) {
-						CategoryRelation categoryRelation = categoryRelationRepository.findByTypeId(d.getId());
-						if (categoryRelation != null) {
-							Category c = categoryRepository.findById(categoryRelation.getCategory());
-							Subcategory subc = subcategoryRepository.findById(categoryRelation.getSubcategory());
+                    for (Dashboard d : dashboards) {
+                        CategoryRelation categoryRelation = categoryRelationRepository.findByTypeId(d.getId());
+                        if (categoryRelation != null) {
+                            Category c = categoryRepository.findById(categoryRelation.getCategory());
+                            Subcategory subc = subcategoryRepository.findById(categoryRelation.getSubcategory());
 
-							dashboardsResult.add(DashboardDTO.builder().identification(d.getIdentification())
-									.user(d.getUser().getUserId()).url(url + d.getId()).category(c.getIdentification())
-									.subcategory(subc.getIdentification()).createdAt(d.getCreatedAt().toString())
-									.modifiedAt(d.getUpdatedAt().toString()).viewUrl(url + d.getId()).build());
-						} else {
-							dashboardsResult.add(DashboardDTO.builder().identification(d.getIdentification())
-									.user(d.getUser().getUserId()).url(url + d.getId()).category(null).subcategory(null)
-									.createdAt(d.getCreatedAt().toString()).modifiedAt(d.getUpdatedAt().toString())
-									.viewUrl(url + d.getId()).build());
-						}
-					}
-					return new ResponseEntity<>(dashboardsResult, HttpStatus.OK);
-				} else if (category != null && subcategory == null) {
-					List<DashboardDTO> dashboardsResult = new ArrayList<DashboardDTO>();
-					for (Dashboard d : dashboards) {
-						CategoryRelation categoryRelation = categoryRelationRepository.findByTypeId(d.getId());
-						if (categoryRelation != null) {
+                            dashboardsResult.add(DashboardDTO.builder().identification(d.getIdentification()).user(
+                                    d.getUser().getUserId()).url(url + d.getId()).category(
+                                    c.getIdentification()).subcategory(subc.getIdentification()).createdAt(
+                                    d.getCreatedAt().toString()).modifiedAt(d.getUpdatedAt().toString()).viewUrl(
+                                    url + d.getId()).build());
+                        } else {
+                            dashboardsResult.add(DashboardDTO.builder().identification(d.getIdentification()).user(
+                                    d.getUser().getUserId()).url(url + d.getId()).category(null).subcategory(
+                                    null).createdAt(d.getCreatedAt().toString()).modifiedAt(
+                                    d.getUpdatedAt().toString()).viewUrl(url + d.getId()).build());
+                        }
+                    }
+                    return new ResponseEntity<>(dashboardsResult, HttpStatus.OK);
+                } else if (category != null && subcategory == null) {
+                    List<DashboardDTO> dashboardsResult = new ArrayList<DashboardDTO>();
+                    for (Dashboard d : dashboards) {
+                        CategoryRelation categoryRelation = categoryRelationRepository.findByTypeId(d.getId());
+                        if (categoryRelation != null) {
 
-							Category c = categoryRepository.findById(categoryRelation.getCategory());
-							Subcategory subc = subcategoryRepository.findById(categoryRelation.getSubcategory());
+                            Category c = categoryRepository.findById(categoryRelation.getCategory());
+                            Subcategory subc = subcategoryRepository.findById(categoryRelation.getSubcategory());
 
-							if (category.equalsIgnoreCase(c.getIdentification())) {
-								dashboardsResult.add(DashboardDTO.builder().identification(d.getIdentification())
-										.user(d.getUser().getUserId()).url(url + d.getId())
-										.category(c.getIdentification()).subcategory(subc.getIdentification())
-										.createdAt(d.getCreatedAt().toString()).modifiedAt(d.getUpdatedAt().toString())
-										.viewUrl(url + d.getId()).build());
-							}
-						}
-					}
-					return new ResponseEntity<>(dashboardsResult, HttpStatus.OK);
-				} else if (category != null && subcategory != null) {
-					List<DashboardDTO> dashboardsResult = new ArrayList<DashboardDTO>();
-					for (Dashboard d : dashboards) {
-						CategoryRelation categoryRelation = categoryRelationRepository.findByTypeId(d.getId());
-						if (categoryRelation != null) {
+                            if (category.equalsIgnoreCase(c.getIdentification())) {
+                                dashboardsResult.add(DashboardDTO.builder().identification(d.getIdentification()).user(
+                                        d.getUser().getUserId()).url(url + d.getId()).category(
+                                        c.getIdentification()).subcategory(subc.getIdentification()).createdAt(
+                                        d.getCreatedAt().toString()).modifiedAt(d.getUpdatedAt().toString()).viewUrl(
+                                        url + d.getId()).build());
+                            }
+                        }
+                    }
+                    return new ResponseEntity<>(dashboardsResult, HttpStatus.OK);
+                } else if (category != null && subcategory != null) {
+                    List<DashboardDTO> dashboardsResult = new ArrayList<DashboardDTO>();
+                    for (Dashboard d : dashboards) {
+                        CategoryRelation categoryRelation = categoryRelationRepository.findByTypeId(d.getId());
+                        if (categoryRelation != null) {
 
-							Category c = categoryRepository.findById(categoryRelation.getCategory());
-							Subcategory subc = subcategoryRepository.findById(categoryRelation.getSubcategory());
+                            Category c = categoryRepository.findById(categoryRelation.getCategory());
+                            Subcategory subc = subcategoryRepository.findById(categoryRelation.getSubcategory());
 
-							if (category.equalsIgnoreCase(c.getIdentification())
-									&& subcategory.equalsIgnoreCase(subc.getIdentification())) {
-								dashboardsResult.add(DashboardDTO.builder().identification(d.getIdentification())
-										.user(d.getUser().getUserId()).url(url + d.getId())
-										.category(c.getIdentification()).subcategory(subc.getIdentification())
-										.createdAt(d.getCreatedAt().toString()).modifiedAt(d.getUpdatedAt().toString())
-										.viewUrl(url + d.getId()).build());
-							}
-						}
-					}
-					return new ResponseEntity<>(dashboardsResult, HttpStatus.OK);
-				} else {
-					List<DashboardDTO> dashboardsResult = new ArrayList<DashboardDTO>();
-					return new ResponseEntity<>(dashboardsResult, HttpStatus.OK);
-				}
+                            if (category.equalsIgnoreCase(c.getIdentification()) && subcategory.equalsIgnoreCase(
+                                    subc.getIdentification())) {
+                                dashboardsResult.add(DashboardDTO.builder().identification(d.getIdentification()).user(
+                                        d.getUser().getUserId()).url(url + d.getId()).category(
+                                        c.getIdentification()).subcategory(subc.getIdentification()).createdAt(
+                                        d.getCreatedAt().toString()).modifiedAt(d.getUpdatedAt().toString()).viewUrl(
+                                        url + d.getId()).build());
+                            }
+                        }
+                    }
+                    return new ResponseEntity<>(dashboardsResult, HttpStatus.OK);
+                } else {
+                    List<DashboardDTO> dashboardsResult = new ArrayList<DashboardDTO>();
+                    return new ResponseEntity<>(dashboardsResult, HttpStatus.OK);
+                }
 
-			} else {
-				return new ResponseEntity<>("User is not found.", HttpStatus.NOT_FOUND);
-			}
-		} catch (Exception e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+            } else {
+                return new ResponseEntity<>("User is not found.", HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
-	}
+    }
 
 }

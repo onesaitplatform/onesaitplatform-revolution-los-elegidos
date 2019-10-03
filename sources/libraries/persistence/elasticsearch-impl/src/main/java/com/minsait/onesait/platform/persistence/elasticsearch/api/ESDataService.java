@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,123 +35,123 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ESDataService {
 
-	@Autowired
-	ESBaseApi connector;
-	@Autowired
-	private ElasticSearchUtil util;
+    @Autowired
+    ESBaseApi connector;
+    @Autowired
+    private ElasticSearchUtil util;
 
-	private static final String QUERY_ERROR = "Query Error:";
-	private static final String SIZE_STR = "[SIZE]";
-	private static final String FROM_STR = "[FROM]";
+    private static final String QUERY_ERROR = "Query Error:";
+    private static final String SIZE_STR = "[SIZE]";
+    private static final String FROM_STR = "[FROM]";
 
-	public List<String> findQueryData(String jsonQueryString, String... indexes) {
-		log.info("findQueryData");
+    public List<String> findQueryData(String jsonQueryString, String... indexes) {
+        log.info("findQueryData");
 
-		jsonQueryString = jsonQueryString.replaceAll("\\n", "");
-		jsonQueryString = jsonQueryString.replaceAll("\\r", "");
+        jsonQueryString = jsonQueryString.replaceAll("\\n", "");
+        jsonQueryString = jsonQueryString.replaceAll("\\r", "");
 
-		final List<String> list = new ArrayList<>(Arrays.asList(indexes));
-		final Search search = new Search.Builder(jsonQueryString).addIndex(list.get(0)).build();
+        final List<String> list = new ArrayList<>(Arrays.asList(indexes));
+        final Search search = new Search.Builder(jsonQueryString).addIndex(list.get(0)).build();
 
-		SearchResult result;
-		try {
-			result = connector.getHttpClient().execute(search);
+        SearchResult result;
+        try {
+            result = connector.getHttpClient().execute(search);
 
-			if (result.isSucceeded())
-				return result.getSourceAsStringList();
-			else {
-				log.error("Error in findQueryDataAsJson:" + result.getErrorMessage());
-				return Arrays.asList(QUERY_ERROR + result.getErrorMessage());
-			}
-		} catch (final IOException e) {
-			log.error("Error in findQueryByJSON ", e);
-			return Arrays.asList(QUERY_ERROR + e.getLocalizedMessage());
-		}
-	}
+            if (result.isSucceeded())
+                return result.getSourceAsStringList();
+            else {
+                log.error("Error in findQueryDataAsJson:" + result.getErrorMessage());
+                return Arrays.asList(QUERY_ERROR + result.getErrorMessage());
+            }
+        } catch (final IOException e) {
+            log.error("Error in findQueryByJSON ", e);
+            return Arrays.asList(QUERY_ERROR + e.getLocalizedMessage());
+        }
+    }
 
-	public String findQueryDataAsJson(String jsonQueryString, String... indexes) {
-		log.info("findQueryDataAsJson with query:" + jsonQueryString);
+    public String findQueryDataAsJson(String jsonQueryString, String... indexes) {
+        log.info("findQueryDataAsJson with query:" + jsonQueryString);
 
-		jsonQueryString = jsonQueryString.replaceAll("\\n", "");
-		jsonQueryString = jsonQueryString.replaceAll("\\r", "");
+        jsonQueryString = jsonQueryString.replaceAll("\\n", "");
+        jsonQueryString = jsonQueryString.replaceAll("\\r", "");
 
-		final List<String> list = new ArrayList<>(Arrays.asList(indexes));
-		final Search search = new Search.Builder(jsonQueryString).addIndex(list.get(0)).build();
-		SearchResult result;
-		try {
-			result = connector.getHttpClient().execute(search);
-			if (result.isSucceeded())
-				return util.parseElastiSearchResult(result.getJsonString(), false);
-			else {
-				log.error("Error in findQueryDataAsJson:" + result.getErrorMessage());
-				return QUERY_ERROR + result.getErrorMessage();
-			}
+        final List<String> list = new ArrayList<>(Arrays.asList(indexes));
+        final Search search = new Search.Builder(jsonQueryString).addIndex(list.get(0)).build();
+        SearchResult result;
+        try {
+            result = connector.getHttpClient().execute(search);
+            if (result.isSucceeded())
+                return util.parseElastiSearchResult(result.getJsonString(), false);
+            else {
+                log.error("Error in findQueryDataAsJson:" + result.getErrorMessage());
+                return QUERY_ERROR + result.getErrorMessage();
+            }
 
-		} catch (final IOException e) {
-			log.error("Error in findQueryByJSON ", e);
-			return QUERY_ERROR + e.getLocalizedMessage();
-		} catch (final JSONException e) {
-			log.error("Error in findQueryByJSON PArsing result ", e);
-			return QUERY_ERROR + e.getLocalizedMessage();
-		}
+        } catch (final IOException e) {
+            log.error("Error in findQueryByJSON ", e);
+            return QUERY_ERROR + e.getLocalizedMessage();
+        } catch (final JSONException e) {
+            log.error("Error in findQueryByJSON PArsing result ", e);
+            return QUERY_ERROR + e.getLocalizedMessage();
+        }
 
-	}
+    }
 
-	public String findByIndex(String index, String type, String documentId) {
-		log.info("findByIndex");
-		try {
-			final DocumentResult result = connector.getHttpClient()
-					.execute(new Get.Builder(index, documentId).type(type).build());
+    public String findByIndex(String index, String type, String documentId) {
+        log.info("findByIndex");
+        try {
+            final DocumentResult result = connector.getHttpClient().execute(
+                    new Get.Builder(index, documentId).type(type).build());
 
-			return result.getSourceAsString();
-		} catch (final Exception e) {
-			log.error("findByIndex", e);
-			return "QueryError:" + e.getLocalizedMessage();
-		}
-	}
+            return result.getSourceAsString();
+        } catch (final Exception e) {
+            log.error("findByIndex", e);
+            return "QueryError:" + e.getLocalizedMessage();
+        }
+    }
 
-	public List<String> findAllByType(String ontology) {
-		return findQueryData(ESBaseApi.QUERY_ALL, ontology);
-	}
+    public List<String> findAllByType(String ontology) {
+        return findQueryData(ESBaseApi.QUERY_ALL, ontology);
+    }
 
-	public List<String> findAllByType(String ontology, int from, int limit) {
-		String query = ESBaseApi.QUERY_ALL_SIZE_FROM_TO;
-		query = query.replace(SIZE_STR, "" + limit);
-		query = query.replace(FROM_STR, "" + from);
+    public List<String> findAllByType(String ontology, int from, int limit) {
+        String query = ESBaseApi.QUERY_ALL_SIZE_FROM_TO;
+        query = query.replace(SIZE_STR, "" + limit);
+        query = query.replace(FROM_STR, "" + from);
 
-		return findQueryData(query, ontology);
-	}
+        return findQueryData(query, ontology);
+    }
 
-	public List<String> findAllByType(String ontology, String query, int from, int limit) {
-		String querybase = ESBaseApi.QUERY_ALL_SIZE_FROM_TO_QUERY;
+    public List<String> findAllByType(String ontology, String query, int from, int limit) {
+        String querybase = ESBaseApi.QUERY_ALL_SIZE_FROM_TO_QUERY;
 
-		querybase = querybase.replace(SIZE_STR, "" + limit);
-		querybase = querybase.replace(FROM_STR, "" + from);
-		querybase = querybase.replace("[QUERY]", "" + query);
+        querybase = querybase.replace(SIZE_STR, "" + limit);
+        querybase = querybase.replace(FROM_STR, "" + from);
+        querybase = querybase.replace("[QUERY]", "" + query);
 
-		return findQueryData(querybase, ontology);
-	}
+        return findQueryData(querybase, ontology);
+    }
 
-	public List<String> findAllByType(String ontology, int limit) {
-		String query = ESBaseApi.QUERY_ALL_SIZE;
-		query = query.replace(SIZE_STR, "" + limit);
+    public List<String> findAllByType(String ontology, int limit) {
+        String query = ESBaseApi.QUERY_ALL_SIZE;
+        query = query.replace(SIZE_STR, "" + limit);
 
-		return findQueryData(query, ontology);
-	}
+        return findQueryData(query, ontology);
+    }
 
-	public String findAllByTypeAsJson(String ontology, int limit) {
-		String query = ESBaseApi.QUERY_ALL_SIZE;
-		query = query.replace(SIZE_STR, "" + limit);
+    public String findAllByTypeAsJson(String ontology, int limit) {
+        String query = ESBaseApi.QUERY_ALL_SIZE;
+        query = query.replace(SIZE_STR, "" + limit);
 
-		return findQueryDataAsJson(query, ontology);
-	}
+        return findQueryDataAsJson(query, ontology);
+    }
 
-	public String findAllByTypeAsJson(String ontology, int from, int limit) {
-		String query = ESBaseApi.QUERY_ALL_SIZE_FROM_TO;
-		query = query.replace(SIZE_STR, "" + limit);
-		query = query.replace(FROM_STR, "" + from);
+    public String findAllByTypeAsJson(String ontology, int from, int limit) {
+        String query = ESBaseApi.QUERY_ALL_SIZE_FROM_TO;
+        query = query.replace(SIZE_STR, "" + limit);
+        query = query.replace(FROM_STR, "" + from);
 
-		return findQueryDataAsJson(query, ontology);
-	}
+        return findQueryDataAsJson(query, ontology);
+    }
 
 }

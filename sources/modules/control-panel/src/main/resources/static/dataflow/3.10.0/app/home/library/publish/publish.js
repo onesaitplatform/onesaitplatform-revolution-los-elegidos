@@ -18,73 +18,72 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('PublishModalInstanceController', ["$scope", "$modalInstance", "pipelineInfo", "api", "$q", "authService", function ($scope, $modalInstance, pipelineInfo, api, $q, authService) {
-    angular.extend($scope, {
-      remoteBaseUrl: authService.getRemoteBaseUrl(),
-      publishing: false,
-      common: {
-        errors: []
-      },
-      commitPipelineModel : {
-        name: _.isArray(pipelineInfo) ? undefined : pipelineInfo.title,
-        commitMessage: ''
-      },
-      isList: _.isArray(pipelineInfo),
-      publish : function () {
-        $scope.publishing = true;
-        if ($scope.isList) {
-          var deferList = [];
-          for (var i = 0; i < pipelineInfo.length; i++) {
-            deferList.push(api.remote.publishPipeline(
-              authService.getRemoteBaseUrl(),
-              authService.getSSOToken(),
-              pipelineInfo[i].pipelineId,
-              {
-                name:  pipelineInfo[i].title,
-                commitMessage: $scope.commitPipelineModel.commitMessage
-              }
-            ));
-          }
-          $q.all(deferList).then(
-            function() {
-              $modalInstance.close();
+    .module('dataCollectorApp.home')
+    .controller('PublishModalInstanceController', ["$scope", "$modalInstance", "pipelineInfo", "api", "$q", "authService", function ($scope, $modalInstance, pipelineInfo, api, $q, authService) {
+        angular.extend($scope, {
+            remoteBaseUrl: authService.getRemoteBaseUrl(),
+            publishing: false,
+            common: {
+                errors: []
             },
-            function(res) {
-              if (res && res.status === 403) {
-                $scope.common.errors =
-                  ['User Not Authorized. Contact your administrator to request permission to use this functionality'];
-              } else {
-                $scope.common.errors = [res.data];
-              }
-              $scope.publishing = false;
-            }
-          );
-        } else {
-          $q.when(api.remote.publishPipeline(
-            authService.getRemoteBaseUrl(),
-            authService.getSSOToken(),
-            pipelineInfo.pipelineId,
-            $scope.commitPipelineModel
-          )).
-          then(
-            function(metadata) {
-              $modalInstance.close(metadata);
+            commitPipelineModel: {
+                name: _.isArray(pipelineInfo) ? undefined : pipelineInfo.title,
+                commitMessage: ''
             },
-            function(res) {
-              if (res && res.status === 403) {
-                $scope.common.errors =
-                  ['User Not Authorized. Contact your administrator to request permission to use this functionality'];
-              } else {
-                $scope.common.errors = [res.data];
-              }
-              $scope.publishing = false;
+            isList: _.isArray(pipelineInfo),
+            publish: function () {
+                $scope.publishing = true;
+                if ($scope.isList) {
+                    var deferList = [];
+                    for (var i = 0; i < pipelineInfo.length; i++) {
+                        deferList.push(api.remote.publishPipeline(
+                            authService.getRemoteBaseUrl(),
+                            authService.getSSOToken(),
+                            pipelineInfo[i].pipelineId,
+                            {
+                                name: pipelineInfo[i].title,
+                                commitMessage: $scope.commitPipelineModel.commitMessage
+                            }
+                        ));
+                    }
+                    $q.all(deferList).then(
+                        function () {
+                            $modalInstance.close();
+                        },
+                        function (res) {
+                            if (res && res.status === 403) {
+                                $scope.common.errors =
+                                    ['User Not Authorized. Contact your administrator to request permission to use this functionality'];
+                            } else {
+                                $scope.common.errors = [res.data];
+                            }
+                            $scope.publishing = false;
+                        }
+                    );
+                } else {
+                    $q.when(api.remote.publishPipeline(
+                        authService.getRemoteBaseUrl(),
+                        authService.getSSOToken(),
+                        pipelineInfo.pipelineId,
+                        $scope.commitPipelineModel
+                    )).then(
+                        function (metadata) {
+                            $modalInstance.close(metadata);
+                        },
+                        function (res) {
+                            if (res && res.status === 403) {
+                                $scope.common.errors =
+                                    ['User Not Authorized. Contact your administrator to request permission to use this functionality'];
+                            } else {
+                                $scope.common.errors = [res.data];
+                            }
+                            $scope.publishing = false;
+                        }
+                    );
+                }
+            },
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
             }
-          );
-        }
-      },
-      cancel : function () {
-        $modalInstance.dismiss('cancel');
-      }
-    });
-  }]);
+        });
+    }]);

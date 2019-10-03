@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,116 +38,117 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DeviceSimulatorJob {
 
-	@Autowired
-	private FieldRandomizerService fieldRandomizerService;
-	@Autowired
-	private IoTBrokerClient persistenceService;
-	@Autowired
-	private OntologyService ontologyService;
-	@Autowired
-	private JsonUtils2 jsonUtils2;
+    @Autowired
+    private FieldRandomizerService fieldRandomizerService;
+    @Autowired
+    private IoTBrokerClient persistenceService;
+    @Autowired
+    private OntologyService ontologyService;
+    @Autowired
+    private JsonUtils2 jsonUtils2;
 
-	private static final String PATH_INSTANCES = "instances";
-	private static final String PATH_INSTANCES_MODE = "instancesMode";
-	private static final String MODE_RANDOM = "random";
-	private static final String MODE_SEC = "sequential";
-	private static final String INDEX_STR = "index";
+    private static final String PATH_INSTANCES = "instances";
+    private static final String PATH_INSTANCES_MODE = "instancesMode";
+    private static final String MODE_RANDOM = "random";
+    private static final String MODE_SEC = "sequential";
+    private static final String INDEX_STR = "index";
 
-	private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
-	public void execute(JobExecutionContext context) throws IOException {
+    public void execute(JobExecutionContext context) throws IOException {
 
-		final String user = context.getJobDetail().getJobDataMap().getString("userId");
+        final String user = context.getJobDetail().getJobDataMap().getString("userId");
 
-		final String json = context.getJobDetail().getJobDataMap().getString("json");
+        final String json = context.getJobDetail().getJobDataMap().getString("json");
 
-		try {
-			proxyJson(user, json, context);
-			log.debug("Simulated instance for user: {}", user);
-		} catch (HttpClientErrorException | HttpServerErrorException e) {
-			log.error("Rest error: code {}, {}", e.getStatusCode(), e.getResponseBodyAsString());
-		} catch (final Exception e) {
-			log.error("Error generating the ontology instance for user:" + user + " and json:" + json, e);
+        try {
+            proxyJson(user, json, context);
+            log.debug("Simulated instance for user: {}", user);
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            log.error("Rest error: code {}, {}", e.getStatusCode(), e.getResponseBodyAsString());
+        } catch (final Exception e) {
+            log.error("Error generating the ontology instance for user:" + user + " and json:" + json, e);
 
-		}
+        }
 
-	}
+    }
 
-	public void proxyJson(String user, String json, JobExecutionContext context)
-			throws IOException, SchedulerException {
-		final JsonNode jsonInstance = mapper.readTree(json);
-		if (!jsonInstance.path(PATH_INSTANCES).isMissingNode())
-			insertInstacesFromJson(user, json, context);
-		else
-			generateInstanceAndInsert(user, json);
-	}
+    public void proxyJson(String user, String json,
+            JobExecutionContext context) throws IOException, SchedulerException {
+        final JsonNode jsonInstance = mapper.readTree(json);
+        if (!jsonInstance.path(PATH_INSTANCES).isMissingNode())
+            insertInstacesFromJson(user, json, context);
+        else
+            generateInstanceAndInsert(user, json);
+    }
 
-	public void insertInstacesFromJson(String user, String json, JobExecutionContext context)
-			throws IOException, SchedulerException {
-		final JsonNode contextJson = mapper.readTree(json);
-		final JsonNode instances = contextJson.path(PATH_INSTANCES);
-		final String clientPlatform = contextJson.get("clientPlatform").asText();
-		final String clientPlatformInstance = contextJson.get("clientPlatformInstance").asText();
-		final String ontology = contextJson.get("ontology").asText();
+    public void insertInstacesFromJson(String user, String json,
+            JobExecutionContext context) throws IOException, SchedulerException {
+        final JsonNode contextJson = mapper.readTree(json);
+        final JsonNode instances = contextJson.path(PATH_INSTANCES);
+        final String clientPlatform = contextJson.get("clientPlatform").asText();
+        final String clientPlatformInstance = contextJson.get("clientPlatformInstance").asText();
+        final String ontology = contextJson.get("ontology").asText();
 
-		if (!instances.isArray())
-			persistenceService.insertOntologyInstance(instances.asText(), ontology, user, clientPlatform,
-					clientPlatformInstance);
-		else {
-			String instancesMode = contextJson.path(PATH_INSTANCES_MODE).asText();
-			final int size = ((ArrayNode) instances).size();
-			if (StringUtils.isEmpty(instancesMode))
-				instancesMode = MODE_RANDOM;
-			switch (instancesMode) {
-			case MODE_RANDOM:
-				final int position = fieldRandomizerService.randomizeInt(0, size - 1);
-				final String inst = ((ArrayNode) instances).get(position).toString();
-				persistenceService.insertOntologyInstance(inst, ontology, user, clientPlatform, clientPlatformInstance);
-				break;
-			case MODE_SEC:
-				int index = 0;
-				try {
-					index = context.getJobDetail().getJobDataMap().getInt(INDEX_STR);
-					log.debug("Inserting item {} of json array, ontology {}", index, ontology);
-				} catch (final Exception e) {
-					log.error("Not index yet, setting index to 0");
-				}
+        if (!instances.isArray())
+            persistenceService.insertOntologyInstance(instances.asText(), ontology, user, clientPlatform,
+                                                      clientPlatformInstance);
+        else {
+            String instancesMode = contextJson.path(PATH_INSTANCES_MODE).asText();
+            final int size = ((ArrayNode) instances).size();
+            if (StringUtils.isEmpty(instancesMode))
+                instancesMode = MODE_RANDOM;
+            switch (instancesMode) {
+                case MODE_RANDOM:
+                    final int position = fieldRandomizerService.randomizeInt(0, size - 1);
+                    final String inst = ((ArrayNode) instances).get(position).toString();
+                    persistenceService.insertOntologyInstance(inst, ontology, user, clientPlatform,
+                                                              clientPlatformInstance);
+                    break;
+                case MODE_SEC:
+                    int index = 0;
+                    try {
+                        index = context.getJobDetail().getJobDataMap().getInt(INDEX_STR);
+                        log.debug("Inserting item {} of json array, ontology {}", index, ontology);
+                    } catch (final Exception e) {
+                        log.error("Not index yet, setting index to 0");
+                    }
 
-				if (index >= size)
-					index = 0;
-				final String sinst = ((ArrayNode) instances).get(index).toString();
-				persistenceService.insertOntologyInstance(sinst, ontology, user, clientPlatform,
-						clientPlatformInstance);
-				context.getJobDetail().getJobDataMap().remove(INDEX_STR);
-				context.getJobDetail().getJobDataMap().put(INDEX_STR, ++index);
-				context.getScheduler().addJob(context.getJobDetail(), true);
-				break;
+                    if (index >= size)
+                        index = 0;
+                    final String sinst = ((ArrayNode) instances).get(index).toString();
+                    persistenceService.insertOntologyInstance(sinst, ontology, user, clientPlatform,
+                                                              clientPlatformInstance);
+                    context.getJobDetail().getJobDataMap().remove(INDEX_STR);
+                    context.getJobDetail().getJobDataMap().put(INDEX_STR, ++index);
+                    context.getScheduler().addJob(context.getJobDetail(), true);
+                    break;
 
-			default:
-				break;
-			}
-		}
+                default:
+                    break;
+            }
+        }
 
-	}
+    }
 
-	public JsonNode generateInstanceAndInsert(String user, String json) throws IOException {
+    public JsonNode generateInstanceAndInsert(String user, String json) throws IOException {
 
-		final JsonNode jsonInstance = mapper.readTree(json);
+        final JsonNode jsonInstance = mapper.readTree(json);
 
-		final String clientPlatform = jsonInstance.get("clientPlatform").asText();
-		final String clientPlatformInstance = jsonInstance.get("clientPlatformInstance").asText();
-		final String ontology = jsonInstance.get("ontology").asText();
+        final String clientPlatform = jsonInstance.get("clientPlatform").asText();
+        final String clientPlatformInstance = jsonInstance.get("clientPlatformInstance").asText();
+        final String ontology = jsonInstance.get("ontology").asText();
 
-		final JsonNode ontologySchema = jsonUtils2.generateJson(ontology, user);
-		final JsonNode schema = mapper
-				.readTree(ontologyService.getOntologyByIdentification(ontology, user).getJsonSchema());
-		final JsonNode fieldAndValues = fieldRandomizerService.randomizeFields(jsonInstance.path("fields"),
-				ontologySchema, schema);
+        final JsonNode ontologySchema = jsonUtils2.generateJson(ontology, user);
+        final JsonNode schema = mapper.readTree(
+                ontologyService.getOntologyByIdentification(ontology, user).getJsonSchema());
+        final JsonNode fieldAndValues = fieldRandomizerService.randomizeFields(jsonInstance.path("fields"),
+                                                                               ontologySchema, schema);
 
-		persistenceService.insertOntologyInstance(fieldAndValues.toString(), ontology, user, clientPlatform,
-				clientPlatformInstance);
-		log.debug("Inserted in ontology " + ontology + " data:" + fieldAndValues.toString());
-		return fieldAndValues;
-	}
+        persistenceService.insertOntologyInstance(fieldAndValues.toString(), ontology, user, clientPlatform,
+                                                  clientPlatformInstance);
+        log.debug("Inserted in ontology " + ontology + " data:" + fieldAndValues.toString());
+        return fieldAndValues;
+    }
 
 }

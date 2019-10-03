@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,29 +39,29 @@ import lombok.extern.slf4j.Slf4j;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class AuthProviderSaml extends WebSecurityConfigurerAdapter {
 
-	@Bean
-	@Primary
-	@Order(Ordered.HIGHEST_PRECEDENCE)
-	public AuthenticationProvider samlAuthenticationProvider() {
-		final SAMLAuthenticationProvider samlAuthenticationProvider = new SAMLAuthenticationProvider();
-		samlAuthenticationProvider.setUserDetails(new SAMLUserDetailsService() {
-			// TO-DO userdetailsservice
-			@Override
-			public Object loadUserBySAML(SAMLCredential credential) {
-				final String userID = credential.getNameID().getValue();
+    @Bean
+    @Primary
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    public AuthenticationProvider samlAuthenticationProvider() {
+        final SAMLAuthenticationProvider samlAuthenticationProvider = new SAMLAuthenticationProvider();
+        samlAuthenticationProvider.setUserDetails(new SAMLUserDetailsService() {
+            // TO-DO userdetailsservice
+            @Override
+            public Object loadUserBySAML(SAMLCredential credential) {
+                final String userID = credential.getNameID().getValue();
 
-				final List<GrantedAuthority> authorities = new ArrayList<>();
-				final GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_USER");
-				authorities.add(authority);
+                final List<GrantedAuthority> authorities = new ArrayList<>();
+                final GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_USER");
+                authorities.add(authority);
 
-				// In a real scenario, this implementation has to locate user in a arbitrary
-				// dataStore based on information present in the SAMLCredential and
-				// returns such a date in a form of application specific UserDetails object.
-				return new User(userID, "<abc123>", true, true, true, true, authorities);
-			}
-		});
-		samlAuthenticationProvider.setForcePrincipalAsString(false);
-		return samlAuthenticationProvider;
-	}
+                // In a real scenario, this implementation has to locate user in a arbitrary
+                // dataStore based on information present in the SAMLCredential and
+                // returns such a date in a form of application specific UserDetails object.
+                return new User(userID, "<abc123>", true, true, true, true, authorities);
+            }
+        });
+        samlAuthenticationProvider.setForcePrincipalAsString(false);
+        return samlAuthenticationProvider;
+    }
 
 }

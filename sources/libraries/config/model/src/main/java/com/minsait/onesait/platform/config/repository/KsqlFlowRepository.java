@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,25 +26,25 @@ import com.minsait.onesait.platform.config.model.User;
 
 public interface KsqlFlowRepository extends JpaRepository<KsqlFlow, String> {
 
-	List<KsqlFlow> findByUser(User user);
+    List<KsqlFlow> findByUser(User user);
 
-	List<KsqlFlow> findByIdentification(String identification);
+    List<KsqlFlow> findByIdentification(String identification);
 
-	List<KsqlFlow> findByUserAndIdentificationContainingAndDescriptionContaining(User user, String identification,
-			String description);
+    List<KsqlFlow> findByUserAndIdentificationContainingAndDescriptionContaining(User user, String identification,
+            String description);
 
-	List<KsqlFlow> findByIdentificationContainingAndDescriptionContaining(String identification, String description);
+    List<KsqlFlow> findByIdentificationContainingAndDescriptionContaining(String identification, String description);
 
-	@Modifying
-	@Transactional
-	void deleteByIdentificationAndUserUserId(String identification, String userId);
+    @Modifying
+    @Transactional
+    void deleteByIdentificationAndUserUserId(String identification, String userId);
 
-	List<KsqlFlow> findAllByOrderByIdentificationAsc();
+    List<KsqlFlow> findAllByOrderByIdentificationAsc();
 
-	KsqlFlow findByUserAndIdentification(User sessionUser, String identification);
+    KsqlFlow findByUserAndIdentification(User sessionUser, String identification);
 
-	KsqlFlow findById(String id);
+    KsqlFlow findById(String id);
 
-	@Transactional
-	void deleteById(String id);
+    @Transactional
+    void deleteById(String id);
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,61 +43,61 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RestActionNotifier implements ActionNotifier {
 
-	private static final int TIMEOUT = (int) TimeUnit.SECONDS.toMillis(10);
+    private static final int TIMEOUT = (int) TimeUnit.SECONDS.toMillis(10);
 
-	private RestTemplate restTemplate;
+    private RestTemplate restTemplate;
 
-	@Autowired
-	private DigitalTwinDeviceRepository deviceRepo;
+    @Autowired
+    private DigitalTwinDeviceRepository deviceRepo;
 
-	@PostConstruct
-	public void init() {
-		this.restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
-		this.restTemplate.setRequestFactory(getRestTemplateRequestFactory());
-	}
+    @PostConstruct
+    public void init() {
+        this.restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+        this.restTemplate.setRequestFactory(getRestTemplateRequestFactory());
+    }
 
-	@Override
-	public void notifyActionMessage(JSONObject message) {
-		try {
-			if (message.has("id")) {
-				String targetTwin = message.get("id").toString();
+    @Override
+    public void notifyActionMessage(JSONObject message) {
+        try {
+            if (message.has("id")) {
+                String targetTwin = message.get("id").toString();
 
-				DigitalTwinDevice device = deviceRepo.findByIdentification(targetTwin);
-				if (null != device) {
-					String deviceEndpoint = device.getUrlSchema() + "://" + device.getIp() + ":" + device.getPort()
-							+ device.getContextPath() + "/actions";
+                DigitalTwinDevice device = deviceRepo.findByIdentification(targetTwin);
+                if (null != device) {
+                    String deviceEndpoint =
+                            device.getUrlSchema() + "://" + device.getIp() + ":" + device.getPort() + device.getContextPath() + "/actions";
 
-					ActionMessage actionMessage = new ActionMessage();
-					actionMessage.setName(message.get("name").toString());
-					actionMessage.setData(message.get("data").toString());
+                    ActionMessage actionMessage = new ActionMessage();
+                    actionMessage.setName(message.get("name").toString());
+                    actionMessage.setData(message.get("data").toString());
 
-					HttpEntity<ActionMessage> shadowEntity = new HttpEntity<>(actionMessage);
+                    HttpEntity<ActionMessage> shadowEntity = new HttpEntity<>(actionMessage);
 
-					log.info("Attemp to notify custom message to device {}", deviceEndpoint);
-					ResponseEntity<String> resp = restTemplate.exchange(deviceEndpoint, HttpMethod.POST, shadowEntity,
-							String.class);
+                    log.info("Attemp to notify custom message to device {}", deviceEndpoint);
+                    ResponseEntity<String> resp = restTemplate.exchange(deviceEndpoint, HttpMethod.POST, shadowEntity,
+                                                                        String.class);
 
-					if (resp.getStatusCode() == HttpStatus.OK) {
-						log.info("Notified custom message to device {}", deviceEndpoint);
-					} else {
-						log.warn("HTTP code {} notifing custom message to device {}", resp.getStatusCode(),
-								deviceEndpoint);
-						log.warn("Broker message {}", resp.getBody());
-					}
-				}
-			}
-		} catch (Exception e) {
-			log.error("Error notifing shadow message", e);
-		}
-	}
+                    if (resp.getStatusCode() == HttpStatus.OK) {
+                        log.info("Notified custom message to device {}", deviceEndpoint);
+                    } else {
+                        log.warn("HTTP code {} notifing custom message to device {}", resp.getStatusCode(),
+                                 deviceEndpoint);
+                        log.warn("Broker message {}", resp.getBody());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error notifing shadow message", e);
+        }
+    }
 
-	private ClientHttpRequestFactory getRestTemplateRequestFactory() {
-		RequestConfig config = RequestConfig.custom().setSocketTimeout(TIMEOUT).setConnectTimeout(TIMEOUT)
-				.setConnectionRequestTimeout(TIMEOUT).build();
+    private ClientHttpRequestFactory getRestTemplateRequestFactory() {
+        RequestConfig config = RequestConfig.custom().setSocketTimeout(TIMEOUT).setConnectTimeout(
+                TIMEOUT).setConnectionRequestTimeout(TIMEOUT).build();
 
-		CloseableHttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
+        CloseableHttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
 
-		return new HttpComponentsClientHttpRequestFactory(client);
-	}
+        return new HttpComponentsClientHttpRequestFactory(client);
+    }
 
 }

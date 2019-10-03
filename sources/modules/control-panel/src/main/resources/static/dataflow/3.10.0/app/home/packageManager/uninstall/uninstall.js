@@ -16,43 +16,43 @@
 
 // Controller for Stage Library Uninstall Modal.
 angular
-  .module('dataCollectorApp.home')
-  .controller('UninstallModalInstanceController', ["$scope", "$modalInstance", "libraryList", "api", function ($scope, $modalInstance, libraryList, api) {
-    angular.extend($scope, {
-      common: {
-        errors: []
-      },
-      libraryList: libraryList,
-      operationInProgress: false,
-      libraryUninstalled: false,
-      isRestartInProgress: false,
-
-      install: function() {
-        $scope.operationInProgress = true;
-        var stageLibIdList = [];
-        angular.forEach($scope.libraryList, function (lib) {
-          stageLibIdList.push(lib.stageLibraryManifest.stageLibId);
-        });
-        api.pipelineAgent.uninstallLibraries(stageLibIdList)
-          .then(
-            function (res) {
-              $scope.libraryUninstalled = true;
-              $scope.operationInProgress = false;
+    .module('dataCollectorApp.home')
+    .controller('UninstallModalInstanceController', ["$scope", "$modalInstance", "libraryList", "api", function ($scope, $modalInstance, libraryList, api) {
+        angular.extend($scope, {
+            common: {
+                errors: []
             },
-            function (res) {
-              $scope.operationInProgress = false;
-              $scope.common.errors = [res.data];
+            libraryList: libraryList,
+            operationInProgress: false,
+            libraryUninstalled: false,
+            isRestartInProgress: false,
+
+            install: function () {
+                $scope.operationInProgress = true;
+                var stageLibIdList = [];
+                angular.forEach($scope.libraryList, function (lib) {
+                    stageLibIdList.push(lib.stageLibraryManifest.stageLibId);
+                });
+                api.pipelineAgent.uninstallLibraries(stageLibIdList)
+                    .then(
+                        function (res) {
+                            $scope.libraryUninstalled = true;
+                            $scope.operationInProgress = false;
+                        },
+                        function (res) {
+                            $scope.operationInProgress = false;
+                            $scope.common.errors = [res.data];
+                        }
+                    );
+            },
+
+            restart: function () {
+                $scope.isRestartInProgress = true;
+                api.admin.restartDataCollector();
+            },
+
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
             }
-          );
-      },
-
-      restart: function() {
-        $scope.isRestartInProgress = true;
-        api.admin.restartDataCollector();
-      },
-
-      cancel: function() {
-        $modalInstance.dismiss('cancel');
-      }
-    });
-  }]);
+        });
+    }]);

@@ -19,7 +19,7 @@
 
 angular
     .module('dataCollectorApp.home')
-    .controller('CustomBarChartController', function($scope, $rootScope, pipelineConstant) {
+    .controller('CustomBarChartController', function ($scope, $rootScope, pipelineConstant) {
 
         angular.extend($scope, {
             chartOptions: {
@@ -28,10 +28,10 @@ angular
                     height: 220,
                     showLabels: true,
                     duration: 0,
-                    x: function(d) {
+                    x: function (d) {
                         return d[0];
                     },
-                    y: function(d) {
+                    y: function (d) {
                         return d[1];
                     },
                     //showLegend: true,
@@ -45,7 +45,7 @@ angular
                     xAxis: {
                         axisLabel: "",
                     },
-                    valueFormat: function(d) {
+                    valueFormat: function (d) {
                         return d3.format(',d')(d);
                     },
                     margin: {
@@ -55,7 +55,7 @@ angular
                         right: 20
                     },
                     tooltip: {
-                        valueFormatter: function(d) {
+                        valueFormatter: function (d) {
                             return d.toFixed(4);
                         }
                     }
@@ -70,9 +70,9 @@ angular
             var customStageGauge = $scope.customStageGauge,
                 pipelineMetrics = $rootScope.common.pipelineMetrics;
 
-            if(pipelineMetrics && pipelineMetrics.gauges) {
+            if (pipelineMetrics && pipelineMetrics.gauges) {
                 var gaugeData = pipelineMetrics.gauges[customStageGauge.gaugeKey].value;
-                if(gaugeData) {
+                if (gaugeData) {
                     $scope.chartTitle = gaugeData.title;
                     $scope.chartOptions.chart.yAxis.axisLabel = gaugeData.yAxis;
                     for (var data in gaugeData.data) {
@@ -93,8 +93,8 @@ angular
             }
         }
 
-        $rootScope.$watch('common.pipelineMetrics', function() {
-            if($scope.isPipelineRunning &&
+        $rootScope.$watch('common.pipelineMetrics', function () {
+            if ($scope.isPipelineRunning &&
                 $rootScope.common.pipelineMetrics &&
                 $scope.selectedType === pipelineConstant.STAGE_INSTANCE &&
                 !$scope.monitoringPaused) {

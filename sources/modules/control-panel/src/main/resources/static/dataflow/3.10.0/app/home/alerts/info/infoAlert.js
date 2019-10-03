@@ -18,19 +18,19 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('InfoAlertController', ["$scope", function ($scope) {
+    .module('dataCollectorApp.home')
+    .controller('InfoAlertController', ["$scope", function ($scope) {
 
-    angular.extend($scope, {
+        angular.extend($scope, {
 
-      /**
-       * Remove Message.
-       *
-       * @param alertList
-       * @param index
-       */
-      removeAlert: function(alertList, index) {
-        alertList.splice(index, 1);
-      }
-    });
-  }]);
+            /**
+             * Remove Message.
+             *
+             * @param alertList
+             * @param index
+             */
+            removeAlert: function (alertList, index) {
+                alertList.splice(index, 1);
+            }
+        });
+    }]);

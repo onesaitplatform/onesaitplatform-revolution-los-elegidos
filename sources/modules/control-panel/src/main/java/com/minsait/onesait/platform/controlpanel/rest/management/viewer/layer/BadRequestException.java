@@ -20,23 +20,23 @@
  ******************************************************************************/
 package com.minsait.onesait.platform.controlpanel.rest.management.viewer.layer;
 
-public class BadRequestException extends RuntimeException{
+public class BadRequestException extends RuntimeException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public BadRequestException(Exception e){
-		super(e);
-	}
-	
-	public BadRequestException(String msg){
-		super(msg);
-	}
-	
-	public BadRequestException(String msg, Throwable e){
-		super(msg, e);
-	}
+    public BadRequestException(Exception e) {
+        super(e);
+    }
+
+    public BadRequestException(String msg) {
+        super(msg);
+    }
+
+    public BadRequestException(String msg, Throwable e) {
+        super(msg, e);
+    }
 
 }

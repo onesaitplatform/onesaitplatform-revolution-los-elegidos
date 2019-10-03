@@ -1,15 +1,15 @@
-ace.define("ace/snippets/scad",[], function(require, exports, module) {
-"use strict";
+ace.define("ace/snippets/scad", [], function (require, exports, module) {
+    "use strict";
 
-exports.snippetText = "";
-exports.scope = "scad";
+    exports.snippetText = "";
+    exports.scope = "scad";
 
 });
-                (function() {
-                    ace.require(["ace/snippets/scad"], function(m) {
-                        if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
-                        }
-                    });
-                })();
+(function () {
+    ace.require(["ace/snippets/scad"], function (m) {
+        if (typeof module == "object" && typeof exports == "object" && module) {
+            module.exports = m;
+        }
+    });
+})();
             

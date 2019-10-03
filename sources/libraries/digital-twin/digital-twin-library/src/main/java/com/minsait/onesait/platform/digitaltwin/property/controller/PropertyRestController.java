@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,59 +41,59 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping(value = "/properties")
 public class PropertyRestController {
 
-	@Autowired
-	private IDigitalTwinStatus digitalTwinStatus;
+    @Autowired
+    private IDigitalTwinStatus digitalTwinStatus;
 
-	@Autowired
-	private TransactionManager transactionManager;
+    @Autowired
+    private TransactionManager transactionManager;
 
-	@Autowired
-	private EventManager eventManager;
+    @Autowired
+    private EventManager eventManager;
 
-	@RequestMapping(value = "/{propertyName}", method = RequestMethod.GET)
-	public Response getProperty(@PathVariable("propertyName") String propertyName) {
-		try {
-			if (digitalTwinStatus.validate(OperationType.OUT, propertyName)) {
-				return Response.ok(digitalTwinStatus.getProperty(propertyName).toString()).build();
-			} else {
-				return Response.status(Status.UNAUTHORIZED).build();
-			}
-		} catch (Exception e) {
-			return Response.status(Status.FORBIDDEN).build();
-		}
-	}
+    @RequestMapping(value = "/{propertyName}", method = RequestMethod.GET)
+    public Response getProperty(@PathVariable("propertyName") String propertyName) {
+        try {
+            if (digitalTwinStatus.validate(OperationType.OUT, propertyName)) {
+                return Response.ok(digitalTwinStatus.getProperty(propertyName).toString()).build();
+            } else {
+                return Response.status(Status.UNAUTHORIZED).build();
+            }
+        } catch (Exception e) {
+            return Response.status(Status.FORBIDDEN).build();
+        }
+    }
 
-	@RequestMapping(value = "/{propertyName}", method = RequestMethod.PUT)
-	public Response setProperty(@PathVariable("propertyName") String propertyName, @RequestBody String property,
-			HttpServletRequest request) {
+    @RequestMapping(value = "/{propertyName}", method = RequestMethod.PUT)
+    public Response setProperty(@PathVariable("propertyName") String propertyName, @RequestBody String property,
+            HttpServletRequest request) {
 
-		if (digitalTwinStatus.validate(OperationType.IN, propertyName)) {
-			try {
-				String idTransaction = request.getHeader("Transaction-Id");
-				JSONObject propJSON = new JSONObject(property);
-				if (idTransaction != null && idTransaction != "") {
-					transactionManager.setProperty(propertyName, property, idTransaction);
-				} else {
-					// MODIFIED O WORK WITH PROPERTIES OF TYPE ONTOLOGY --> UPDATE SHADOW ONLY THE
-					// PROPERTY SETTED
-					JSONArray jsonArrayProperties = propJSON.getJSONArray(propertyName);
-					digitalTwinStatus.setProperty(propertyName, jsonArrayProperties);
+        if (digitalTwinStatus.validate(OperationType.IN, propertyName)) {
+            try {
+                String idTransaction = request.getHeader("Transaction-Id");
+                JSONObject propJSON = new JSONObject(property);
+                if (idTransaction != null && idTransaction != "") {
+                    transactionManager.setProperty(propertyName, property, idTransaction);
+                } else {
+                    // MODIFIED O WORK WITH PROPERTIES OF TYPE ONTOLOGY --> UPDATE SHADOW ONLY THE
+                    // PROPERTY SETTED
+                    JSONArray jsonArrayProperties = propJSON.getJSONArray(propertyName);
+                    digitalTwinStatus.setProperty(propertyName, jsonArrayProperties);
 
-					HashMap<String, Object> properties = new HashMap<String, Object>();
-					properties.put(propertyName, jsonArrayProperties.toString());
+                    HashMap<String, Object> properties = new HashMap<String, Object>();
+                    properties.put(propertyName, jsonArrayProperties.toString());
 
-					eventManager.updateShadow(properties);
-				}
-			} catch (JSONException e) {
-				log.error("Invalid JSON property: " + property, e);
-				return Response.status(Status.BAD_REQUEST).build();
-			} catch (Exception e) {
-				return Response.status(Status.FORBIDDEN).build();
-			}
-			return Response.ok().build();
-		} else {
-			log.error("Invalid Operation Type for property: " + propertyName);
-			return Response.status(Status.UNAUTHORIZED).build();
-		}
-	}
+                    eventManager.updateShadow(properties);
+                }
+            } catch (JSONException e) {
+                log.error("Invalid JSON property: " + property, e);
+                return Response.status(Status.BAD_REQUEST).build();
+            } catch (Exception e) {
+                return Response.status(Status.FORBIDDEN).build();
+            }
+            return Response.ok().build();
+        } else {
+            log.error("Invalid Operation Type for property: " + propertyName);
+            return Response.status(Status.UNAUTHORIZED).build();
+        }
+    }
 }

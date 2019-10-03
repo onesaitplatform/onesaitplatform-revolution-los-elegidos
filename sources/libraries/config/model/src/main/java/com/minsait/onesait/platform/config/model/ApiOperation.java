@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,69 +43,69 @@ import lombok.Setter;
 @Configurable
 public class ApiOperation extends AuditableEntityWithUUID {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public enum Type {
-		PUT, POST, GET, DELETE;
-	}
+    public enum Type {
+        PUT, POST, GET, DELETE;
+    }
 
-	@ManyToOne
-	@JoinColumn(name = "API_ID", referencedColumnName = "ID", nullable = false)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@Getter
-	@Setter
-	private Api api;
+    @ManyToOne
+    @JoinColumn(name = "API_ID", referencedColumnName = "ID", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Getter
+    @Setter
+    private Api api;
 
-	@OneToMany(mappedBy = "apiOperation", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@Getter
-	@Setter
-	private Set<ApiHeader> apiheaders;
+    @OneToMany(mappedBy = "apiOperation", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Getter
+    @Setter
+    private Set<ApiHeader> apiheaders;
 
-	@OneToMany(mappedBy = "apiOperation", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@Getter
-	@Setter
-	private Set<ApiQueryParameter> apiqueryparameters;
+    @OneToMany(mappedBy = "apiOperation", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Getter
+    @Setter
+    private Set<ApiQueryParameter> apiqueryparameters;
 
-	@Column(name = "IDENTIFICATION", length = 50, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String identification;
+    @Column(name = "IDENTIFICATION", length = 50, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String identification;
 
-	@Column(name = "DESCRIPTION", length = 512, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String description;
+    @Column(name = "DESCRIPTION", length = 512, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String description;
 
-	@Column(name = "OPERATION", length = 50, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	@Enumerated(EnumType.STRING)
-	private Type operation;
+    @Column(name = "OPERATION", length = 50, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private Type operation;
 
-	@Column(name = "ENDPOINT", length = 512)
-	@Getter
-	@Setter
-	private String endpoint;
+    @Column(name = "ENDPOINT", length = 512)
+    @Getter
+    @Setter
+    private String endpoint;
 
-	@Column(name = "BASE_PATH", length = 512)
-	@Getter
-	@Setter
-	private String basePath;
+    @Column(name = "BASE_PATH", length = 512)
+    @Getter
+    @Setter
+    private String basePath;
 
-	@Column(name = "PATH", length = 512)
-	@Getter
-	@Setter
-	private String path;
+    @Column(name = "PATH", length = 512)
+    @Getter
+    @Setter
+    private String path;
 
-	@Column(name = "POST_PROCESS")
-	@Lob
-	@Getter
-	@Setter
-	private String postProcess;
+    @Column(name = "POST_PROCESS")
+    @Lob
+    @Getter
+    @Setter
+    private String postProcess;
 
 }

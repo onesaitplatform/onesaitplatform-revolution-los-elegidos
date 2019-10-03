@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,26 +27,26 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExposeAttemptedPathAuthorizationAuditListener extends AbstractAuthorizationAuditListener {
 
-	public static final String AUTHORIZATION_FAILURE = "AUTHORIZATION_FAILURE";
+    public static final String AUTHORIZATION_FAILURE = "AUTHORIZATION_FAILURE";
 
-	@Override
-	public void onApplicationEvent(AbstractAuthorizationEvent event) {
-		if (event instanceof AuthorizationFailureEvent) {
-			onAuthorizationFailureEvent((AuthorizationFailureEvent) event);
-		}
-	}
+    @Override
+    public void onApplicationEvent(AbstractAuthorizationEvent event) {
+        if (event instanceof AuthorizationFailureEvent) {
+            onAuthorizationFailureEvent((AuthorizationFailureEvent) event);
+        }
+    }
 
-	private void onAuthorizationFailureEvent(AuthorizationFailureEvent event) {
-		final Map<String, Object> data = new HashMap<>();
-		data.put("type", event.getAccessDeniedException().getClass().getName());
-		data.put("message", event.getAccessDeniedException().getMessage());
-		if (event.getSource() instanceof FilterInvocation) {
-			final String requestUrl = ((FilterInvocation) event.getSource()).getRequestUrl();
-			data.put("requestUrl", requestUrl);
-		}
-		if (event.getAuthentication().getDetails() != null) {
-			data.put("details", event.getAuthentication().getDetails());
-		}
-		publish(new AuditEvent(event.getAuthentication().getName(), AUTHORIZATION_FAILURE, data));
-	}
+    private void onAuthorizationFailureEvent(AuthorizationFailureEvent event) {
+        final Map<String, Object> data = new HashMap<>();
+        data.put("type", event.getAccessDeniedException().getClass().getName());
+        data.put("message", event.getAccessDeniedException().getMessage());
+        if (event.getSource() instanceof FilterInvocation) {
+            final String requestUrl = ((FilterInvocation) event.getSource()).getRequestUrl();
+            data.put("requestUrl", requestUrl);
+        }
+        if (event.getAuthentication().getDetails() != null) {
+            data.put("details", event.getAuthentication().getDetails());
+        }
+        publish(new AuditEvent(event.getAuthentication().getName(), AUTHORIZATION_FAILURE, data));
+    }
 }

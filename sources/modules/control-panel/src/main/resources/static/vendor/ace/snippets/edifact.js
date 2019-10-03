@@ -1,6 +1,6 @@
-ace.define("ace/snippets/edifact",[], function(require, exports, module) {
+ace.define("ace/snippets/edifact", [], function (require, exports, module) {
     "use strict";
-    
+
     exports.snippetText = "## Access Modifiers\n\
 snippet u\n\
 	UN\n\
@@ -243,13 +243,13 @@ snippet unless\n\
 	(unless=${1:param});${2}\n\
 ";
     exports.scope = "edifact";
-    
+
 });
-                (function() {
-                    ace.require(["ace/snippets/edifact"], function(m) {
-                        if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
-                        }
-                    });
-                })();
+(function () {
+    ace.require(["ace/snippets/edifact"], function (m) {
+        if (typeof module == "object" && typeof exports == "object" && module) {
+            module.exports = m;
+        }
+    });
+})();
             

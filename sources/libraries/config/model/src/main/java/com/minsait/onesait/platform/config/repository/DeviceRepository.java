@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,55 +31,61 @@ import com.minsait.onesait.platform.config.model.Device;
 
 public interface DeviceRepository extends JpaRepository<Device, String> {
 
-	@Override
-	@CacheEvict(cacheNames = "DeviceRepository", allEntries = true)
-	<S extends Device> List<S> save(Iterable<S> entities);
+    @Override
+    @CacheEvict(cacheNames = "DeviceRepository", allEntries = true)
+    <S extends Device> List<S> save(Iterable<S> entities);
 
-	@Override
-	@CacheEvict(cacheNames = "DeviceRepository", allEntries = true)
-	void flush();
+    @Override
+    @CacheEvict(cacheNames = "DeviceRepository", allEntries = true)
+    void flush();
 
-	@Override
-	@CacheEvict(cacheNames = "DeviceRepository", key = "#p0.clientPlatform.identification.concat('-').concat(#p0.identification)")
-	<S extends Device> S saveAndFlush(S entity);
+    @Override
+    @CacheEvict(cacheNames = "DeviceRepository", key = "#p0.clientPlatform.identification.concat('-').concat(#p0" +
+            ".identification)")
+    <S extends Device> S saveAndFlush(S entity);
 
-	@SuppressWarnings("unchecked")
-	@Override
-	@CacheEvict(cacheNames = "DeviceRepository", key = "#p0.clientPlatform.identification.concat('-').concat(#p0.identification)")
-	Device save(Device entity);
+    @SuppressWarnings("unchecked")
+    @Override
+    @CacheEvict(cacheNames = "DeviceRepository", key = "#p0.clientPlatform.identification.concat('-').concat(#p0" +
+            ".identification)")
+    Device save(Device entity);
 
-	@Modifying
-	@CacheEvict(cacheNames = "DeviceRepository", key = "#p0.clientPlatform.identification.concat('-').concat(#p0.identification)")
-	@Query("DELETE Device d WHERE d= :device")
-	@Transactional
-	void deleteById(@Param("device") Device device);
+    @Modifying
+    @CacheEvict(cacheNames = "DeviceRepository", key = "#p0.clientPlatform.identification.concat('-').concat(#p0" +
+            ".identification)")
+    @Query("DELETE Device d WHERE d= :device")
+    @Transactional
+    void deleteById(@Param("device") Device device);
 
-	@Override
-	List<Device> findAll();
+    @Override
+    List<Device> findAll();
 
-	@Override
-	@CacheEvict(cacheNames = "DeviceRepository", allEntries = true)
-	@Transactional
-	void deleteAll();
+    @Override
+    @CacheEvict(cacheNames = "DeviceRepository", allEntries = true)
+    @Transactional
+    void deleteAll();
 
-	List<Device> findByClientPlatform(ClientPlatform clientPlatform);
+    List<Device> findByClientPlatform(ClientPlatform clientPlatform);
 
-	@Cacheable(cacheNames = "DeviceRepository", key = "#a0.identification.concat('-').concat(#a1)", unless = "#result == null")
-	Device findByClientPlatformAndIdentification(ClientPlatform clientPlatform, String identification);
+    @Cacheable(cacheNames = "DeviceRepository", key = "#a0.identification.concat('-').concat(#a1)", unless = "#result" +
+            " == null")
+    Device findByClientPlatformAndIdentification(ClientPlatform clientPlatform, String identification);
 
-	@Modifying
-	@Query("UPDATE Device d SET d.connected = :connected, d.disabled = :disabled WHERE d.updatedAt < :date")
-	int updateDeviceStatusByUpdatedAt(@Param("connected") boolean connected, @Param("disabled") boolean disabled,
-			@Param("date") Date date);
+    @Modifying
+    @Query("UPDATE Device d SET d.connected = :connected, d.disabled = :disabled WHERE d.updatedAt < :date")
+    int updateDeviceStatusByUpdatedAt(@Param("connected") boolean connected, @Param("disabled") boolean disabled,
+            @Param("date") Date date);
 
-	@Modifying
-	@Query("UPDATE Device d SET d.identification= :identification, d.clientPlatform= :clientPlatform,d.sessionKey = :sessionKey, d.protocol = :protocol, d.location = :location, d.updatedAt = :updatedAt, d.status = :status,d.connected = :connected, d.disabled = :disabled WHERE d.id = :id")
-	int updateDevice(@Param("clientPlatform") ClientPlatform clientPlatform,
-			@Param("identification") String identification, @Param("sessionKey") String sessionKey,
-			@Param("protocol") String protocol, @Param("location") double[] location,
-			@Param("updatedAt") Date updatedAt, @Param("status") String status, @Param("connected") boolean connected,
-			@Param("disabled") boolean disabled, @Param("id") String id);
+    @Modifying
+    @Query("UPDATE Device d SET d.identification= :identification, d.clientPlatform= :clientPlatform,d.sessionKey = " +
+            ":sessionKey, d.protocol = :protocol, d.location = :location, d.updatedAt = :updatedAt, d.status = " +
+            ":status,d.connected = :connected, d.disabled = :disabled WHERE d.id = :id")
+    int updateDevice(@Param("clientPlatform") ClientPlatform clientPlatform,
+            @Param("identification") String identification, @Param("sessionKey") String sessionKey,
+            @Param("protocol") String protocol, @Param("location") double[] location,
+            @Param("updatedAt") Date updatedAt, @Param("status") String status, @Param("connected") boolean connected,
+            @Param("disabled") boolean disabled, @Param("id") String id);
 
-	Device findById(String id);
+    Device findById(String id);
 
 }

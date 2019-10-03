@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
 
 
     SchemaStaticV = Backbone.View.extend({
@@ -6,16 +6,16 @@ $(document).ready(function() {
         l: 0,
         level: 0,
 
-        setLevel: function(l) {
+        setLevel: function (l) {
             this.level = l;
         },
 
-        resetBuffer: function() {
+        resetBuffer: function () {
             this.sb = [];
             this.l = 0;
         },
 
-        getIndent: function(l) {
+        getIndent: function (l) {
             var s = '';
             l = (l == undefined ? this.level : l);
             for (var i = 0; i < l; i++) {
@@ -24,7 +24,7 @@ $(document).ready(function() {
             return s;
         },
 
-        render: function() {
+        render: function () {
             this.resetBuffer();
             var indent = this.getIndent();
 
@@ -98,7 +98,7 @@ $(document).ready(function() {
             return this.sb.join(',\n');
         },
 
-        makeAttribute: function(attribute, value, hasQuotes) {
+        makeAttribute: function (attribute, value, hasQuotes) {
             if (hasQuotes) {
                 return ('"' + attribute + '": "' + value + '"');
             }
@@ -113,16 +113,16 @@ $(document).ready(function() {
         level: 0,
         last: false,
 
-        setLevel: function(l) {
+        setLevel: function (l) {
             this.level = l;
         },
 
-        resetBuffer: function() {
+        resetBuffer: function () {
             this.sb = [];
             this.l = 0;
         },
 
-        getIndent: function(l) {
+        getIndent: function (l) {
             var s = '';
             l = (l == undefined ? this.level : l);
             for (var i = 0; i < l; i++) {
@@ -131,7 +131,7 @@ $(document).ready(function() {
             return s;
         },
 
-        render: function() {
+        render: function () {
             var indent = this.getIndent();
             this.resetBuffer();
 
@@ -178,16 +178,16 @@ $(document).ready(function() {
         level: 0,
         className: '',
 
-        setLevel: function(l) {
+        setLevel: function (l) {
             this.level = l;
         },
 
-        resetBuffer: function() {
+        resetBuffer: function () {
             this.sb = [];
             this.l = 0;
         },
 
-        getIndent: function(l) {
+        getIndent: function (l) {
             var s = '';
             l = (l == undefined ? this.level : l);
             for (var i = 0; i < l; i++) {
@@ -196,7 +196,7 @@ $(document).ready(function() {
             return s;
         },
 
-        render: function() {
+        render: function () {
             var self = this;
             var pSchemas = (this.className == 'Properties');
             var iSchemas = (this.className == 'Items');
@@ -219,7 +219,7 @@ $(document).ready(function() {
 
             var nestedLevel = (this.level + 1);
 
-            _(this.collection.models).each(function(sp) {
+            _(this.collection.models).each(function (sp) {
                 var index = this.collection.indexOf(sp);
                 var isLast = (index == (this.collection.length - 1));
 
@@ -255,16 +255,16 @@ $(document).ready(function() {
         l: 0,
         level: 0,
 
-        setLevel: function(l) {
+        setLevel: function (l) {
             this.level = l;
         },
 
-        resetBuffer: function() {
+        resetBuffer: function () {
             this.sb = [];
             this.l = 0;
         },
 
-        render: function() {
+        render: function () {
             var self = this;
             var unionType = (this.collection.length > 1);
 
@@ -276,7 +276,7 @@ $(document).ready(function() {
                 this.sb[this.l] = '';
             }
 
-            _(this.collection.models).each(function(type) {
+            _(this.collection.models).each(function (type) {
                 var index = this.collection.indexOf(type);
                 var isLast = (index == (this.collection.length - 1));
 

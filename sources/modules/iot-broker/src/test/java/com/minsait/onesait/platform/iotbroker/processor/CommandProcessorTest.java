@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -56,85 +56,85 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootTest
 @Slf4j
 public class CommandProcessorTest {
-	private MockMvc mockMvc;
-	@Autowired
-	private WebApplicationContext wac;
-	private ResultActions resultAction;
-	private final String URL_COMMAND_PATH = "/commandAsync";
-	@Autowired
-	ObjectMapper mapper;
+    private MockMvc mockMvc;
+    @Autowired
+    private WebApplicationContext wac;
+    private ResultActions resultAction;
+    private final String URL_COMMAND_PATH = "/commandAsync";
+    @Autowired
+    ObjectMapper mapper;
 
-	@Autowired
-	GatewayNotifier notifier;
+    @Autowired
+    GatewayNotifier notifier;
 
-	@MockBean
-	SecurityPluginManager securityPluginManager;
+    @MockBean
+    SecurityPluginManager securityPluginManager;
 
-	IoTSession session;
+    IoTSession session;
 
-	SSAPMessage<SSAPBodyCommandMessage> ssapCommand;
+    SSAPMessage<SSAPBodyCommandMessage> ssapCommand;
 
-	CompletableFuture<SSAPMessage<SSAPBodyCommandMessage>> completableFutureCommand;
+    CompletableFuture<SSAPMessage<SSAPBodyCommandMessage>> completableFutureCommand;
 
-	@MockBean
-	DeviceManager deviceManager;
+    @MockBean
+    DeviceManager deviceManager;
 
-	@MockBean
-	IotBrokerAuditableAspect iotBrokerAuditableAspect;
+    @MockBean
+    IotBrokerAuditableAspect iotBrokerAuditableAspect;
 
-	private void auditMocks() {
-		try {
-			doNothing().when(iotBrokerAuditableAspect).processTx(any(), any(), any(), any());
-			doNothing().when(iotBrokerAuditableAspect).doRecoveryActions(any(), any(), any(), any(), any());
-		} catch (Throwable e) {
-			log.error(e.getMessage());
-		}
+    private void auditMocks() {
+        try {
+            doNothing().when(iotBrokerAuditableAspect).processTx(any(), any(), any(), any());
+            doNothing().when(iotBrokerAuditableAspect).doRecoveryActions(any(), any(), any(), any(), any());
+        } catch (Throwable e) {
+            log.error(e.getMessage());
+        }
 
-	}
+    }
 
-	private void securityMocks() {
-		session = PojoGenerator.generateSession();
-		when(deviceManager.registerActivity(any(), any(), any(), any())).thenReturn(true);
+    private void securityMocks() {
+        session = PojoGenerator.generateSession();
+        when(deviceManager.registerActivity(any(), any(), any(), any())).thenReturn(true);
 
-		when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
-		when(securityPluginManager.checkSessionKeyActive(anyString())).thenReturn(true);
-		when(securityPluginManager.checkAuthorization(any(), any(), any())).thenReturn(true);
-	}
+        when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
+        when(securityPluginManager.checkSessionKeyActive(anyString())).thenReturn(true);
+        when(securityPluginManager.checkAuthorization(any(), any(), any())).thenReturn(true);
+    }
 
-	@Before
-	public void setUp() throws IOException, Exception {
-		completableFutureCommand = new CompletableFuture<>();
-		// repositoy.deleteByOntologyName(Person.class.getSimpleName());
-		securityMocks();
-		auditMocks();
-		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+    @Before
+    public void setUp() throws IOException, Exception {
+        completableFutureCommand = new CompletableFuture<>();
+        // repositoy.deleteByOntologyName(Person.class.getSimpleName());
+        securityMocks();
+        auditMocks();
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 
-		ssapCommand = SSAPMessageGenerator.generateCommandMessage(session.getSessionKey());
+        ssapCommand = SSAPMessageGenerator.generateCommandMessage(session.getSessionKey());
 
-	}
+    }
 
-	@Test
-	public void given_AGateway_When_ACommandArrivesInPlatform_Then_TheGatewayReceivesIt() throws Exception {
-		completableFutureCommand = new CompletableFuture<>();
-		notifier.addCommandListener("test_gateway", (c) -> {
-			completableFutureCommand.complete(c);
-			return new SSAPMessage<>();
-		});
+    @Test
+    public void given_AGateway_When_ACommandArrivesInPlatform_Then_TheGatewayReceivesIt() throws Exception {
+        completableFutureCommand = new CompletableFuture<>();
+        notifier.addCommandListener("test_gateway", (c) -> {
+            completableFutureCommand.complete(c);
+            return new SSAPMessage<>();
+        });
 
-		final StringBuilder url = new StringBuilder(URL_COMMAND_PATH);
-		url.append("/test_command/?sessionKey=" + session.getSessionKey());
+        final StringBuilder url = new StringBuilder(URL_COMMAND_PATH);
+        url.append("/test_command/?sessionKey=" + session.getSessionKey());
 
-		resultAction = mockMvc.perform(
-				MockMvcRequestBuilders.post(url.toString()).accept(org.springframework.http.MediaType.APPLICATION_JSON)
-						.content("{}").contentType(org.springframework.http.MediaType.APPLICATION_JSON));
+        resultAction = mockMvc.perform(MockMvcRequestBuilders.post(url.toString()).accept(
+                org.springframework.http.MediaType.APPLICATION_JSON).content("{}").contentType(
+                org.springframework.http.MediaType.APPLICATION_JSON));
 
-		resultAction.andExpect(status().is2xxSuccessful());
-		// final Boolean result =
-		// mapper.readValue(resultAction.andReturn().getResponse().getContentAsString(),
-		// Boolean.class);
+        resultAction.andExpect(status().is2xxSuccessful());
+        // final Boolean result =
+        // mapper.readValue(resultAction.andReturn().getResponse().getContentAsString(),
+        // Boolean.class);
 
-		final SSAPMessage<SSAPBodyCommandMessage> response = completableFutureCommand.get(10, TimeUnit.SECONDS);
-		Assert.assertNotNull(response);
-	}
+        final SSAPMessage<SSAPBodyCommandMessage> response = completableFutureCommand.get(10, TimeUnit.SECONDS);
+        Assert.assertNotNull(response);
+    }
 
 }

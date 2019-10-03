@@ -1,8 +1,8 @@
-ace.define("ace/theme/merbivore",[], function(require, exports, module) {
+ace.define("ace/theme/merbivore", [], function (require, exports, module) {
 
-exports.isDark = true;
-exports.cssClass = "ace-merbivore";
-exports.cssText = ".ace-merbivore .ace_gutter {\
+    exports.isDark = true;
+    exports.cssClass = "ace-merbivore";
+    exports.cssText = ".ace-merbivore .ace_gutter {\
 background: #202020;\
 color: #E6E1DC\
 }\
@@ -90,14 +90,14 @@ color: #FFFF89\
 background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWMQFxf3ZXB1df0PAAdsAmERTkEHAAAAAElFTkSuQmCC) right repeat-y\
 }";
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+    var dom = require("../lib/dom");
+    dom.importCssString(exports.cssText, exports.cssClass);
 });
-                (function() {
-                    ace.require(["ace/theme/merbivore"], function(m) {
-                        if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
-                        }
-                    });
-                })();
+(function () {
+    ace.require(["ace/theme/merbivore"], function (m) {
+        if (typeof module == "object" && typeof exports == "object" && module) {
+            module.exports = m;
+        }
+    });
+})();
             

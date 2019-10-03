@@ -18,23 +18,23 @@
  */
 
 angular
-  .module('dataCollectorApp.home', [
-    'ngRoute',
-    'jsonFormatter',
-    'splitterDirectives',
-    'tabDirectives',
-    'pipelineGraphDirectives',
-    'commonUI.commonDirectives',
-    'commonUI.filters',
-    'commonUI.codemirrorDirectives',
-    'ui.bootstrap',
-    'angularMoment',
-    'nvd3',
-    'ui.select',
-    'showLoadingDirectives',
-    'recordTreeDirectives',
-    'ui.bootstrap.datetimepicker'
-  ])
-  .constant('amTimeAgoConfig', {
-    withoutSuffix: true
-  });
+    .module('dataCollectorApp.home', [
+        'ngRoute',
+        'jsonFormatter',
+        'splitterDirectives',
+        'tabDirectives',
+        'pipelineGraphDirectives',
+        'commonUI.commonDirectives',
+        'commonUI.filters',
+        'commonUI.codemirrorDirectives',
+        'ui.bootstrap',
+        'angularMoment',
+        'nvd3',
+        'ui.select',
+        'showLoadingDirectives',
+        'recordTreeDirectives',
+        'ui.bootstrap.datetimepicker'
+    ])
+    .constant('amTimeAgoConfig', {
+        withoutSuffix: true
+    });

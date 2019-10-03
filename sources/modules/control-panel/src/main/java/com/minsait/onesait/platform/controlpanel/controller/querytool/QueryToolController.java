@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -53,186 +53,187 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class QueryToolController {
 
-	@Autowired
-	private OntologyService ontologyService;
+    @Autowired
+    private OntologyService ontologyService;
 
-	@Autowired
-	private OntologyDataService ontologyDataService;
+    @Autowired
+    private OntologyDataService ontologyDataService;
 
-	@Autowired
-	private QueryToolService queryToolService;
+    @Autowired
+    private QueryToolService queryToolService;
 
-	@Autowired
-	private ProjectService projectService;
+    @Autowired
+    private ProjectService projectService;
 
-	@Autowired
-	private ManageDBRepositoryFactory manageFactory;
+    @Autowired
+    private ManageDBRepositoryFactory manageFactory;
 
-	@Autowired
-	private AppWebUtils utils;
+    @Autowired
+    private AppWebUtils utils;
 
-	@Autowired
-	private ConfigurationRepository configurationRepository;
+    @Autowired
+    private ConfigurationRepository configurationRepository;
 
-	public static final String QUERY_SQL = "SQL";
-	public static final String QUERY_NATIVE = "NATIVE";
-	private static final String QUERY_RESULT_STR = "queryResult";
-	private static final String QUERY_TOOL_SHOW_QUERY = "querytool/show :: query";
-	private static final String CONTEXT_USER = "$context.userId";
-	private static final String RUNQUERYERROR = "Error in runQuery";
+    public static final String QUERY_SQL = "SQL";
+    public static final String QUERY_NATIVE = "NATIVE";
+    private static final String QUERY_RESULT_STR = "queryResult";
+    private static final String QUERY_TOOL_SHOW_QUERY = "querytool/show :: query";
+    private static final String CONTEXT_USER = "$context.userId";
+    private static final String RUNQUERYERROR = "Error in runQuery";
 
-	@GetMapping("show")
-	public String show(Model model) {
-		final Set<Ontology> ontologies = new LinkedHashSet<>(ontologyService.getAllOntologies(utils.getUserId()));
-		ontologies.addAll(projectService.getResourcesForUserOfType(utils.getUserId(), Ontology.class));
-		final List<String> tables = queryToolService.getTables();
-		model.addAttribute("ontologies", ontologies);
-		model.addAttribute("userRole", utils.getRole());
-		model.addAttribute("configDBTables", tables);
-		return "querytool/show";
+    @GetMapping("show")
+    public String show(Model model) {
+        final Set<Ontology> ontologies = new LinkedHashSet<>(ontologyService.getAllOntologies(utils.getUserId()));
+        ontologies.addAll(projectService.getResourcesForUserOfType(utils.getUserId(), Ontology.class));
+        final List<String> tables = queryToolService.getTables();
+        model.addAttribute("ontologies", ontologies);
+        model.addAttribute("userRole", utils.getRole());
+        model.addAttribute("configDBTables", tables);
+        return "querytool/show";
 
-	}
+    }
 
-	@PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-	@PostMapping("queryconfigdb")
-	public String runQueryConfigDB(Model model, @RequestParam String query, @RequestParam String tableName)
-			throws JsonProcessingException {
-		query = query.trim();
-		if (query.toLowerCase().startsWith("select") && query.split(";").length == 1) {
-			try {
-				List<String> queryResult = new LinkedList<>();
-				queryResult = queryToolService.querySQLtoConfigDB(query);
-				model.addAttribute(QUERY_RESULT_STR, queryResult);
-				return QUERY_TOOL_SHOW_QUERY;
-			} catch (final SQLGrammarException e) {
-				log.error("Error while executing SQL query in ConfigDB {}", e.getMessage());
-				model.addAttribute(QUERY_RESULT_STR, e.getSQLException());
-				return QUERY_TOOL_SHOW_QUERY;
-			} catch (final RuntimeException e) {
-				log.error("Error while executing SQL query in ConfigDB {}", e.getMessage());
-				model.addAttribute(QUERY_RESULT_STR, e.getMessage());
-				return QUERY_TOOL_SHOW_QUERY;
-			}
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+    @PostMapping("queryconfigdb")
+    public String runQueryConfigDB(Model model, @RequestParam String query,
+            @RequestParam String tableName) throws JsonProcessingException {
+        query = query.trim();
+        if (query.toLowerCase().startsWith("select") && query.split(";").length == 1) {
+            try {
+                List<String> queryResult = new LinkedList<>();
+                queryResult = queryToolService.querySQLtoConfigDB(query);
+                model.addAttribute(QUERY_RESULT_STR, queryResult);
+                return QUERY_TOOL_SHOW_QUERY;
+            } catch (final SQLGrammarException e) {
+                log.error("Error while executing SQL query in ConfigDB {}", e.getMessage());
+                model.addAttribute(QUERY_RESULT_STR, e.getSQLException());
+                return QUERY_TOOL_SHOW_QUERY;
+            } catch (final RuntimeException e) {
+                log.error("Error while executing SQL query in ConfigDB {}", e.getMessage());
+                model.addAttribute(QUERY_RESULT_STR, e.getMessage());
+                return QUERY_TOOL_SHOW_QUERY;
+            }
 
-		} else {
-			model.addAttribute(QUERY_RESULT_STR, utils.getMessage("querytool.error.operation", "Unallowed operation"));
-			return QUERY_TOOL_SHOW_QUERY;
-		}
-	}
+        } else {
+            model.addAttribute(QUERY_RESULT_STR, utils.getMessage("querytool.error.operation", "Unallowed operation"));
+            return QUERY_TOOL_SHOW_QUERY;
+        }
+    }
 
-	@PostMapping("query")
-	public String runQuery(Model model, @RequestParam String queryType, @RequestParam String query,
-			@RequestParam String ontologyIdentification) throws JsonProcessingException {
-		String queryResult = null;
+    @PostMapping("query")
+    public String runQuery(Model model, @RequestParam String queryType, @RequestParam String query,
+            @RequestParam String ontologyIdentification) throws JsonProcessingException {
+        String queryResult = null;
 
-		final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
-				utils.getUserId());
+        final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
+                                                                              utils.getUserId());
 
-		try {
-			if (ontologyService.hasUserPermissionForQuery(utils.getUserId(), ontologyIdentification)) {
-				final ManageDBRepository manageDB = manageFactory.getInstance(ontologyIdentification);
-				if (manageDB.getListOfTables4Ontology(ontologyIdentification).isEmpty()) {
-					manageDB.createTable4Ontology(ontologyIdentification, "{}", null);
-				}
-				query = query.replace(CONTEXT_USER, utils.getUserId());
-				if (queryType.toUpperCase().equals(QUERY_SQL)
-						&& !ontology.getRtdbDatasource().equals(RtdbDatasource.VIRTUAL)) {
-					queryResult = queryToolService.querySQLAsJson(utils.getUserId(), ontologyIdentification, query, 0);
-					model.addAttribute(QUERY_RESULT_STR, queryResult);
-					return QUERY_TOOL_SHOW_QUERY;
+        try {
+            if (ontologyService.hasUserPermissionForQuery(utils.getUserId(), ontologyIdentification)) {
+                final ManageDBRepository manageDB = manageFactory.getInstance(ontologyIdentification);
+                if (manageDB.getListOfTables4Ontology(ontologyIdentification).isEmpty()) {
+                    manageDB.createTable4Ontology(ontologyIdentification, "{}", null);
+                }
+                query = query.replace(CONTEXT_USER, utils.getUserId());
+                if (queryType.toUpperCase().equals(QUERY_SQL) && !ontology.getRtdbDatasource().equals(
+                        RtdbDatasource.VIRTUAL)) {
+                    queryResult = queryToolService.querySQLAsJson(utils.getUserId(), ontologyIdentification, query, 0);
+                    model.addAttribute(QUERY_RESULT_STR, queryResult);
+                    return QUERY_TOOL_SHOW_QUERY;
 
-				} else if (queryType.toUpperCase().equals(QUERY_NATIVE)
-						|| ontology.getRtdbDatasource().equals(RtdbDatasource.VIRTUAL)) {
-					queryResult = queryToolService.queryNativeAsJson(utils.getUserId(), ontologyIdentification, query);
-					model.addAttribute(QUERY_RESULT_STR, queryResult);
-					return QUERY_TOOL_SHOW_QUERY;
-				} else {
-					return utils.getMessage("querytool.querytype.notselected", "Please select queryType Native or SQL");
-				}
-			} else {
-				model.addAttribute(QUERY_RESULT_STR, utils.getMessage("querytool.ontology.access.denied.json",
-						"You don't have permissions for this ontology"));
-				return QUERY_TOOL_SHOW_QUERY;
-			}
+                } else if (queryType.toUpperCase().equals(QUERY_NATIVE) || ontology.getRtdbDatasource().equals(
+                        RtdbDatasource.VIRTUAL)) {
+                    queryResult = queryToolService.queryNativeAsJson(utils.getUserId(), ontologyIdentification, query);
+                    model.addAttribute(QUERY_RESULT_STR, queryResult);
+                    return QUERY_TOOL_SHOW_QUERY;
+                } else {
+                    return utils.getMessage("querytool.querytype.notselected", "Please select queryType Native or SQL");
+                }
+            } else {
+                model.addAttribute(QUERY_RESULT_STR, utils.getMessage("querytool.ontology.access.denied.json",
+                                                                      "You don't have permissions for this ontology"));
+                return QUERY_TOOL_SHOW_QUERY;
+            }
 
-		} catch (final QueryNativeFormatException e) {
-			log.error(RUNQUERYERROR, e);
-			model.addAttribute(QUERY_RESULT_STR, "Malformed Query.");
-			return QUERY_TOOL_SHOW_QUERY;
-		} catch (final DBPersistenceException e) {
-			log.error(RUNQUERYERROR, e);
-			model.addAttribute(QUERY_RESULT_STR, e.getMessage());
-			return QUERY_TOOL_SHOW_QUERY;
-		} catch (final Exception e) {
-			log.error(RUNQUERYERROR, e);
-			model.addAttribute(QUERY_RESULT_STR, utils.getMessage("querytool.query.native.error", e.getMessage()));
-			return QUERY_TOOL_SHOW_QUERY;
-		}
+        } catch (final QueryNativeFormatException e) {
+            log.error(RUNQUERYERROR, e);
+            model.addAttribute(QUERY_RESULT_STR, "Malformed Query.");
+            return QUERY_TOOL_SHOW_QUERY;
+        } catch (final DBPersistenceException e) {
+            log.error(RUNQUERYERROR, e);
+            model.addAttribute(QUERY_RESULT_STR, e.getMessage());
+            return QUERY_TOOL_SHOW_QUERY;
+        } catch (final Exception e) {
+            log.error(RUNQUERYERROR, e);
+            model.addAttribute(QUERY_RESULT_STR, utils.getMessage("querytool.query.native.error", e.getMessage()));
+            return QUERY_TOOL_SHOW_QUERY;
+        }
 
-	}
+    }
 
-	@PostMapping("compile")
-	public String compile(Model model, @RequestParam String queryType, @RequestParam String query,
-			@RequestParam String ontologyIdentification) throws JsonProcessingException {
-		final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
-				utils.getUserId());
-		try {
-			if (ontology != null && queryType.equalsIgnoreCase(QUERY_SQL)
-					&& !ontology.getRtdbDatasource().equals(RtdbDatasource.VIRTUAL)) {
-				final String queryResult = queryToolService.compileSQLQueryAsJson(utils.getUserId(), ontology, query,
-						0);
-				model.addAttribute(QUERY_RESULT_STR, queryResult);
-				return QUERY_TOOL_SHOW_QUERY;
-			} else {
-				model.addAttribute(QUERY_RESULT_STR,
-						utils.getMessage("querytool.error.sqlonly", "Please select queryType Native or SQL"));
-				return QUERY_TOOL_SHOW_QUERY;
+    @PostMapping("compile")
+    public String compile(Model model, @RequestParam String queryType, @RequestParam String query,
+            @RequestParam String ontologyIdentification) throws JsonProcessingException {
+        final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
+                                                                              utils.getUserId());
+        try {
+            if (ontology != null && queryType.equalsIgnoreCase(QUERY_SQL) && !ontology.getRtdbDatasource().equals(
+                    RtdbDatasource.VIRTUAL)) {
+                final String queryResult = queryToolService.compileSQLQueryAsJson(utils.getUserId(), ontology, query,
+                                                                                  0);
+                model.addAttribute(QUERY_RESULT_STR, queryResult);
+                return QUERY_TOOL_SHOW_QUERY;
+            } else {
+                model.addAttribute(QUERY_RESULT_STR, utils.getMessage("querytool.error.sqlonly",
+                                                                      "Please select queryType Native or SQL"));
+                return QUERY_TOOL_SHOW_QUERY;
 
-			}
-		} catch (final DBPersistenceException e) {
-			log.error(RUNQUERYERROR, e);
-			model.addAttribute(QUERY_RESULT_STR, e.getMessage());
-			return QUERY_TOOL_SHOW_QUERY;
-		} catch (final Exception e) {
-			log.error(RUNQUERYERROR, e);
-			model.addAttribute(QUERY_RESULT_STR,
-					utils.getMessage("querytool.query.native.error", "Error malformed query"));
-			return QUERY_TOOL_SHOW_QUERY;
-		}
+            }
+        } catch (final DBPersistenceException e) {
+            log.error(RUNQUERYERROR, e);
+            model.addAttribute(QUERY_RESULT_STR, e.getMessage());
+            return QUERY_TOOL_SHOW_QUERY;
+        } catch (final Exception e) {
+            log.error(RUNQUERYERROR, e);
+            model.addAttribute(QUERY_RESULT_STR,
+                               utils.getMessage("querytool.query.native.error", "Error malformed query"));
+            return QUERY_TOOL_SHOW_QUERY;
+        }
 
-	}
+    }
 
-	@PostMapping("ontologyfields")
-	public String getOntologyFields(Model model, @RequestParam String ontologyIdentification) throws IOException {
+    @PostMapping("ontologyfields")
+    public String getOntologyFields(Model model, @RequestParam String ontologyIdentification) throws IOException {
 
-		model.addAttribute("fields",
-				ontologyService.getOntologyFieldsQueryTool(ontologyIdentification, utils.getUserId()));
-		return "querytool/show :: fields";
+        model.addAttribute("fields",
+                           ontologyService.getOntologyFieldsQueryTool(ontologyIdentification, utils.getUserId()));
+        return "querytool/show :: fields";
 
-	}
+    }
 
-	@PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-	@PostMapping("tableColumns")
-	public String getTableColumns(Model model, @RequestParam String tableName) {
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+    @PostMapping("tableColumns")
+    public String getTableColumns(Model model, @RequestParam String tableName) {
 
-		model.addAttribute("fields", queryToolService.getTableColumns(tableName));
-		return "querytool/show :: fields";
+        model.addAttribute("fields", queryToolService.getTableColumns(tableName));
+        return "querytool/show :: fields";
 
-	}
+    }
 
-	@PostMapping("relations")
-	public String getOntologyRelations(Model model, @RequestParam String ontologyIdentification) throws IOException {
-		model.addAttribute("relations", ontologyDataService.getOntologyReferences(ontologyIdentification));
-		final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
-				utils.getUserId());
-		if (ontology != null)
-			model.addAttribute("datasource", ontology.getRtdbDatasource().name());
-		return "querytool/show :: relations";
-	}
+    @PostMapping("relations")
+    public String getOntologyRelations(Model model, @RequestParam String ontologyIdentification) throws IOException {
+        model.addAttribute("relations", ontologyDataService.getOntologyReferences(ontologyIdentification));
+        final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
+                                                                              utils.getUserId());
+        if (ontology != null)
+            model.addAttribute("datasource", ontology.getRtdbDatasource().name());
+        return "querytool/show :: relations";
+    }
 
-	@GetMapping("/rtdb/{ontology}")
-	public @ResponseBody String getRtdb(Model model, @PathVariable("ontology") String ontologyIdentification) {
-		return ontologyService.getRtdbFromOntology(ontologyIdentification);
-	}
+    @GetMapping("/rtdb/{ontology}")
+    public @ResponseBody
+    String getRtdb(Model model, @PathVariable("ontology") String ontologyIdentification) {
+        return ontologyService.getRtdbFromOntology(ontologyIdentification);
+    }
 
 }

@@ -1,15 +1,15 @@
-ace.define("ace/snippets/redshift",[], function(require, exports, module) {
-"use strict";
+ace.define("ace/snippets/redshift", [], function (require, exports, module) {
+    "use strict";
 
-exports.snippetText = "";
-exports.scope = "redshift";
+    exports.snippetText = "";
+    exports.scope = "redshift";
 
 });
-                (function() {
-                    ace.require(["ace/snippets/redshift"], function(m) {
-                        if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
-                        }
-                    });
-                })();
+(function () {
+    ace.require(["ace/snippets/redshift"], function (m) {
+        if (typeof module == "object" && typeof exports == "object" && module) {
+            module.exports = m;
+        }
+    });
+})();
             

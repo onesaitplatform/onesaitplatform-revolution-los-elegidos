@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -53,173 +53,173 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class QueryTemplateController {
 
-	private static final String TEMPLATE_STR = "template";
-	private static final String TEMPLATE_ONT_SEL_STR = "templateOntologySelected";
-	private static final String ONTOLOGIES_STR = "ontologies";
-	private static final String REDIRECT_TEMPLATE_CREATE = "redirect:/querytemplates/create";
-	private static final String REDIRECT_TEMPLATE_LIST = "redirect:/querytemplates/list";
+    private static final String TEMPLATE_STR = "template";
+    private static final String TEMPLATE_ONT_SEL_STR = "templateOntologySelected";
+    private static final String ONTOLOGIES_STR = "ontologies";
+    private static final String REDIRECT_TEMPLATE_CREATE = "redirect:/querytemplates/create";
+    private static final String REDIRECT_TEMPLATE_LIST = "redirect:/querytemplates/list";
 
-	@Autowired
-	private QueryTemplateService queryTemplateService;
-	@Autowired
-	private QueryTemplateRepository queryTemplateRepository;
-	@Autowired
-	private OntologyService ontologyService;
-	@Autowired
-	private AppWebUtils utils;
-	@Autowired
-	private EntityDeletionService entityDeletionService;
+    @Autowired
+    private QueryTemplateService queryTemplateService;
+    @Autowired
+    private QueryTemplateRepository queryTemplateRepository;
+    @Autowired
+    private OntologyService ontologyService;
+    @Autowired
+    private AppWebUtils utils;
+    @Autowired
+    private EntityDeletionService entityDeletionService;
 
-	@PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-	@RequestMapping(value = "/list", produces = "text/html")
-	public String list(Model uiModel, HttpServletRequest request) {
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+    @RequestMapping(value = "/list", produces = "text/html")
+    public String list(Model uiModel, HttpServletRequest request) {
 
-		List<QueryTemplate> templates = this.queryTemplateService.getAllQueryTemplates();
-		uiModel.addAttribute("templates", templates);
-		return "querytemplates/list";
+        List<QueryTemplate> templates = this.queryTemplateService.getAllQueryTemplates();
+        uiModel.addAttribute("templates", templates);
+        return "querytemplates/list";
 
-	}
+    }
 
-	@PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-	@GetMapping(value = "/create", produces = "text/html")
-	public String createQueryTemplate(Model model) {
-		model.addAttribute(TEMPLATE_STR, new QueryTemplate());
-		model.addAttribute(TEMPLATE_ONT_SEL_STR, "");
-		model.addAttribute(ONTOLOGIES_STR, getOntologiesDTO());
-		model.addAttribute("qtemplate", new QueryTemplateDTO());
-		return "querytemplates/create";
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+    @GetMapping(value = "/create", produces = "text/html")
+    public String createQueryTemplate(Model model) {
+        model.addAttribute(TEMPLATE_STR, new QueryTemplate());
+        model.addAttribute(TEMPLATE_ONT_SEL_STR, "");
+        model.addAttribute(ONTOLOGIES_STR, getOntologiesDTO());
+        model.addAttribute("qtemplate", new QueryTemplateDTO());
+        return "querytemplates/create";
 
-	}
+    }
 
-	@PostMapping(value = { "/create" })
-	public String createQueryTemplate(Model model, @Valid QueryTemplateDTO queryTemplateDTO,
-			BindingResult bindingResult, RedirectAttributes redirect) {
-		if (bindingResult.hasErrors()) {
-			log.debug("Some query template properties missing");
-			utils.addRedirectMessage("templates.create.error", redirect);
-			return REDIRECT_TEMPLATE_CREATE;
-		}
-		QueryTemplate queryTemplate = new QueryTemplate();
-		try {
-			queryTemplate.setName(queryTemplateDTO.getName());
-			queryTemplate.setDescription(queryTemplateDTO.getDescription());
-			queryTemplate.setQueryGenerator(queryTemplateDTO.getQueryGenerator());
-			queryTemplate.setQuerySelector(queryTemplateDTO.getQuerySelector());
-			queryTemplate.setType(QueryType.NATIVE);
+    @PostMapping(value = {"/create"})
+    public String createQueryTemplate(Model model, @Valid QueryTemplateDTO queryTemplateDTO,
+            BindingResult bindingResult, RedirectAttributes redirect) {
+        if (bindingResult.hasErrors()) {
+            log.debug("Some query template properties missing");
+            utils.addRedirectMessage("templates.create.error", redirect);
+            return REDIRECT_TEMPLATE_CREATE;
+        }
+        QueryTemplate queryTemplate = new QueryTemplate();
+        try {
+            queryTemplate.setName(queryTemplateDTO.getName());
+            queryTemplate.setDescription(queryTemplateDTO.getDescription());
+            queryTemplate.setQueryGenerator(queryTemplateDTO.getQueryGenerator());
+            queryTemplate.setQuerySelector(queryTemplateDTO.getQuerySelector());
+            queryTemplate.setType(QueryType.NATIVE);
 
-			String onto = queryTemplateDTO.getOntology();
-			Ontology ontology;
-			if (onto.length() > 0) {
-				ontology = ontologyService.getOntologyByIdentification(onto, this.utils.getUserId());
-				if (ontology != null) {
-					queryTemplate.setOntology(ontology);
-				}
-			}
-			this.queryTemplateService.createQueryTemplate(queryTemplate);
-		} catch (QueryTemplateServiceException e) {
-			log.debug("Cannot create query template");
-			utils.addRedirectMessage("templates.create.error", redirect);
-			return REDIRECT_TEMPLATE_CREATE;
-		}
-		return REDIRECT_TEMPLATE_LIST;
-	}
+            String onto = queryTemplateDTO.getOntology();
+            Ontology ontology;
+            if (onto.length() > 0) {
+                ontology = ontologyService.getOntologyByIdentification(onto, this.utils.getUserId());
+                if (ontology != null) {
+                    queryTemplate.setOntology(ontology);
+                }
+            }
+            this.queryTemplateService.createQueryTemplate(queryTemplate);
+        } catch (QueryTemplateServiceException e) {
+            log.debug("Cannot create query template");
+            utils.addRedirectMessage("templates.create.error", redirect);
+            return REDIRECT_TEMPLATE_CREATE;
+        }
+        return REDIRECT_TEMPLATE_LIST;
+    }
 
-	@GetMapping(value = "/update/{id}", produces = "text/html")
-	public String update(Model model, @PathVariable("id") String id) {
-		QueryTemplate queryTemplate = this.queryTemplateService.getQueryTemplateById(id);
-		if (queryTemplate != null) {
-			model.addAttribute(TEMPLATE_STR, queryTemplate);
-			String ontologyIdentification = "";
-			if (queryTemplate.getOntology() != null && queryTemplate.getOntology().getIdentification() != null) {
-				ontologyIdentification = queryTemplate.getOntology().getIdentification();
-			}
-			model.addAttribute(TEMPLATE_ONT_SEL_STR, ontologyIdentification);
-			model.addAttribute(ONTOLOGIES_STR, getOntologiesDTO());
-			QueryTemplateDTO qTemplate = new QueryTemplateDTO();
-			qTemplate.setDescription(queryTemplate.getDescription());
-			qTemplate.setName(queryTemplate.getName());
-			qTemplate.setOntology(ontologyIdentification);
-			qTemplate.setQueryGenerator(queryTemplate.getQueryGenerator());
-			qTemplate.setQuerySelector(queryTemplate.getQuerySelector());
-			model.addAttribute("qtemplate", qTemplate);
-			return "querytemplates/create";
-		} else {
-			return "error/404";
-		}
-	}
+    @GetMapping(value = "/update/{id}", produces = "text/html")
+    public String update(Model model, @PathVariable("id") String id) {
+        QueryTemplate queryTemplate = this.queryTemplateService.getQueryTemplateById(id);
+        if (queryTemplate != null) {
+            model.addAttribute(TEMPLATE_STR, queryTemplate);
+            String ontologyIdentification = "";
+            if (queryTemplate.getOntology() != null && queryTemplate.getOntology().getIdentification() != null) {
+                ontologyIdentification = queryTemplate.getOntology().getIdentification();
+            }
+            model.addAttribute(TEMPLATE_ONT_SEL_STR, ontologyIdentification);
+            model.addAttribute(ONTOLOGIES_STR, getOntologiesDTO());
+            QueryTemplateDTO qTemplate = new QueryTemplateDTO();
+            qTemplate.setDescription(queryTemplate.getDescription());
+            qTemplate.setName(queryTemplate.getName());
+            qTemplate.setOntology(ontologyIdentification);
+            qTemplate.setQueryGenerator(queryTemplate.getQueryGenerator());
+            qTemplate.setQuerySelector(queryTemplate.getQuerySelector());
+            model.addAttribute("qtemplate", qTemplate);
+            return "querytemplates/create";
+        } else {
+            return "error/404";
+        }
+    }
 
-	@PutMapping(value = "/update/{id}", produces = "text/html")
-	public String updateQueryTemplate(Model model, @PathVariable("id") String id,
-			@Valid QueryTemplateDTO queryTemplateDTO, BindingResult bindingResult, RedirectAttributes redirect) {
+    @PutMapping(value = "/update/{id}", produces = "text/html")
+    public String updateQueryTemplate(Model model, @PathVariable("id") String id,
+            @Valid QueryTemplateDTO queryTemplateDTO, BindingResult bindingResult, RedirectAttributes redirect) {
 
-		QueryTemplate queryTemplate = queryTemplateRepository.findByName(queryTemplateDTO.getName());
-		queryTemplate.setDescription(queryTemplateDTO.getDescription());
-		queryTemplate.setQueryGenerator(queryTemplateDTO.getQueryGenerator());
-		queryTemplate.setQuerySelector(queryTemplateDTO.getQuerySelector());
+        QueryTemplate queryTemplate = queryTemplateRepository.findByName(queryTemplateDTO.getName());
+        queryTemplate.setDescription(queryTemplateDTO.getDescription());
+        queryTemplate.setQueryGenerator(queryTemplateDTO.getQueryGenerator());
+        queryTemplate.setQuerySelector(queryTemplateDTO.getQuerySelector());
 
-		if (bindingResult.hasErrors()) {
-			log.debug("Some Query Template properties missing");
-			utils.addRedirectMessage("templates.update.error", redirect);
-			return "redirect:/querytemplates/update/" + id;
-		}
-		try {
-			String onto = queryTemplateDTO.getOntology();
-			Ontology ontology;
-			if (onto.length() > 0) {
-				ontology = ontologyService.getOntologyByIdentification(onto, this.utils.getUserId());
-				if (ontology != null) {
-					queryTemplate.setOntology(ontology);
-				}
-			} else {
-				queryTemplate.setOntology(null);
-			}
-			this.queryTemplateService.updateQueryTemplate(queryTemplate);
-		} catch (QueryTemplateServiceException e) {
-			log.debug("Cannot update Query Template");
-			utils.addRedirectMessage("templates.update.error", redirect);
-			return REDIRECT_TEMPLATE_CREATE;
-		}
-		return REDIRECT_TEMPLATE_LIST;
-	}
+        if (bindingResult.hasErrors()) {
+            log.debug("Some Query Template properties missing");
+            utils.addRedirectMessage("templates.update.error", redirect);
+            return "redirect:/querytemplates/update/" + id;
+        }
+        try {
+            String onto = queryTemplateDTO.getOntology();
+            Ontology ontology;
+            if (onto.length() > 0) {
+                ontology = ontologyService.getOntologyByIdentification(onto, this.utils.getUserId());
+                if (ontology != null) {
+                    queryTemplate.setOntology(ontology);
+                }
+            } else {
+                queryTemplate.setOntology(null);
+            }
+            this.queryTemplateService.updateQueryTemplate(queryTemplate);
+        } catch (QueryTemplateServiceException e) {
+            log.debug("Cannot update Query Template");
+            utils.addRedirectMessage("templates.update.error", redirect);
+            return REDIRECT_TEMPLATE_CREATE;
+        }
+        return REDIRECT_TEMPLATE_LIST;
+    }
 
-	@PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-	@DeleteMapping("/{id}")
-	public String delete(Model model, @PathVariable("id") String id) {
-		this.entityDeletionService.deleteQueryTemplate(id);
-		return REDIRECT_TEMPLATE_LIST;
-	}
+    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+    @DeleteMapping("/{id}")
+    public String delete(Model model, @PathVariable("id") String id) {
+        this.entityDeletionService.deleteQueryTemplate(id);
+        return REDIRECT_TEMPLATE_LIST;
+    }
 
-	@GetMapping(value = "/show/{id}", produces = "text/html")
-	public String show(Model model, @PathVariable("id") String id) {
-		QueryTemplate queryTemplate = this.queryTemplateService.getQueryTemplateById(id);
-		if (queryTemplate != null) {
-			model.addAttribute(TEMPLATE_STR, queryTemplate);
-			String ontologyIdentification = "";
-			if (queryTemplate.getOntology() != null && queryTemplate.getOntology().getIdentification() != null) {
-				ontologyIdentification = queryTemplate.getOntology().getIdentification();
-			}
-			model.addAttribute(TEMPLATE_ONT_SEL_STR, ontologyIdentification);
-			model.addAttribute(ONTOLOGIES_STR, getOntologiesDTO());
-			return "querytemplates/show";
-		} else {
-			return "error/404";
-		}
-	}
+    @GetMapping(value = "/show/{id}", produces = "text/html")
+    public String show(Model model, @PathVariable("id") String id) {
+        QueryTemplate queryTemplate = this.queryTemplateService.getQueryTemplateById(id);
+        if (queryTemplate != null) {
+            model.addAttribute(TEMPLATE_STR, queryTemplate);
+            String ontologyIdentification = "";
+            if (queryTemplate.getOntology() != null && queryTemplate.getOntology().getIdentification() != null) {
+                ontologyIdentification = queryTemplate.getOntology().getIdentification();
+            }
+            model.addAttribute(TEMPLATE_ONT_SEL_STR, ontologyIdentification);
+            model.addAttribute(ONTOLOGIES_STR, getOntologiesDTO());
+            return "querytemplates/show";
+        } else {
+            return "error/404";
+        }
+    }
 
-	private List<OntologyDTO> getOntologiesDTO() {
-		List<OntologyDTO> listOntologies = new ArrayList<>();
-		List<Ontology> ontologies = this.ontologyService.getOntologiesByUserId(utils.getUserId());
-		if (ontologies != null && !ontologies.isEmpty()) {
-			for (Iterator<Ontology> iterator = ontologies.iterator(); iterator.hasNext();) {
-				Ontology ontology = iterator.next();
-				OntologyDTO oDTO = new OntologyDTO();
-				oDTO.setIdentification(ontology.getIdentification());
-				oDTO.setDescription(ontology.getDescription());
-				oDTO.setUser(ontology.getUser().getUserId());
-				listOntologies.add(oDTO);
-			}
-		}
-		return listOntologies;
-	}
+    private List<OntologyDTO> getOntologiesDTO() {
+        List<OntologyDTO> listOntologies = new ArrayList<>();
+        List<Ontology> ontologies = this.ontologyService.getOntologiesByUserId(utils.getUserId());
+        if (ontologies != null && !ontologies.isEmpty()) {
+            for (Iterator<Ontology> iterator = ontologies.iterator(); iterator.hasNext(); ) {
+                Ontology ontology = iterator.next();
+                OntologyDTO oDTO = new OntologyDTO();
+                oDTO.setIdentification(ontology.getIdentification());
+                oDTO.setDescription(ontology.getDescription());
+                oDTO.setUser(ontology.getUser().getUserId());
+                listOntologies.add(oDTO);
+            }
+        }
+        return listOntologies;
+    }
 
 }

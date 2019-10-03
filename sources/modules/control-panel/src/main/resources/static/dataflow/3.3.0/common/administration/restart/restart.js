@@ -18,27 +18,27 @@
  */
 
 angular
-  .module('dataCollectorApp')
-  .controller('RestartModalInstanceController', function ($scope, $modalInstance, api) {
-    angular.extend($scope, {
-      issues: [],
-      isRestarting: false,
-      isRestartSucceed: false,
+    .module('dataCollectorApp')
+    .controller('RestartModalInstanceController', function ($scope, $modalInstance, api) {
+        angular.extend($scope, {
+            issues: [],
+            isRestarting: false,
+            isRestartSucceed: false,
 
-      restart: function() {
-        $scope.isRestarting = true;
-        api.admin.restartDataCollector()
-          .then(function() {
-            $scope.isRestartSucceed = true;
-          })
-          .catch(function(res) {
-            $scope.issues = [res.data];
-            $scope.isRestarting = false;
-          });
-      },
+            restart: function () {
+                $scope.isRestarting = true;
+                api.admin.restartDataCollector()
+                    .then(function () {
+                        $scope.isRestartSucceed = true;
+                    })
+                    .catch(function (res) {
+                        $scope.issues = [res.data];
+                        $scope.isRestarting = false;
+                    });
+            },
 
-      cancel: function() {
-        $modalInstance.dismiss('cancel');
-      }
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
+            }
+        });
     });
-  });

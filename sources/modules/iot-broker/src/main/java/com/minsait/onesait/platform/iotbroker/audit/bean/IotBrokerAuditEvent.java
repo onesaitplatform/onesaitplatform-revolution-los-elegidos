@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,48 +25,48 @@ import lombok.Setter;
 
 public class IotBrokerAuditEvent extends OPAuditRemoteEvent implements Serializable {
 
-	private static final long serialVersionUID = -4179966151619124358L;
+    private static final long serialVersionUID = -4179966151619124358L;
 
-	@Getter
-	@Setter
-	private String sessionKey;
+    @Getter
+    @Setter
+    private String sessionKey;
 
-	@Getter
-	@Setter
-	private GatewayInfo gatewayInfo;
+    @Getter
+    @Setter
+    private GatewayInfo gatewayInfo;
 
-	@Getter
-	@Setter
-	private String query;
+    @Getter
+    @Setter
+    private String query;
 
-	@Getter
-	@Setter
-	private String data;
+    @Getter
+    @Setter
+    private String data;
 
-	@Getter
-	@Setter
-	private String clientPlatform;
+    @Getter
+    @Setter
+    private String clientPlatform;
 
-	@Getter
-	@Setter
-	private String clientPlatformInstance;
+    @Getter
+    @Setter
+    private String clientPlatformInstance;
 
-	public IotBrokerAuditEvent() {
-		super();
-	}
+    public IotBrokerAuditEvent() {
+        super();
+    }
 
-	public IotBrokerAuditEvent(String message, String id, EventType type, long timeStamp, String formatedTimeStamp,
-			String user, String ontology, String operationType, Module module, Map<String, Object> extraData,
-			String otherType, String remoteAddress, ResultOperationType resultOperation, String sessionKey,
-			GatewayInfo gatewayInfo, String query, String data, String clientPlatform, String clientPlatformInstance) {
-		super(message, id, type, timeStamp, formatedTimeStamp, user, ontology, operationType, module, extraData,
-				otherType, remoteAddress, resultOperation);
-		this.sessionKey = sessionKey;
-		this.gatewayInfo = gatewayInfo;
-		this.query = query;
-		this.data = data;
-		this.clientPlatform = clientPlatform;
-		this.clientPlatformInstance = clientPlatformInstance;
-	}
+    public IotBrokerAuditEvent(String message, String id, EventType type, long timeStamp, String formatedTimeStamp,
+            String user, String ontology, String operationType, Module module, Map<String, Object> extraData,
+            String otherType, String remoteAddress, ResultOperationType resultOperation, String sessionKey,
+            GatewayInfo gatewayInfo, String query, String data, String clientPlatform, String clientPlatformInstance) {
+        super(message, id, type, timeStamp, formatedTimeStamp, user, ontology, operationType, module, extraData,
+              otherType, remoteAddress, resultOperation);
+        this.sessionKey = sessionKey;
+        this.gatewayInfo = gatewayInfo;
+        this.query = query;
+        this.data = data;
+        this.clientPlatform = clientPlatform;
+        this.clientPlatformInstance = clientPlatformInstance;
+    }
 
 }

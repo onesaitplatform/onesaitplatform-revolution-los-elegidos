@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,25 +21,25 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.minsait.onesait.platform.config.model.ActionsDigitalTwinType;
 import com.minsait.onesait.platform.config.model.DigitalTwinType;
 
-public interface ActionsDigitalTwinTypeRepository extends JpaRepository<ActionsDigitalTwinType, String>{
-	
-	List<ActionsDigitalTwinType> findByNameIgnoreCase(String name);
+public interface ActionsDigitalTwinTypeRepository extends JpaRepository<ActionsDigitalTwinType, String> {
 
-	List<ActionsDigitalTwinType> findByDescription(String description);
+    List<ActionsDigitalTwinType> findByNameIgnoreCase(String name);
 
-	ActionsDigitalTwinType findByName(String name);
+    List<ActionsDigitalTwinType> findByDescription(String description);
 
-	List<ActionsDigitalTwinType> findAllByOrderByNameAsc();
+    ActionsDigitalTwinType findByName(String name);
 
-	List<ActionsDigitalTwinType> findByDescriptionContaining(String description);
+    List<ActionsDigitalTwinType> findAllByOrderByNameAsc();
 
-	List<ActionsDigitalTwinType> findByNameContaining(String name);
-	
-	List<ActionsDigitalTwinType> findByNameLikeAndDescriptionLike(String name, String description);
-	
-	List<ActionsDigitalTwinType> findByNameContainingAndDescriptionContaining(String name, String description);
-	
-	ActionsDigitalTwinType findById(String id);
-	
-	List<ActionsDigitalTwinType> findByTypeId(DigitalTwinType digitalTwinType);
+    List<ActionsDigitalTwinType> findByDescriptionContaining(String description);
+
+    List<ActionsDigitalTwinType> findByNameContaining(String name);
+
+    List<ActionsDigitalTwinType> findByNameLikeAndDescriptionLike(String name, String description);
+
+    List<ActionsDigitalTwinType> findByNameContainingAndDescriptionContaining(String name, String description);
+
+    ActionsDigitalTwinType findById(String id);
+
+    List<ActionsDigitalTwinType> findByTypeId(DigitalTwinType digitalTwinType);
 }

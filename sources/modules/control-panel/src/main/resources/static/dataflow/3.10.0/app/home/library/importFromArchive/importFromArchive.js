@@ -18,55 +18,55 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('ImportFromArchiveModalInstanceController', ["$scope", "$modalInstance", "api", "$translate", function ($scope, $modalInstance, api, $translate) {
-    var errorMsg = 'Not a valid Pipeline Configuration file.';
+    .module('dataCollectorApp.home')
+    .controller('ImportFromArchiveModalInstanceController', ["$scope", "$modalInstance", "api", "$translate", function ($scope, $modalInstance, api, $translate) {
+        var errorMsg = 'Not a valid Pipeline Configuration file.';
 
-    angular.extend($scope, {
-      common: {
-        errors: []
-      },
-      successEntities: [],
-      showLoading: true,
-      uploadFile: {},
-      operationDone: false,
-      operationInProgress: false,
+        angular.extend($scope, {
+            common: {
+                errors: []
+            },
+            successEntities: [],
+            showLoading: true,
+            uploadFile: {},
+            operationDone: false,
+            operationInProgress: false,
 
-      /**
-       * Import button callback function.
-       */
-      import: function () {
-        $scope.operationInProgress = true;
-        var formData = new FormData();
-        formData.append('file', $scope.uploadFile);
-        api.pipelineAgent.importPipelines(formData)
-          .then(function(response) {
-            var res = response.data;
-            $scope.common.errors = res.errorMessages;
-            $scope.successEntities = res.successEntities;
-            $scope.operationDone = true;
-            $scope.operationInProgress = false;
-          })
-          .catch(function(res) {
-            $scope.common.errors = [res.data];
-            $scope.operationDone = true;
-            $scope.operationInProgress = false;
-          });
-      },
+            /**
+             * Import button callback function.
+             */
+            import: function () {
+                $scope.operationInProgress = true;
+                var formData = new FormData();
+                formData.append('file', $scope.uploadFile);
+                api.pipelineAgent.importPipelines(formData)
+                    .then(function (response) {
+                        var res = response.data;
+                        $scope.common.errors = res.errorMessages;
+                        $scope.successEntities = res.successEntities;
+                        $scope.operationDone = true;
+                        $scope.operationInProgress = false;
+                    })
+                    .catch(function (res) {
+                        $scope.common.errors = [res.data];
+                        $scope.operationDone = true;
+                        $scope.operationInProgress = false;
+                    });
+            },
 
-      /**
-       * Cancel button callback.
-       */
-      cancel: function () {
-        $modalInstance.dismiss('cancel');
-      },
+            /**
+             * Cancel button callback.
+             */
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
+            },
 
-      /**
-       * Close button callback.
-       */
-      close: function () {
-        $modalInstance.close($scope.successEntities);
-      }
-    });
+            /**
+             * Close button callback.
+             */
+            close: function () {
+                $modalInstance.close($scope.successEntities);
+            }
+        });
 
-  }]);
+    }]);

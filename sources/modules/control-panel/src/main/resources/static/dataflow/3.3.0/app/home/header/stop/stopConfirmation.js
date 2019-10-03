@@ -18,50 +18,50 @@
  */
 
 angular
-  .module('dataCollectorApp.home')
-  .controller('StopConfirmationModalInstanceController', function ($scope, $modalInstance, pipelineInfo, forceStop, api) {
-    angular.extend($scope, {
-      common: {
-        errors: []
-      },
-      pipelineInfo: pipelineInfo,
-      forceStop: forceStop,
-      stopping: false,
-      isList: _.isArray(pipelineInfo),
+    .module('dataCollectorApp.home')
+    .controller('StopConfirmationModalInstanceController', function ($scope, $modalInstance, pipelineInfo, forceStop, api) {
+        angular.extend($scope, {
+            common: {
+                errors: []
+            },
+            pipelineInfo: pipelineInfo,
+            forceStop: forceStop,
+            stopping: false,
+            isList: _.isArray(pipelineInfo),
 
-      yes: function() {
-        $scope.stopping = true;
-        if ($scope.isList) {
+            yes: function () {
+                $scope.stopping = true;
+                if ($scope.isList) {
 
-          var pipelineNames = _.pluck(pipelineInfo, 'pipelineId');
-          api.pipelineAgent.stopPipelines(pipelineNames, forceStop)
-            .then(function(response) {
-              var res = response.data;
-              if (res.errorMessages.length === 0) {
-                $modalInstance.close(res);
-              } else {
-                $scope.stopping = false;
-                $scope.common.errors = res.errorMessages;
-              }
-            })
-            .catch(function(res) {
-              $scope.stopping = false;
-              $scope.common.errors = [res.data];
-            });
+                    var pipelineNames = _.pluck(pipelineInfo, 'pipelineId');
+                    api.pipelineAgent.stopPipelines(pipelineNames, forceStop)
+                        .then(function (response) {
+                            var res = response.data;
+                            if (res.errorMessages.length === 0) {
+                                $modalInstance.close(res);
+                            } else {
+                                $scope.stopping = false;
+                                $scope.common.errors = res.errorMessages;
+                            }
+                        })
+                        .catch(function (res) {
+                            $scope.stopping = false;
+                            $scope.common.errors = [res.data];
+                        });
 
-        } else {
-          api.pipelineAgent.stopPipeline(pipelineInfo.pipelineId, 0, forceStop)
-            .then(function(res) {
-              $modalInstance.close(res.data);
-            })
-            .catch(function(res) {
-              $scope.stopping = false;
-              $scope.common.errors = [res.data];
-            });
-        }
-      },
-      no: function() {
-        $modalInstance.dismiss('cancel');
-      }
+                } else {
+                    api.pipelineAgent.stopPipeline(pipelineInfo.pipelineId, 0, forceStop)
+                        .then(function (res) {
+                            $modalInstance.close(res.data);
+                        })
+                        .catch(function (res) {
+                            $scope.stopping = false;
+                            $scope.common.errors = [res.data];
+                        });
+                }
+            },
+            no: function () {
+                $modalInstance.dismiss('cancel');
+            }
+        });
     });
-  });

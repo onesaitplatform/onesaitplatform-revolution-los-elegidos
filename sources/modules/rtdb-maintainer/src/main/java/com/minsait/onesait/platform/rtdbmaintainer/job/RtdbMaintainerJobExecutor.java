@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,28 +27,28 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RtdbMaintainerJobExecutor implements BatchGenericExecutor {
 
-	@Autowired
-	RtdbMaintainerJob rtdbMaintainerJob;
+    @Autowired
+    RtdbMaintainerJob rtdbMaintainerJob;
 
-	@Autowired
-	OKPIJob oKPIJob;
+    @Autowired
+    OKPIJob oKPIJob;
 
-	private static final String OKPI_JOB_KEY = "Ontology KPI";
+    private static final String OKPI_JOB_KEY = "Ontology KPI";
 
-	@Override
-	public void execute(JobExecutionContext context) throws JobExecutionException {
-		try {
-			if (context.getJobDetail().getKey().toString().contains(OKPI_JOB_KEY)) {
-				oKPIJob.execute(context);
-			} else {
-				rtdbMaintainerJob.execute(context);
-			}
+    @Override
+    public void execute(JobExecutionContext context) throws JobExecutionException {
+        try {
+            if (context.getJobDetail().getKey().toString().contains(OKPI_JOB_KEY)) {
+                oKPIJob.execute(context);
+            } else {
+                rtdbMaintainerJob.execute(context);
+            }
 
-			log.info("Executed");
-		} catch (final Exception e) {
-			log.error("Not executed" + e.getMessage(), e);
-		}
+            log.info("Executed");
+        } catch (final Exception e) {
+            log.error("Not executed" + e.getMessage(), e);
+        }
 
-	}
+    }
 
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,123 +49,123 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SwaggerGeneratorServiceImpl implements SwaggerGeneratorService {
 
-	@Autowired
-	private ApiServiceRest apiService;
+    @Autowired
+    private ApiServiceRest apiService;
 
-	@Autowired
-	private ApiFIQL apiFIQL;
+    @Autowired
+    private ApiFIQL apiFIQL;
 
-	private static final String BASE_PATH = "/api-manager/server/api";
+    private static final String BASE_PATH = "/api-manager/server/api";
 
-	@Autowired
-	private IntegrationResourcesService resourcesService;
+    @Autowired
+    private IntegrationResourcesService resourcesService;
 
-	@Value("${server.port:19090}")
-	private String port;
+    @Value("${server.port:19090}")
+    private String port;
 
-	@Override
-	public Response getApi(String identificacion, String token) throws GenericOPException {
+    @Override
+    public Response getApi(String identificacion, String token) throws GenericOPException {
 
-		final ApiDTO apiDto = apiFIQL.toApiDTO(apiService.findApi(identificacion, token));
+        final ApiDTO apiDto = apiFIQL.toApiDTO(apiService.findApi(identificacion, token));
 
-		final int version = apiDto.getVersion();
-		final String vVersion = "v" + version;
+        final int version = apiDto.getVersion();
+        final String vVersion = "v" + version;
 
-		final BeanConfig config = new BeanConfig();
-		config.setHost("localhost:8080");
-		config.setSchemes(new String[] { "http" });
-		config.setBasePath("/api" + "/" + vVersion + "/" + identificacion);
+        final BeanConfig config = new BeanConfig();
+        config.setHost("localhost:8080");
+        config.setSchemes(new String[]{"http"});
+        config.setBasePath("/api" + "/" + vVersion + "/" + identificacion);
 
-		final RestSwaggerReader reader = new RestSwaggerReader();
+        final RestSwaggerReader reader = new RestSwaggerReader();
 
-		final Swagger swagger = reader.read(apiDto, config);
+        final Swagger swagger = reader.read(apiDto, config);
 
-		final ObjectMapper mapper = new ObjectMapper();
-		mapper.enable(SerializationFeature.INDENT_OUTPUT);
-		mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-		String json = null;
-		try {
-			json = mapper.writeValueAsString(swagger);
-		} catch (JsonProcessingException e) {
-			log.error("getApi Error", e);
-		}
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        String json = null;
+        try {
+            json = mapper.writeValueAsString(swagger);
+        } catch (JsonProcessingException e) {
+            log.error("getApi Error", e);
+        }
 
-		return Response.ok(json).build();
-	}
+        return Response.ok(json).build();
+    }
 
-	public ApiServiceRest getApiService() {
-		return apiService;
-	}
+    public ApiServiceRest getApiService() {
+        return apiService;
+    }
 
-	public void setApiService(ApiServiceRest apiService) {
-		this.apiService = apiService;
-	}
+    public void setApiService(ApiServiceRest apiService) {
+        this.apiService = apiService;
+    }
 
-	public ApiFIQL getApiFIQL() {
-		return apiFIQL;
-	}
+    public ApiFIQL getApiFIQL() {
+        return apiFIQL;
+    }
 
-	public void setApiFIQL(ApiFIQL apiFIQL) {
-		this.apiFIQL = apiFIQL;
-	}
+    public void setApiFIQL(ApiFIQL apiFIQL) {
+        this.apiFIQL = apiFIQL;
+    }
 
-	@Override
-	public Response getApiWithoutToken(String numVersion, String identification) throws GenericOPException {
-		if (numVersion.indexOf('v') != -1) {
-			numVersion = numVersion.substring(1, numVersion.length());
-		}
-		final Api api = apiService.getApiByIdentificationAndVersion(identification, numVersion);
-		if (api == null)
-			return Response.noContent().status(404).build();
+    @Override
+    public Response getApiWithoutToken(String numVersion, String identification) throws GenericOPException {
+        if (numVersion.indexOf('v') != -1) {
+            numVersion = numVersion.substring(1, numVersion.length());
+        }
+        final Api api = apiService.getApiByIdentificationAndVersion(identification, numVersion);
+        if (api == null)
+            return Response.noContent().status(404).build();
 
-		final ObjectMapper mapper = new ObjectMapper();
-		mapper.enable(SerializationFeature.INDENT_OUTPUT);
-		mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-		if (api.getApiType().equals(ApiType.EXTERNAL_FROM_JSON)) {
-			final SwaggerParser swaggerParser = new SwaggerParser();
-			final Swagger swagger = swaggerParser.parse(api.getSwaggerJson());
+        if (api.getApiType().equals(ApiType.EXTERNAL_FROM_JSON)) {
+            final SwaggerParser swaggerParser = new SwaggerParser();
+            final Swagger swagger = swaggerParser.parse(api.getSwaggerJson());
 
-			addCustomHeaderToPaths(swagger);
-			swagger.setHost(null);
-			swagger.setBasePath(BASE_PATH + "/v" + api.getNumversion() + "/" + api.getIdentification());
+            addCustomHeaderToPaths(swagger);
+            swagger.setHost(null);
+            swagger.setBasePath(BASE_PATH + "/v" + api.getNumversion() + "/" + api.getIdentification());
 
-			try {
-				return Response.ok(mapper.writeValueAsString(swagger)).build();
-			} catch (JsonProcessingException e) {
-				log.error("getApiWithoutToken Error", e);
-			}
-		}
-		final ApiDTO apiDto = apiFIQL.toApiDTO(api);
+            try {
+                return Response.ok(mapper.writeValueAsString(swagger)).build();
+            } catch (JsonProcessingException e) {
+                log.error("getApiWithoutToken Error", e);
+            }
+        }
+        final ApiDTO apiDto = apiFIQL.toApiDTO(api);
 
-		final BeanConfig config = new BeanConfig();
+        final BeanConfig config = new BeanConfig();
 
-		config.setBasePath(BASE_PATH + "/v" + numVersion + "/" + api.getIdentification());
+        config.setBasePath(BASE_PATH + "/v" + numVersion + "/" + api.getIdentification());
 
-		final RestSwaggerReader reader = new RestSwaggerReader();
+        final RestSwaggerReader reader = new RestSwaggerReader();
 
-		final Swagger swagger = reader.read(apiDto, config);
+        final Swagger swagger = reader.read(apiDto, config);
 
-		String json = null;
-		try {
-			json = mapper.writeValueAsString(swagger);
-		} catch (JsonProcessingException e) {
-			log.error("getApiWithoutToken Error", e);
-		}
+        String json = null;
+        try {
+            json = mapper.writeValueAsString(swagger);
+        } catch (JsonProcessingException e) {
+            log.error("getApiWithoutToken Error", e);
+        }
 
-		return Response.ok(json).build();
-	}
+        return Response.ok(json).build();
+    }
 
-	private void addCustomHeaderToPaths(Swagger swagger) {
-		final Parameter header = new HeaderParameter();
-		header.setIn("header");
-		header.setDescription("onesait Platform API Key");
-		header.setName(Constants.AUTHENTICATION_HEADER);
-		header.setRequired(true);
-		swagger.getPaths().entrySet().forEach(p -> {
-			final Path path = p.getValue();
-			path.getOperations().forEach(o -> o.addParameter(header));
-		});
-	}
+    private void addCustomHeaderToPaths(Swagger swagger) {
+        final Parameter header = new HeaderParameter();
+        header.setIn("header");
+        header.setDescription("onesait Platform API Key");
+        header.setName(Constants.AUTHENTICATION_HEADER);
+        header.setRequired(true);
+        swagger.getPaths().entrySet().forEach(p -> {
+            final Path path = p.getValue();
+            path.getOperations().forEach(o -> o.addParameter(header));
+        });
+    }
 
 }

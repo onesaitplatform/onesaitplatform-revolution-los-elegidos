@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,73 +41,73 @@ import lombok.Setter;
 @Table(name = "ONTOLOGY_REST")
 public class OntologyRest extends AuditableEntityWithUUID {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public enum SecurityType {
-		NONE, API_KEY, OAUTH, BASIC
-	}
+    public enum SecurityType {
+        NONE, API_KEY, OAUTH, BASIC
+    }
 
-	@OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
-	@JoinColumn(name = "ONTOLOGY_ID", referencedColumnName = "ID", nullable = false)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@Getter
-	@Setter
-	private Ontology ontologyId;
+    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "ONTOLOGY_ID", referencedColumnName = "ID", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Getter
+    @Setter
+    private Ontology ontologyId;
 
-	@Column(name = "BASE_URL", length = 1024, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String baseUrl;
+    @Column(name = "BASE_URL", length = 1024, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String baseUrl;
 
-	// @Column(name = "INFER_OPS", nullable = false)
-	// @NotNull
-	// @Getter
-	// @Setter
-	// private boolean inferOps;
-	//
-	// @Column(name = "WADL_URL", length = 1024, nullable = false)
-	// @NotNull
-	// @Getter
-	// @Setter
-	// private String wadlUrl;
+    // @Column(name = "INFER_OPS", nullable = false)
+    // @NotNull
+    // @Getter
+    // @Setter
+    // private boolean inferOps;
+    //
+    // @Column(name = "WADL_URL", length = 1024, nullable = false)
+    // @NotNull
+    // @Getter
+    // @Setter
+    // private String wadlUrl;
 
-	@Column(name = "SWAGGER_URL", length = 1024, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String swaggerUrl;
+    @Column(name = "SWAGGER_URL", length = 1024, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String swaggerUrl;
 
-	@Column(name = "SECURITY_TYPE", length = 512, nullable = false)
-	@NotNull
-	@Enumerated(EnumType.STRING)
-	@Getter
-	@Setter
-	private SecurityType securityType;
+    @Column(name = "SECURITY_TYPE", length = 512, nullable = false)
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Getter
+    @Setter
+    private SecurityType securityType;
 
-	@Column(name = "JSON_SCHEMA")
-	@NotNull
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
-	@Getter
-	@Setter
-	private String jsonSchema;
+    @Column(name = "JSON_SCHEMA")
+    @NotNull
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Getter
+    @Setter
+    private String jsonSchema;
 
-	@OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
-	@JoinColumn(name = "SECURITY_ID", referencedColumnName = "ID", nullable = true)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@Getter
-	@Setter
-	private OntologyRestSecurity securityId;
+    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "SECURITY_ID", referencedColumnName = "ID", nullable = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Getter
+    @Setter
+    private OntologyRestSecurity securityId;
 
-	@OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
-	@JoinColumn(name = "HEADER_ID", referencedColumnName = "ID", nullable = true)
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	@Getter
-	@Setter
-	private OntologyRestHeaders headerId;
+    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "HEADER_ID", referencedColumnName = "ID", nullable = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @Getter
+    @Setter
+    private OntologyRestHeaders headerId;
 
 }

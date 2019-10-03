@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -52,178 +52,178 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DeleteProcessor implements MessageTypeProcessor {
 
-	@Autowired
-	private RouterService routerService;
-	@Autowired
-	ObjectMapper objectMapper;
-	@Autowired
-	SecurityPluginManager securityPluginManager;
+    @Autowired
+    private RouterService routerService;
+    @Autowired
+    ObjectMapper objectMapper;
+    @Autowired
+    SecurityPluginManager securityPluginManager;
 
-	@Override
-	public SSAPMessage<SSAPBodyReturnMessage> process(SSAPMessage<? extends SSAPBodyMessage> message) {
+    @Override
+    public SSAPMessage<SSAPBodyReturnMessage> process(SSAPMessage<? extends SSAPBodyMessage> message) {
 
-		if (SSAPMessageTypes.DELETE.equals(message.getMessageType())) {
-			final SSAPMessage<SSAPBodyDeleteMessage> deleteMessage = (SSAPMessage<SSAPBodyDeleteMessage>) message;
-			return processDelete(deleteMessage);
-		}
+        if (SSAPMessageTypes.DELETE.equals(message.getMessageType())) {
+            final SSAPMessage<SSAPBodyDeleteMessage> deleteMessage = (SSAPMessage<SSAPBodyDeleteMessage>) message;
+            return processDelete(deleteMessage);
+        }
 
-		if (SSAPMessageTypes.DELETE_BY_ID.equals(message.getMessageType())) {
-			final SSAPMessage<SSAPBodyDeleteByIdMessage> deleteMessage = (SSAPMessage<SSAPBodyDeleteByIdMessage>) message;
-			return processDeleteById(deleteMessage);
-		}
+        if (SSAPMessageTypes.DELETE_BY_ID.equals(message.getMessageType())) {
+            final SSAPMessage<SSAPBodyDeleteByIdMessage> deleteMessage =
+                    (SSAPMessage<SSAPBodyDeleteByIdMessage>) message;
+            return processDeleteById(deleteMessage);
+        }
 
-		SSAPMessage<SSAPBodyReturnMessage> responseMessage;
-		responseMessage = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.PROCESSOR, "Mesage not supported");
-		return responseMessage;
-	}
+        SSAPMessage<SSAPBodyReturnMessage> responseMessage;
+        responseMessage = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.PROCESSOR, "Mesage not supported");
+        return responseMessage;
+    }
 
-	private SSAPMessage<SSAPBodyReturnMessage> processDeleteById(SSAPMessage<SSAPBodyDeleteByIdMessage> message) {
-		SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
-		responseMessage.setBody(new SSAPBodyReturnMessage());
-		responseMessage.getBody().setOk(true);
-		final Optional<IoTSession> session = securityPluginManager.getSession(message.getSessionKey());
+    private SSAPMessage<SSAPBodyReturnMessage> processDeleteById(SSAPMessage<SSAPBodyDeleteByIdMessage> message) {
+        SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
+        responseMessage.setBody(new SSAPBodyReturnMessage());
+        responseMessage.getBody().setOk(true);
+        final Optional<IoTSession> session = securityPluginManager.getSession(message.getSessionKey());
 
-		final String user = session.isPresent() ? session.get().getUserID() : null;
-		final String deviceTemplate = session.isPresent() ? session.get().getClientPlatform() : null;
-		final OperationModel model = OperationModel
-				.builder(message.getBody().getOntology(), OperationType.DELETE, user, OperationModel.Source.IOTBROKER)
-				.objectId(message.getBody().getId()).queryType(QueryType.NATIVE).deviceTemplate(deviceTemplate).build();
+        final String user = session.isPresent() ? session.get().getUserID() : null;
+        final String deviceTemplate = session.isPresent() ? session.get().getClientPlatform() : null;
+        final OperationModel model = OperationModel.builder(message.getBody().getOntology(), OperationType.DELETE, user,
+                                                            OperationModel.Source.IOTBROKER).objectId(
+                message.getBody().getId()).queryType(QueryType.NATIVE).deviceTemplate(deviceTemplate).build();
 
-		final NotificationModel modelNotification = new NotificationModel();
-		modelNotification.setOperationModel(model);
+        final NotificationModel modelNotification = new NotificationModel();
+        modelNotification.setOperationModel(model);
 
-		OperationResultModel result;
-		String responseStr = null;
-		String messageStr = null;
-		try {
-			result = routerService.delete(modelNotification);
-			responseStr = result.getResult();
-			messageStr = result.getMessage();
+        OperationResultModel result;
+        String responseStr = null;
+        String messageStr = null;
+        try {
+            result = routerService.delete(modelNotification);
+            responseStr = result.getResult();
+            messageStr = result.getMessage();
 
-			if (messageStr.equals("OK")) {
-				if (message.includeIds()) {
-					final JSONObject jsonObject = new JSONObject(responseStr);
-					final int nDeleted = jsonObject.getInt("count");
-					final String deleted = nDeleted > 0 ? "[\"" + message.getBody().getId() + "\"]" : "[]";
+            if (messageStr.equals("OK")) {
+                if (message.includeIds()) {
+                    final JSONObject jsonObject = new JSONObject(responseStr);
+                    final int nDeleted = jsonObject.getInt("count");
+                    final String deleted = nDeleted > 0 ? "[\"" + message.getBody().getId() + "\"]" : "[]";
 
-					final String response = String.format("{\"nDeleted\":%s, \"deleted\":%s}", nDeleted, deleted);
+                    final String response = String.format("{\"nDeleted\":%s, \"deleted\":%s}", nDeleted, deleted);
 
-					responseMessage.getBody().setData(objectMapper.readTree(response));
-				} else {
-					final String response = String.format("{\"nDeleted\":%s}", responseStr);
-					responseMessage.getBody().setData(objectMapper.readTree(response));
-				}
-			} else {
-				final String error = MessageException.ERR_DATABASE;
-				responseMessage = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.PROCESSOR, error);
-				responseMessage.getBody().setError(messageStr);
-			}
+                    responseMessage.getBody().setData(objectMapper.readTree(response));
+                } else {
+                    final String response = String.format("{\"nDeleted\":%s}", responseStr);
+                    responseMessage.getBody().setData(objectMapper.readTree(response));
+                }
+            } else {
+                final String error = MessageException.ERR_DATABASE;
+                responseMessage = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.PROCESSOR, error);
+                responseMessage.getBody().setError(messageStr);
+            }
 
-		} catch (final Exception e) {
-			log.error("Error deleting by ObjectId", e);
+        } catch (final Exception e) {
+            log.error("Error deleting by ObjectId", e);
 
-			final String error = MessageException.ERR_DATABASE;
-			responseMessage = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.PROCESSOR, error);
-			if (messageStr != null) {
-				responseMessage.getBody().setError(messageStr);
-			}
-		}
+            final String error = MessageException.ERR_DATABASE;
+            responseMessage = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.PROCESSOR, error);
+            if (messageStr != null) {
+                responseMessage.getBody().setError(messageStr);
+            }
+        }
 
-		return responseMessage;
-	}
+        return responseMessage;
+    }
 
-	private SSAPMessage<SSAPBodyReturnMessage> processDelete(SSAPMessage<SSAPBodyDeleteMessage> message) {
+    private SSAPMessage<SSAPBodyReturnMessage> processDelete(SSAPMessage<SSAPBodyDeleteMessage> message) {
 
-		SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
-		responseMessage.setBody(new SSAPBodyReturnMessage());
-		responseMessage.getBody().setOk(true);
-		final Optional<IoTSession> session = securityPluginManager.getSession(message.getSessionKey());
+        SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
+        responseMessage.setBody(new SSAPBodyReturnMessage());
+        responseMessage.getBody().setOk(true);
+        final Optional<IoTSession> session = securityPluginManager.getSession(message.getSessionKey());
 
-		final String user = session.isPresent() ? session.get().getUserID() : null;
-		final String deviceTemplate = session.isPresent() ? session.get().getClientPlatform() : null;
-		final OperationModel model = OperationModel
-				.builder(message.getBody().getOntology(), OperationType.DELETE, user, Source.IOTBROKER,
-						message.includeIds())
-				.queryType(QueryType.NATIVE).body(message.getBody().getQuery()).deviceTemplate(deviceTemplate).build();
+        final String user = session.isPresent() ? session.get().getUserID() : null;
+        final String deviceTemplate = session.isPresent() ? session.get().getClientPlatform() : null;
+        final OperationModel model = OperationModel.builder(message.getBody().getOntology(), OperationType.DELETE, user,
+                                                            Source.IOTBROKER, message.includeIds()).queryType(
+                QueryType.NATIVE).body(message.getBody().getQuery()).deviceTemplate(deviceTemplate).build();
 
-		final NotificationModel modelNotification = new NotificationModel();
-		modelNotification.setOperationModel(model);
+        final NotificationModel modelNotification = new NotificationModel();
+        modelNotification.setOperationModel(model);
 
-		OperationResultModel result;
-		String responseStr = null;
-		String messageStr = null;
-		try {
-			result = routerService.delete(modelNotification);
-			messageStr = result.getMessage();
-			responseStr = result.getResult();
+        OperationResultModel result;
+        String responseStr = null;
+        String messageStr = null;
+        try {
+            result = routerService.delete(modelNotification);
+            messageStr = result.getMessage();
+            responseStr = result.getResult();
 
-			final MultiDocumentOperationResult multidocument = MultiDocumentOperationResult.fromString(responseStr);
+            final MultiDocumentOperationResult multidocument = MultiDocumentOperationResult.fromString(responseStr);
 
-			final String response;
+            final String response;
 
-			if (message.includeIds()) {
-				response = String.format("{\"nDeleted\":%s, \"deleted\":%s}", multidocument.getCount(),
-						multidocument.getStrIds());
-			} else {
-				response = String.format("{\"nDeleted\":%s}", multidocument.getCount());
-			}
+            if (message.includeIds()) {
+                response = String.format("{\"nDeleted\":%s, \"deleted\":%s}", multidocument.getCount(),
+                                         multidocument.getStrIds());
+            } else {
+                response = String.format("{\"nDeleted\":%s}", multidocument.getCount());
+            }
 
-			responseMessage.getBody().setData(objectMapper.readTree(response));
+            responseMessage.getBody().setData(objectMapper.readTree(response));
 
-		} catch (final Exception e) {
-			log.error("Error in processDelete:" + e.getMessage());
+        } catch (final Exception e) {
+            log.error("Error in processDelete:" + e.getMessage());
 
-			final String error = MessageException.ERR_DATABASE;
-			responseMessage = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.PROCESSOR, error);
-			if (messageStr != null) {
-				responseMessage.getBody().setError(messageStr);
-			}
-		}
+            final String error = MessageException.ERR_DATABASE;
+            responseMessage = SSAPUtils.generateErrorMessage(message, SSAPErrorCode.PROCESSOR, error);
+            if (messageStr != null) {
+                responseMessage.getBody().setError(messageStr);
+            }
+        }
 
-		return responseMessage;
-	}
+        return responseMessage;
+    }
 
-	@Override
-	public List<SSAPMessageTypes> getMessageTypes() {
-		final List<SSAPMessageTypes> types = new ArrayList<>();
-		types.add(SSAPMessageTypes.DELETE);
-		types.add(SSAPMessageTypes.DELETE_BY_ID);
-		return types;
-	}
+    @Override
+    public List<SSAPMessageTypes> getMessageTypes() {
+        final List<SSAPMessageTypes> types = new ArrayList<>();
+        types.add(SSAPMessageTypes.DELETE);
+        types.add(SSAPMessageTypes.DELETE_BY_ID);
+        return types;
+    }
 
-	@Override
-	public boolean validateMessage(SSAPMessage<? extends SSAPBodyMessage> message) {
+    @Override
+    public boolean validateMessage(SSAPMessage<? extends SSAPBodyMessage> message) {
 
-		if (SSAPMessageTypes.DELETE.equals(message.getMessageType())) {
-			final SSAPMessage<SSAPBodyDeleteMessage> deleteMessage = (SSAPMessage<SSAPBodyDeleteMessage>) message;
-			return validateDelete(deleteMessage);
-		}
+        if (SSAPMessageTypes.DELETE.equals(message.getMessageType())) {
+            final SSAPMessage<SSAPBodyDeleteMessage> deleteMessage = (SSAPMessage<SSAPBodyDeleteMessage>) message;
+            return validateDelete(deleteMessage);
+        }
 
-		if (SSAPMessageTypes.DELETE_BY_ID.equals(message.getMessageType())) {
-			final SSAPMessage<SSAPBodyDeleteByIdMessage> deleteMessage = (SSAPMessage<SSAPBodyDeleteByIdMessage>) message;
-			return validateDeleteById(deleteMessage);
-		}
+        if (SSAPMessageTypes.DELETE_BY_ID.equals(message.getMessageType())) {
+            final SSAPMessage<SSAPBodyDeleteByIdMessage> deleteMessage = (SSAPMessage<SSAPBodyDeleteByIdMessage>) message;
+            return validateDeleteById(deleteMessage);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	private boolean validateDeleteById(SSAPMessage<SSAPBodyDeleteByIdMessage> message) {
-		if (StringUtils.isEmpty(message.getBody().getId())) {
-			log.error("Error in validateDeleteById");
-			throw new SSAPProcessorException(
-					String.format(MessageException.ERR_FIELD_IS_MANDATORY, "id", message.getMessageType().name()));
-		}
+    private boolean validateDeleteById(SSAPMessage<SSAPBodyDeleteByIdMessage> message) {
+        if (StringUtils.isEmpty(message.getBody().getId())) {
+            log.error("Error in validateDeleteById");
+            throw new SSAPProcessorException(
+                    String.format(MessageException.ERR_FIELD_IS_MANDATORY, "id", message.getMessageType().name()));
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	private boolean validateDelete(SSAPMessage<SSAPBodyDeleteMessage> message) {
-		if (StringUtils.isEmpty(message.getBody().getQuery())) {
-			log.error("Error in validateDelete");
-			throw new SSAPProcessorException(
-					String.format(MessageException.ERR_FIELD_IS_MANDATORY, "quey", message.getMessageType().name()));
-		}
-		return true;
-	}
+    private boolean validateDelete(SSAPMessage<SSAPBodyDeleteMessage> message) {
+        if (StringUtils.isEmpty(message.getBody().getQuery())) {
+            log.error("Error in validateDelete");
+            throw new SSAPProcessorException(
+                    String.format(MessageException.ERR_FIELD_IS_MANDATORY, "quey", message.getMessageType().name()));
+        }
+        return true;
+    }
 
 }

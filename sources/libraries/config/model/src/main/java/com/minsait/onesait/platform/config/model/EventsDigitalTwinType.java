@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,42 +35,42 @@ import lombok.Setter;
 @Table(name = "EVENTS_DIGITAL_TWIN_TYPE")
 public class EventsDigitalTwinType extends AuditableEntityWithUUID {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public enum Type {
-		UPDATE_SHADOW, NOTEBOOK, RULE, FLOW, PING, PIPELINE, LOG, REGISTER, OTHER
-	}
+    public enum Type {
+        UPDATE_SHADOW, NOTEBOOK, RULE, FLOW, PING, PIPELINE, LOG, REGISTER, OTHER
+    }
 
-	@ManyToOne
-	@JoinColumn(name = "TYPE_ID", referencedColumnName = "ID", nullable = false)
-	@OnDelete(action = OnDeleteAction.NO_ACTION)
-	@Getter
-	@Setter
-	private DigitalTwinType typeId;
+    @ManyToOne
+    @JoinColumn(name = "TYPE_ID", referencedColumnName = "ID", nullable = false)
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @Getter
+    @Setter
+    private DigitalTwinType typeId;
 
-	@Column(name = "NAME", length = 50, unique = false, nullable = false)
-	@NotNull
-	@Getter
-	@Setter
-	private String name;
+    @Column(name = "NAME", length = 50, unique = false, nullable = false)
+    @NotNull
+    @Getter
+    @Setter
+    private String name;
 
-	@Column(name = "DESCRIPTION", length = 512)
-	@Getter
-	@Setter
-	private String description;
+    @Column(name = "DESCRIPTION", length = 512)
+    @Getter
+    @Setter
+    private String description;
 
-	@Column(name = "STATUS", nullable = false, columnDefinition = "BIT")
-	@NotNull
-	@Getter
-	@Setter
-	private boolean status;
+    @Column(name = "STATUS", nullable = false, columnDefinition = "BIT")
+    @NotNull
+    @Getter
+    @Setter
+    private boolean status;
 
-	@Column(name = "TYPE", length = 50, unique = false, nullable = false)
-	@NotNull
-	@Getter
-	private String type;
+    @Column(name = "TYPE", length = 50, unique = false, nullable = false)
+    @NotNull
+    @Getter
+    private String type;
 
-	public void setType(EventsDigitalTwinType.Type type) {
-		this.type = type.toString();
-	}
+    public void setType(EventsDigitalTwinType.Type type) {
+        this.type = type.toString();
+    }
 }

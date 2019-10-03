@@ -1,5 +1,5 @@
 // plugin setup
-var mPortlet = function(elementId, options) {
+var mPortlet = function (elementId, options) {
     //== Main object
     var the = this;
     var init = false;
@@ -43,7 +43,7 @@ var mPortlet = function(elementId, options) {
          * Construct
          */
 
-        construct: function(options) {
+        construct: function (options) {
             if (mUtil.data(element).has('portlet')) {
                 the = mUtil.data(element).get('portlet');
             } else {
@@ -62,7 +62,7 @@ var mPortlet = function(elementId, options) {
         /**
          * Init portlet
          */
-        init: function(options) {
+        init: function (options) {
             the.element = element;
             the.events = [];
 
@@ -81,11 +81,11 @@ var mPortlet = function(elementId, options) {
         /**
          * Build Form Wizard
          */
-        build: function() {
+        build: function () {
             //== Remove
             var remove = mUtil.find(the.head, '[m-portlet-tool=remove]');
             if (remove) {
-                mUtil.addEvent(remove, 'click', function(e) {
+                mUtil.addEvent(remove, 'click', function (e) {
                     e.preventDefault();
                     Plugin.remove();
                 });
@@ -94,7 +94,7 @@ var mPortlet = function(elementId, options) {
             //== Reload
             var reload = mUtil.find(the.head, '[m-portlet-tool=reload]');
             if (reload) {
-                mUtil.addEvent(reload, 'click', function(e) {
+                mUtil.addEvent(reload, 'click', function (e) {
                     e.preventDefault();
                     Plugin.reload();
                 });
@@ -103,7 +103,7 @@ var mPortlet = function(elementId, options) {
             //== Toggle
             var toggle = mUtil.find(the.head, '[m-portlet-tool=toggle]');
             if (toggle) {
-                mUtil.addEvent(toggle, 'click', function(e) {
+                mUtil.addEvent(toggle, 'click', function (e) {
                     e.preventDefault();
                     Plugin.toggle();
                 });
@@ -112,7 +112,7 @@ var mPortlet = function(elementId, options) {
             //== Fullscreen
             var fullscreen = mUtil.find(the.head, '[m-portlet-tool=fullscreen]');
             if (fullscreen) {
-                mUtil.addEvent(fullscreen, 'click', function(e) {
+                mUtil.addEvent(fullscreen, 'click', function (e) {
                     e.preventDefault();
                     Plugin.fullscreen();
                 });
@@ -124,7 +124,7 @@ var mPortlet = function(elementId, options) {
         /**
          * Window scroll handle event for sticky portlet
          */
-        onScrollSticky: function() {
+        onScrollSticky: function () {
             var st = window.pageYOffset;
             var offset = the.options.sticky.offset;
 
@@ -153,7 +153,7 @@ var mPortlet = function(elementId, options) {
         /**
          * Init sticky portlet
          */
-        initSticky: function() {
+        initSticky: function () {
             if (!the.head) {
                 return;
             }
@@ -164,7 +164,7 @@ var mPortlet = function(elementId, options) {
         /**
          * Update sticky portlet positions
          */
-        updateSticky: function() {
+        updateSticky: function () {
             if (!the.head) {
                 return;
             }
@@ -197,19 +197,19 @@ var mPortlet = function(elementId, options) {
 
                 if (mUtil.isRTL()) {
                     mUtil.css(the.head, 'left', right + 'px');
-                    mUtil.css(the.head, 'right',left  + 'px');
+                    mUtil.css(the.head, 'right', left + 'px');
                 } else {
                     mUtil.css(the.head, 'left', left + 'px');
                     mUtil.css(the.head, 'right', right + 'px');
                 }
-                
+
             }
         },
 
         /**
          * Reset sticky portlet positions
          */
-        resetSticky: function() {
+        resetSticky: function () {
             if (!the.head) {
                 return;
             }
@@ -225,7 +225,7 @@ var mPortlet = function(elementId, options) {
         /**
          * Destroy sticky portlet
          */
-        destroySticky: function() {
+        destroySticky: function () {
             if (!the.head) {
                 return;
             }
@@ -238,7 +238,7 @@ var mPortlet = function(elementId, options) {
         /**
          * Remove portlet
          */
-        remove: function() {
+        remove: function () {
             if (Plugin.eventTrigger('beforeRemove') === false) {
                 return;
             }
@@ -257,7 +257,7 @@ var mPortlet = function(elementId, options) {
         /**
          * Set content
          */
-        setContent: function(html) {
+        setContent: function (html) {
             if (html) {
                 the.body.innerHTML = html;
             }
@@ -266,21 +266,21 @@ var mPortlet = function(elementId, options) {
         /**
          * Get body
          */
-        getBody: function() {
+        getBody: function () {
             return the.body;
         },
 
         /**
          * Get self
          */
-        getSelf: function() {
+        getSelf: function () {
             return element;
         },
 
         /**
          * Setup tooltips
          */
-        setupTooltips: function() {
+        setupTooltips: function () {
             if (the.options.tooltips) {
                 var collapsed = mUtil.hasClass(element, 'm-portlet--collapse') || mUtil.hasClass(element, 'm-portlet--collapsed');
                 var fullscreenOn = mUtil.hasClass(body, 'm-portlet--fullscreen') && mUtil.hasClass(element, 'm-portlet--fullscreen');
@@ -362,7 +362,7 @@ var mPortlet = function(elementId, options) {
         /**
          * Setup tooltips
          */
-        removeTooltips: function() {
+        removeTooltips: function () {
             if (the.options.tooltips) {
                 //== Remove
                 var remove = mUtil.find(the.head, '[m-portlet-tool=remove]');
@@ -393,14 +393,14 @@ var mPortlet = function(elementId, options) {
         /**
          * Reload
          */
-        reload: function() {
+        reload: function () {
             Plugin.eventTrigger('reload');
         },
 
         /**
          * Toggle
          */
-        toggle: function() {
+        toggle: function () {
             if (mUtil.hasClass(element, 'm-portlet--collapse') || mUtil.hasClass(element, 'm-portlet--collapsed')) {
                 Plugin.expand();
             } else {
@@ -411,12 +411,12 @@ var mPortlet = function(elementId, options) {
         /**
          * Collapse
          */
-        collapse: function() {
+        collapse: function () {
             if (Plugin.eventTrigger('beforeCollapse') === false) {
                 return;
             }
 
-            mUtil.slideUp(the.body, the.options.bodyToggleSpeed, function() {
+            mUtil.slideUp(the.body, the.options.bodyToggleSpeed, function () {
                 Plugin.eventTrigger('afterCollapse');
             });
 
@@ -431,12 +431,12 @@ var mPortlet = function(elementId, options) {
         /**
          * Expand
          */
-        expand: function() {
+        expand: function () {
             if (Plugin.eventTrigger('beforeExpand') === false) {
                 return;
             }
 
-            mUtil.slideDown(the.body, the.options.bodyToggleSpeed, function() {
+            mUtil.slideDown(the.body, the.options.bodyToggleSpeed, function () {
                 Plugin.eventTrigger('afterExpand');
             });
 
@@ -452,7 +452,7 @@ var mPortlet = function(elementId, options) {
         /**
          * Toggle
          */
-        fullscreen: function(mode) {
+        fullscreen: function (mode) {
             var d = {};
             var speed = 300;
 
@@ -495,7 +495,7 @@ var mPortlet = function(elementId, options) {
         /**
          * Trigger events
          */
-        eventTrigger: function(name) {
+        eventTrigger: function (name) {
             //mUtil.triggerCustomEvent(name);
             for (i = 0; i < the.events.length; i++) {
                 var event = the.events[i];
@@ -512,7 +512,7 @@ var mPortlet = function(elementId, options) {
             }
         },
 
-        addEvent: function(name, handler, one) {
+        addEvent: function (name, handler, one) {
             the.events.push({
                 name: name,
                 handler: handler,
@@ -529,10 +529,10 @@ var mPortlet = function(elementId, options) {
     //////////////////////////
 
     /**
-     * Set default options 
+     * Set default options
      */
 
-    the.setDefaults = function(options) {
+    the.setDefaults = function (options) {
         defaultOptions = options;
     };
 
@@ -540,7 +540,7 @@ var mPortlet = function(elementId, options) {
      * Remove portlet
      * @returns {mPortlet}
      */
-    the.remove = function() {
+    the.remove = function () {
         return Plugin.remove(html);
     };
 
@@ -548,7 +548,7 @@ var mPortlet = function(elementId, options) {
      * Init sticky portlet
      * @returns {mPortlet}
      */
-    the.initSticky = function() {
+    the.initSticky = function () {
         return Plugin.initSticky();
     };
 
@@ -556,7 +556,7 @@ var mPortlet = function(elementId, options) {
      * Update sticky portlet scroll event
      * @returns {mPortlet}
      */
-    the.updateSticky = function() {
+    the.updateSticky = function () {
         return Plugin.updateSticky();
     };
 
@@ -564,7 +564,7 @@ var mPortlet = function(elementId, options) {
      * Reset sticky portlet positions
      * @returns {mPortlet}
      */
-    the.resetSticky = function() {
+    the.resetSticky = function () {
         return Plugin.resetSticky();
     };
 
@@ -572,7 +572,7 @@ var mPortlet = function(elementId, options) {
      * Destroy sticky portlet scroll event
      * @returns {mPortlet}
      */
-    the.destroySticky = function() {
+    the.destroySticky = function () {
         return Plugin.destroySticky();
     };
 
@@ -580,7 +580,7 @@ var mPortlet = function(elementId, options) {
      * Reload portlet
      * @returns {mPortlet}
      */
-    the.reload = function() {
+    the.reload = function () {
         return Plugin.reload();
     };
 
@@ -588,7 +588,7 @@ var mPortlet = function(elementId, options) {
      * Set portlet content
      * @returns {mPortlet}
      */
-    the.setContent = function(html) {
+    the.setContent = function (html) {
         return Plugin.setContent(html);
     };
 
@@ -596,7 +596,7 @@ var mPortlet = function(elementId, options) {
      * Toggle portlet
      * @returns {mPortlet}
      */
-    the.toggle = function() {
+    the.toggle = function () {
         return Plugin.toggle();
     };
 
@@ -604,7 +604,7 @@ var mPortlet = function(elementId, options) {
      * Collapse portlet
      * @returns {mPortlet}
      */
-    the.collapse = function() {
+    the.collapse = function () {
         return Plugin.collapse();
     };
 
@@ -612,7 +612,7 @@ var mPortlet = function(elementId, options) {
      * Expand portlet
      * @returns {mPortlet}
      */
-    the.expand = function() {
+    the.expand = function () {
         return Plugin.expand();
     };
 
@@ -620,7 +620,7 @@ var mPortlet = function(elementId, options) {
      * Fullscreen portlet
      * @returns {mPortlet}
      */
-    the.fullscreen = function() {
+    the.fullscreen = function () {
         return Plugin.fullscreen('on');
     };
 
@@ -628,37 +628,37 @@ var mPortlet = function(elementId, options) {
      * Fullscreen portlet
      * @returns {mPortlet}
      */
-    the.unFullscreen = function() {
+    the.unFullscreen = function () {
         return Plugin.fullscreen('off');
     };
 
     /**
-     * Get portletbody 
+     * Get portletbody
      * @returns {jQuery}
      */
-    the.getBody = function() {
+    the.getBody = function () {
         return Plugin.getBody();
     };
 
     /**
-     * Get portletbody 
+     * Get portletbody
      * @returns {jQuery}
      */
-    the.getSelf = function() {
+    the.getSelf = function () {
         return Plugin.getSelf();
     };
 
     /**
      * Attach event
      */
-    the.on = function(name, handler) {
+    the.on = function (name, handler) {
         return Plugin.addEvent(name, handler);
     };
 
     /**
      * Attach event that will be fired once
      */
-    the.one = function(name, handler) {
+    the.one = function (name, handler) {
         return Plugin.addEvent(name, handler, true);
     };
 

@@ -18,62 +18,62 @@
  */
 
 angular
-  .module('dataCollectorApp')
-  .controller('RegisterModalInstanceController', function ($scope, $modalInstance, api, activationInfo) {
-    angular.extend($scope, {
-      common: {
-        errors: []
-      },
-      showLoading: true,
-      uploadFile: {},
-      operationDone: false,
-      operationInProgress: false,
-      activationInfo: activationInfo,
+    .module('dataCollectorApp')
+    .controller('RegisterModalInstanceController', function ($scope, $modalInstance, api, activationInfo) {
+        angular.extend($scope, {
+            common: {
+                errors: []
+            },
+            showLoading: true,
+            uploadFile: {},
+            operationDone: false,
+            operationInProgress: false,
+            activationInfo: activationInfo,
 
-      /**
-       * Upload button callback function.
-       */
-      uploadActivationKey: function () {
-        $scope.operationInProgress = true;
-        var reader = new FileReader();
-        reader.onload = function (loadEvent) {
-          try {
-            var parsedObj = loadEvent.target.result;
-            api.activation.updateActivation(parsedObj)
-              .then(
-                function(res) {
-                  $scope.activationInfo = res.data;
-                  if ($scope.activationInfo && $scope.activationInfo.info.valid) {
-                    $scope.operationDone = true;
-                    $scope.common.errors = [];
-                  } else {
-                    $scope.common.errors = ['Uploaded activation key is not valid'];
-                  }
-                  $scope.operationInProgress = false;
-                },
-                function(res) {
-                  $scope.common.errors = [res.data];
-                  $scope.operationDone = false;
-                  $scope.operationInProgress = false;
-                }
-              );
-          } catch(e) {
-            $scope.$apply(function() {
-              $scope.common.errors = [e];
-            });
-          }
-        };
-        reader.readAsText($scope.uploadFile);
-      },
+            /**
+             * Upload button callback function.
+             */
+            uploadActivationKey: function () {
+                $scope.operationInProgress = true;
+                var reader = new FileReader();
+                reader.onload = function (loadEvent) {
+                    try {
+                        var parsedObj = loadEvent.target.result;
+                        api.activation.updateActivation(parsedObj)
+                            .then(
+                                function (res) {
+                                    $scope.activationInfo = res.data;
+                                    if ($scope.activationInfo && $scope.activationInfo.info.valid) {
+                                        $scope.operationDone = true;
+                                        $scope.common.errors = [];
+                                    } else {
+                                        $scope.common.errors = ['Uploaded activation key is not valid'];
+                                    }
+                                    $scope.operationInProgress = false;
+                                },
+                                function (res) {
+                                    $scope.common.errors = [res.data];
+                                    $scope.operationDone = false;
+                                    $scope.operationInProgress = false;
+                                }
+                            );
+                    } catch (e) {
+                        $scope.$apply(function () {
+                            $scope.common.errors = [e];
+                        });
+                    }
+                };
+                reader.readAsText($scope.uploadFile);
+            },
 
-      /**
-       * Cancel button callback.
-       */
-      cancel: function () {
-        $modalInstance.dismiss('cancel');
-        window.location.reload();
-      }
+            /**
+             * Cancel button callback.
+             */
+            cancel: function () {
+                $modalInstance.dismiss('cancel');
+                window.location.reload();
+            }
+        });
+
+
     });
-
-
-  });

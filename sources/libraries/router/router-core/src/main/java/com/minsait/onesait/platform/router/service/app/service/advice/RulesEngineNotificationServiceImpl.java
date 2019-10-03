@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -54,78 +54,79 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RulesEngineNotificationServiceImpl implements RulesEngineNotificationService {
 
-	@Autowired
-	private DroolsRuleService droolsRuleService;
+    @Autowired
+    private DroolsRuleService droolsRuleService;
 
-	@Value("${onesaitplatform.router.avoidsslverification:false}")
-	private boolean avoidSSLVerification;
+    @Value("${onesaitplatform.router.avoidsslverification:false}")
+    private boolean avoidSSLVerification;
 
-	@Value("${onesaitplatform.router.notifications.pool.rulesengine:10}")
-	private int MAX_TOTAL_CONNECTIONS;
+    @Value("${onesaitplatform.router.notifications.pool.rulesengine:10}")
+    private int MAX_TOTAL_CONNECTIONS;
 
-	private RestTemplate restTemplate;
-	private String NOTIFICATION_URL;
+    private RestTemplate restTemplate;
+    private String NOTIFICATION_URL;
 
-	@Autowired
-	private IntegrationResourcesService resourcesService;
+    @Autowired
+    private IntegrationResourcesService resourcesService;
 
-	@PostConstruct
-	public void init() throws KeyManagementException, NoSuchAlgorithmException, GenericOPException {
-		if (avoidSSLVerification) {
-			SSLUtil.turnOffSslChecking();
-		}
+    @PostConstruct
+    public void init() throws KeyManagementException, NoSuchAlgorithmException, GenericOPException {
+        if (avoidSSLVerification) {
+            SSLUtil.turnOffSslChecking();
+        }
 
-		final HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
-		httpRequestFactory.setHttpClient(httpClient());
+        final HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+        httpRequestFactory.setHttpClient(httpClient());
 
-		restTemplate = new RestTemplate(httpRequestFactory);
+        restTemplate = new RestTemplate(httpRequestFactory);
 
-		NOTIFICATION_URL = resourcesService.getUrl(Module.RULES_ENGINE, ServiceUrl.ADVICE);
+        NOTIFICATION_URL = resourcesService.getUrl(Module.RULES_ENGINE, ServiceUrl.ADVICE);
 
-	}
+    }
 
-	private HttpClient httpClient() throws GenericOPException {
-		final TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
+    private HttpClient httpClient() throws GenericOPException {
+        final TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
 
-		SSLContext sslContext;
+        SSLContext sslContext;
 
-		try {
-			sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy)
-					.build();
-		} catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
-			throw new GenericOPException("Problem configuring SSL verification", e);
-		}
+        try {
+            sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null,
+                                                                                    acceptingTrustStrategy).build();
+        } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
+            throw new GenericOPException("Problem configuring SSL verification", e);
+        }
 
-		final SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext,
-				NoopHostnameVerifier.INSTANCE);
+        final SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext,
+                                                                              NoopHostnameVerifier.INSTANCE);
 
-		final RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(10000)
-				.setConnectTimeout(10000).setSocketTimeout(10000).build();
+        final RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(10000).setConnectTimeout(
+                10000).setSocketTimeout(10000).build();
 
-		return HttpClients.custom().setDefaultRequestConfig(requestConfig).setConnectionManager(connectionManager())
-				.setSSLSocketFactory(csf).setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).build();
-	}
+        return HttpClients.custom().setDefaultRequestConfig(requestConfig).setConnectionManager(
+                connectionManager()).setSSLSocketFactory(csf).setSSLHostnameVerifier(
+                NoopHostnameVerifier.INSTANCE).build();
+    }
 
-	PoolingHttpClientConnectionManager connectionManager() {
-		final PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-		cm.setMaxTotal(MAX_TOTAL_CONNECTIONS);
-		cm.setDefaultMaxPerRoute(MAX_TOTAL_CONNECTIONS);
-		return cm;
-	}
+    PoolingHttpClientConnectionManager connectionManager() {
+        final PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+        cm.setMaxTotal(MAX_TOTAL_CONNECTIONS);
+        cm.setDefaultMaxPerRoute(MAX_TOTAL_CONNECTIONS);
+        return cm;
+    }
 
-	@Override
-	public boolean notifyToEngine(String ontology) {
-		return !droolsRuleService.getRulesForOntology(ontology).isEmpty();
-	}
+    @Override
+    public boolean notifyToEngine(String ontology) {
+        return !droolsRuleService.getRulesForOntology(ontology).isEmpty();
+    }
 
-	@Override
-	public void notify(String ontology, String json) {
-		log.debug("Sending notification to Rules Engine, ontology: {}", ontology);
-		final HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
-		final HttpEntity<RulesEngineModel> httpEntity = new HttpEntity<>(
-				RulesEngineModel.builder().json(json).ontology(ontology).build(), headers);
-		restTemplate.exchange(NOTIFICATION_URL, HttpMethod.POST, httpEntity, String.class);
-	}
+    @Override
+    public void notify(String ontology, String json) {
+        log.debug("Sending notification to Rules Engine, ontology: {}", ontology);
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        final HttpEntity<RulesEngineModel> httpEntity = new HttpEntity<>(
+                RulesEngineModel.builder().json(json).ontology(ontology).build(), headers);
+        restTemplate.exchange(NOTIFICATION_URL, HttpMethod.POST, httpEntity, String.class);
+    }
 
 }

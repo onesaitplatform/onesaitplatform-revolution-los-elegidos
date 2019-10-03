@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,93 +29,93 @@ import net.sf.jsqlparser.statement.update.Update;
 
 public class Sql2NativeTool {
 
-	private static final String UPDATE = "update";
-	private static final String DELETE = "delete";
-	private static final CCJSqlParserManager parserManager = new CCJSqlParserManager();
+    private static final String UPDATE = "update";
+    private static final String DELETE = "delete";
+    private static final CCJSqlParserManager parserManager = new CCJSqlParserManager();
 
-	private Sql2NativeTool() {
-		throw new IllegalStateException("Utility class");
-	}
+    private Sql2NativeTool() {
+        throw new IllegalStateException("Utility class");
+    }
 
-	public static String translateSql(String query) {
+    public static String translateSql(String query) {
 
-		try {
-			if (query.trim().toLowerCase().startsWith(UPDATE))
-				return translateUpdate(replaceDoubleQuotes(query));
-			else if (query.trim().toLowerCase().startsWith(DELETE))
-				return translateDelete(replaceDoubleQuotes(query));
-		} catch (final JSQLParserException e) {
-			throw new DBPersistenceException("Invalid SQL syntax");
-		}
+        try {
+            if (query.trim().toLowerCase().startsWith(UPDATE))
+                return translateUpdate(replaceDoubleQuotes(query));
+            else if (query.trim().toLowerCase().startsWith(DELETE))
+                return translateDelete(replaceDoubleQuotes(query));
+        } catch (final JSQLParserException e) {
+            throw new DBPersistenceException("Invalid SQL syntax");
+        }
 
-		throw new DBPersistenceException("Unsupported SQL operation");
-	}
+        throw new DBPersistenceException("Unsupported SQL operation");
+    }
 
-	private static String translateUpdate(String query) throws JSQLParserException {
-		final StringBuilder mongoDbQuery = new StringBuilder();
-		final Update statement = (Update) parserManager.parse(new StringReader(query));
-		final List<Column> columns = statement.getColumns();
-		final List<Expression> expressions = statement.getExpressions();
+    private static String translateUpdate(String query) throws JSQLParserException {
+        final StringBuilder mongoDbQuery = new StringBuilder();
+        final Update statement = (Update) parserManager.parse(new StringReader(query));
+        final List<Column> columns = statement.getColumns();
+        final List<Expression> expressions = statement.getExpressions();
 
-		mongoDbQuery.append("db.".concat(statement.getTables().get(0).getFullyQualifiedName()).concat(".update({"));
-		final Expression where = statement.getWhere();
-		if (null != where)
-			where.accept(new WhereExpressionVisitorAdapter(mongoDbQuery, false, 0, false, 0));
-		removeIfLastCharacterIsComma(mongoDbQuery);
-		mongoDbQuery.append("},{");
+        mongoDbQuery.append("db.".concat(statement.getTables().get(0).getFullyQualifiedName()).concat(".update({"));
+        final Expression where = statement.getWhere();
+        if (null != where)
+            where.accept(new WhereExpressionVisitorAdapter(mongoDbQuery, false, 0, false, 0));
+        removeIfLastCharacterIsComma(mongoDbQuery);
+        mongoDbQuery.append("},{");
 
-		// for special ops such as $push define variable
-		// currently we only support $push operations
-		final StringBuilder spOps = new StringBuilder();
-		final StringBuilder update = new StringBuilder();
-		IntStream.range(0, columns.size()).forEach(i -> {
-			final StringBuilder filter = new StringBuilder();
-			if (i != 0)
-				filter.append(",");
-			filter.append("'" + columns.get(i).getFullyQualifiedName() + "':");
-			expressions.get(i).accept(new UpdateSetVisitorAdapter(filter, i));
-			if (filter.indexOf("$push") != -1)
-				spOps.append(filter);
-			else
-				update.append(filter);
-		});
-		if (spOps.length() > 0) {
-			if (spOps.charAt(0) == ',')
-				spOps.deleteCharAt(0);
-			mongoDbQuery.append(spOps);
-			if (update.length() > 0) {
-				if (update.charAt(0) == ',')
-					update.deleteCharAt(0);
-				mongoDbQuery.append(",$set:{" + update + "}");
-			}
-		} else {
-			mongoDbQuery.append(update);
-		}
-		mongoDbQuery.append("})");
-		return mongoDbQuery.toString();
-	}
+        // for special ops such as $push define variable
+        // currently we only support $push operations
+        final StringBuilder spOps = new StringBuilder();
+        final StringBuilder update = new StringBuilder();
+        IntStream.range(0, columns.size()).forEach(i -> {
+            final StringBuilder filter = new StringBuilder();
+            if (i != 0)
+                filter.append(",");
+            filter.append("'" + columns.get(i).getFullyQualifiedName() + "':");
+            expressions.get(i).accept(new UpdateSetVisitorAdapter(filter, i));
+            if (filter.indexOf("$push") != -1)
+                spOps.append(filter);
+            else
+                update.append(filter);
+        });
+        if (spOps.length() > 0) {
+            if (spOps.charAt(0) == ',')
+                spOps.deleteCharAt(0);
+            mongoDbQuery.append(spOps);
+            if (update.length() > 0) {
+                if (update.charAt(0) == ',')
+                    update.deleteCharAt(0);
+                mongoDbQuery.append(",$set:{" + update + "}");
+            }
+        } else {
+            mongoDbQuery.append(update);
+        }
+        mongoDbQuery.append("})");
+        return mongoDbQuery.toString();
+    }
 
-	private static String translateDelete(String query) throws JSQLParserException {
-		final StringBuilder mongoDbQuery = new StringBuilder();
+    private static String translateDelete(String query) throws JSQLParserException {
+        final StringBuilder mongoDbQuery = new StringBuilder();
 
-		final Delete statement = (Delete) parserManager.parse(new StringReader(query));
-		mongoDbQuery.append("db.".concat(statement.getTable().getFullyQualifiedName()).concat(".remove({"));
-		final Expression where = statement.getWhere();
-		if (null != where)
-			where.accept(new WhereExpressionVisitorAdapter(mongoDbQuery, false, 0, false, 0));
+        final Delete statement = (Delete) parserManager.parse(new StringReader(query));
+        mongoDbQuery.append("db.".concat(statement.getTable().getFullyQualifiedName()).concat(".remove({"));
+        final Expression where = statement.getWhere();
+        if (null != where)
+            where.accept(new WhereExpressionVisitorAdapter(mongoDbQuery, false, 0, false, 0));
 
-		removeIfLastCharacterIsComma(mongoDbQuery);
+        removeIfLastCharacterIsComma(mongoDbQuery);
 
-		mongoDbQuery.append("})");
-		return mongoDbQuery.toString();
-	}
+        mongoDbQuery.append("})");
+        return mongoDbQuery.toString();
+    }
 
-	private static String replaceDoubleQuotes(String query) {
-		return query.replaceAll("(?<!\\\\)\"", "'");
-	}
+    private static String replaceDoubleQuotes(String query) {
+        return query.replaceAll("(?<!\\\\)\"", "'");
+    }
 
-	public static void removeIfLastCharacterIsComma(StringBuilder sb) {
-		if (sb.toString().endsWith(","))
-			sb.deleteCharAt(sb.length() - 1);
-	}
+    public static void removeIfLastCharacterIsComma(StringBuilder sb) {
+        if (sb.toString().endsWith(","))
+            sb.deleteCharAt(sb.length() - 1);
+    }
 }

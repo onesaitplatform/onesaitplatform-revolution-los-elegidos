@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,51 +36,53 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class UpdateAuditProcessor implements MessageAuditProcessor {
 
-	@Override
-	public IotBrokerAuditEvent process(SSAPMessage<? extends SSAPBodyMessage> message, IoTSession session,
-			GatewayInfo info) {
+    @Override
+    public IotBrokerAuditEvent process(SSAPMessage<? extends SSAPBodyMessage> message, IoTSession session,
+            GatewayInfo info) {
 
-		log.debug("Processing update message");
-		IotBrokerAuditEvent event = null;
+        log.debug("Processing update message");
+        IotBrokerAuditEvent event = null;
 
-		if (SSAPMessageTypes.UPDATE.equals(message.getMessageType())) {
-			SSAPBodyUpdateMessage updateMessage = (SSAPBodyUpdateMessage) message.getBody();
+        if (SSAPMessageTypes.UPDATE.equals(message.getMessageType())) {
+            SSAPBodyUpdateMessage updateMessage = (SSAPBodyUpdateMessage) message.getBody();
 
-			String updateMessageText = "Update ontology " + updateMessage.getOntology();
+            String updateMessageText = "Update ontology " + updateMessage.getOntology();
 
-			if (session != null) {
-				updateMessageText += " by user " + session.getUserID();
-			}
+            if (session != null) {
+                updateMessageText += " by user " + session.getUserID();
+            }
 
-			event = IotBrokerAuditEventFactory.builder().build().createIotBrokerAuditEvent(updateMessage,
-					updateMessageText, session, info);
+            event = IotBrokerAuditEventFactory.builder().build().createIotBrokerAuditEvent(updateMessage,
+                                                                                           updateMessageText, session,
+                                                                                           info);
 
-		} else if (SSAPMessageTypes.UPDATE_BY_ID.equals(message.getMessageType())) {
+        } else if (SSAPMessageTypes.UPDATE_BY_ID.equals(message.getMessageType())) {
 
-			SSAPBodyUpdateByIdMessage updateMessage = (SSAPBodyUpdateByIdMessage) message.getBody();
+            SSAPBodyUpdateByIdMessage updateMessage = (SSAPBodyUpdateByIdMessage) message.getBody();
 
-			String updateMessageText = "Update ontology " + updateMessage.getOntology() + " by id  "
-					+ updateMessage.getId();
+            String updateMessageText =
+                    "Update ontology " + updateMessage.getOntology() + " by id  " + updateMessage.getId();
 
-			if (session != null) {
-				updateMessageText += "  and user  " + session.getUserID();
-			}
+            if (session != null) {
+                updateMessageText += "  and user  " + session.getUserID();
+            }
 
-			event = IotBrokerAuditEventFactory.builder().build().createIotBrokerAuditEvent(updateMessage,
-					updateMessageText, session, info);
+            event = IotBrokerAuditEventFactory.builder().build().createIotBrokerAuditEvent(updateMessage,
+                                                                                           updateMessageText, session,
+                                                                                           info);
 
-		}
+        }
 
-		return event;
+        return event;
 
-	}
+    }
 
-	@Override
-	public List<SSAPMessageTypes> getMessageTypes() {
-		final List<SSAPMessageTypes> types = new ArrayList<>();
-		types.add(SSAPMessageTypes.UPDATE);
-		types.add(SSAPMessageTypes.UPDATE_BY_ID);
-		return types;
-	}
+    @Override
+    public List<SSAPMessageTypes> getMessageTypes() {
+        final List<SSAPMessageTypes> types = new ArrayList<>();
+        types.add(SSAPMessageTypes.UPDATE);
+        types.add(SSAPMessageTypes.UPDATE_BY_ID);
+        return types;
+    }
 
 }

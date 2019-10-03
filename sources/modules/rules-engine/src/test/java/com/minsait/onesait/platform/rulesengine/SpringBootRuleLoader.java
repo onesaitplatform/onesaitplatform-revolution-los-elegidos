@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,87 +43,85 @@ import com.minsait.onesait.platform.rulesengine.service.RulesEngineService;
 @Category(IntegrationTest.class)
 public class SpringBootRuleLoader {
 
-	@Autowired
-	private DroolsRuleDomainRepository ruleDomainRepository;
-	@Autowired
-	private DroolsRuleRepository ruleRepository;
-	@Autowired
-	private RulesEngineService rulesEngineService;
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private OntologyRepository ontologyRepository;
+    @Autowired
+    private DroolsRuleDomainRepository ruleDomainRepository;
+    @Autowired
+    private DroolsRuleRepository ruleRepository;
+    @Autowired
+    private RulesEngineService rulesEngineService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private OntologyRepository ontologyRepository;
 
-	private OntologyJsonWrapper payload;
+    private OntologyJsonWrapper payload;
 
-	private static final String RULE_ROLE_NAME = "SET_ROLE_RULE";
-	private static final String USER_ADMIN = "administrator";
-	private static final String RULE_ROLE = "package com.minsait.onesait.platform.rulesengine;\n"
-			+ "import com.minsait.onesait.platform.rulesengine.model.OntologyJsonWrapper;\n"
-			+ "global com.minsait.onesait.platform.rulesengine.model.OntologyJsonWrapper input;\n"
-			+ "global com.minsait.onesait.platform.rulesengine.model.OntologyJsonWrapper output;\n" + "\n"
-			+ "dialect  \"mvel\"\n" + "\n" + "\n" + "\n" + "rule \"Assign role Manager\"\n" + "\n" + "    when\n"
-			+ "        eval( input.getProperty(\"currentSalary\") < 1000000 && input.getProperty(\"experienceInYears\") > 10 )\n"
-			+ "    then\n" + "        output.copyInputToOutput(input);\n"
-			+ "        output.setProperty(\"role\", \"Manager\");\n" + "end\n" + "\n"
-			+ "rule \"Assign role Consultant\"\n" + "\n" + "    when\n"
-			+ "        eval( input.getProperty(\"currentSalary\") > 30000 && input.getProperty(\"currentSalary\") < 50000 && input.getProperty(\"experienceInYears\") < 8 )\n"
-			+ "    then\n" + "        output.copyInputToOutput(input);\n"
-			+ "        output.setProperty(\"role\", \"Consultant\");\n" + "end\n" + "\n"
-			+ "rule \"Assign role Junior\"\n" + "\n" + "    when\n"
-			+ "        eval( input.getProperty(\"currentSalary\") < 30000 && input.getProperty(\"experienceInYears\") < 3 )\n"
-			+ "    then\n" + "        output.copyInputToOutput(input);\n"
-			+ "        output.setProperty(\"role\", \"Junior\");\n" + "end";
+    private static final String RULE_ROLE_NAME = "SET_ROLE_RULE";
+    private static final String USER_ADMIN = "administrator";
+    private static final String RULE_ROLE = "package com.minsait.onesait.platform.rulesengine;\n" + "import com" +
+            ".minsait.onesait.platform.rulesengine.model.OntologyJsonWrapper;\n" + "global com.minsait.onesait" +
+            ".platform.rulesengine.model.OntologyJsonWrapper input;\n" + "global com.minsait.onesait.platform" +
+            ".rulesengine.model.OntologyJsonWrapper output;\n" + "\n" + "dialect  \"mvel\"\n" + "\n" + "\n" + "\n" +
+            "rule \"Assign role Manager\"\n" + "\n" + "    when\n" + "        eval( input.getProperty" +
+            "(\"currentSalary\") < 1000000 && input.getProperty(\"experienceInYears\") > 10 )\n" + "    then\n" + "  " +
+            "      output.copyInputToOutput(input);\n" + "        output.setProperty(\"role\", \"Manager\");\n" +
+            "end\n" + "\n" + "rule \"Assign role Consultant\"\n" + "\n" + "    when\n" + "        eval( input" +
+            ".getProperty(\"currentSalary\") > 30000 && input.getProperty(\"currentSalary\") < 50000 && input" +
+            ".getProperty(\"experienceInYears\") < 8 )\n" + "    then\n" + "        output.copyInputToOutput(input);" +
+            "\n" + "        output.setProperty(\"role\", \"Consultant\");\n" + "end\n" + "\n" + "rule \"Assign role " +
+            "Junior\"\n" + "\n" + "    when\n" + "        eval( input.getProperty(\"currentSalary\") < 30000 && input" +
+            ".getProperty(\"experienceInYears\") < 3 )\n" + "    then\n" + "        output.copyInputToOutput(input);" +
+            "\n" + "        output.setProperty(\"role\", \"Junior\");\n" + "end";
 
-	@Before
-	public void setUp() {
-		final User admin = userRepository.findByUserId(USER_ADMIN);
-		if (ruleDomainRepository.findByUser(admin) == null) {
-			final DroolsRuleDomain domain = new DroolsRuleDomain();
-			domain.setActive(true);
-			domain.setIdentification("admin_domain");
-			domain.setUser(admin);
-			ruleDomainRepository.save(domain);
-		}
+    @Before
+    public void setUp() {
+        final User admin = userRepository.findByUserId(USER_ADMIN);
+        if (ruleDomainRepository.findByUser(admin) == null) {
+            final DroolsRuleDomain domain = new DroolsRuleDomain();
+            domain.setActive(true);
+            domain.setIdentification("admin_domain");
+            domain.setUser(admin);
+            ruleDomainRepository.save(domain);
+        }
 
-		final DroolsRule restRule = new DroolsRule();
-		restRule.setDRL(RULE_ROLE);
-		restRule.setUser(admin);
-		restRule.setIdentification(RULE_ROLE_NAME);
-		restRule.setType(Type.REST);
-		ruleRepository.save(restRule);
+        final DroolsRule restRule = new DroolsRule();
+        restRule.setDRL(RULE_ROLE);
+        restRule.setUser(admin);
+        restRule.setIdentification(RULE_ROLE_NAME);
+        restRule.setType(Type.REST);
+        ruleRepository.save(restRule);
 
-		payload = new OntologyJsonWrapper();
+        payload = new OntologyJsonWrapper();
 
-	}
+    }
 
-	@After
-	public void destroy() {
-		ruleRepository.deleteByIdentification(RULE_ROLE_NAME);
-	}
+    @After
+    public void destroy() {
+        ruleRepository.deleteByIdentification(RULE_ROLE_NAME);
+    }
 
-	@Test
-	public void userCanExecuteItsOwnRule() throws GenericOPException {
-		assertTrue(rulesEngineService.canUserExecuteRule(RULE_ROLE_NAME, USER_ADMIN));
-	}
+    @Test
+    public void userCanExecuteItsOwnRule() throws GenericOPException {
+        assertTrue(rulesEngineService.canUserExecuteRule(RULE_ROLE_NAME, USER_ADMIN));
+    }
 
-	@Test
-	public void whenSalaryIsLessThan30000_ThenRoleIsJunior() throws GenericOPException {
-		payload.setProperty("experienceInYears", 2);
-		payload.setProperty("currentSalary", 23000);
-		final OntologyJsonWrapper result = new OntologyJsonWrapper(
-				rulesEngineService.executeRestRule(RULE_ROLE_NAME, payload.toJson()));
-		assertTrue(result.getProperty("role").equals("Junior"));
-	}
+    @Test
+    public void whenSalaryIsLessThan30000_ThenRoleIsJunior() throws GenericOPException {
+        payload.setProperty("experienceInYears", 2);
+        payload.setProperty("currentSalary", 23000);
+        final OntologyJsonWrapper result = new OntologyJsonWrapper(
+                rulesEngineService.executeRestRule(RULE_ROLE_NAME, payload.toJson()));
+        assertTrue(result.getProperty("role").equals("Junior"));
+    }
 
-	@Test
-	public void whenExperienceInYearsIs12_ThenRoleIsManager() throws GenericOPException {
-		payload.setProperty("experienceInYears", 15);
-		payload.setProperty("currentSalary", 123000);
-		final OntologyJsonWrapper result = new OntologyJsonWrapper(
-				rulesEngineService.executeRestRule(RULE_ROLE_NAME, payload.toJson()));
-		assertTrue(result.getProperty("role").equals("Manager"));
+    @Test
+    public void whenExperienceInYearsIs12_ThenRoleIsManager() throws GenericOPException {
+        payload.setProperty("experienceInYears", 15);
+        payload.setProperty("currentSalary", 123000);
+        final OntologyJsonWrapper result = new OntologyJsonWrapper(
+                rulesEngineService.executeRestRule(RULE_ROLE_NAME, payload.toJson()));
+        assertTrue(result.getProperty("role").equals("Manager"));
 
-	}
+    }
 
 }

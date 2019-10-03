@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,54 +34,53 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "CLIENT_PLATFORM_ONTOLOGY", uniqueConstraints = {
-		@UniqueConstraint(columnNames = { "CLIENT_PLATFORM_ID", "ONTOLOGY_ID" }) })
+@Table(name = "CLIENT_PLATFORM_ONTOLOGY", uniqueConstraints = {@UniqueConstraint(columnNames = {"CLIENT_PLATFORM_ID",
+        "ONTOLOGY_ID"})})
 @Configurable
 public class ClientPlatformOntology extends AuditableEntityWithUUID {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Column(name = "ACCESS")
-	@Getter
-	@Setter
-	@Enumerated(EnumType.STRING)
-	private AccessType access;
+    @Column(name = "ACCESS")
+    @Getter
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private AccessType access;
 
-	@ManyToOne
-	@JoinColumn(name = "CLIENT_PLATFORM_ID", referencedColumnName = "ID", nullable = false)
-	@OnDelete(action = OnDeleteAction.NO_ACTION)
-	@Getter
-	@Setter
-	private ClientPlatform clientPlatform;
+    @ManyToOne
+    @JoinColumn(name = "CLIENT_PLATFORM_ID", referencedColumnName = "ID", nullable = false)
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @Getter
+    @Setter
+    private ClientPlatform clientPlatform;
 
-	@ManyToOne
-	@JoinColumn(name = "ONTOLOGY_ID", referencedColumnName = "ID", nullable = false)
-	@OnDelete(action = OnDeleteAction.NO_ACTION)
-	@Getter
-	@Setter
-	private Ontology ontology;
+    @ManyToOne
+    @JoinColumn(name = "ONTOLOGY_ID", referencedColumnName = "ID", nullable = false)
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @Getter
+    @Setter
+    private Ontology ontology;
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof ClientPlatformOntology))
-			return false;
-		final ClientPlatformOntology that = (ClientPlatformOntology) o;
-		return getClientPlatform() != null
-				&& getClientPlatform().getIdentification().equals(that.getClientPlatform().getIdentification())
-				&& getOntology() != null
-				&& getOntology().getIdentification().equals(that.getOntology().getIdentification());
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof ClientPlatformOntology))
+            return false;
+        final ClientPlatformOntology that = (ClientPlatformOntology) o;
+        return getClientPlatform() != null && getClientPlatform().getIdentification().equals(
+                that.getClientPlatform().getIdentification()) && getOntology() != null && getOntology().getIdentification().equals(
+                that.getOntology().getIdentification());
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((getClientPlatform() == null) ? 0 : getClientPlatform().getIdentification().hashCode());
-		result = prime * result + ((getOntology() == null) ? 0 : getOntology().getIdentification().hashCode());
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((getClientPlatform() == null) ? 0
+                : getClientPlatform().getIdentification().hashCode());
+        result = prime * result + ((getOntology() == null) ? 0 : getOntology().getIdentification().hashCode());
+        return result;
+    }
 
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Provides Digital Device API to Javascript Logic
- * 
+ *
  * @author minsait by Indra
  *
  */
@@ -40,67 +40,67 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class DigitalTwinApi implements DigitalTwinLogicAPI {
 
-	@Autowired
-	private EventManager eventManager;
+    @Autowired
+    private EventManager eventManager;
 
-	@Autowired
-	private IDigitalTwinStatus digitalTwinStatus;
+    @Autowired
+    private IDigitalTwinStatus digitalTwinStatus;
 
-	private static DigitalTwinApi instance;
+    private static DigitalTwinApi instance;
 
-	@PostConstruct
-	@Override
-	public void init() {
-		instance = this;
-	}
+    @PostConstruct
+    @Override
+    public void init() {
+        instance = this;
+    }
 
-	public static DigitalTwinApi getInstance() {
-		return instance;
-	}
+    public static DigitalTwinApi getInstance() {
+        return instance;
+    }
 
-	@Override
-	public void log(String trace) {
-		eventManager.log(trace);
-	}
+    @Override
+    public void log(String trace) {
+        eventManager.log(trace);
+    }
 
-	@Override
-	public void setStatusValue(String property, Object value) {
-		try {
-			digitalTwinStatus.setProperty(property, value);
-		} catch (Exception e) {
-			log.error("Error setting status property {}", property, e);
-		}
-	}
+    @Override
+    public void setStatusValue(String property, Object value) {
+        try {
+            digitalTwinStatus.setProperty(property, value);
+        } catch (Exception e) {
+            log.error("Error setting status property {}", property, e);
+        }
+    }
 
-	@Override
-	public Object getStatusValue(String property) {
-		try {
-			return digitalTwinStatus.getProperty(property);
-		} catch (Exception e) {
-			log.error("Error getting status property {}", property, e);
-			return null;
-		}
-	}
+    @Override
+    public Object getStatusValue(String property) {
+        try {
+            return digitalTwinStatus.getProperty(property);
+        } catch (Exception e) {
+            log.error("Error getting status property {}", property, e);
+            return null;
+        }
+    }
 
-	@Override
-	public void sendUpdateShadow(String data) {
-		try {
-			JSONObject jsonData = new JSONObject(data);
-			Iterator<String> keys = jsonData.keys();
-			HashMap<String, Object> properties = new HashMap<String, Object>();
-			while (keys.hasNext()) {
-				String property = keys.next();
-				JSONArray jsonArrayProperties = jsonData.getJSONArray(property);
-				properties.put(property, jsonArrayProperties.toString());
-			}
-			eventManager.updateShadow(properties);
-		} catch (JSONException e) {
-			log.error("Error parding data");
-		}
-	}
+    @Override
+    public void sendUpdateShadow(String data) {
+        try {
+            JSONObject jsonData = new JSONObject(data);
+            Iterator<String> keys = jsonData.keys();
+            HashMap<String, Object> properties = new HashMap<String, Object>();
+            while (keys.hasNext()) {
+                String property = keys.next();
+                JSONArray jsonArrayProperties = jsonData.getJSONArray(property);
+                properties.put(property, jsonArrayProperties.toString());
+            }
+            eventManager.updateShadow(properties);
+        } catch (JSONException e) {
+            log.error("Error parding data");
+        }
+    }
 
-	@Override
-	public void sendCustomEvent(String eventName) {
-		eventManager.sendCustomEvent(digitalTwinStatus.toMap(), eventName);
-	}
+    @Override
+    public void sendCustomEvent(String eventName) {
+        eventManager.sendCustomEvent(digitalTwinStatus.toMap(), eventName);
+    }
 }

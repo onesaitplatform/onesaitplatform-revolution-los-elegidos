@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -60,68 +60,68 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SubscribeProcessorTest {
 
-	@Autowired
-	MessageProcessorDelegate subscribeProcessor;
+    @Autowired
+    MessageProcessorDelegate subscribeProcessor;
 
-	@MockBean
-	SecurityPluginManager securityPluginManager;
+    @MockBean
+    SecurityPluginManager securityPluginManager;
 
-	// @Autowired
-	// SuscriptionModelRepository repositoy;
+    // @Autowired
+    // SuscriptionModelRepository repositoy;
 
-	@MockBean
-	RouterService routerService;
-	@MockBean
-	RouterSuscriptionService routerSuscriptionService;
+    @MockBean
+    RouterService routerService;
+    @MockBean
+    RouterSuscriptionService routerSuscriptionService;
 
-	SSAPMessage<SSAPBodySubscribeMessage> ssapSbuscription;
-	IoTSession session;
-	@MockBean
-	DeviceManager deviceManager;
+    SSAPMessage<SSAPBodySubscribeMessage> ssapSbuscription;
+    IoTSession session;
+    @MockBean
+    DeviceManager deviceManager;
 
-	// @MockBean
-	// IotBrokerAuditableAspect iotBrokerAuditableAspect;
+    // @MockBean
+    // IotBrokerAuditableAspect iotBrokerAuditableAspect;
 
-	private void auditMocks() {
+    private void auditMocks() {
 
-	}
+    }
 
-	private void securityMocks() {
-		session = PojoGenerator.generateSession();
-		when(deviceManager.registerActivity(any(), any(), any(), any())).thenReturn(true);
+    private void securityMocks() {
+        session = PojoGenerator.generateSession();
+        when(deviceManager.registerActivity(any(), any(), any(), any())).thenReturn(true);
 
-		when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
-		when(securityPluginManager.checkSessionKeyActive(anyString())).thenReturn(true);
-		when(securityPluginManager.checkAuthorization(any(), any(), any())).thenReturn(true);
-	}
+        when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
+        when(securityPluginManager.checkSessionKeyActive(anyString())).thenReturn(true);
+        when(securityPluginManager.checkAuthorization(any(), any(), any())).thenReturn(true);
+    }
 
-	@Before
-	public void setUp() throws IOException, Exception {
-		// repositoy.deleteByOntologyName(Person.class.getSimpleName());
-		securityMocks();
-		auditMocks();
-		ssapSbuscription = SSAPMessageGenerator.generateSubscriptionMessage(Person.class.getSimpleName(),
-				session.getSessionKey(), SSAPQueryType.SQL, "select * from Person");
+    @Before
+    public void setUp() throws IOException, Exception {
+        // repositoy.deleteByOntologyName(Person.class.getSimpleName());
+        securityMocks();
+        auditMocks();
+        ssapSbuscription = SSAPMessageGenerator.generateSubscriptionMessage(Person.class.getSimpleName(),
+                                                                            session.getSessionKey(), SSAPQueryType.SQL,
+                                                                            "select * from Person");
 
-	}
+    }
 
-	@Test
-	public void given_OneSubsctiptionProcessorWhenSubscriptionArrivesThenSubscriptionIsStoredAndReturned()
-			throws Exception {
+    @Test
+    public void given_OneSubsctiptionProcessorWhenSubscriptionArrivesThenSubscriptionIsStoredAndReturned() throws Exception {
 
-		final OperationResultModel value = RouterServiceGenerator.generateSubscriptionOk(UUID.randomUUID().toString());
-		when(routerSuscriptionService.suscribe(any())).thenReturn(value);
+        final OperationResultModel value = RouterServiceGenerator.generateSubscriptionOk(UUID.randomUUID().toString());
+        when(routerSuscriptionService.suscribe(any())).thenReturn(value);
 
-		final SSAPMessage<SSAPBodyReturnMessage> response = subscribeProcessor.process(ssapSbuscription,
-				PojoGenerator.generateGatewayInfo());
-		Assert.assertNotNull(response);
-		Assert.assertEquals(SSAPMessageDirection.RESPONSE, response.getDirection());
-		Assert.assertEquals(SSAPMessageTypes.SUBSCRIBE, response.getMessageType());
-		Assert.assertNotNull(response.getBody());
-		Assert.assertNotNull(response.getBody().getData());
-		final JsonNode data = response.getBody().getData();
-		Assert.assertNotNull(data.at("/subscriptionId").asText());
+        final SSAPMessage<SSAPBodyReturnMessage> response = subscribeProcessor.process(ssapSbuscription,
+                                                                                       PojoGenerator.generateGatewayInfo());
+        Assert.assertNotNull(response);
+        Assert.assertEquals(SSAPMessageDirection.RESPONSE, response.getDirection());
+        Assert.assertEquals(SSAPMessageTypes.SUBSCRIBE, response.getMessageType());
+        Assert.assertNotNull(response.getBody());
+        Assert.assertNotNull(response.getBody().getData());
+        final JsonNode data = response.getBody().getData();
+        Assert.assertNotNull(data.at("/subscriptionId").asText());
 
-	}
+    }
 
 }

@@ -1,8 +1,8 @@
-ace.define("ace/theme/dracula",[], function(require, exports, module) {
+ace.define("ace/theme/dracula", [], function (require, exports, module) {
 
-exports.isDark = true;
-exports.cssClass = "ace-dracula";
-exports.cssText = "\
+    exports.isDark = true;
+    exports.cssClass = "ace-dracula";
+    exports.cssText = "\
 .ace-dracula .ace_gutter {\
 background: #282a36;\
 color: rgb(144,145,148)\
@@ -121,16 +121,16 @@ color: #626680;\
 .ace-dracula .ace_indent-guide {\
 background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNgYGBgYHB3d/8PAAOIAdULw8qMAAAAAElFTkSuQmCC) right repeat-y\
 }";
-exports.$selectionColorConflict = true;
+    exports.$selectionColorConflict = true;
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+    var dom = require("../lib/dom");
+    dom.importCssString(exports.cssText, exports.cssClass);
 });
-                (function() {
-                    ace.require(["ace/theme/dracula"], function(m) {
-                        if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
-                        }
-                    });
-                })();
+(function () {
+    ace.require(["ace/theme/dracula"], function (m) {
+        if (typeof module == "object" && typeof exports == "object" && module) {
+            module.exports = m;
+        }
+    });
+})();
             

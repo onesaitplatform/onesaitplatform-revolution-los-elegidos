@@ -18,6 +18,6 @@
  */
 
 angular
-  .module('commonUI.logs', [
-    'ngRoute'
-  ]);
+    .module('commonUI.logs', [
+        'ngRoute'
+    ]);

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,73 +26,69 @@ import com.minsait.onesait.platform.config.model.User;
 
 public interface UserRepository extends JpaRepository<User, String> {
 
-	@Override
+    @Override
+    <S extends User> List<S> save(Iterable<S> entities);
 
-	<S extends User> List<S> save(Iterable<S> entities);
+    @Override
+    void flush();
 
-	@Override
+    @Override
+    <S extends User> S saveAndFlush(S entity);
 
-	void flush();
+    @SuppressWarnings("unchecked")
+    @Override
+    User save(User entity);
 
-	@Override
+    @Override
+    @Transactional
+    void delete(User id);
 
-	<S extends User> S saveAndFlush(S entity);
+    @Override
+    @Transactional
+    void delete(Iterable<? extends User> entities);
 
-	@SuppressWarnings("unchecked")
-	@Override
+    @Override
+    @Transactional
+    void deleteAll();
 
-	User save(User entity);
+    @Override
+    List<User> findAll();
 
-	@Override
-	@Transactional
-	void delete(User id);
+    @Override
+    List<User> findAll(Iterable<String> ids);
 
-	@Override
-	@Transactional
-	void delete(Iterable<? extends User> entities);
+    @Query("SELECT o FROM User AS o WHERE o.active=true")
+    List<User> findAllActiveUsers();
 
-	@Override
-	@Transactional
-	void deleteAll();
+    @Query("SELECT o FROM User AS o WHERE o.email=:email")
+    List<User> findByEmail(@Param("email") String email);
 
-	@Override
+    User findByUserId(String userId);
 
-	List<User> findAll();
+    User findUserByEmail(String email);
 
-	@Override
+    User findByUserIdAndPassword(String userId, String password);
 
-	List<User> findAll(Iterable<String> ids);
+    @Transactional
+    void deleteByUserId(String userId);
 
-	@Query("SELECT o FROM User AS o WHERE o.active=true")
-	List<User> findAllActiveUsers();
+    @Query("SELECT o FROM User AS o WHERE o.role !='ADMINISTRATOR'")
+    List<User> findUsersNoAdmin();
 
-	@Query("SELECT o FROM User AS o WHERE o.email=:email")
-	List<User> findByEmail(@Param("email") String email);
+    @Query("SELECT o FROM User AS o WHERE (o.userId LIKE %:userId% OR o.fullName LIKE %:fullName% OR o.email LIKE " +
+            "%:email% OR o.role.name =:role)")
+    List<User> findByUserIdOrFullNameOrEmailOrRoleType(@Param("userId") String userId,
+            @Param("fullName") String fullName, @Param("email") String email, @Param("role") String role);
 
-	User findByUserId(String userId);
+    @Query("SELECT o FROM User AS o WHERE (o.userId LIKE %:userId% OR o.fullName LIKE %:fullName% OR o.email LIKE " +
+            "%:email% OR o.role.name =:role) AND (o.active=:active)")
+    List<User> findByUserIdOrFullNameOrEmailOrRoleTypeAndActive(@Param("userId") String userId,
+            @Param("fullName") String fullName, @Param("email") String email, @Param("role") String role,
+            @Param("active") boolean active);
 
-	User findUserByEmail(String email);
+    @Query("SELECT o FROM User AS o WHERE (o.userId != :userId AND o.role.id != :rolId) ORDER BY o.userId)")
+    List<User> findUserByIdentificationAndNoRol(@Param("userId") String userId, @Param("rolId") String rolId);
 
-	User findByUserIdAndPassword(String userId, String password);
-
-	@Transactional
-	void deleteByUserId(String userId);
-
-	@Query("SELECT o FROM User AS o WHERE o.role !='ADMINISTRATOR'")
-	List<User> findUsersNoAdmin();
-
-	@Query("SELECT o FROM User AS o WHERE (o.userId LIKE %:userId% OR o.fullName LIKE %:fullName% OR o.email LIKE %:email% OR o.role.name =:role)")
-	List<User> findByUserIdOrFullNameOrEmailOrRoleType(@Param("userId") String userId,
-			@Param("fullName") String fullName, @Param("email") String email, @Param("role") String role);
-
-	@Query("SELECT o FROM User AS o WHERE (o.userId LIKE %:userId% OR o.fullName LIKE %:fullName% OR o.email LIKE %:email% OR o.role.name =:role) AND (o.active=:active)")
-	List<User> findByUserIdOrFullNameOrEmailOrRoleTypeAndActive(@Param("userId") String userId,
-			@Param("fullName") String fullName, @Param("email") String email, @Param("role") String role,
-			@Param("active") boolean active);
-
-	@Query("SELECT o FROM User AS o WHERE (o.userId != :userId AND o.role.id != :rolId) ORDER BY o.userId)")
-	List<User> findUserByIdentificationAndNoRol(@Param("userId") String userId, @Param("rolId") String rolId);
-	
-	@Query("SELECT o FROM User AS o WHERE (o.userId != :userId AND o.role.id = :rolId) ORDER BY o.userId)")
-	List<User> findUserByIdentificationAndRol(@Param("userId") String userId, @Param("rolId") String rolId);
+    @Query("SELECT o FROM User AS o WHERE (o.userId != :userId AND o.role.id = :rolId) ORDER BY o.userId)")
+    List<User> findUserByIdentificationAndRol(@Param("userId") String userId, @Param("rolId") String rolId);
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,23 +23,23 @@ import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class NotebookUserAccessSimplified implements Comparable<NotebookUserAccessSimplified>{
+public class NotebookUserAccessSimplified implements Comparable<NotebookUserAccessSimplified> {
 
-	@Getter
-	@Setter
-	private String userId;
+    @Getter
+    @Setter
+    private String userId;
 
-	@Getter
-	@Setter
-	private String accessType;
-	
-	public NotebookUserAccessSimplified(NotebookUserAccess notebookUserAccess) {
-		this.userId = notebookUserAccess.getUser().getUserId();
-		this.accessType = notebookUserAccess.getNotebookUserAccessType().getName();
-	}
+    @Getter
+    @Setter
+    private String accessType;
 
-	@Override
-	public int compareTo(NotebookUserAccessSimplified o) {
-		return userId.compareTo(o.getUserId());
-	}
+    public NotebookUserAccessSimplified(NotebookUserAccess notebookUserAccess) {
+        this.userId = notebookUserAccess.getUser().getUserId();
+        this.accessType = notebookUserAccess.getNotebookUserAccessType().getName();
+    }
+
+    @Override
+    public int compareTo(NotebookUserAccessSimplified o) {
+        return userId.compareTo(o.getUserId());
+    }
 }

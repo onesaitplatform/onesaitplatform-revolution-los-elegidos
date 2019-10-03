@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -68,421 +68,424 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 
-@Api(value = "Ontology Management", tags = { "Ontology management service" })
+@Api(value = "Ontology Management", tags = {"Ontology management service"})
 @RestController
-@ApiResponses({ @ApiResponse(code = 400, message = "Bad request"),
-		@ApiResponse(code = 500, message = "Internal server error"), @ApiResponse(code = 403, message = "Forbidden") })
+@ApiResponses({@ApiResponse(code = 400, message = "Bad request"), @ApiResponse(code = 500, message = "Internal server" +
+        " error"), @ApiResponse(code = 403, message = "Forbidden")})
 @RequestMapping("api/ontologies")
 @Slf4j
 public class OntologyManagementController {
 
-	private static final String USER_IS_NOT_AUTH = "The user is not authorized";
-	private static final String ONTOLOGY_STR = "Ontology \"";
-	private static final String NOT_EXIST = "\" does not exist";
-	private static final String ONTOLOGY_NOT_FOUND = "Ontologies not found";
+    private static final String USER_IS_NOT_AUTH = "The user is not authorized";
+    private static final String ONTOLOGY_STR = "Ontology \"";
+    private static final String NOT_EXIST = "\" does not exist";
+    private static final String ONTOLOGY_NOT_FOUND = "Ontologies not found";
 
-	@Autowired
-	private AppWebUtils utils;
-	@Autowired
-	private OntologyService ontologyService;
-	@Autowired
-	private UserService userService;
-	@Autowired
-	private QueryToolService queryToolService;
-	@Autowired
-	private EntityDeletionService entityDeletionService;
-	@Autowired
-	private OntologyBusinessService ontologyBusinessService;
+    @Autowired
+    private AppWebUtils utils;
+    @Autowired
+    private OntologyService ontologyService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private QueryToolService queryToolService;
+    @Autowired
+    private EntityDeletionService entityDeletionService;
+    @Autowired
+    private OntologyBusinessService ontologyBusinessService;
 
-	@ApiOperation(value = "Get ontology by identification")
-	@GetMapping("/{identification}")
-	@ApiResponses(@ApiResponse(response = OntologySimplified.class, code = 200, message = "OK"))
-	public ResponseEntity<?> get(
-			@ApiParam(value = "Ontology identification", required = true) @PathVariable("identification") String ontologyIdentification) {
+    @ApiOperation(value = "Get ontology by identification")
+    @GetMapping("/{identification}")
+    @ApiResponses(@ApiResponse(response = OntologySimplified.class, code = 200, message = "OK"))
+    public ResponseEntity<?> get(
+            @ApiParam(value = "Ontology identification", required = true) @PathVariable("identification") String ontologyIdentification) {
 
-		try {
-			final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
-					utils.getUserId());
-			if (ontology == null) {
-				return new ResponseEntity<>(ONTOLOGY_STR + ontologyIdentification + NOT_EXIST, HttpStatus.BAD_REQUEST);
-			} else {
-				final OntologySimplified ontologySimplified = new OntologySimplified(ontology);
-				return new ResponseEntity<>(ontologySimplified, HttpStatus.OK);
-			}
+        try {
+            final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
+                                                                                  utils.getUserId());
+            if (ontology == null) {
+                return new ResponseEntity<>(ONTOLOGY_STR + ontologyIdentification + NOT_EXIST, HttpStatus.BAD_REQUEST);
+            } else {
+                final OntologySimplified ontologySimplified = new OntologySimplified(ontology);
+                return new ResponseEntity<>(ontologySimplified, HttpStatus.OK);
+            }
 
-		} catch (final OntologyServiceException exception) {
-			return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
-		}
-	}
+        } catch (final OntologyServiceException exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
+    }
 
-	@ApiOperation(value = "Delete ontology by identification")
-	@DeleteMapping("/{identification}")
-	public ResponseEntity<String> delete(
-			@ApiParam(value = "Ontology identification", required = true) @PathVariable("identification") String ontologyIdentification) {
-		try {
-			final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
-					utils.getUserId());
-			if (ontology == null) {
-				return new ResponseEntity<>(ONTOLOGY_STR + ontologyIdentification + NOT_EXIST, HttpStatus.BAD_REQUEST);
-			}
-			final User user = userService.getUser(utils.getUserId());
-			if (!userService.isUserAdministrator(user) && !userService.isUserDeveloper(user)) {
-				return new ResponseEntity<>(USER_IS_NOT_AUTH, HttpStatus.UNAUTHORIZED);
-			}
-			entityDeletionService.deleteOntology(ontology.getId(), utils.getUserId());
-		} catch (final OntologyServiceException exception) {
-			return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-		return new ResponseEntity<>("Ontology deleted successfully", HttpStatus.OK);
-	}
+    @ApiOperation(value = "Delete ontology by identification")
+    @DeleteMapping("/{identification}")
+    public ResponseEntity<String> delete(
+            @ApiParam(value = "Ontology identification", required = true) @PathVariable("identification") String ontologyIdentification) {
+        try {
+            final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
+                                                                                  utils.getUserId());
+            if (ontology == null) {
+                return new ResponseEntity<>(ONTOLOGY_STR + ontologyIdentification + NOT_EXIST, HttpStatus.BAD_REQUEST);
+            }
+            final User user = userService.getUser(utils.getUserId());
+            if (!userService.isUserAdministrator(user) && !userService.isUserDeveloper(user)) {
+                return new ResponseEntity<>(USER_IS_NOT_AUTH, HttpStatus.UNAUTHORIZED);
+            }
+            entityDeletionService.deleteOntology(ontology.getId(), utils.getUserId());
+        } catch (final OntologyServiceException exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>("Ontology deleted successfully", HttpStatus.OK);
+    }
 
-	@ApiOperation(value = "Get all ontologies. Filtering by dataModel or type=kpi if desired (dataModel and type are exclusive and can not be used both in the same request)")
-	@GetMapping
-	@ApiResponses(@ApiResponse(response = OntologySimplified[].class, code = 200, message = "OK"))
-	public ResponseEntity<?> getAll(
-			@ApiParam(value = "Datamodel of the listed ontologies. Ignored if empty", required = false) @RequestParam(value = "dataModel", required = false, defaultValue = "") String dataModel,
-			@ApiParam(value = "Allowed values: (kpi|timeseries). Ignored if empty", required = false) @RequestParam(value = "type", required = false, defaultValue = "") String type) {
+    @ApiOperation(value = "Get all ontologies. Filtering by dataModel or type=kpi if desired (dataModel and type are " +
+            "exclusive and can not be used both in the same request)")
+    @GetMapping
+    @ApiResponses(@ApiResponse(response = OntologySimplified[].class, code = 200, message = "OK"))
+    public ResponseEntity<?> getAll(
+            @ApiParam(value = "Datamodel of the listed ontologies. Ignored if empty", required = false) @RequestParam(value = "dataModel", required = false, defaultValue = "") String dataModel,
+            @ApiParam(value = "Allowed values: (kpi|timeseries). Ignored if empty", required = false) @RequestParam(value = "type", required = false, defaultValue = "") String type) {
 
-		if (dataModel.length() > 0 && type.length() > 0) {
-			log.error("dataModel and type attributes cannot be in the same request");
-			return new ResponseEntity<>("dataModel and type attributes cannot be in the same request",
-					HttpStatus.BAD_REQUEST);
-		}
+        if (dataModel.length() > 0 && type.length() > 0) {
+            log.error("dataModel and type attributes cannot be in the same request");
+            return new ResponseEntity<>("dataModel and type attributes cannot be in the same request",
+                                        HttpStatus.BAD_REQUEST);
+        }
 
-		if (dataModel.equals("") && type.equals("")) {
-			return this.getAll();
-		} else if (dataModel.length() > 0) {// Search by DataModel
-			return getAllByDataModel(dataModel);
-		} else { // Search by Type
-			return getAllByType(type);
-		}
-	}
+        if (dataModel.equals("") && type.equals("")) {
+            return this.getAll();
+        } else if (dataModel.length() > 0) {// Search by DataModel
+            return getAllByDataModel(dataModel);
+        } else { // Search by Type
+            return getAllByType(type);
+        }
+    }
 
-	private ResponseEntity<?> getAll() {
-		final List<Ontology> ontologies = ontologyService.getOntologiesByUserId(utils.getUserId());
-		if (ontologies == null) {
-			return new ResponseEntity<>(ONTOLOGY_NOT_FOUND, HttpStatus.NOT_FOUND);
-		} else {
-			final Set<OntologySimplified> ontologiesList = new TreeSet<>();
-			ontologies.forEach(o -> ontologiesList.add(new OntologySimplified(o)));
-			return new ResponseEntity<>(ontologiesList, HttpStatus.OK);
-		}
-	}
+    private ResponseEntity<?> getAll() {
+        final List<Ontology> ontologies = ontologyService.getOntologiesByUserId(utils.getUserId());
+        if (ontologies == null) {
+            return new ResponseEntity<>(ONTOLOGY_NOT_FOUND, HttpStatus.NOT_FOUND);
+        } else {
+            final Set<OntologySimplified> ontologiesList = new TreeSet<>();
+            ontologies.forEach(o -> ontologiesList.add(new OntologySimplified(o)));
+            return new ResponseEntity<>(ontologiesList, HttpStatus.OK);
+        }
+    }
 
-	private ResponseEntity<?> getAllByDataModel(String dataModel) {
+    private ResponseEntity<?> getAllByDataModel(String dataModel) {
 
-		final List<Ontology> ontologies = ontologyService.getOntologiesByUserIdAndDataModel(utils.getUserId(),
-				dataModel);
-		if (ontologies == null) {
-			return new ResponseEntity<>(ONTOLOGY_NOT_FOUND, HttpStatus.NOT_FOUND);
-		} else {
-			final Set<OntologySimplified> ontologiesList = new TreeSet<>();
-			ontologies.forEach(o -> ontologiesList.add(new OntologySimplified(o)));
-			return new ResponseEntity<>(ontologiesList, HttpStatus.OK);
-		}
+        final List<Ontology> ontologies = ontologyService.getOntologiesByUserIdAndDataModel(utils.getUserId(),
+                                                                                            dataModel);
+        if (ontologies == null) {
+            return new ResponseEntity<>(ONTOLOGY_NOT_FOUND, HttpStatus.NOT_FOUND);
+        } else {
+            final Set<OntologySimplified> ontologiesList = new TreeSet<>();
+            ontologies.forEach(o -> ontologiesList.add(new OntologySimplified(o)));
+            return new ResponseEntity<>(ontologiesList, HttpStatus.OK);
+        }
 
-	}
+    }
 
-	private ResponseEntity<?> getAllByType(String type) {
-		// Validates type
-		switch (type) {
-		case OntologyServiceImpl.KPI_TYPE:
-		case OntologyServiceImpl.TIMESERIES_TYPE:
-			break;
-		default:
-			log.error("type {} not allowed, no ontologies will be returned", type);
-			return new ResponseEntity<>("type: " + type + " not allowed", HttpStatus.BAD_REQUEST);
-		}
+    private ResponseEntity<?> getAllByType(String type) {
+        // Validates type
+        switch (type) {
+            case OntologyServiceImpl.KPI_TYPE:
+            case OntologyServiceImpl.TIMESERIES_TYPE:
+                break;
+            default:
+                log.error("type {} not allowed, no ontologies will be returned", type);
+                return new ResponseEntity<>("type: " + type + " not allowed", HttpStatus.BAD_REQUEST);
+        }
 
-		final List<Ontology> ontologies = ontologyService.getOntologiesByUserIdAndType(utils.getUserId(), type);
-		if (ontologies == null) {
-			return new ResponseEntity<>(ONTOLOGY_NOT_FOUND, HttpStatus.NOT_FOUND);
-		} else {
-			final Set<OntologySimplified> ontologiesList = new TreeSet<>();
-			ontologies.forEach(o -> ontologiesList.add(new OntologySimplified(o)));
-			return new ResponseEntity<>(ontologiesList, HttpStatus.OK);
-		}
-	}
+        final List<Ontology> ontologies = ontologyService.getOntologiesByUserIdAndType(utils.getUserId(), type);
+        if (ontologies == null) {
+            return new ResponseEntity<>(ONTOLOGY_NOT_FOUND, HttpStatus.NOT_FOUND);
+        } else {
+            final Set<OntologySimplified> ontologiesList = new TreeSet<>();
+            ontologies.forEach(o -> ontologiesList.add(new OntologySimplified(o)));
+            return new ResponseEntity<>(ontologiesList, HttpStatus.OK);
+        }
+    }
 
-	@ApiOperation(value = "Create new ontology")
-	@PostMapping
-	public ResponseEntity<?> create(
-			@ApiParam(value = "OntologyCreate", required = true) @Valid @RequestBody OntologyCreate ontologyCreate,
-			Errors errors) {
-		if (errors.hasErrors())
-			return ErrorValidationResponse.generateValidationErrorResponse(errors);
-		final Ontology ontology = new Ontology();
-		final User user = userService.getUser(utils.getUserId());
+    @ApiOperation(value = "Create new ontology")
+    @PostMapping
+    public ResponseEntity<?> create(
+            @ApiParam(value = "OntologyCreate", required = true) @Valid @RequestBody OntologyCreate ontologyCreate,
+            Errors errors) {
+        if (errors.hasErrors())
+            return ErrorValidationResponse.generateValidationErrorResponse(errors);
+        final Ontology ontology = new Ontology();
+        final User user = userService.getUser(utils.getUserId());
 
-		if (!userService.isUserAdministrator(user) && !userService.isUserDeveloper(user)) {
-			return new ResponseEntity<>(USER_IS_NOT_AUTH, HttpStatus.UNAUTHORIZED);
-		}
+        if (!userService.isUserAdministrator(user) && !userService.isUserDeveloper(user)) {
+            return new ResponseEntity<>(USER_IS_NOT_AUTH, HttpStatus.UNAUTHORIZED);
+        }
 
-		ontology.setUser(user);
-		ontology.setIdentification(ontologyCreate.getIdentification());
-		ontology.setDescription(ontologyCreate.getDescription());
-		ontology.setMetainf(ontologyCreate.getMetainf());
-		ontology.setActive(ontologyCreate.isActive());
-		ontology.setPublic(ontologyCreate.isPublic());
-		ontology.setAllowsCypherFields(ontologyCreate.isAllowsCypherFields());
-		ontology.setJsonSchema(ontologyCreate.getJsonSchema());
-		ontology.setRtdbClean(ontologyCreate.isRtdbClean());
-		ontology.setRtdbCleanLapse(ontologyCreate.getRtdbCleanLapse());
-		if (ontologyCreate.getRtdbDatasource() == null) {
-			ontology.setRtdbDatasource(RtdbDatasource.MONGO);
-		} else {
-			ontology.setRtdbDatasource(ontologyCreate.getRtdbDatasource());
-		}
-		ontology.setRtdbToHdb(ontologyCreate.isRtdbToHdb());
-		if (ontologyCreate.getRtdbToHdbStorage() == null) {
-			ontology.setRtdbToHdbStorage(RtdbToHdbStorage.MONGO_GRIDFS);
-		} else {
-			ontology.setRtdbToHdbStorage(ontologyCreate.getRtdbToHdbStorage());
-		}
-		ontology.setAllowsCreateTopic(ontologyCreate.isAllowsCreateTopic());
+        ontology.setUser(user);
+        ontology.setIdentification(ontologyCreate.getIdentification());
+        ontology.setDescription(ontologyCreate.getDescription());
+        ontology.setMetainf(ontologyCreate.getMetainf());
+        ontology.setActive(ontologyCreate.isActive());
+        ontology.setPublic(ontologyCreate.isPublic());
+        ontology.setAllowsCypherFields(ontologyCreate.isAllowsCypherFields());
+        ontology.setJsonSchema(ontologyCreate.getJsonSchema());
+        ontology.setRtdbClean(ontologyCreate.isRtdbClean());
+        ontology.setRtdbCleanLapse(ontologyCreate.getRtdbCleanLapse());
+        if (ontologyCreate.getRtdbDatasource() == null) {
+            ontology.setRtdbDatasource(RtdbDatasource.MONGO);
+        } else {
+            ontology.setRtdbDatasource(ontologyCreate.getRtdbDatasource());
+        }
+        ontology.setRtdbToHdb(ontologyCreate.isRtdbToHdb());
+        if (ontologyCreate.getRtdbToHdbStorage() == null) {
+            ontology.setRtdbToHdbStorage(RtdbToHdbStorage.MONGO_GRIDFS);
+        } else {
+            ontology.setRtdbToHdbStorage(ontologyCreate.getRtdbToHdbStorage());
+        }
+        ontology.setAllowsCreateTopic(ontologyCreate.isAllowsCreateTopic());
 
-		final OntologyConfiguration ontologyConfig = new OntologyConfiguration();
-		try {
-			ontologyBusinessService.createOntology(ontology, utils.getUserId(), ontologyConfig);
-		} catch (final OntologyDataJsonProblemException jsonException) {
-			return new ResponseEntity<>(jsonException.getMessage(), HttpStatus.BAD_REQUEST);
-		} catch (final OntologyServiceException exception) {
-			return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
-		} catch (final OntologyBusinessServiceException exception) {
-			return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
-		}
+        final OntologyConfiguration ontologyConfig = new OntologyConfiguration();
+        try {
+            ontologyBusinessService.createOntology(ontology, utils.getUserId(), ontologyConfig);
+        } catch (final OntologyDataJsonProblemException jsonException) {
+            return new ResponseEntity<>(jsonException.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (final OntologyServiceException exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (final OntologyBusinessServiceException exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+        }
 
-		return new ResponseEntity<>("Ontology created successfully", HttpStatus.OK);
-	}
+        return new ResponseEntity<>("Ontology created successfully", HttpStatus.OK);
+    }
 
-	@ApiOperation(value = "Update an existing ontology")
-	@PutMapping
-	public ResponseEntity<?> update(
-			@ApiParam(value = "OntologyUpdate", required = true) @Valid @RequestBody OntologyUpdate ontologyUpdate,
-			Errors errors) {
-		if (errors.hasErrors())
-			return ErrorValidationResponse.generateValidationErrorResponse(errors);
-		final User user = userService.getUser(utils.getUserId());
+    @ApiOperation(value = "Update an existing ontology")
+    @PutMapping
+    public ResponseEntity<?> update(
+            @ApiParam(value = "OntologyUpdate", required = true) @Valid @RequestBody OntologyUpdate ontologyUpdate,
+            Errors errors) {
+        if (errors.hasErrors())
+            return ErrorValidationResponse.generateValidationErrorResponse(errors);
+        final User user = userService.getUser(utils.getUserId());
 
-		if (!userService.isUserAdministrator(user) && !userService.isUserDeveloper(user)) {
-			return new ResponseEntity<>(USER_IS_NOT_AUTH, HttpStatus.UNAUTHORIZED);
-		}
-		try {
-			final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyUpdate.getIdentification(),
-					utils.getUserId());
-			if (ontology == null) {
-				return new ResponseEntity<>(ONTOLOGY_STR + ontologyUpdate.getIdentification() + NOT_EXIST,
-						HttpStatus.BAD_REQUEST);
-			}
+        if (!userService.isUserAdministrator(user) && !userService.isUserDeveloper(user)) {
+            return new ResponseEntity<>(USER_IS_NOT_AUTH, HttpStatus.UNAUTHORIZED);
+        }
+        try {
+            final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyUpdate.getIdentification(),
+                                                                                  utils.getUserId());
+            if (ontology == null) {
+                return new ResponseEntity<>(ONTOLOGY_STR + ontologyUpdate.getIdentification() + NOT_EXIST,
+                                            HttpStatus.BAD_REQUEST);
+            }
 
-			final String value = queryToolService.querySQLAsJson(utils.getUserId(), ontology.getIdentification(),
-					"select count(*) as value from " + ontology.getIdentification(), 0);
-			final ObjectMapper mapper = new ObjectMapper();
-			final int count = mapper.readValue(value, JsonNode.class).path(0).path("value").asInt();
+            final String value = queryToolService.querySQLAsJson(utils.getUserId(), ontology.getIdentification(),
+                                                                 "select count(*) as value from " + ontology.getIdentification(),
+                                                                 0);
+            final ObjectMapper mapper = new ObjectMapper();
+            final int count = mapper.readValue(value, JsonNode.class).path(0).path("value").asInt();
 
-			if (ontologyUpdate.getDescription() != null) {
-				ontology.setDescription(ontologyUpdate.getDescription());
-			}
-			if (ontologyUpdate.getMetainf() != null) {
-				ontology.setMetainf(ontologyUpdate.getMetainf());
-			}
-			if (ontologyUpdate.getJsonSchema() != null) {
-				ontology.setJsonSchema(ontologyUpdate.getJsonSchema());
-			}
-			if (ontologyUpdate.getActive() != null) {
-				ontology.setActive(ontologyUpdate.getActive());
-			}
-			if (ontologyUpdate.getAllowsCypherFields() != null) {
-				ontology.setAllowsCypherFields(ontologyUpdate.getAllowsCypherFields());
-			}
-			if (ontologyUpdate.getAllowsCreateTopic() != null) {
-				ontology.setAllowsCreateTopic(ontologyUpdate.getAllowsCreateTopic());
-			}
-			if (ontologyUpdate.getRtdbClean() != null) {
-				ontology.setRtdbClean(ontologyUpdate.getRtdbClean());
-				if (ontology.isRtdbClean()) {
-					ontologyUpdate.setRtdbCleanLapse(ontologyUpdate.getRtdbCleanLapse());
-				}
-			}
-			if (ontologyUpdate.getRtdbToHdb() != null) {
-				ontology.setRtdbToHdb(ontologyUpdate.getRtdbToHdb());
-			}
-			final OntologyConfiguration ontologyConfig = new OntologyConfiguration();
-			try {
-				ontologyService.updateOntology(ontology, utils.getUserId(), ontologyConfig, count > 0 ? true : false);
-			} catch (OntologyDataJsonProblemException | OntologyServiceException exception) {
-				return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
-			}
-		} catch (final OntologyServiceException exception) {
-			return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
-		} catch (final IOException e) {
-			return new ResponseEntity<>("Could not check if ontology has documents in RTDB",
-					HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		return new ResponseEntity<>("Ontology updated successfully", HttpStatus.OK);
-	}
+            if (ontologyUpdate.getDescription() != null) {
+                ontology.setDescription(ontologyUpdate.getDescription());
+            }
+            if (ontologyUpdate.getMetainf() != null) {
+                ontology.setMetainf(ontologyUpdate.getMetainf());
+            }
+            if (ontologyUpdate.getJsonSchema() != null) {
+                ontology.setJsonSchema(ontologyUpdate.getJsonSchema());
+            }
+            if (ontologyUpdate.getActive() != null) {
+                ontology.setActive(ontologyUpdate.getActive());
+            }
+            if (ontologyUpdate.getAllowsCypherFields() != null) {
+                ontology.setAllowsCypherFields(ontologyUpdate.getAllowsCypherFields());
+            }
+            if (ontologyUpdate.getAllowsCreateTopic() != null) {
+                ontology.setAllowsCreateTopic(ontologyUpdate.getAllowsCreateTopic());
+            }
+            if (ontologyUpdate.getRtdbClean() != null) {
+                ontology.setRtdbClean(ontologyUpdate.getRtdbClean());
+                if (ontology.isRtdbClean()) {
+                    ontologyUpdate.setRtdbCleanLapse(ontologyUpdate.getRtdbCleanLapse());
+                }
+            }
+            if (ontologyUpdate.getRtdbToHdb() != null) {
+                ontology.setRtdbToHdb(ontologyUpdate.getRtdbToHdb());
+            }
+            final OntologyConfiguration ontologyConfig = new OntologyConfiguration();
+            try {
+                ontologyService.updateOntology(ontology, utils.getUserId(), ontologyConfig, count > 0 ? true : false);
+            } catch (OntologyDataJsonProblemException | OntologyServiceException exception) {
+                return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+            }
+        } catch (final OntologyServiceException exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
+        } catch (final IOException e) {
+            return new ResponseEntity<>("Could not check if ontology has documents in RTDB",
+                                        HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>("Ontology updated successfully", HttpStatus.OK);
+    }
 
-	@ApiOperation(value = "Get users access authorizations for an ontology by ontology identification")
-	@GetMapping("/{identification}/authorizations")
-	@ApiResponses(@ApiResponse(response = OntologySimplified.class, code = 200, message = "OK"))
-	public ResponseEntity<?> getOntologyAuthorizations(
-			@ApiParam(value = "Ontology identification", required = true) @PathVariable("identification") String ontologyIdentification) {
+    @ApiOperation(value = "Get users access authorizations for an ontology by ontology identification")
+    @GetMapping("/{identification}/authorizations")
+    @ApiResponses(@ApiResponse(response = OntologySimplified.class, code = 200, message = "OK"))
+    public ResponseEntity<?> getOntologyAuthorizations(
+            @ApiParam(value = "Ontology identification", required = true) @PathVariable("identification") String ontologyIdentification) {
 
-		try {
-			final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
-					utils.getUserId());
-			if (ontology == null) {
-				return new ResponseEntity<>(ONTOLOGY_STR + ontologyIdentification + NOT_EXIST, HttpStatus.BAD_REQUEST);
-			}
-			if (!ontologyService.hasOntologyUsersAuthorized(ontology.getId())) {
-				return new ResponseEntity<>(ONTOLOGY_STR + ontologyIdentification + "\" does not have authorizations",
-						HttpStatus.BAD_REQUEST);
-			}
+        try {
+            final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
+                                                                                  utils.getUserId());
+            if (ontology == null) {
+                return new ResponseEntity<>(ONTOLOGY_STR + ontologyIdentification + NOT_EXIST, HttpStatus.BAD_REQUEST);
+            }
+            if (!ontologyService.hasOntologyUsersAuthorized(ontology.getId())) {
+                return new ResponseEntity<>(ONTOLOGY_STR + ontologyIdentification + "\" does not have authorizations",
+                                            HttpStatus.BAD_REQUEST);
+            }
 
-			final List<OntologyUserAccess> ontologyUserAccessList = ontologyService
-					.getOntologyUserAccesses(ontology.getId(), utils.getUserId());
-			final Set<OntologyUserAccessSimplified> ontologyUserAccessSimplifiedList = new TreeSet<>();
-			ontologyUserAccessList
-					.forEach(o -> ontologyUserAccessSimplifiedList.add(new OntologyUserAccessSimplified(o)));
+            final List<OntologyUserAccess> ontologyUserAccessList = ontologyService.getOntologyUserAccesses(
+                    ontology.getId(), utils.getUserId());
+            final Set<OntologyUserAccessSimplified> ontologyUserAccessSimplifiedList = new TreeSet<>();
+            ontologyUserAccessList.forEach(
+                    o -> ontologyUserAccessSimplifiedList.add(new OntologyUserAccessSimplified(o)));
 
-			return new ResponseEntity<>(ontologyUserAccessSimplifiedList, HttpStatus.OK);
+            return new ResponseEntity<>(ontologyUserAccessSimplifiedList, HttpStatus.OK);
 
-		} catch (final OntologyServiceException exception) {
-			return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
-		}
-	}
+        } catch (final OntologyServiceException exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
+    }
 
-	@ApiOperation(value = "Set user access authorizations for an ontology by ontology identification")
-	@PostMapping("/{identification}/authorizations")
-	public ResponseEntity<?> setOntologyAuthorizations(
-			@ApiParam(value = "Ontology identification", required = true) @PathVariable("identification") String ontologyIdentification,
-			@Valid @RequestBody OntologyUserAccessSimplified ontologyUserAccessSimplified, Errors errors) {
-		if (errors.hasErrors())
-			return ErrorValidationResponse.generateValidationErrorResponse(errors);
-		try {
-			final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
-					utils.getUserId());
-			if (ontology == null) {
-				return new ResponseEntity<>(ONTOLOGY_STR + ontologyIdentification + NOT_EXIST, HttpStatus.BAD_REQUEST);
-			}
+    @ApiOperation(value = "Set user access authorizations for an ontology by ontology identification")
+    @PostMapping("/{identification}/authorizations")
+    public ResponseEntity<?> setOntologyAuthorizations(
+            @ApiParam(value = "Ontology identification", required = true) @PathVariable("identification") String ontologyIdentification,
+            @Valid @RequestBody OntologyUserAccessSimplified ontologyUserAccessSimplified, Errors errors) {
+        if (errors.hasErrors())
+            return ErrorValidationResponse.generateValidationErrorResponse(errors);
+        try {
+            final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
+                                                                                  utils.getUserId());
+            if (ontology == null) {
+                return new ResponseEntity<>(ONTOLOGY_STR + ontologyIdentification + NOT_EXIST, HttpStatus.BAD_REQUEST);
+            }
 
-			final User user = userService.getUser(ontologyUserAccessSimplified.getUserId());
-			if (user == null) {
-				return new ResponseEntity<>("User \"" + ontologyUserAccessSimplified.getUserId() + NOT_EXIST,
-						HttpStatus.BAD_REQUEST);
-			}
-			try {
-				final OntologyUserAccess ontologyUserAccess = ontologyService
-						.getOntologyUserAccessByOntologyIdAndUserId(ontology.getId(),
-								ontologyUserAccessSimplified.getUserId(), utils.getUserId());
-				ontologyService.updateOntologyUserAccess(ontologyUserAccess.getId(),
-						ontologyUserAccessSimplified.getTypeName(), utils.getUserId());
-				return new ResponseEntity<>("Authorization updated successfully", HttpStatus.OK);
-			} catch (final IllegalStateException e) {
-				return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-			} catch (final OntologyServiceException e) {
-				ontologyService.createUserAccess(ontology.getId(), user.getUserId(),
-						ontologyUserAccessSimplified.getTypeName(), utils.getUserId());
-				return new ResponseEntity<>("Authorization created successfully", HttpStatus.OK);
-			}
+            final User user = userService.getUser(ontologyUserAccessSimplified.getUserId());
+            if (user == null) {
+                return new ResponseEntity<>("User \"" + ontologyUserAccessSimplified.getUserId() + NOT_EXIST,
+                                            HttpStatus.BAD_REQUEST);
+            }
+            try {
+                final OntologyUserAccess ontologyUserAccess =
+                        ontologyService.getOntologyUserAccessByOntologyIdAndUserId(
+                        ontology.getId(), ontologyUserAccessSimplified.getUserId(), utils.getUserId());
+                ontologyService.updateOntologyUserAccess(ontologyUserAccess.getId(),
+                                                         ontologyUserAccessSimplified.getTypeName(), utils.getUserId());
+                return new ResponseEntity<>("Authorization updated successfully", HttpStatus.OK);
+            } catch (final IllegalStateException e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            } catch (final OntologyServiceException e) {
+                ontologyService.createUserAccess(ontology.getId(), user.getUserId(),
+                                                 ontologyUserAccessSimplified.getTypeName(), utils.getUserId());
+                return new ResponseEntity<>("Authorization created successfully", HttpStatus.OK);
+            }
 
-		} catch (final OntologyServiceException exception) {
-			return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-	}
+        } catch (final OntologyServiceException exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 
-	@ApiOperation(value = "Delete user access authorization for an ontology by ontology identification and user id")
-	@DeleteMapping("/{identification}/authorizations/{userId}")
-	public ResponseEntity<String> deleteOntologyAuthorizations(
-			@ApiParam(value = "Ontology identification", required = true) @PathVariable("identification") String ontologyIdentification,
-			@ApiParam(value = "User id", required = true) @PathVariable("userId") String userId) {
-		try {
+    @ApiOperation(value = "Delete user access authorization for an ontology by ontology identification and user id")
+    @DeleteMapping("/{identification}/authorizations/{userId}")
+    public ResponseEntity<String> deleteOntologyAuthorizations(
+            @ApiParam(value = "Ontology identification", required = true) @PathVariable("identification") String ontologyIdentification,
+            @ApiParam(value = "User id", required = true) @PathVariable("userId") String userId) {
+        try {
 
-			final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
-					utils.getUserId());
-			if (ontology == null) {
-				return new ResponseEntity<>(ONTOLOGY_STR + ontologyIdentification + NOT_EXIST, HttpStatus.BAD_REQUEST);
-			}
+            final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
+                                                                                  utils.getUserId());
+            if (ontology == null) {
+                return new ResponseEntity<>(ONTOLOGY_STR + ontologyIdentification + NOT_EXIST, HttpStatus.BAD_REQUEST);
+            }
 
-			final User user = userService.getUser(userId);
-			if (user == null) {
-				return new ResponseEntity<>("User \"" + userId + NOT_EXIST, HttpStatus.BAD_REQUEST);
-			}
+            final User user = userService.getUser(userId);
+            if (user == null) {
+                return new ResponseEntity<>("User \"" + userId + NOT_EXIST, HttpStatus.BAD_REQUEST);
+            }
 
-			final OntologyUserAccess ontologyUserAccess = ontologyService
-					.getOntologyUserAccessByOntologyIdAndUserId(ontology.getId(), userId, utils.getUserId());
-			ontologyService.deleteOntologyUserAccess(ontologyUserAccess.getId(), utils.getUserId());
+            final OntologyUserAccess ontologyUserAccess = ontologyService.getOntologyUserAccessByOntologyIdAndUserId(
+                    ontology.getId(), userId, utils.getUserId());
+            ontologyService.deleteOntologyUserAccess(ontologyUserAccess.getId(), utils.getUserId());
 
-			return new ResponseEntity<>("Authorization deleted successfully", HttpStatus.OK);
+            return new ResponseEntity<>("Authorization deleted successfully", HttpStatus.OK);
 
-		} catch (final OntologyServiceException exception) {
-			return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
-		}
-	}
+        } catch (final OntologyServiceException exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
+    }
 
-	@ApiOperation(value = "KPI Execution")
-	@GetMapping("/ontologies/{identification}/executeKPI")
-	public ResponseEntity<String> kpiExecution(
-			@ApiParam(value = "Ontology identification", required = true) @PathVariable("identification") String ontologyIdentification) {
+    @ApiOperation(value = "KPI Execution")
+    @GetMapping("/ontologies/{identification}/executeKPI")
+    public ResponseEntity<String> kpiExecution(
+            @ApiParam(value = "Ontology identification", required = true) @PathVariable("identification") String ontologyIdentification) {
 
-		try {
-			final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
-					utils.getUserId());
-			if (ontology == null) {
-				return new ResponseEntity<>(ONTOLOGY_STR + ontologyIdentification + NOT_EXIST, HttpStatus.BAD_REQUEST);
-			} else {
+        try {
+            final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
+                                                                                  utils.getUserId());
+            if (ontology == null) {
+                return new ResponseEntity<>(ONTOLOGY_STR + ontologyIdentification + NOT_EXIST, HttpStatus.BAD_REQUEST);
+            } else {
 
-				if (ontology.getOntologyKPI() != null) {
-					ontologyService.executeKPI(utils.getUserId(), ontology.getOntologyKPI().getQuery(),
-							ontology.getIdentification(), ontology.getOntologyKPI().getPostProcess());
-					return new ResponseEntity<>("KPI successfully executed", HttpStatus.OK);
+                if (ontology.getOntologyKPI() != null) {
+                    ontologyService.executeKPI(utils.getUserId(), ontology.getOntologyKPI().getQuery(),
+                                               ontology.getIdentification(),
+                                               ontology.getOntologyKPI().getPostProcess());
+                    return new ResponseEntity<>("KPI successfully executed", HttpStatus.OK);
 
-				} else {
-					return new ResponseEntity<>("Not KPI ontology", HttpStatus.BAD_REQUEST);
-				}
-			}
-		} catch (final Exception exception) {
-			return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
-		}
-	}
+                } else {
+                    return new ResponseEntity<>("Not KPI ontology", HttpStatus.BAD_REQUEST);
+                }
+            }
+        } catch (final Exception exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
+    }
 
-	@ApiOperation(value = "KPI Execution with parameters")
-	@PostMapping("/ontologies/{identification}/executeKPI")
-	public ResponseEntity<String> kpiParamExecution(
-			@ApiParam(value = "Ontology identification", required = true) @PathVariable("identification") String ontologyIdentification,
-			@Valid @RequestBody String kpiParameters) {
+    @ApiOperation(value = "KPI Execution with parameters")
+    @PostMapping("/ontologies/{identification}/executeKPI")
+    public ResponseEntity<String> kpiParamExecution(
+            @ApiParam(value = "Ontology identification", required = true) @PathVariable("identification") String ontologyIdentification,
+            @Valid @RequestBody String kpiParameters) {
 
-		ObjectMapper mapper = new ObjectMapper();
-		JsonNode parameters = null;
-		try {
-			parameters = mapper.readTree(kpiParameters);
-		} catch (IOException e) {
-			return new ResponseEntity<>("Error parsing KPI ontology's parameters", HttpStatus.BAD_REQUEST);
-		}
-		try {
-			final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
-					utils.getUserId());
-			if (ontology == null) {
-				return new ResponseEntity<>(ONTOLOGY_STR + ontologyIdentification + NOT_EXIST, HttpStatus.BAD_REQUEST);
-			} else {
-				if (ontology.getOntologyKPI() != null) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode parameters = null;
+        try {
+            parameters = mapper.readTree(kpiParameters);
+        } catch (IOException e) {
+            return new ResponseEntity<>("Error parsing KPI ontology's parameters", HttpStatus.BAD_REQUEST);
+        }
+        try {
+            final Ontology ontology = ontologyService.getOntologyByIdentification(ontologyIdentification,
+                                                                                  utils.getUserId());
+            if (ontology == null) {
+                return new ResponseEntity<>(ONTOLOGY_STR + ontologyIdentification + NOT_EXIST, HttpStatus.BAD_REQUEST);
+            } else {
+                if (ontology.getOntologyKPI() != null) {
 
-					String query = ontology.getOntologyKPI().getQuery();
-					Iterator<Entry<String, JsonNode>> paramIter = parameters.fields();
-					while (paramIter.hasNext()) {
-						Entry<String, JsonNode> param = paramIter.next();
-						query = query.replace("{$" + param.getKey() + "}", param.getValue().asText());
-					}
-					ontologyService.executeKPI(utils.getUserId(), query, ontology.getIdentification(),
-							ontology.getOntologyKPI().getPostProcess());
-					return new ResponseEntity<>("KPI successfully executed", HttpStatus.OK);
+                    String query = ontology.getOntologyKPI().getQuery();
+                    Iterator<Entry<String, JsonNode>> paramIter = parameters.fields();
+                    while (paramIter.hasNext()) {
+                        Entry<String, JsonNode> param = paramIter.next();
+                        query = query.replace("{$" + param.getKey() + "}", param.getValue().asText());
+                    }
+                    ontologyService.executeKPI(utils.getUserId(), query, ontology.getIdentification(),
+                                               ontology.getOntologyKPI().getPostProcess());
+                    return new ResponseEntity<>("KPI successfully executed", HttpStatus.OK);
 
-				} else {
-					return new ResponseEntity<>("Not KPI ontology", HttpStatus.BAD_REQUEST);
-				}
-			}
-		} catch (final Exception exception) {
-			return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
-		}
-	}
+                } else {
+                    return new ResponseEntity<>("Not KPI ontology", HttpStatus.BAD_REQUEST);
+                }
+            }
+        } catch (final Exception exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
+    }
 }

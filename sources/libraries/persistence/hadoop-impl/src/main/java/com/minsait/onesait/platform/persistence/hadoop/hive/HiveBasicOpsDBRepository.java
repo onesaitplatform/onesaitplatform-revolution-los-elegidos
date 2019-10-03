@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,123 +34,123 @@ import com.minsait.onesait.platform.persistence.interfaces.BasicOpsDBRepository;
 @ConditionalOnBean(name = NameBeanConst.HIVE_TEMPLATE_JDBC_BEAN_NAME)
 public class HiveBasicOpsDBRepository implements BasicOpsDBRepository {
 
-	private static final String NOT_IMPLEMENTED = "Method not implemented";
+    private static final String NOT_IMPLEMENTED = "Method not implemented";
 
-	@Override
-	public String insert(String ontology, String schema, String instance) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public String insert(String ontology, String schema, String instance) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public ComplexWriteResult insertBulk(String ontology, String schema, List<String> instances, boolean order,
-			boolean includeIds) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public ComplexWriteResult insertBulk(String ontology, String schema, List<String> instances, boolean order,
+            boolean includeIds) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public MultiDocumentOperationResult updateNative(String ontology, String updateStmt, boolean includeIds) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public MultiDocumentOperationResult updateNative(String ontology, String updateStmt, boolean includeIds) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public MultiDocumentOperationResult updateNative(String collection, String query, String data, boolean includeIds) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public MultiDocumentOperationResult updateNative(String collection, String query, String data, boolean includeIds) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public MultiDocumentOperationResult deleteNative(String collection, String query, boolean includeIds) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public MultiDocumentOperationResult deleteNative(String collection, String query, boolean includeIds) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public List<String> queryNative(String ontology, String query) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public List<String> queryNative(String ontology, String query) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public List<String> queryNative(String ontology, String query, int offset, int limit) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public List<String> queryNative(String ontology, String query, int offset, int limit) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public String queryNativeAsJson(String ontology, String query) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public String queryNativeAsJson(String ontology, String query) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public String queryNativeAsJson(String ontology, String query, int offset, int limit) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public String queryNativeAsJson(String ontology, String query, int offset, int limit) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public String findById(String ontology, String objectId) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public String findById(String ontology, String objectId) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public String querySQLAsJson(String ontology, String query) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public String querySQLAsJson(String ontology, String query) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public String querySQLAsTable(String ontology, String query) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public String querySQLAsTable(String ontology, String query) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public String querySQLAsJson(String ontology, String query, int offset) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public String querySQLAsJson(String ontology, String query, int offset) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public String querySQLAsTable(String ontology, String query, int offset) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public String querySQLAsTable(String ontology, String query, int offset) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public String findAllAsJson(String ontology) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public String findAllAsJson(String ontology) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public String findAllAsJson(String ontology, int limit) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public String findAllAsJson(String ontology, int limit) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public List<String> findAll(String ontology) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public List<String> findAll(String ontology) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public List<String> findAll(String ontology, int limit) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public List<String> findAll(String ontology, int limit) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public long count(String ontology) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public long count(String ontology) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public MultiDocumentOperationResult delete(String ontology, boolean includeIds) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public MultiDocumentOperationResult delete(String ontology, boolean includeIds) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public long countNative(String collectionName, String query) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public long countNative(String collectionName, String query) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public MultiDocumentOperationResult deleteNativeById(String ontologyName, String objectId) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public MultiDocumentOperationResult deleteNativeById(String ontologyName, String objectId) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
-	@Override
-	public MultiDocumentOperationResult updateNativeByObjectIdAndBodyData(String ontologyName, String objectId,
-			String body) {
-		throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
-	}
+    @Override
+    public MultiDocumentOperationResult updateNativeByObjectIdAndBodyData(String ontologyName, String objectId,
+            String body) {
+        throw new DBPersistenceException(NOT_IMPLEMENTED, new NotImplementedException(NOT_IMPLEMENTED));
+    }
 
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,160 +42,150 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuditableAspect extends BaseAspect {
 
-	private static final String PROCESSING_STR = "Processing :";
-	private static final String TYPE_STR = " Type : ";
-	private static final String BY_USER_STR = " By User : ";
-	private static final String CALL_FOR = "INFO Log @@AfterThrowing Call For: ";
+    private static final String PROCESSING_STR = "Processing :";
+    private static final String TYPE_STR = " Type : ";
+    private static final String BY_USER_STR = " By User : ";
+    private static final String CALL_FOR = "INFO Log @@AfterThrowing Call For: ";
 
-	// @Around(value = "@annotation(auditable)")
-	public Object processTx(ProceedingJoinPoint joinPoint, Auditable auditable) throws java.lang.Throwable {
+    // @Around(value = "@annotation(auditable)")
+    public Object processTx(ProceedingJoinPoint joinPoint, Auditable auditable) throws java.lang.Throwable {
 
-		String className = getClassName(joinPoint);
-		String methodName = getMethod(joinPoint).getName();
-		long executionTime = -1l;
+        String className = getClassName(joinPoint);
+        String methodName = getMethod(joinPoint).getName();
+        long executionTime = -1l;
 
-		final long start = System.currentTimeMillis();
-		Object proceed = null;
+        final long start = System.currentTimeMillis();
+        Object proceed = null;
 
-		OPAuditEvent event = null;
+        OPAuditEvent event = null;
 
-		OperationModel model = (OperationModel) getTheObject(joinPoint, OperationModel.class);
-		if (model != null) {
-			event = Sofia2RouterEventFactory.createAuditEvent(joinPoint, auditable, EventType.DATA,
-					PROCESSING_STR + className + "-> " + methodName);
-			event.setOntology(model.getOntologyName());
-			event.setOperationType(model.getOperationType().name());
-			event.setUser(model.getUser());
-			event.setMessage("Executing operation for Ontology : " + model.getOntologyName() + TYPE_STR
-					+ model.getOperationType().name() + BY_USER_STR + model.getUser() + " With ObjectId: "
-					+ model.getObjectId());
-		}
+        OperationModel model = (OperationModel) getTheObject(joinPoint, OperationModel.class);
+        if (model != null) {
+            event = Sofia2RouterEventFactory.createAuditEvent(joinPoint, auditable, EventType.DATA,
+                                                              PROCESSING_STR + className + "-> " + methodName);
+            event.setOntology(model.getOntologyName());
+            event.setOperationType(model.getOperationType().name());
+            event.setUser(model.getUser());
+            event.setMessage(
+                    "Executing operation for Ontology : " + model.getOntologyName() + TYPE_STR + model.getOperationType().name() + BY_USER_STR + model.getUser() + " With ObjectId: " + model.getObjectId());
+        } else {
+            event = Sofia2RouterEventFactory.createAuditEvent(joinPoint, auditable, EventType.GENERAL,
+                                                              PROCESSING_STR + className + "-> " + methodName);
+            event.setMessage("Action Performed");
+        }
 
-		else {
-			event = Sofia2RouterEventFactory.createAuditEvent(joinPoint, auditable, EventType.GENERAL,
-					PROCESSING_STR + className + "-> " + methodName);
-			event.setMessage("Action Performed");
-		}
+        try {
+            proceed = joinPoint.proceed();
+        } finally {
+            updateStats(className, methodName, (System.currentTimeMillis() - start));
 
-		try {
-			proceed = joinPoint.proceed();
-		}
+            eventProducer.publish(event);
+        }
 
-		finally {
-			updateStats(className, methodName, (System.currentTimeMillis() - start));
+        executionTime = System.currentTimeMillis() - start;
 
-			eventProducer.publish(event);
-		}
+        log.info("Execution of class {}, method {} executed in {} ms", className, methodName, executionTime);
 
-		executionTime = System.currentTimeMillis() - start;
+        return proceed;
+    }
 
-		log.info("Execution of class {}, method {} executed in {} ms",className,methodName, executionTime);
+    // @Before("@annotation(auditable)")
+    public void beforeExecution(JoinPoint joinPoint, Auditable auditable) {
+        String className = getClassName(joinPoint);
+        String methodName = getMethod(joinPoint).getName();
 
-		return proceed;
-	}
+        OPAuditEvent event = null;
 
-	// @Before("@annotation(auditable)")
-	public void beforeExecution(JoinPoint joinPoint, Auditable auditable) {
-		String className = getClassName(joinPoint);
-		String methodName = getMethod(joinPoint).getName();
+        OperationModel model = (OperationModel) getTheObject(joinPoint, OperationModel.class);
+        if (model != null) {
+            event = Sofia2RouterEventFactory.createAuditEvent(joinPoint, auditable, EventType.DATA,
+                                                              PROCESSING_STR + className + "-> " + methodName);
+            event.setOntology(model.getOntologyName());
+            event.setOperationType(model.getOperationType().name());
+            event.setUser(model.getUser());
+            event.setMessage(
+                    "Before Executing operation for Ontology : " + model.getOntologyName() + TYPE_STR + model.getOperationType().name() + BY_USER_STR + model.getUser() + " With ObjectId: " + model.getObjectId());
+        } else {
+            event = Sofia2RouterEventFactory.createAuditEvent(joinPoint, auditable, EventType.GENERAL,
+                                                              PROCESSING_STR + className + "-> " + methodName);
+            event.setMessage("Action Being Performed");
+        }
 
-		OPAuditEvent event = null;
+        eventProducer.publish(event);
+    }
 
-		OperationModel model = (OperationModel) getTheObject(joinPoint, OperationModel.class);
-		if (model != null) {
-			event = Sofia2RouterEventFactory.createAuditEvent(joinPoint, auditable, EventType.DATA,
-					PROCESSING_STR + className + "-> " + methodName);
-			event.setOntology(model.getOntologyName());
-			event.setOperationType(model.getOperationType().name());
-			event.setUser(model.getUser());
-			event.setMessage("Before Executing operation for Ontology : " + model.getOntologyName() + TYPE_STR
-					+ model.getOperationType().name() + BY_USER_STR + model.getUser() + " With ObjectId: "
-					+ model.getObjectId());
-		}
+    @SuppressWarnings("rawtypes")
+    @AfterReturning(pointcut = "@annotation(auditable)", returning = "retVal")
+    public void afterReturningExecution(JoinPoint joinPoint, Object retVal, Auditable auditable) {
 
-		else {
-			event = Sofia2RouterEventFactory.createAuditEvent(joinPoint, auditable, EventType.GENERAL,
-					PROCESSING_STR + className + "-> " + methodName);
-			event.setMessage("Action Being Performed");
-		}
+        String className = getClassName(joinPoint);
+        String methodName = getMethod(joinPoint).getName();
 
-		eventProducer.publish(event);
-	}
+        if (retVal != null) {
 
-	@SuppressWarnings("rawtypes")
-	@AfterReturning(pointcut = "@annotation(auditable)", returning = "retVal")
-	public void afterReturningExecution(JoinPoint joinPoint, Object retVal, Auditable auditable) {
+            OPAuditEvent event = Sofia2RouterEventFactory.createAuditEvent(joinPoint, auditable, EventType.DATA,
+                                                                           "Execution of :" + className + "-> " + methodName);
 
-		String className = getClassName(joinPoint);
-		String methodName = getMethod(joinPoint).getName();
+            if (retVal instanceof ResponseEntity) {
+                ResponseEntity response = (ResponseEntity) retVal;
+                log.debug(
+                        "After -> CALL FOR " + className + "-> " + methodName + " RETURNED CODE: " + response.getStatusCode());
+            }
 
-		if (retVal != null) {
+            if (retVal instanceof OperationResultModel) {
+                OperationModel model = (OperationModel) getTheObject(joinPoint, OperationModel.class);
 
-			OPAuditEvent event = Sofia2RouterEventFactory.createAuditEvent(joinPoint, auditable, EventType.DATA,
-					"Execution of :" + className + "-> " + methodName);
+                OperationResultModel response = (OperationResultModel) retVal;
+                event = Sofia2RouterEventFactory.createAuditEvent(joinPoint, auditable, EventType.DATA,
+                                                                  PROCESSING_STR + className + "-> " + methodName);
+                event.setOntology(model.getOntologyName());
+                event.setOperationType(model.getOperationType().name());
+                event.setUser(model.getUser());
+                event.setMessage(
+                        "operation for Ontology : " + model.getOntologyName() + TYPE_STR + model.getOperationType().name() + BY_USER_STR + model.getUser() + " Has a Response: " + response.getMessage());
 
-			if (retVal instanceof ResponseEntity) {
-				ResponseEntity response = (ResponseEntity) retVal;
-				log.debug("After -> CALL FOR " + className + "-> " + methodName + " RETURNED CODE: "
-						+ response.getStatusCode());
-			}
+                Map<String, Object> data = new HashMap<>();
+                data.put("data", retVal);
 
-			if (retVal instanceof OperationResultModel) {
-				OperationModel model = (OperationModel) getTheObject(joinPoint, OperationModel.class);
+                eventProducer.publish(event);
+            }
 
-				OperationResultModel response = (OperationResultModel) retVal;
-				event = Sofia2RouterEventFactory.createAuditEvent(joinPoint, auditable, EventType.DATA,
-						PROCESSING_STR + className + "-> " + methodName);
-				event.setOntology(model.getOntologyName());
-				event.setOperationType(model.getOperationType().name());
-				event.setUser(model.getUser());
-				event.setMessage("operation for Ontology : " + model.getOntologyName() + TYPE_STR
-						+ model.getOperationType().name() + BY_USER_STR + model.getUser() + " Has a Response: "
-						+ response.getMessage());
+            // not storing returned value at this moment.. Do I need?
 
-				Map<String, Object> data = new HashMap<>();
-				data.put("data", retVal);
+        }
+    }
 
-				eventProducer.publish(event);
-			}
+    // @AfterThrowing(pointcut = "@annotation(auditable)", throwing = "ex")
+    public void doRecoveryActions(JoinPoint joinPoint, Exception ex, Auditable auditable) {
 
-			// not storing returned value at this moment.. Do I need?
+        String className = getClassName(joinPoint);
+        String methodName = getMethod(joinPoint).getName();
 
-		}
-	}
+        OPAuditError event = null;
 
-	// @AfterThrowing(pointcut = "@annotation(auditable)", throwing = "ex")
-	public void doRecoveryActions(JoinPoint joinPoint, Exception ex, Auditable auditable) {
+        OperationModel model = (OperationModel) getTheObject(joinPoint, OperationModel.class);
 
-		String className = getClassName(joinPoint);
-		String methodName = getMethod(joinPoint).getName();
+        if (model != null) {
 
-		OPAuditError event = null;
+            String messageOperation = ("Exception Detected while operation : " + model.getOntologyName() + TYPE_STR + model.getOperationType().name() + BY_USER_STR + model.getUser());
 
-		OperationModel model = (OperationModel) getTheObject(joinPoint, OperationModel.class);
+            event = OPEventFactory.builder().build().createAuditEventError(model.getUser(), messageOperation,
+                                                                           Module.ROUTER, ex);
 
-		if (model != null) {
+            event.setOntology(model.getOntologyName());
+            event.setOperationType(model.getOperationType().name());
 
-			String messageOperation = ("Exception Detected while operation : " + model.getOntologyName() + TYPE_STR
-					+ model.getOperationType().name() + BY_USER_STR + model.getUser());
+        } else {
+            event = OPEventFactory.builder().build().createAuditEventError("Exception Detected", Module.ROUTER, ex);
+        }
 
-			event = OPEventFactory.builder().build().createAuditEventError(model.getUser(), messageOperation,
-					Module.ROUTER, ex);
+        OPEventFactory.builder().build().setErrorDetails(event, ex);
+        eventProducer.publish(event);
 
-			event.setOntology(model.getOntologyName());
-			event.setOperationType(model.getOperationType().name());
+        log.debug(CALL_FOR + className + "-> " + methodName);
+        log.debug(CALL_FOR + className + "-> " + methodName + " Exception Message: " + ex.getMessage());
+        log.debug(CALL_FOR + className + "-> " + methodName + " Class: " + ex.getClass().getName());
 
-		} else {
-			event = OPEventFactory.builder().build().createAuditEventError("Exception Detected", Module.ROUTER, ex);
-		}
-
-		OPEventFactory.builder().build().setErrorDetails(event, ex);
-		eventProducer.publish(event);
-
-		log.debug(CALL_FOR + className + "-> " + methodName);
-		log.debug(CALL_FOR + className + "-> " + methodName + " Exception Message: " + ex.getMessage());
-		log.debug(CALL_FOR + className + "-> " + methodName + " Class: " + ex.getClass().getName());
-
-	}
+    }
 
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,136 +58,135 @@ import com.minsait.onesait.platform.iotbroker.plugable.impl.security.SecurityPlu
 @Category(IntegrationTest.class)
 @Ignore
 public class ReferenceSecurityTest {
-	@Autowired
-	SecurityPluginManager security;
+    @Autowired
+    SecurityPluginManager security;
 
-	@Autowired
-	UserService userService;
-	@Autowired
-	RoleRepository roleRepository;
-	@Autowired
-	ClientPlatformService clientPlatformService;
-	@Autowired
-	OntologyService ontologyService;
-	@Autowired
-	DataModelRepository dataModelRepository;
-	@Autowired
-	TokenService tokenService;
-	@Autowired
-	ClientPlatformOntologyRepository clientPlatformOntologyRepository;
+    @Autowired
+    UserService userService;
+    @Autowired
+    RoleRepository roleRepository;
+    @Autowired
+    ClientPlatformService clientPlatformService;
+    @Autowired
+    OntologyService ontologyService;
+    @Autowired
+    DataModelRepository dataModelRepository;
+    @Autowired
+    TokenService tokenService;
+    @Autowired
+    ClientPlatformOntologyRepository clientPlatformOntologyRepository;
 
-	ClientPlatform subjectClientPlatform;
-	User subjectUser;
-	Ontology subjectOntology;
+    ClientPlatform subjectClientPlatform;
+    User subjectUser;
+    Ontology subjectOntology;
 
-	Faker faker = new Faker();
+    Faker faker = new Faker();
 
-	@Before
-	public void setup() throws JsonGenerationException, IOException {
-		final User user = new User();
-		user.setActive(true);
-		user.setEmail(faker.internet().emailAddress());
-		user.setFullName(faker.name().fullName());
-		user.setPassword("changeIt!");
-		user.setRole(roleRepository.findById(Role.Type.ROLE_DEVELOPER.name()));
-		final String userId = UUID.randomUUID().toString();
-		user.setUserId(userId);
-		userService.createUser(user);
-		subjectUser = userService.getUser(userId);
+    @Before
+    public void setup() throws JsonGenerationException, IOException {
+        final User user = new User();
+        user.setActive(true);
+        user.setEmail(faker.internet().emailAddress());
+        user.setFullName(faker.name().fullName());
+        user.setPassword("changeIt!");
+        user.setRole(roleRepository.findById(Role.Type.ROLE_DEVELOPER.name()));
+        final String userId = UUID.randomUUID().toString();
+        user.setUserId(userId);
+        userService.createUser(user);
+        subjectUser = userService.getUser(userId);
 
-		final Ontology ontology = new Ontology();
-		ontology.setActive(true);
-		ontology.setDescription(faker.lorem().fixedString(10));
-		final String ontologyIdentification = UUID.randomUUID().toString();
-		ontology.setIdentification(ontologyIdentification);
-		ontology.setDataModel(dataModelRepository.findAll().get(0));
-		ontology.setJsonSchema("{}");
-		ontology.setMetainf("meta");
-		ontology.setPublic(false);
-		ontology.setRtdbClean(false);
-		ontology.setRtdbToHdb(false);
-		ontology.setUser(subjectUser);
-		ontologyService.createOntology(ontology, null);
-		subjectOntology = ontologyService.getOntologyByIdentification(ontology.getIdentification(),
-				subjectUser.getUserId());
+        final Ontology ontology = new Ontology();
+        ontology.setActive(true);
+        ontology.setDescription(faker.lorem().fixedString(10));
+        final String ontologyIdentification = UUID.randomUUID().toString();
+        ontology.setIdentification(ontologyIdentification);
+        ontology.setDataModel(dataModelRepository.findAll().get(0));
+        ontology.setJsonSchema("{}");
+        ontology.setMetainf("meta");
+        ontology.setPublic(false);
+        ontology.setRtdbClean(false);
+        ontology.setRtdbToHdb(false);
+        ontology.setUser(subjectUser);
+        ontologyService.createOntology(ontology, null);
+        subjectOntology = ontologyService.getOntologyByIdentification(ontology.getIdentification(),
+                                                                      subjectUser.getUserId());
 
-		final ClientPlatform clientPlatform = new ClientPlatform();
-		final String clientPlatformIdentification = UUID.randomUUID().toString();
-		clientPlatform.setIdentification(clientPlatformIdentification);
-		clientPlatform.setUser(subjectUser);
-		// clientPlatformService.createClientAndToken(Arrays.asList(subjectOntology),
-		// clientPlatform);
-		clientPlatformService.createClientAndToken(new ArrayList<>(), clientPlatform);
-		subjectClientPlatform = clientPlatformService.getByIdentification(clientPlatformIdentification);
+        final ClientPlatform clientPlatform = new ClientPlatform();
+        final String clientPlatformIdentification = UUID.randomUUID().toString();
+        clientPlatform.setIdentification(clientPlatformIdentification);
+        clientPlatform.setUser(subjectUser);
+        // clientPlatformService.createClientAndToken(Arrays.asList(subjectOntology),
+        // clientPlatform);
+        clientPlatformService.createClientAndToken(new ArrayList<>(), clientPlatform);
+        subjectClientPlatform = clientPlatformService.getByIdentification(clientPlatformIdentification);
 
-		final ClientPlatformOntology cpo = new ClientPlatformOntology();
-		cpo.setAccess(AccessType.ALL);
+        final ClientPlatformOntology cpo = new ClientPlatformOntology();
+        cpo.setAccess(AccessType.ALL);
 
-		cpo.setClientPlatform(subjectClientPlatform);
-		cpo.setOntology(subjectOntology);
+        cpo.setClientPlatform(subjectClientPlatform);
+        cpo.setOntology(subjectOntology);
 
-		clientPlatformOntologyRepository.save(cpo);
+        clientPlatformOntologyRepository.save(cpo);
 
-		tokenService.generateTokenForClient(subjectClientPlatform);
+        tokenService.generateTokenForClient(subjectClientPlatform);
 
-	}
+    }
 
-	@Before
-	public void tearDown() {
-	}
+    @Before
+    public void tearDown() {
+    }
 
-	@Test
-	public void given_OneValidToken_When_ASessionIsCreatedAndCheckedAndFinallyClosed_TheSessionReturnsTheCorrectParametersAndThenItIsClosed()
-			throws AuthenticationException, AuthorizationException {
-		final Token t = tokenService.getToken(subjectClientPlatform);
+    @Test
+    public void given_OneValidToken_When_ASessionIsCreatedAndCheckedAndFinallyClosed_TheSessionReturnsTheCorrectParametersAndThenItIsClosed() throws AuthenticationException, AuthorizationException {
+        final Token t = tokenService.getToken(subjectClientPlatform);
 
-		final Optional<IoTSession> session = security.authenticate(t.getTokenName(),
-				subjectClientPlatform.getIdentification(), UUID.randomUUID().toString(), "");
+        final Optional<IoTSession> session = security.authenticate(t.getTokenName(),
+                                                                   subjectClientPlatform.getIdentification(),
+                                                                   UUID.randomUUID().toString(), "");
 
-		Assert.assertTrue(session.isPresent());
-		Assert.assertTrue(!StringUtils.isEmpty(session.get().getSessionKey()));
-		Assert.assertTrue(security.checkSessionKeyActive(session.get().getSessionKey()));
-		Assert.assertTrue(security.closeSession(session.get().getSessionKey()));
-		Assert.assertFalse(security.checkSessionKeyActive(session.get().getSessionKey()));
-	}
+        Assert.assertTrue(session.isPresent());
+        Assert.assertTrue(!StringUtils.isEmpty(session.get().getSessionKey()));
+        Assert.assertTrue(security.checkSessionKeyActive(session.get().getSessionKey()));
+        Assert.assertTrue(security.closeSession(session.get().getSessionKey()));
+        Assert.assertFalse(security.checkSessionKeyActive(session.get().getSessionKey()));
+    }
 
-	@Test
-	public void given_OneInvalidToken_When_ASessionIsCreated_Then_ItReturnsAnInvalidSession()
-			throws AuthenticationException {
-		final Optional<IoTSession> session = security.authenticate("INVALID_TOKEN",
-				subjectClientPlatform.getIdentification(), UUID.randomUUID().toString(), "");
+    @Test
+    public void given_OneInvalidToken_When_ASessionIsCreated_Then_ItReturnsAnInvalidSession() throws AuthenticationException {
+        final Optional<IoTSession> session = security.authenticate("INVALID_TOKEN",
+                                                                   subjectClientPlatform.getIdentification(),
+                                                                   UUID.randomUUID().toString(), "");
 
-		Assert.assertFalse(session.isPresent());
-	}
+        Assert.assertFalse(session.isPresent());
+    }
 
-	@Test
-	public void given_OneNotValidSessionKey_When_TheSessionIsChecked_Then_ItRetrunsThatTheSessionIsNotAcctive()
-			throws AuthorizationException {
-		Assert.assertFalse(security.checkSessionKeyActive("NOT_EXISTENT_SESSIONKEY"));
-	}
+    @Test
+    public void given_OneNotValidSessionKey_When_TheSessionIsChecked_Then_ItRetrunsThatTheSessionIsNotAcctive() throws AuthorizationException {
+        Assert.assertFalse(security.checkSessionKeyActive("NOT_EXISTENT_SESSIONKEY"));
+    }
 
-	@Test
-	public void given_OneValidClientSessionPlatform_When_ItCreatesASession_Then_ItIsAuthorizedForUsingTheOntologyAssociated()
-			throws AuthenticationException, AuthorizationException {
-		final Token t = tokenService.getToken(subjectClientPlatform);
+    @Test
+    public void given_OneValidClientSessionPlatform_When_ItCreatesASession_Then_ItIsAuthorizedForUsingTheOntologyAssociated() throws AuthenticationException, AuthorizationException {
+        final Token t = tokenService.getToken(subjectClientPlatform);
 
-		final Optional<IoTSession> session = security.authenticate(t.getTokenName(),
-				subjectClientPlatform.getIdentification(), UUID.randomUUID().toString(), "");
+        final Optional<IoTSession> session = security.authenticate(t.getTokenName(),
+                                                                   subjectClientPlatform.getIdentification(),
+                                                                   UUID.randomUUID().toString(), "");
 
-		Assert.assertTrue(security.checkAuthorization(SSAPMessageTypes.INSERT, subjectOntology.getIdentification(),
-				session.get().getSessionKey()));
-	}
+        Assert.assertTrue(security.checkAuthorization(SSAPMessageTypes.INSERT, subjectOntology.getIdentification(),
+                                                      session.get().getSessionKey()));
+    }
 
-	@Test
-	public void given_OneValidClientSessionPlatform_When_ItCreatesASession_Then_ItIsNotAuthorizedForUsingNotAuthorizedOntologies()
-			throws AuthenticationException, AuthorizationException {
-		final Token t = tokenService.getToken(subjectClientPlatform);
+    @Test
+    public void given_OneValidClientSessionPlatform_When_ItCreatesASession_Then_ItIsNotAuthorizedForUsingNotAuthorizedOntologies() throws AuthenticationException, AuthorizationException {
+        final Token t = tokenService.getToken(subjectClientPlatform);
 
-		final Optional<IoTSession> session = security.authenticate(t.getTokenName(),
-				subjectClientPlatform.getIdentification(), UUID.randomUUID().toString(), "");
+        final Optional<IoTSession> session = security.authenticate(t.getTokenName(),
+                                                                   subjectClientPlatform.getIdentification(),
+                                                                   UUID.randomUUID().toString(), "");
 
-		Assert.assertFalse(security.checkAuthorization(SSAPMessageTypes.INSERT, "NOT_ASSIGNED_ONTOLOGY",
-				session.get().getSessionKey()));
-	}
+        Assert.assertFalse(security.checkAuthorization(SSAPMessageTypes.INSERT, "NOT_ASSIGNED_ONTOLOGY",
+                                                       session.get().getSessionKey()));
+    }
 
 }

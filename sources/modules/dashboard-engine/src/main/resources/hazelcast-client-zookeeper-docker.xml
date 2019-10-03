@@ -21,20 +21,20 @@
         http://www.hazelcast.com/schema/client-config/hazelcast-client-config-3.7.xsd"
         xmlns="http://www.hazelcast.com/schema/client-config"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<properties>
-		<property name="hazelcast.logging.type">slf4j</property>
-		<property name="hazelcast.jmx">true</property>
-		<property name="hazelcast.version.check.enabled">false</property>
-		<property name="hazelcast.memcache.enabled">true</property>
-		<property name="hazelcast.rest.enabled">true</property>
-		<property name="hazelcast.wait.seconds.before.join">5</property>
-		<property name="hazelcast.connection.monitor.interval">300</property>
+    <properties>
+        <property name="hazelcast.logging.type">slf4j</property>
+        <property name="hazelcast.jmx">true</property>
+        <property name="hazelcast.version.check.enabled">false</property>
+        <property name="hazelcast.memcache.enabled">true</property>
+        <property name="hazelcast.rest.enabled">true</property>
+        <property name="hazelcast.wait.seconds.before.join">5</property>
+        <property name="hazelcast.connection.monitor.interval">300</property>
 
-		<property name="hazelcast.elastic.memory.enabled">false</property>
-		<property name="hazelcast.elastic.memory.total.size">4G</property>
-		<property name="hazelcast.discovery.enabled">true</property>
-	</properties>
-     <group>
+        <property name="hazelcast.elastic.memory.enabled">false</property>
+        <property name="hazelcast.elastic.memory.total.size">4G</property>
+        <property name="hazelcast.discovery.enabled">true</property>
+    </properties>
+    <group>
         <name>onesaitplatform</name>
         <password>onesaitplatform</password>
     </group>
@@ -46,7 +46,8 @@
         <discovery-strategies>
             <discovery-strategy enabled="true" class="com.hazelcast.zookeeper.ZookeeperDiscoveryStrategy">
                 <properties>
-                    <property name="zookeeper_url">${onesaitplatform.hazelcast.service.discovery.zookeeper.url}</property>
+                    <property name="zookeeper_url">${onesaitplatform.hazelcast.service.discovery.zookeeper.url}
+                    </property>
                     <!--Path in ZooKeeper Hazelcast will useDefault: /discovery/hazelcast -->
                     <property name="zookeeper_path">/discovery/hazelcast</property>
                     <!--Name of this Hazelcast cluster. You can have multiple distinct clusters to use the same ZooKeeper installation.-->
@@ -54,10 +55,10 @@
                 </properties>
             </discovery-strategy>
         </discovery-strategies>
-        
+
         <connection-attempt-period>20000</connection-attempt-period>
-		<connection-timeout>5000</connection-timeout>
-		<connection-attempt-limit>0</connection-attempt-limit><!-- 0 means forever -->
+        <connection-timeout>5000</connection-timeout>
+        <connection-attempt-limit>0</connection-attempt-limit><!-- 0 means forever -->
     </network>
-    
+
 </hazelcast-client>

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,85 +43,84 @@ import lombok.extern.slf4j.Slf4j;
 @Category(IntegrationTest.class)
 public class ElasticSearchBasicApiTest {
 
-	public final static String TEST_INDEX = "test" + System.currentTimeMillis();
-	public final static String TEST_INDEX_GAME_OF_THRONES = TEST_INDEX + "_game_of_thrones";
-	public final static String TEST_INDEX_ONLINE = TEST_INDEX + "_online";
-	public String dataMapping = "{  \"" + TEST_INDEX_GAME_OF_THRONES + "\": { " + " \"properties\": {\n"
-			+ " \"nickname\": {\n" + "\"type\":\"text\", " + "\"fielddata\":true" + "},\n" + " \"name\": {\n"
-			+ "\"properties\": {\n" + "\"firstname\": {\n" + "\"type\": \"text\",\n" + "  \"fielddata\": true\n"
-			+ "},\n" + "\"lastname\": {\n" + "\"type\": \"text\",\n" + "  \"fielddata\": true\n" + "},\n"
-			+ "\"ofHerName\": {\n" + "\"type\": \"integer\"\n" + "},\n" + "\"ofHisName\": {\n"
-			+ "\"type\": \"integer\"\n" + "}\n" + "}\n" + "}" + "} } }";
-	@Autowired
-	ESBaseApi connector;
+    public final static String TEST_INDEX = "test" + System.currentTimeMillis();
+    public final static String TEST_INDEX_GAME_OF_THRONES = TEST_INDEX + "_game_of_thrones";
+    public final static String TEST_INDEX_ONLINE = TEST_INDEX + "_online";
+    public String dataMapping = "{  \"" + TEST_INDEX_GAME_OF_THRONES + "\": { " + " \"properties\": {\n" + " " +
+            "\"nickname\": {\n" + "\"type\":\"text\", " + "\"fielddata\":true" + "},\n" + " \"name\": {\n" +
+            "\"properties\": {\n" + "\"firstname\": {\n" + "\"type\": \"text\",\n" + "  \"fielddata\": true\n" + "}," +
+            "\n" + "\"lastname\": {\n" + "\"type\": \"text\",\n" + "  \"fielddata\": true\n" + "},\n" + "\"ofHerName" +
+            "\": {\n" + "\"type\": \"integer\"\n" + "},\n" + "\"ofHisName\": {\n" + "\"type\": \"integer\"\n" + "}\n" + "}\n" + "}" + "} } }";
+    @Autowired
+    ESBaseApi connector;
 
-	@Autowired
-	ESInsertService sSInsertService;
+    @Autowired
+    ESInsertService sSInsertService;
 
-	private String createTestIndex(String index) {
-		final String res = connector.createIndex(index);
-		log.info("createTestIndex :" + res);
-		return res;
-	}
+    private String createTestIndex(String index) {
+        final String res = connector.createIndex(index);
+        log.info("createTestIndex :" + res);
+        return res;
+    }
 
-	@After
-	public void tearDown() {
-		log.info("teardown process...");
+    @After
+    public void tearDown() {
+        log.info("teardown process...");
 
-		try {
-			deleteTestIndex(TEST_INDEX_GAME_OF_THRONES);
-			deleteTestIndex(TEST_INDEX_ONLINE);
-		} catch (final Exception e) {
-			log.error("Something happens when deleting indexes :" + e.getMessage());
-		}
+        try {
+            deleteTestIndex(TEST_INDEX_GAME_OF_THRONES);
+            deleteTestIndex(TEST_INDEX_ONLINE);
+        } catch (final Exception e) {
+            log.error("Something happens when deleting indexes :" + e.getMessage());
+        }
 
-	}
+    }
 
-	private boolean prepareGameOfThronesIndex() {
+    private boolean prepareGameOfThronesIndex() {
 
-		final boolean response = connector.createType(TEST_INDEX_GAME_OF_THRONES, TEST_INDEX_GAME_OF_THRONES,
-				dataMapping);
-		log.info("prepareGameOfThronesIndex :" + response);
-		return response;
+        final boolean response = connector.createType(TEST_INDEX_GAME_OF_THRONES, TEST_INDEX_GAME_OF_THRONES,
+                                                      dataMapping);
+        log.info("prepareGameOfThronesIndex :" + response);
+        return response;
 
-	}
+    }
 
-	private void deleteTestIndex(String index) {
-		final boolean res = connector.deleteIndex(index);
-		log.info("deleteTestIndex :" + res);
-	}
+    private void deleteTestIndex(String index) {
+        final boolean res = connector.deleteIndex(index);
+        log.info("deleteTestIndex :" + res);
+    }
 
-	@Test
-	public void testCreateTable() {
-		try {
-			deleteTestIndex(TEST_INDEX_ONLINE);
-			createTestIndex(TEST_INDEX_ONLINE);
-			List<String> list = ESInsertService
-					.readLines(new File(this.getClass().getClassLoader().getResource("online.json").toURI()));
+    @Test
+    public void testCreateTable() {
+        try {
+            deleteTestIndex(TEST_INDEX_ONLINE);
+            createTestIndex(TEST_INDEX_ONLINE);
+            List<String> list = ESInsertService.readLines(
+                    new File(this.getClass().getClassLoader().getResource("online.json").toURI()));
 
-			List<String> result = list.stream().filter(x -> x.startsWith("{\"0\"")).collect(Collectors.toList());
+            List<String> result = list.stream().filter(x -> x.startsWith("{\"0\"")).collect(Collectors.toList());
 
-			ComplexWriteResult r = sSInsertService.load(TEST_INDEX_ONLINE, TEST_INDEX_ONLINE, result, dataMapping);
+            ComplexWriteResult r = sSInsertService.load(TEST_INDEX_ONLINE, TEST_INDEX_ONLINE, result, dataMapping);
 
-			log.info("Loaded Bulk :" + r.getData().size());
+            log.info("Loaded Bulk :" + r.getData().size());
 
-			deleteTestIndex(TEST_INDEX_GAME_OF_THRONES);
-			createTestIndex(TEST_INDEX_GAME_OF_THRONES);
-			prepareGameOfThronesIndex();
+            deleteTestIndex(TEST_INDEX_GAME_OF_THRONES);
+            createTestIndex(TEST_INDEX_GAME_OF_THRONES);
+            prepareGameOfThronesIndex();
 
-			list = ESInsertService.readLines(
-					new File(this.getClass().getClassLoader().getResource("game_of_thrones_complex.json").toURI()));
+            list = ESInsertService.readLines(
+                    new File(this.getClass().getClassLoader().getResource("game_of_thrones_complex.json").toURI()));
 
-			result = list.stream().filter(x -> x.startsWith("{\"name\":")).collect(Collectors.toList());
+            result = list.stream().filter(x -> x.startsWith("{\"name\":")).collect(Collectors.toList());
 
-			r = sSInsertService.load(TEST_INDEX_GAME_OF_THRONES, TEST_INDEX_GAME_OF_THRONES, result, dataMapping);
+            r = sSInsertService.load(TEST_INDEX_GAME_OF_THRONES, TEST_INDEX_GAME_OF_THRONES, result, dataMapping);
 
-			log.info("Loaded Bulk :" + r.getData().size());
+            log.info("Loaded Bulk :" + r.getData().size());
 
-			Assert.assertTrue(r.getData().size() > 0);
-		} catch (final Exception e) {
-			Assert.fail("No connection. " + e);
-		}
-	}
+            Assert.assertTrue(r.getData().size() > 0);
+        } catch (final Exception e) {
+            Assert.fail("No connection. " + e);
+        }
+    }
 
 }

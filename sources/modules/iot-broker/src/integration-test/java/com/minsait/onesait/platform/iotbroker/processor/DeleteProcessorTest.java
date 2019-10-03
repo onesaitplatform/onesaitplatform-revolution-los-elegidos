@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,161 +59,157 @@ import lombok.extern.slf4j.Slf4j;
 @Ignore
 @Slf4j
 public class DeleteProcessorTest {
-	@Autowired
-	MessageProcessorDelegate deleteProcessor;
-	@Autowired
-	ObjectMapper objectMapper;
-	@Autowired
-	MongoBasicOpsDBRepository repository;
-	@MockBean
-	SecurityPluginManager securityPluginManager;
-	@MockBean
-	RouterService routerService;
-	@MockBean
-	RouterSuscriptionService routerSuscriptionService;
+    @Autowired
+    MessageProcessorDelegate deleteProcessor;
+    @Autowired
+    ObjectMapper objectMapper;
+    @Autowired
+    MongoBasicOpsDBRepository repository;
+    @MockBean
+    SecurityPluginManager securityPluginManager;
+    @MockBean
+    RouterService routerService;
+    @MockBean
+    RouterSuscriptionService routerSuscriptionService;
 
-	Person subject = PojoGenerator.generatePerson();
-	String subjectId;
+    Person subject = PojoGenerator.generatePerson();
+    String subjectId;
 
-	SSAPMessage<SSAPBodyDeleteMessage> ssapDeletetOperation;
-	SSAPMessage<SSAPBodyDeleteByIdMessage> ssapDeleteByIdtOperation;
+    SSAPMessage<SSAPBodyDeleteMessage> ssapDeletetOperation;
+    SSAPMessage<SSAPBodyDeleteByIdMessage> ssapDeleteByIdtOperation;
 
-	@MockBean
-	DeviceManager deviceManager;
+    @MockBean
+    DeviceManager deviceManager;
 
-	// @MockBean
-	// IotBrokerAuditableAspect iotBrokerAuditableAspect;
+    // @MockBean
+    // IotBrokerAuditableAspect iotBrokerAuditableAspect;
 
-	private void auditMocks() {
-	}
+    private void auditMocks() {
+    }
 
-	private void securityMocks() {
-		final IoTSession session = PojoGenerator.generateSession();
-		when(deviceManager.registerActivity(any(), any(), any(), any())).thenReturn(true);
+    private void securityMocks() {
+        final IoTSession session = PojoGenerator.generateSession();
+        when(deviceManager.registerActivity(any(), any(), any(), any())).thenReturn(true);
 
-		when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
-		when(securityPluginManager.checkSessionKeyActive(anyString())).thenReturn(true);
-		when(securityPluginManager.checkAuthorization(any(), any(), any())).thenReturn(true);
-	}
+        when(securityPluginManager.getSession(anyString())).thenReturn(Optional.of(session));
+        when(securityPluginManager.checkSessionKeyActive(anyString())).thenReturn(true);
+        when(securityPluginManager.checkAuthorization(any(), any(), any())).thenReturn(true);
+    }
 
-	@Before
-	public void setUp() throws IOException, Exception {
-		// mockOntologies.createOntology(Person.class);
+    @Before
+    public void setUp() throws IOException, Exception {
+        // mockOntologies.createOntology(Person.class);
 
-		subject = PojoGenerator.generatePerson();
-		final String subjectInsertResult = repository.insert(Person.class.getSimpleName(), "",
-				objectMapper.writeValueAsString(subject));
-		// subjectId =
-		// objectMapper.readTree(subjectInsertResult).at("/_id/$oid").asText();
-		subjectId = subjectInsertResult;
-		ssapDeletetOperation = SSAPMessageGenerator.generateDeleteMessage(Person.class.getSimpleName(), "");
-		ssapDeleteByIdtOperation = SSAPMessageGenerator.generateDeleteByIdMessage(Person.class.getSimpleName(),
-				subjectId);
+        subject = PojoGenerator.generatePerson();
+        final String subjectInsertResult = repository.insert(Person.class.getSimpleName(), "",
+                                                             objectMapper.writeValueAsString(subject));
+        // subjectId =
+        // objectMapper.readTree(subjectInsertResult).at("/_id/$oid").asText();
+        subjectId = subjectInsertResult;
+        ssapDeletetOperation = SSAPMessageGenerator.generateDeleteMessage(Person.class.getSimpleName(), "");
+        ssapDeleteByIdtOperation = SSAPMessageGenerator.generateDeleteByIdMessage(Person.class.getSimpleName(),
+                                                                                  subjectId);
 
-		securityMocks();
-		auditMocks();
-	}
+        securityMocks();
+        auditMocks();
+    }
 
-	@After
-	public void tearDown() {
-		// mockOntologies.deleteOntology(Person.class);
-	}
+    @After
+    public void tearDown() {
+        // mockOntologies.deleteOntology(Person.class);
+    }
 
-	@Test
-	public void given_OneDeleteProcessor_When_ItProcessesOneValidDeleteById_Then_TheResponseIndicatesTheOperationWasPerformed()
-			throws Exception {
+    @Test
+    public void given_OneDeleteProcessor_When_ItProcessesOneValidDeleteById_Then_TheResponseIndicatesTheOperationWasPerformed() throws Exception {
 
-		SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
+        SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
 
-		final OperationResultModel value = RouterServiceGenerator.generateUpdateDeleteResultOk(1);
-		when(routerService.delete(any())).thenReturn(value);
+        final OperationResultModel value = RouterServiceGenerator.generateUpdateDeleteResultOk(1);
+        when(routerService.delete(any())).thenReturn(value);
 
-		responseMessage = deleteProcessor.process(ssapDeleteByIdtOperation, PojoGenerator.generateGatewayInfo());
+        responseMessage = deleteProcessor.process(ssapDeleteByIdtOperation, PojoGenerator.generateGatewayInfo());
 
-		Assert.assertNotNull(responseMessage);
-		Assert.assertNotNull(responseMessage.getBody());
-		Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.RESPONSE));
-		Assert.assertNotNull(responseMessage.getBody().getData());
-		Assert.assertEquals(1, responseMessage.getBody().getData().at("/nDeleted").asInt());
+        Assert.assertNotNull(responseMessage);
+        Assert.assertNotNull(responseMessage.getBody());
+        Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.RESPONSE));
+        Assert.assertNotNull(responseMessage.getBody().getData());
+        Assert.assertEquals(1, responseMessage.getBody().getData().at("/nDeleted").asInt());
 
-	}
+    }
 
-	@Test
-	public void given_OneDeleteProcessor_When_ItProccessesOneInvalidId_Then_TheResponseIndicatesTheOperationWasNotPerformed()
-			throws Exception {
+    @Test
+    public void given_OneDeleteProcessor_When_ItProccessesOneInvalidId_Then_TheResponseIndicatesTheOperationWasNotPerformed() throws Exception {
 
-		SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
+        SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
 
-		ssapDeleteByIdtOperation.getBody().setId("5a9b2ef917f81f33589e06d3");
+        ssapDeleteByIdtOperation.getBody().setId("5a9b2ef917f81f33589e06d3");
 
-		final OperationResultModel value = RouterServiceGenerator.generateUpdateDeleteResultOk(0);
-		when(routerService.delete(any())).thenReturn(value);
+        final OperationResultModel value = RouterServiceGenerator.generateUpdateDeleteResultOk(0);
+        when(routerService.delete(any())).thenReturn(value);
 
-		responseMessage = deleteProcessor.process(ssapDeleteByIdtOperation, PojoGenerator.generateGatewayInfo());
+        responseMessage = deleteProcessor.process(ssapDeleteByIdtOperation, PojoGenerator.generateGatewayInfo());
 
-		Assert.assertNotNull(responseMessage);
-		Assert.assertNotNull(responseMessage.getBody());
-		Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.RESPONSE));
-		Assert.assertNotNull(responseMessage.getBody().getData());
-		Assert.assertEquals(0, responseMessage.getBody().getData().at("/nDeleted").asInt());
-	}
+        Assert.assertNotNull(responseMessage);
+        Assert.assertNotNull(responseMessage.getBody());
+        Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.RESPONSE));
+        Assert.assertNotNull(responseMessage.getBody().getData());
+        Assert.assertEquals(0, responseMessage.getBody().getData().at("/nDeleted").asInt());
+    }
 
-	@Test
-	public void given_OneDeleteProcessor_When_ItProccessesOneValidNativeQuery_TheResponseIndicatesTheOperationWasPerformed()
-			throws Exception {
+    @Test
+    public void given_OneDeleteProcessor_When_ItProccessesOneValidNativeQuery_TheResponseIndicatesTheOperationWasPerformed() throws Exception {
 
-		SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
-		ssapDeletetOperation.getBody().setQuery("db.Person.remove({})");
+        SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
+        ssapDeletetOperation.getBody().setQuery("db.Person.remove({})");
 
-		final OperationResultModel value = RouterServiceGenerator.generateUpdateDeleteResultOk(1);
-		when(routerService.delete(any())).thenReturn(value);
+        final OperationResultModel value = RouterServiceGenerator.generateUpdateDeleteResultOk(1);
+        when(routerService.delete(any())).thenReturn(value);
 
-		responseMessage = deleteProcessor.process(ssapDeletetOperation, PojoGenerator.generateGatewayInfo());
+        responseMessage = deleteProcessor.process(ssapDeletetOperation, PojoGenerator.generateGatewayInfo());
 
-		Assert.assertNotNull(responseMessage);
-		Assert.assertNotNull(responseMessage.getBody());
-		Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.RESPONSE));
-		Assert.assertNotNull(responseMessage.getBody().getData());
-		Assert.assertEquals(1, responseMessage.getBody().getData().at("/nDeleted").asInt());
+        Assert.assertNotNull(responseMessage);
+        Assert.assertNotNull(responseMessage.getBody());
+        Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.RESPONSE));
+        Assert.assertNotNull(responseMessage.getBody().getData());
+        Assert.assertEquals(1, responseMessage.getBody().getData().at("/nDeleted").asInt());
 
-	}
+    }
 
-	@Test
-	public void given_OneDeleteProcessor_When_OneNativeQueryIsPerformedAndNoOccurrencesExist_Then_TheResponseIndicatesThatNoDeletionWasPerformed()
-			throws Exception {
+    @Test
+    public void given_OneDeleteProcessor_When_OneNativeQueryIsPerformedAndNoOccurrencesExist_Then_TheResponseIndicatesThatNoDeletionWasPerformed() throws Exception {
 
-		SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
-		ssapDeletetOperation.getBody().setQuery("db.Person.remove({\"name\":\"NO_OCURRENCE_NAME\"})");
+        SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
+        ssapDeletetOperation.getBody().setQuery("db.Person.remove({\"name\":\"NO_OCURRENCE_NAME\"})");
 
-		final OperationResultModel value = RouterServiceGenerator.generateUpdateDeleteResultOk(0);
-		when(routerService.delete(any())).thenReturn(value);
+        final OperationResultModel value = RouterServiceGenerator.generateUpdateDeleteResultOk(0);
+        when(routerService.delete(any())).thenReturn(value);
 
-		responseMessage = deleteProcessor.process(ssapDeletetOperation, PojoGenerator.generateGatewayInfo());
+        responseMessage = deleteProcessor.process(ssapDeletetOperation, PojoGenerator.generateGatewayInfo());
 
-		Assert.assertNotNull(responseMessage);
-		Assert.assertNotNull(responseMessage.getBody());
-		Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.RESPONSE));
-		Assert.assertNotNull(responseMessage.getBody().getData());
-		Assert.assertEquals(0, responseMessage.getBody().getData().at("/nDeleted").asInt());
+        Assert.assertNotNull(responseMessage);
+        Assert.assertNotNull(responseMessage.getBody());
+        Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.RESPONSE));
+        Assert.assertNotNull(responseMessage.getBody().getData());
+        Assert.assertEquals(0, responseMessage.getBody().getData().at("/nDeleted").asInt());
 
-	}
+    }
 
-	@Ignore
-	@Test
-	public void given_OneDeleteProcessor_When_OneMalFormedQueryIsProccesed_Then_TheResponseIndicatesThatNotDeletionWasPerformed() {
+    @Ignore
+    @Test
+    public void given_OneDeleteProcessor_When_OneMalFormedQueryIsProccesed_Then_TheResponseIndicatesThatNotDeletionWasPerformed() {
 
-		SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
-		ssapDeletetOperation.getBody().setQuery("db.Person.remov({})");
-		responseMessage = deleteProcessor.process(ssapDeletetOperation, PojoGenerator.generateGatewayInfo());
+        SSAPMessage<SSAPBodyReturnMessage> responseMessage = new SSAPMessage<>();
+        ssapDeletetOperation.getBody().setQuery("db.Person.remov({})");
+        responseMessage = deleteProcessor.process(ssapDeletetOperation, PojoGenerator.generateGatewayInfo());
 
-		Assert.assertNotNull(responseMessage);
-		Assert.assertNotNull(responseMessage.getBody());
-		Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.ERROR));
-		Assert.assertFalse(responseMessage.getBody().isOk());
-		// Assert.assertNotNull(responseMessage.getBody().getData());
-		// Assert.assertEquals(0,
-		// responseMessage.getBody().getData().at("/nDeleted").asInt());
+        Assert.assertNotNull(responseMessage);
+        Assert.assertNotNull(responseMessage.getBody());
+        Assert.assertTrue(responseMessage.getDirection().equals(SSAPMessageDirection.ERROR));
+        Assert.assertFalse(responseMessage.getBody().isOk());
+        // Assert.assertNotNull(responseMessage.getBody().getData());
+        // Assert.assertEquals(0,
+        // responseMessage.getBody().getData().at("/nDeleted").asInt());
 
-	}
+    }
 
 }

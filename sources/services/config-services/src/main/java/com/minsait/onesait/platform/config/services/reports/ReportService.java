@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,20 +25,20 @@ import com.minsait.onesait.platform.config.model.Report;
 @Service
 public interface ReportService {
 
-	List<Report> findAllActiveReportsByUserId(String userId);
+    List<Report> findAllActiveReportsByUserId(String userId);
 
-	@Secured({ "ROLE_ADMINISTRATOR" })
-	List<Report> findAllActiveReports();
+    @Secured({"ROLE_ADMINISTRATOR"})
+    List<Report> findAllActiveReports();
 
-	Report findById(String id);
+    Report findById(String id);
 
-	void saveOrUpdate(Report report);
+    void saveOrUpdate(Report report);
 
-	void disable(String id);
+    void disable(String id);
 
-	void delete(String id);
+    void delete(String id);
 
-	Report findByIdentificationOrId(String id);
+    Report findByIdentificationOrId(String id);
 
-	boolean hasUserPermission(String userId, Report report, ResourceAccessType accessType);
+    boolean hasUserPermission(String userId, Report report, ResourceAccessType accessType);
 }

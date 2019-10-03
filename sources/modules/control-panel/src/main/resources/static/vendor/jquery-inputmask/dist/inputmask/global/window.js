@@ -6,6 +6,6 @@
 * Version: 4.0.0-beta.19
 */
 
-"function" == typeof define && define.amd ? define(function() {
+"function" == typeof define && define.amd ? define(function () {
     return window;
 }) : "object" == typeof exports && (module.exports = window);

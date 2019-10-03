@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,70 +37,70 @@ import com.minsait.onesait.platform.scheduler.scheduler.service.TaskService;
 @Service
 public class OntologyKPIServiceImpl implements OntologyKPIService {
 
-	@Autowired
-	private OntologyKPIRepository ontologyKPIRepository;
+    @Autowired
+    private OntologyKPIRepository ontologyKPIRepository;
 
-	@Autowired
-	private TaskService taskService;
+    @Autowired
+    private TaskService taskService;
 
-	@Override
-	public void unscheduleKpi(OntologyKPI oKPI) {
-		final String jobName = oKPI.getJobName();
-		if (jobName != null && oKPI.isActive()) {
-			final TaskOperation operation = new TaskOperation();
-			operation.setJobName(jobName);
-			if(taskService.unscheduled(operation)) {
-				oKPI.setActive(false);
-				oKPI.setJobName(null);
-				ontologyKPIRepository.save(oKPI);
-			}
-		}
-	}
+    @Override
+    public void unscheduleKpi(OntologyKPI oKPI) {
+        final String jobName = oKPI.getJobName();
+        if (jobName != null && oKPI.isActive()) {
+            final TaskOperation operation = new TaskOperation();
+            operation.setJobName(jobName);
+            if (taskService.unscheduled(operation)) {
+                oKPI.setActive(false);
+                oKPI.setJobName(null);
+                ontologyKPIRepository.save(oKPI);
+            }
+        }
+    }
 
-	@Override
-	public JsonNode completeSchema(String schema, String identification, String description) throws IOException {
-		final JsonNode schemaSubTree = organizeRootNodeIfExist(schema);
-		((ObjectNode) schemaSubTree).put("type", "object");
-		((ObjectNode) schemaSubTree).put("description", "Info " + identification);
+    @Override
+    public JsonNode completeSchema(String schema, String identification, String description) throws IOException {
+        final JsonNode schemaSubTree = organizeRootNodeIfExist(schema);
+        ((ObjectNode) schemaSubTree).put("type", "object");
+        ((ObjectNode) schemaSubTree).put("description", "Info " + identification);
 
-		((ObjectNode) schemaSubTree).put("$schema", SCHEMA_DRAFT_VERSION);
-		((ObjectNode) schemaSubTree).put("title", identification);
+        ((ObjectNode) schemaSubTree).put("$schema", SCHEMA_DRAFT_VERSION);
+        ((ObjectNode) schemaSubTree).put("title", identification);
 
-		((ObjectNode) schemaSubTree).put("additionalProperties", true);
-		return schemaSubTree;
-	}
+        ((ObjectNode) schemaSubTree).put("additionalProperties", true);
+        return schemaSubTree;
+    }
 
-	@Override
-	public JsonNode organizeRootNodeIfExist(String schema) throws IOException {
+    @Override
+    public JsonNode organizeRootNodeIfExist(String schema) throws IOException {
 
-		ObjectMapper mapper = new ObjectMapper();
-		final JsonNode schemaSubTree = mapper.readTree(schema);
-		boolean find = Boolean.FALSE;
-		for (Iterator<Entry<String, JsonNode>> elements = schemaSubTree.fields(); elements.hasNext();) {
-			Entry<String, JsonNode> e = elements.next();
-			if (e.getKey().equals("properties")) {
-				e.getValue().fields();
-				for (Iterator<Entry<String, JsonNode>> properties = e.getValue().fields(); properties.hasNext();) {
-					Entry<String, JsonNode> prop = properties.next();
-					String field = prop.getKey();
-					if (!field.toUpperCase().equals(field) && Character.isUpperCase(field.charAt(0))) {
-					    ((ObjectNode) schemaSubTree).set("datos", prop.getValue());
-						String newString = "{\"type\": \"string\",\"$ref\": \"#/datos\"}";
-						JsonNode newNode = mapper.readTree(newString);
-						prop.setValue(newNode);
-						find = Boolean.TRUE;
+        ObjectMapper mapper = new ObjectMapper();
+        final JsonNode schemaSubTree = mapper.readTree(schema);
+        boolean find = Boolean.FALSE;
+        for (Iterator<Entry<String, JsonNode>> elements = schemaSubTree.fields(); elements.hasNext(); ) {
+            Entry<String, JsonNode> e = elements.next();
+            if (e.getKey().equals("properties")) {
+                e.getValue().fields();
+                for (Iterator<Entry<String, JsonNode>> properties = e.getValue().fields(); properties.hasNext(); ) {
+                    Entry<String, JsonNode> prop = properties.next();
+                    String field = prop.getKey();
+                    if (!field.toUpperCase().equals(field) && Character.isUpperCase(field.charAt(0))) {
+                        ((ObjectNode) schemaSubTree).set("datos", prop.getValue());
+                        String newString = "{\"type\": \"string\",\"$ref\": \"#/datos\"}";
+                        JsonNode newNode = mapper.readTree(newString);
+                        prop.setValue(newNode);
+                        find = Boolean.TRUE;
                         break;
                     }
                     if (find) {
                         break;
                     }
-				}
-			}
-		}
-		return schemaSubTree;
-	}
-	
-	@Override
+                }
+            }
+        }
+        return schemaSubTree;
+    }
+
+    @Override
     public void scheduleKpi(OntologyKPI oKPI) {
         if (!oKPI.isActive()) {
             final TaskInfo task = new TaskInfo();

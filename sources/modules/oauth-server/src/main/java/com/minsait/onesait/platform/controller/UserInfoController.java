@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,41 +36,41 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserInfoController {
 
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private TokenController tokenController;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private TokenController tokenController;
 
-	@RequestMapping("/user")
-	public Object user(Principal user, @RequestHeader("Authorization") String authorization) {
-		if (!StringUtils.isEmpty(authorization)) {
-			try {
-				log.info("authentication of type {}", user.getClass().getName());
-				return tokenController.info(authorization.split(" ")[1].trim()).getOauthInfo();
-			} catch (final Exception e) {
-				log.error("erorr ", e);
-				return user;
-			}
-		} else {
-			return user;
-		}
-	}
+    @RequestMapping("/user")
+    public Object user(Principal user, @RequestHeader("Authorization") String authorization) {
+        if (!StringUtils.isEmpty(authorization)) {
+            try {
+                log.info("authentication of type {}", user.getClass().getName());
+                return tokenController.info(authorization.split(" ")[1].trim()).getOauthInfo();
+            } catch (final Exception e) {
+                log.error("erorr ", e);
+                return user;
+            }
+        } else {
+            return user;
+        }
+    }
 
-	/*
-	 * Endpoint for OIDC principal information retrieval
-	 */
-	@RequestMapping("/oidc/userinfo")
-	public JsonNode userInfo(OAuth2Authentication token) {
+    /*
+     * Endpoint for OIDC principal information retrieval
+     */
+    @RequestMapping("/oidc/userinfo")
+    public JsonNode userInfo(OAuth2Authentication token) {
 
-		final User principal = userRepository.findByUserId(token.getPrincipal().toString());
-		final ObjectMapper mapper = new ObjectMapper();
-		final JsonNode node = mapper.createObjectNode();
-		((ObjectNode) node).put("mail", principal.getEmail());
-		((ObjectNode) node).put("username", principal.getUserId());
-		((ObjectNode) node).put("name", principal.getFullName());
-		((ObjectNode) node).put("role", principal.getRole().getId());
-		((ObjectNode) node).put("userid", "(" + principal.getUserId() + ")");
+        final User principal = userRepository.findByUserId(token.getPrincipal().toString());
+        final ObjectMapper mapper = new ObjectMapper();
+        final JsonNode node = mapper.createObjectNode();
+        ((ObjectNode) node).put("mail", principal.getEmail());
+        ((ObjectNode) node).put("username", principal.getUserId());
+        ((ObjectNode) node).put("name", principal.getFullName());
+        ((ObjectNode) node).put("role", principal.getRole().getId());
+        ((ObjectNode) node).put("userid", "(" + principal.getUserId() + ")");
 
-		return node;
-	}
+        return node;
+    }
 }

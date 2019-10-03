@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,59 +33,59 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ServiceUtils {
 
-	@Autowired
-	private MessageSource messageSource;
+    @Autowired
+    private MessageSource messageSource;
 
-	public static final String AUDIT_COLLECTION_NAME = "Audit_";
+    public static final String AUDIT_COLLECTION_NAME = "Audit_";
 
-	public Authentication getAuthentication() {
-		return SecurityContextHolder.getContext().getAuthentication();
-	}
+    public Authentication getAuthentication() {
+        return SecurityContextHolder.getContext().getAuthentication();
+    }
 
-	public String getUserId() {
-		Authentication auth = getAuthentication();
-		if (auth == null)
-			return null;
-		return auth.getName();
-	}
+    public String getUserId() {
+        Authentication auth = getAuthentication();
+        if (auth == null)
+            return null;
+        return auth.getName();
+    }
 
-	public String getRole() {
-		Authentication auth = getAuthentication();
-		if (auth == null)
-			return null;
-		return auth.getAuthorities().toArray()[0].toString();
-	}
+    public String getRole() {
+        Authentication auth = getAuthentication();
+        if (auth == null)
+            return null;
+        return auth.getAuthorities().toArray()[0].toString();
+    }
 
-	public String getMessage(String key, String valueDefault) {
-		try {
-			return messageSource.getMessage(key, null, LocaleContextHolder.getLocale());
-		} catch (Exception e) {
-			log.debug("Key:" + key + " not found. Returns:" + valueDefault);
-			return valueDefault;
-		}
-	}
+    public String getMessage(String key, String valueDefault) {
+        try {
+            return messageSource.getMessage(key, null, LocaleContextHolder.getLocale());
+        } catch (Exception e) {
+            log.debug("Key:" + key + " not found. Returns:" + valueDefault);
+            return valueDefault;
+        }
+    }
 
-	public void setSessionAttribute(HttpServletRequest request, String name, Object o) {
-		WebUtils.setSessionAttribute(request, name, o);
-	}
+    public void setSessionAttribute(HttpServletRequest request, String name, Object o) {
+        WebUtils.setSessionAttribute(request, name, o);
+    }
 
-	public String jsonStringToString(String json) {
+    public String jsonStringToString(String json) {
 
-		ObjectMapper objectMapper = new ObjectMapper();
-		String formattedJson = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        String formattedJson = null;
 
-		try {
-			JsonNode tree = objectMapper.readValue(json, JsonNode.class);
-			formattedJson = tree.toString();
-			return formattedJson;
-		} catch (Exception e) {
-			log.error("Exception reached " + e.getMessage(), e);
-			return null;
-		}
-	}
+        try {
+            JsonNode tree = objectMapper.readValue(json, JsonNode.class);
+            formattedJson = tree.toString();
+            return formattedJson;
+        } catch (Exception e) {
+            log.error("Exception reached " + e.getMessage(), e);
+            return null;
+        }
+    }
 
 
-	public static String getAuditCollectionName(String userId) {
-		return AUDIT_COLLECTION_NAME + userId;
-	}
+    public static String getAuditCollectionName(String userId) {
+        return AUDIT_COLLECTION_NAME + userId;
+    }
 }

@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,148 +45,151 @@ import lombok.Data;
 @Rule
 public class APIQueryOntologyRule extends DefaultRuleBase {
 
-	@Autowired
-	private ApiManagerService apiManagerService;
+    @Autowired
+    private ApiManagerService apiManagerService;
 
-	private static final String SQL_LIKE_STR = "SQL";
+    private static final String SQL_LIKE_STR = "SQL";
 
-	@Priority
-	public int getPriority() {
-		return 4;
-	}
+    @Priority
+    public int getPriority() {
+        return 4;
+    }
 
-	@Condition
-	public boolean existsRequest(Facts facts) {
-		final HttpServletRequest request = facts.get(RuleManager.REQUEST);
-		return ((request != null) && canExecuteRule(facts));
-	}
+    @Condition
+    public boolean existsRequest(Facts facts) {
+        final HttpServletRequest request = facts.get(RuleManager.REQUEST);
+        return ((request != null) && canExecuteRule(facts));
+    }
 
-	@Action
-	public void setFirstDerivedData(Facts facts) {
-		String queryDb = "";
-		String targetDb = "";
-		final Map<String, Object> data = facts.get(RuleManager.FACTS);
-		final HttpServletRequest request = facts.get(RuleManager.REQUEST);
+    @Action
+    public void setFirstDerivedData(Facts facts) {
+        String queryDb = "";
+        String targetDb = "";
+        final Map<String, Object> data = facts.get(RuleManager.FACTS);
+        final HttpServletRequest request = facts.get(RuleManager.REQUEST);
 
-		final Api api = (Api) data.get(Constants.API);
-		final User user = (User) data.get(Constants.USER);
-		final String pathInfo = (String) data.get(Constants.PATH_INFO);
-		final String body = (String) data.get(Constants.BODY);
-		String queryType = (String) data.get(Constants.QUERY_TYPE);
+        final Api api = (Api) data.get(Constants.API);
+        final User user = (User) data.get(Constants.USER);
+        final String pathInfo = (String) data.get(Constants.PATH_INFO);
+        final String body = (String) data.get(Constants.BODY);
+        String queryType = (String) data.get(Constants.QUERY_TYPE);
 
-		final Ontology ontology = api.getOntology();
-		if (ontology != null) {
-			data.put(Constants.IS_EXTERNAL_API, false);
+        final Ontology ontology = api.getOntology();
+        if (ontology != null) {
+            data.put(Constants.IS_EXTERNAL_API, false);
 
-			final ApiOperation customSQL = apiManagerService.getCustomSQL(pathInfo, api);
+            final ApiOperation customSQL = apiManagerService.getCustomSQL(pathInfo, api);
 
-			final String objectId = apiManagerService.getObjectidFromPathQuery(pathInfo);
-			if (customSQL == null && !objectId.equals("") && (queryType.equals("") || queryType.equals("NONE"))) {
+            final String objectId = apiManagerService.getObjectidFromPathQuery(pathInfo);
+            if (customSQL == null && !objectId.equals("") && (queryType.equals("") || queryType.equals("NONE"))) {
 
-				queryDb = this.buildQueryByObjectId(ontology, objectId);
+                queryDb = this.buildQueryByObjectId(ontology, objectId);
 
-				data.put(Constants.QUERY_TYPE, SQL_LIKE_STR);
-				queryType = SQL_LIKE_STR;
-				data.put(Constants.QUERY, queryDb);
-				data.put(Constants.QUERY_BY_ID, Boolean.TRUE);
+                data.put(Constants.QUERY_TYPE, SQL_LIKE_STR);
+                queryType = SQL_LIKE_STR;
+                data.put(Constants.QUERY, queryDb);
+                data.put(Constants.QUERY_BY_ID, Boolean.TRUE);
 
-			} else if (customSQL == null && objectId.equals("") && (queryType.equals("") || queryType.equals("NONE"))) {
+            } else if (customSQL == null && objectId.equals("") && (queryType.equals("") || queryType.equals("NONE"))) {
 
-				queryDb = "select c,_id from " + ontology.getIdentification() + " as c";
+                queryDb = "select c,_id from " + ontology.getIdentification() + " as c";
 
-				data.put(Constants.QUERY_TYPE, SQL_LIKE_STR);
-				queryType = SQL_LIKE_STR;
-				data.put(Constants.QUERY, queryDb);
-				data.put(Constants.QUERY_BY_ID, Boolean.TRUE);
-			}
+                data.put(Constants.QUERY_TYPE, SQL_LIKE_STR);
+                queryType = SQL_LIKE_STR;
+                data.put(Constants.QUERY, queryDb);
+                data.put(Constants.QUERY_BY_ID, Boolean.TRUE);
+            }
 
-			if (customSQL != null) {
-				CustomQueryData result = this.buildCustomQuery(customSQL, data, body, request, user);
-				queryType = result.getQueryType();
-				queryDb = result.getQueryDb();
-				targetDb = result.getTargetDb();
-			}
+            if (customSQL != null) {
+                CustomQueryData result = this.buildCustomQuery(customSQL, data, body, request, user);
+                queryType = result.getQueryType();
+                queryDb = result.getQueryDb();
+                targetDb = result.getTargetDb();
+            }
 
-			data.put(Constants.QUERY_TYPE, queryType);
-			data.put(Constants.QUERY, queryDb);
-			data.put(Constants.TARGET_DB_PARAM, targetDb);
+            data.put(Constants.QUERY_TYPE, queryType);
+            data.put(Constants.QUERY, queryDb);
+            data.put(Constants.TARGET_DB_PARAM, targetDb);
 
-			data.put(Constants.OBJECT_ID, objectId);
-			data.put(Constants.ONTOLOGY, ontology);
+            data.put(Constants.OBJECT_ID, objectId);
+            data.put(Constants.ONTOLOGY, ontology);
 
-			// Guess type of operation!!!
+            // Guess type of operation!!!
 
-		} else {
-			data.put(Constants.IS_EXTERNAL_API, true);
+        } else {
+            data.put(Constants.IS_EXTERNAL_API, true);
 
-		}
-	}
+        }
+    }
 
-	private static boolean matchParameter(String name, String match) {
-		final String variable = match.replace("$", "");
-		return (name.equalsIgnoreCase(match) || name.equalsIgnoreCase(variable));
-	}
+    private static boolean matchParameter(String name, String match) {
+        final String variable = match.replace("$", "");
+        return (name.equalsIgnoreCase(match) || name.equalsIgnoreCase(variable));
+    }
 
-	private String buildQueryByObjectId(Ontology ontology, String objectId) {
-		String queryDb = "";
-		final RtdbDatasource dataSource = ontology.getRtdbDatasource();
+    private String buildQueryByObjectId(Ontology ontology, String objectId) {
+        String queryDb = "";
+        final RtdbDatasource dataSource = ontology.getRtdbDatasource();
 
-		if (dataSource.equals(RtdbDatasource.MONGO))
-			queryDb = "select *, _id from " + ontology.getIdentification() + " as c where  _id = OID(\"" + objectId
-					+ "\")";
-		else if (dataSource.equals(RtdbDatasource.ELASTIC_SEARCH))
-			queryDb = "select * from " + ontology.getIdentification() + " where _id = IDS_QUERY("
-					+ ontology.getIdentification() + "," + objectId + ")";
+        if (dataSource.equals(RtdbDatasource.MONGO))
+            queryDb =
+                    "select *, _id from " + ontology.getIdentification() + " as c where  _id = OID(\"" + objectId +
+                            "\")";
+        else if (dataSource.equals(RtdbDatasource.ELASTIC_SEARCH))
+            queryDb =
+                    "select * from " + ontology.getIdentification() + " where _id = IDS_QUERY(" + ontology.getIdentification() + "," + objectId + ")";
 
-		return queryDb;
-	}
+        return queryDb;
+    }
 
-	private CustomQueryData buildCustomQuery(ApiOperation customSQL, Map<String, Object> data, String body,
-			HttpServletRequest request, User user) {
-		String queryDb = "";
-		String queryType = (String) data.get(Constants.QUERY_TYPE);
-		String targetDb = "";
+    private CustomQueryData buildCustomQuery(ApiOperation customSQL, Map<String, Object> data, String body,
+            HttpServletRequest request, User user) {
+        String queryDb = "";
+        String queryType = (String) data.get(Constants.QUERY_TYPE);
+        String targetDb = "";
 
-		final Set<ApiQueryParameter> queryParametersCustomQuery = new HashSet<>();
+        final Set<ApiQueryParameter> queryParametersCustomQuery = new HashSet<>();
 
-		data.put(Constants.API_OPERATION, customSQL);
+        data.put(Constants.API_OPERATION, customSQL);
 
-		for (final ApiQueryParameter queryparameter : customSQL.getApiqueryparameters()) {
-			final String name = queryparameter.getName();
-			final String value = queryparameter.getValue();
+        for (final ApiQueryParameter queryparameter : customSQL.getApiqueryparameters()) {
+            final String name = queryparameter.getName();
+            final String value = queryparameter.getValue();
 
-			if (matchParameter(name, Constants.QUERY))
-				queryDb = value;
-			else if (matchParameter(name, Constants.QUERY_TYPE))
-				queryType = value;
-			else if (matchParameter(name, Constants.TARGET_DB_PARAM))
-				targetDb = value;
-			else
-				queryParametersCustomQuery.add(queryparameter);
+            if (matchParameter(name, Constants.QUERY))
+                queryDb = value;
+            else if (matchParameter(name, Constants.QUERY_TYPE))
+                queryType = value;
+            else if (matchParameter(name, Constants.TARGET_DB_PARAM))
+                targetDb = value;
+            else
+                queryParametersCustomQuery.add(queryparameter);
 
-		}
+        }
 
-		Map<String, String> queryParametersValues = apiManagerService.getCustomParametersValues(request, body, queryParametersCustomQuery, customSQL);
+        Map<String, String> queryParametersValues = apiManagerService.getCustomParametersValues(request, body,
+                                                                                                queryParametersCustomQuery,
+                                                                                                customSQL);
 
-		if (body == null || body.equals("")) {
-			queryDb = apiManagerService.buildQuery(queryDb, queryParametersValues, user);
-		} else {
-			queryDb = body;
-		}
+        if (body == null || body.equals("")) {
+            queryDb = apiManagerService.buildQuery(queryDb, queryParametersValues, user);
+        } else {
+            queryDb = body;
+        }
 
-		CustomQueryData result = new CustomQueryData();
-		result.setQueryDb(queryDb);
-		result.setQueryType(queryType);
-		result.setTargetDb(targetDb);
+        CustomQueryData result = new CustomQueryData();
+        result.setQueryDb(queryDb);
+        result.setQueryType(queryType);
+        result.setTargetDb(targetDb);
 
-		return result;
-	}
+        return result;
+    }
 
-	@Data
-	class CustomQueryData {
-		private String queryDb;
-		private String queryType;
-		private String targetDb;
-	}
+    @Data
+    class CustomQueryData {
+        private String queryDb;
+        private String queryType;
+        private String targetDb;
+    }
 
 }

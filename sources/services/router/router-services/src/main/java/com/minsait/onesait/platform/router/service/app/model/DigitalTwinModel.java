@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,57 +21,55 @@ import lombok.Setter;
 
 public class DigitalTwinModel implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public enum EventType {
-		PING, LOG, NOTEBOOK, FLOW, RULE, SHADOW, REGISTER, CUSTOM, PIPELINE;
-	}
+    public enum EventType {
+        PING, LOG, NOTEBOOK, FLOW, RULE, SHADOW, REGISTER, CUSTOM, PIPELINE;
+    }
 
-	@Getter
-	@Setter
-	private String deviceId;
+    @Getter
+    @Setter
+    private String deviceId;
 
-	@Getter
-	@Setter
-	private String deviceName;
+    @Getter
+    @Setter
+    private String deviceName;
 
-	@Getter
-	@Setter
-	private String type;
+    @Getter
+    @Setter
+    private String type;
 
-	@Getter
-	@Setter
-	private EventType event;
+    @Getter
+    @Setter
+    private EventType event;
 
-	@Getter
-	@Setter
-	private String eventName;
+    @Getter
+    @Setter
+    private String eventName;
 
-	@Getter
-	@Setter
-	private String status;
+    @Getter
+    @Setter
+    private String status;
 
-	@Getter
-	@Setter
-	private String processId;
+    @Getter
+    @Setter
+    private String processId;
 
-	@Getter
-	@Setter
-	private String log;
+    @Getter
+    @Setter
+    private String log;
 
-	@Getter
-	@Setter
-	private String endpoint;
+    @Getter
+    @Setter
+    private String endpoint;
 
-	@Getter
-	@Setter
-	private String actionName;
+    @Getter
+    @Setter
+    private String actionName;
 
-	@Override
-	public String toString() {
-		return "DigitalTwinModel [deviceId=" + deviceId + ", type=" + type + ", event=" + event + ", status=" + status
-				+ ", processId=" + processId + ", log=" + log + ", endpoint=" + endpoint + ", eventName" + eventName
-				+ "]";
-	}
+    @Override
+    public String toString() {
+        return "DigitalTwinModel [deviceId=" + deviceId + ", type=" + type + ", event=" + event + ", status=" + status + ", processId=" + processId + ", log=" + log + ", endpoint=" + endpoint + ", eventName" + eventName + "]";
+    }
 
 }

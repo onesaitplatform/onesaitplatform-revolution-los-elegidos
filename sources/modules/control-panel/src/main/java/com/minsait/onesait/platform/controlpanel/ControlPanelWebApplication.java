@@ -1,11 +1,11 @@
 /**
  * Copyright Indra Soluciones Tecnologías de la Información, S.L.U.
  * 2013-2019 SPAIN
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -74,153 +74,154 @@ import lombok.extern.slf4j.Slf4j;
 @EnableAsync
 @EnableJpaRepositories(basePackages = "com.minsait.onesait.platform.config.repository")
 @EnableMongoRepositories(basePackages = "com.minsait.onesait.platform.persistence.mongodb")
-@ComponentScan(basePackages = { "com.ibm.javametrics.spring", "com.minsait.onesait.platform" }, lazyInit = true)
-@EnableAutoConfiguration(exclude = { MetricsDropwizardAutoConfiguration.class })
+@ComponentScan(basePackages = {"com.ibm.javametrics.spring", "com.minsait.onesait.platform"}, lazyInit = true)
+@EnableAutoConfiguration(exclude = {MetricsDropwizardAutoConfiguration.class})
 @EnableCaching
 public class ControlPanelWebApplication extends WebMvcConfigurerAdapter {
 
-	@Configuration
-	@Profile("default")
-	@ComponentScan(basePackages = { "com.ibm.javametrics.spring", "com.minsait.onesait.platform" }, lazyInit = true)
-	static class LocalConfig {
-	}
+    @Configuration
+    @Profile("default")
+    @ComponentScan(basePackages = {"com.ibm.javametrics.spring", "com.minsait.onesait.platform"}, lazyInit = true)
+    static class LocalConfig {
+    }
 
-	@Value("${onesaitplatform.locale.default:en}")
-	@Getter
-	@Setter
-	private String defaultLocale;
+    @Value("${onesaitplatform.locale.default:en}")
+    @Getter
+    @Setter
+    private String defaultLocale;
 
-	@Value("${onesaitplatform.analytics.dataflow.version:3.10.0}")
-	private String streamsetsVersion;
+    @Value("${onesaitplatform.analytics.dataflow.version:3.10.0}")
+    private String streamsetsVersion;
 
-	@Autowired
-	private CorrelationInterceptor logInterceptor;
+    @Autowired
+    private CorrelationInterceptor logInterceptor;
 
-	@Autowired
-	private ApplicationContext appCtx;
+    @Autowired
+    private ApplicationContext appCtx;
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(ControlPanelWebApplication.class, args);
-	}
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(ControlPanelWebApplication.class, args);
+    }
 
-	@Autowired
-	public void initializeMetricsNotifier() {
-		appCtx.getBean(MetricsNotifier.class);
-	}
+    @Autowired
+    public void initializeMetricsNotifier() {
+        appCtx.getBean(MetricsNotifier.class);
+    }
 
-	@Bean
-	public TaskExecutor taskExecutor() {
-		final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(10);
-		executor.setQueueCapacity(100);
-		executor.setMaxPoolSize(50);
-		executor.initialize();
-		return executor;
-	}
+    @Bean
+    public TaskExecutor taskExecutor() {
+        final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(10);
+        executor.setQueueCapacity(100);
+        executor.setMaxPoolSize(50);
+        executor.initialize();
+        return executor;
+    }
 
-	@Bean
-	public ResourceBundleMessageSource messageSource() {
-		final ResourceBundleMessageSource resourceBundleMessageSource = new ResourceBundleMessageSource();
-		// resourceBundleMessageSource.setBasename("i18n/messages");
-		resourceBundleMessageSource.setBasenames("i18n/messages", "i18n/project");
-		resourceBundleMessageSource.setDefaultEncoding("UTF-8");
-		return resourceBundleMessageSource;
-	}
+    @Bean
+    public ResourceBundleMessageSource messageSource() {
+        final ResourceBundleMessageSource resourceBundleMessageSource = new ResourceBundleMessageSource();
+        // resourceBundleMessageSource.setBasename("i18n/messages");
+        resourceBundleMessageSource.setBasenames("i18n/messages", "i18n/project");
+        resourceBundleMessageSource.setDefaultEncoding("UTF-8");
+        return resourceBundleMessageSource;
+    }
 
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
-		registry.addResourceHandler("/notebooks/app/**").addResourceLocations("classpath:/static/notebooks/");
-		registry.addResourceHandler("/dataflow/app/**").addResourceLocations("classpath:/static/dataflow/"+streamsetsVersion+"/");
-		registry.addResourceHandler("/gitlab/**").addResourceLocations("classpath:/static/gitlab/");
-	}
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+        registry.addResourceHandler("/notebooks/app/**").addResourceLocations("classpath:/static/notebooks/");
+        registry.addResourceHandler("/dataflow/app/**").addResourceLocations(
+                "classpath:/static/dataflow/" + streamsetsVersion + "/");
+        registry.addResourceHandler("/gitlab/**").addResourceLocations("classpath:/static/gitlab/");
+    }
 
-	/**
-	 * Exports the all endpoint metrics like those implementing
-	 * {@link PublicMetrics}.
-	 */
-	@Bean
-	public MetricsEndpointMetricReader metricsEndpointMetricReader(MetricsEndpoint metricsEndpoint) {
-		return new MetricsEndpointMetricReader(metricsEndpoint);
-	}
+    /**
+     * Exports the all endpoint metrics like those implementing
+     * {@link PublicMetrics}.
+     */
+    @Bean
+    public MetricsEndpointMetricReader metricsEndpointMetricReader(MetricsEndpoint metricsEndpoint) {
+        return new MetricsEndpointMetricReader(metricsEndpoint);
+    }
 
-	/**
-	 * Dandelion Config Beans
-	 */
-	@Bean
-	public DandelionDialect dandelionDialect() {
-		return new DandelionDialect();
-	}
+    /**
+     * Dandelion Config Beans
+     */
+    @Bean
+    public DandelionDialect dandelionDialect() {
+        return new DandelionDialect();
+    }
 
-	@Bean
-	public DataTablesDialect dataTablesDialect() {
-		return new DataTablesDialect();
-	}
+    @Bean
+    public DataTablesDialect dataTablesDialect() {
+        return new DataTablesDialect();
+    }
 
-	@Bean
-	public DandelionFilter dandelionFilter() {
-		return new DandelionFilter();
-	}
+    @Bean
+    public DandelionFilter dandelionFilter() {
+        return new DandelionFilter();
+    }
 
-	@Bean
-	public ServletRegistrationBean dandelionServletRegistrationBean() {
-		return new ServletRegistrationBean(new DandelionServlet(), "/dandelion-assets/*");
-	}
+    @Bean
+    public ServletRegistrationBean dandelionServletRegistrationBean() {
+        return new ServletRegistrationBean(new DandelionServlet(), "/dandelion-assets/*");
+    }
 
-	/**
-	 * Locale Context Beans
-	 */
-	@Bean
-	public LocaleResolver localeResolver() {
-		final SessionLocaleResolver slr = new SessionLocaleResolver();
-		final Locale locale = new Locale(defaultLocale);
-		slr.setDefaultLocale(locale);
-		return slr;
-	}
+    /**
+     * Locale Context Beans
+     */
+    @Bean
+    public LocaleResolver localeResolver() {
+        final SessionLocaleResolver slr = new SessionLocaleResolver();
+        final Locale locale = new Locale(defaultLocale);
+        slr.setDefaultLocale(locale);
+        return slr;
+    }
 
-	@Bean
-	public LocaleChangeInterceptor localeChangeInterceptor() {
-		final LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
-		lci.setParamName("lang");
-		lci.setIgnoreInvalidLocale(true);
-		return lci;
-	}
+    @Bean
+    public LocaleChangeInterceptor localeChangeInterceptor() {
+        final LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
+        lci.setParamName("lang");
+        lci.setIgnoreInvalidLocale(true);
+        return lci;
+    }
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(localeChangeInterceptor());
-		registry.addInterceptor(logInterceptor);
-	}
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(localeChangeInterceptor());
+        registry.addInterceptor(logInterceptor);
+    }
 
-	private static final String MSJ_SSL_ERROR = "Error configuring SSL verification in Control Panel";
+    private static final String MSJ_SSL_ERROR = "Error configuring SSL verification in Control Panel";
 
-	@Bean
-	@Conditional(ControlPanelAvoidSSLVerificationCondition.class)
-	String sslUtil() {
-		try {
-			SSLUtil.turnOffSslChecking();
-		} catch (final KeyManagementException | NoSuchAlgorithmException e) {
-			log.error(MSJ_SSL_ERROR, e);
-			throw new GenericRuntimeOPException(MSJ_SSL_ERROR, e);
-		}
+    @Bean
+    @Conditional(ControlPanelAvoidSSLVerificationCondition.class)
+    String sslUtil() {
+        try {
+            SSLUtil.turnOffSslChecking();
+        } catch (final KeyManagementException | NoSuchAlgorithmException e) {
+            log.error(MSJ_SSL_ERROR, e);
+            throw new GenericRuntimeOPException(MSJ_SSL_ERROR, e);
+        }
 
-		return "OK";
-	}
+        return "OK";
+    }
 
-	@Bean
-	public FilterRegistrationBean filterRegistrationBean() {
-		final FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-		final CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
-		characterEncodingFilter.setForceEncoding(true);
-		characterEncodingFilter.setEncoding("UTF-8");
-		registrationBean.setFilter(characterEncodingFilter);
-		registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
-		return registrationBean;
-	}
+    @Bean
+    public FilterRegistrationBean filterRegistrationBean() {
+        final FilterRegistrationBean registrationBean = new FilterRegistrationBean();
+        final CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+        characterEncodingFilter.setForceEncoding(true);
+        characterEncodingFilter.setEncoding("UTF-8");
+        registrationBean.setFilter(characterEncodingFilter);
+        registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        return registrationBean;
+    }
 
-	@Override
-	public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-		converters.add(new YamlHttpMessageConverter<>());
-	}
+    @Override
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.add(new YamlHttpMessageConverter<>());
+    }
 
 }

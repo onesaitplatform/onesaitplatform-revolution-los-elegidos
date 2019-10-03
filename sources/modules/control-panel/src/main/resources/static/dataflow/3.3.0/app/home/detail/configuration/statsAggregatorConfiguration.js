@@ -17,10 +17,10 @@
  * Controller for StatsAggregator Configuration.
  */
 angular
-  .module('dataCollectorApp.home')
-  .controller('StatsAggregatorConfigurationController', function ($scope) {
-    $scope.detailPaneConfig = $scope.statsAggregatorStageConfig;
-    $scope.$watch('statsAggregatorStageConfig', function() {
-      $scope.detailPaneConfig = $scope.statsAggregatorStageConfig;
+    .module('dataCollectorApp.home')
+    .controller('StatsAggregatorConfigurationController', function ($scope) {
+        $scope.detailPaneConfig = $scope.statsAggregatorStageConfig;
+        $scope.$watch('statsAggregatorStageConfig', function () {
+            $scope.detailPaneConfig = $scope.statsAggregatorStageConfig;
+        });
     });
-  });
