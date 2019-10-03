@@ -1,0 +1,14 @@
+server:
+  compression:
+    enabled: true
+    mime-types:
+      - application/json
+      - application/xml
+      - text/plain
+  port: ${SERVER_PORT:8080}
+  context-path: /
+
+management:
+  security:
+    enabled: false
+  context-path: /actuator
