@@ -7,7 +7,7 @@ import java.io.Serializable;
 @Data
 public class LosElegidOSResponseDto implements Serializable {
 
-    private String code;
+    private int code;
     private String description;
     private String message;
 }

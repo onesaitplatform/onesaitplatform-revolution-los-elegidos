@@ -1,0 +1,3 @@
+influxdb: /usr/bin/influxd
+telegraf: /usr/bin/telegraf
+createdb: /createdb.sh

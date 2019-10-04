@@ -1,6 +1,7 @@
 package com.minsait.onesait.platform.revolution.loselegidos.controller;
 
 import com.minsait.onesait.platform.revolution.loselegidos.dto.LosElegidOSResponseDto;
+import com.minsait.onesait.platform.revolution.loselegidos.service.LosElegidOSService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,27 +17,17 @@ import java.util.Random;
 @Slf4j
 public class LosElegidOSController {
 
-    private Random random = new Random(System.currentTimeMillis());
+    private final LosElegidOSService service;
+
+    public LosElegidOSController(LosElegidOSService service) {
+        this.service = service;
+    }
 
     @GetMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LosElegidOSResponseDto> get(@RequestParam("param") String param,
             @RequestParam(value = "bound", defaultValue = "100") int bound) {
-        LosElegidOSResponseDto retVal = new LosElegidOSResponseDto();
-        retVal.setCode("OK");
-        retVal.setDescription("No error");
-
-        int randomInt = random.nextInt(bound);
-
-        try {
-            String message = "Message " + param + " " + randomInt;
-            retVal.setMessage(message);
-            Thread.sleep(randomInt * 100);
-        } catch (InterruptedException e) {
-            log.error("Excepción: {}", e.getMessage(), e);
-            retVal.setMessage(e.getMessage());
-        }
-        log.info("Mensaje = {}", retVal.getMessage());
-        return ResponseEntity.ok(retVal);
+        LosElegidOSResponseDto retVal = service.generateResponse(param, bound);
+        return ResponseEntity.status(retVal.getCode()).body(retVal);
     }
 
 }

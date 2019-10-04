@@ -12,3 +12,13 @@ management:
   security:
     enabled: false
   context-path: /actuator
+
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    platform: org.hibernate.dialect.H2Dialect
+
