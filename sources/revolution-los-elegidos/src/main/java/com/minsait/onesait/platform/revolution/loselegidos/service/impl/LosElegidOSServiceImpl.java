@@ -58,7 +58,13 @@ public class LosElegidOSServiceImpl implements LosElegidOSService {
         }
 
         try {
-            Thread.sleep(randomInt * 100);
+            long counter = 0;
+            for (long i = 0; i < randomInt * 1000; i++) {
+                for (long j = 0; j < randomInt * 100; j++) {
+                    counter += i * j;
+                }
+            }
+            Thread.sleep(randomInt * 10);
         } catch (InterruptedException e) {
             log.error("Excepción: {}", e.getMessage(), e);
             retVal.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
