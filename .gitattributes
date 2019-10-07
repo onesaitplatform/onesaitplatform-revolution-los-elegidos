@@ -1,2 +1,6 @@
 # Mapped as Java
 *.* linguist-language=Java
+
+*.mp4 binary
+*.png binary
+
